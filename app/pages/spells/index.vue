@@ -165,29 +165,20 @@ useHead({
           v-model="selectedLevel"
           :items="levelOptions"
           value-key="value"
-          placeholder="Select level"
-          class="w-40"
-        >
-          <template #label>
-            <span v-if="selectedLevel === null">All Levels</span>
-            <span v-else-if="selectedLevel === 0">Cantrip</span>
-            <span v-else>Level {{ selectedLevel }}</span>
-          </template>
-        </USelectMenu>
+          placeholder="All Levels"
+          size="md"
+          class="w-48"
+        />
 
         <!-- School filter -->
         <USelectMenu
           v-model="selectedSchool"
           :items="schoolOptions"
           value-key="value"
-          placeholder="Select school"
+          placeholder="All Schools"
+          size="md"
           class="w-48"
-        >
-          <template #label>
-            <span v-if="selectedSchool === null">All Schools</span>
-            <span v-else>{{ spellSchools?.find((s: any) => s.id === selectedSchool)?.name }}</span>
-          </template>
-        </USelectMenu>
+        />
 
         <!-- Clear filters button -->
         <UButton
