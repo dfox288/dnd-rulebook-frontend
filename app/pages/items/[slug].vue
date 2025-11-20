@@ -29,18 +29,58 @@ const costInGold = computed(() => {
 
 /**
  * Get rarity color for badge (NuxtUI v4 semantic colors)
+ * Progressive rarity scale from common to artifact
  */
 const rarityColor = computed(() => {
   if (!item.value) return 'neutral'
   const colors: Record<string, string> = {
-    common: 'neutral',
-    uncommon: 'success',
-    rare: 'info',
-    'very rare': 'primary',
-    legendary: 'warning',
-    artifact: 'error'
+    common: 'neutral',      // Gray - most basic
+    uncommon: 'success',     // Green - slightly better
+    rare: 'info',            // Blue - notable
+    'very rare': 'primary',  // Teal/cyan - very valuable
+    legendary: 'warning',    // Orange/amber - extremely rare
+    artifact: 'error'        // Red - unique/powerful
   }
   return colors[item.value.rarity.toLowerCase()] || 'neutral'
+})
+
+/**
+ * Get item type color for badge
+ * Color-coded by general category
+ */
+const getItemTypeColor = computed(() => {
+  if (!item.value?.item_type) return 'neutral'
+  const type = item.value.item_type.name.toLowerCase()
+
+  // Weapons (red/error)
+  if (type.includes('weapon') || type.includes('sword') || type.includes('axe') ||
+      type.includes('bow') || type.includes('dagger')) {
+    return 'error'
+  }
+
+  // Armor (info/blue)
+  if (type.includes('armor') || type.includes('shield')) {
+    return 'info'
+  }
+
+  // Tools & Equipment (warning/amber)
+  if (type.includes('tool') || type.includes('kit') || type.includes('instrument')) {
+    return 'warning'
+  }
+
+  // Potions & Consumables (success/green)
+  if (type.includes('potion') || type.includes('scroll') || type.includes('elixir')) {
+    return 'success'
+  }
+
+  // Wondrous Items & Magical (primary/teal)
+  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet') ||
+      type.includes('staff') || type.includes('rod') || type.includes('wand')) {
+    return 'primary'
+  }
+
+  // Default
+  return 'neutral'
 })
 
 // JSON debug toggle
@@ -106,7 +146,7 @@ const copyJson = () => {
       <div>
         <div class="flex items-center justify-between mb-3 flex-wrap gap-4">
           <div class="flex items-center gap-2 flex-wrap">
-            <UBadge color="warning" variant="subtle" size="lg">
+            <UBadge :color="getItemTypeColor" variant="subtle" size="lg">
               {{ item.item_type.name }}
             </UBadge>
             <UBadge :color="rarityColor" variant="subtle" size="lg">
