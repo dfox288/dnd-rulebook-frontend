@@ -1,0 +1,174 @@
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+
+// Page configuration
+const config = useRuntimeConfig()
+
+// Reactive filters
+const searchQuery = ref('')
+const currentPage = ref(1)
+const perPage = 24
+
+// Computed query params for API
+const queryParams = computed(() => {
+  const params: Record<string, any> = {
+    per_page: perPage,
+    page: currentPage.value,
+  }
+
+  if (searchQuery.value.trim()) {
+    params.q = searchQuery.value.trim()
+  }
+
+  return params
+})
+
+// Fetch feats with reactive filters
+const { data: featsResponse, pending: loading, error, refresh } = await useAsyncData(
+  'feats-list',
+  async () => {
+    const response = await $fetch(`${config.public.apiBase}/feats`, {
+      query: queryParams.value
+    })
+    return response
+  },
+  {
+    watch: [queryParams]
+  }
+)
+
+// Computed values
+const feats = computed(() => featsResponse.value?.data || [])
+const meta = computed(() => featsResponse.value?.meta || null)
+const totalResults = computed(() => meta.value?.total || 0)
+const lastPage = computed(() => meta.value?.last_page || 1)
+
+// Reset to page 1 when search changes
+watch(searchQuery, () => {
+  currentPage.value = 1
+})
+
+// SEO meta tags
+useSeoMeta({
+  title: 'Feats - D&D 5e Compendium',
+  description: 'Browse all D&D 5e feats and character abilities.',
+})
+
+useHead({
+  title: 'Feats - D&D 5e Compendium',
+})
+</script>
+
+<template>
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        Feats
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        Browse all {{ totalResults }} D&D 5e feats
+      </p>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-6">
+      <UInput
+        v-model="searchQuery"
+        icon="i-heroicons-magnifying-glass"
+        size="lg"
+        placeholder="Search feats..."
+        :ui="{ icon: { trailing: { pointer: '' } } }"
+      >
+        <template v-if="searchQuery" #trailing>
+          <UButton
+            color="gray"
+            variant="link"
+            icon="i-heroicons-x-mark-20-solid"
+            :padded="false"
+            @click="searchQuery = ''"
+          />
+        </template>
+      </UInput>
+    </div>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="flex justify-center items-center py-12">
+      <div class="flex flex-col items-center gap-4">
+        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
+        <p class="text-gray-600 dark:text-gray-400">Loading feats...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="py-12">
+      <UCard>
+        <div class="text-center">
+          <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            Error Loading Feats
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400">{{ error.message }}</p>
+          <UButton color="primary" class="mt-4" @click="refresh">
+            Try Again
+          </UButton>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="feats.length === 0" class="py-12">
+      <UCard>
+        <div class="text-center">
+          <UIcon name="i-heroicons-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            No Feats Found
+          </h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Try adjusting your search query
+          </p>
+          <UButton color="gray" @click="searchQuery = ''">
+            Clear Search
+          </UButton>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Results -->
+    <div v-else>
+      <!-- Results count -->
+      <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        Showing {{ meta?.from || 0 }}-{{ meta?.to || 0 }} of {{ totalResults }} feats
+      </div>
+
+      <!-- Feats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <SearchResultCard
+          v-for="feat in feats"
+          :key="feat.id"
+          :result="feat"
+          type="feat"
+        />
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="lastPage > 1" class="flex justify-center">
+        <UPagination
+          v-model="currentPage"
+          :page-count="perPage"
+          :total="totalResults"
+          :max="7"
+        />
+      </div>
+    </div>
+
+    <!-- Back to Home -->
+    <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+      <NuxtLink to="/">
+        <UButton color="gray" variant="soft" icon="i-heroicons-arrow-left">
+          Back to Home
+        </UButton>
+      </NuxtLink>
+    </div>
+  </div>
+</template>
