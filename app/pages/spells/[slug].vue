@@ -49,6 +49,17 @@ const damageEffects = computed(() => {
     .filter((e: any) => e.effect_type === 'damage')
     .sort((a: any, b: any) => a.min_spell_slot - b.min_spell_slot)
 })
+
+// JSON debug toggle
+const showJson = ref(false)
+
+// Copy JSON to clipboard
+const copyJson = () => {
+  if (spell.value) {
+    navigator.clipboard.writeText(JSON.stringify(spell.value, null, 2))
+    // TODO: Show toast notification
+  }
+}
 </script>
 
 <template>
@@ -80,64 +91,94 @@ const damageEffects = computed(() => {
     </div>
 
     <!-- Spell Content -->
-    <div v-else-if="spell" class="space-y-6">
-      <!-- Header -->
+    <div v-else-if="spell" class="space-y-8">
+      <!-- Breadcrumb -->
       <div>
-        <div class="flex items-center gap-2 mb-2">
-          <UBadge color="purple" variant="subtle">
-            {{ spellLevelText }} {{ spell.school.name }}
-          </UBadge>
-          <UBadge v-if="spell.is_ritual" color="secondary" variant="soft" size="xs">
-            Ritual
-          </UBadge>
-          <UBadge v-if="spell.needs_concentration" color="primary" variant="soft" size="xs">
-            Concentration
-          </UBadge>
+        <UButton to="/spells" variant="ghost" color="gray" icon="i-heroicons-arrow-left" size="sm">
+          Back to Spells
+        </UButton>
+      </div>
+
+      <!-- Header -->
+      <div class="flex justify-between items-start gap-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-3 flex-wrap">
+            <UBadge color="purple" variant="subtle" size="lg">
+              {{ spellLevelText }} {{ spell.school.name }}
+            </UBadge>
+            <UBadge v-if="spell.is_ritual" color="blue" variant="soft" size="sm">
+              🔮 Ritual
+            </UBadge>
+            <UBadge v-if="spell.needs_concentration" color="orange" variant="soft" size="sm">
+              ⭐ Concentration
+            </UBadge>
+          </div>
+          <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100">
+            {{ spell.name }}
+          </h1>
         </div>
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-          {{ spell.name }}
-        </h1>
+        <UButton
+          @click="showJson = !showJson"
+          variant="ghost"
+          color="gray"
+          icon="i-heroicons-code-bracket"
+          size="sm"
+        >
+          {{ showJson ? 'Hide' : 'View' }} JSON
+        </UButton>
       </div>
 
       <!-- Quick Stats -->
       <UCard>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-              Casting Time
-            </div>
-            <div class="text-gray-900 dark:text-gray-100">
-              {{ spell.casting_time }}
-            </div>
-          </div>
-
-          <div>
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-              Range
-            </div>
-            <div class="text-gray-900 dark:text-gray-100">
-              {{ spell.range }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex items-start gap-3">
+            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+            <div>
+              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                Casting Time
+              </div>
+              <div class="text-lg text-gray-900 dark:text-gray-100">
+                {{ spell.casting_time }}
+              </div>
             </div>
           </div>
 
-          <div>
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-              Components
-            </div>
-            <div class="text-gray-900 dark:text-gray-100">
-              {{ spell.components }}
-            </div>
-            <div v-if="spell.material_components" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {{ spell.material_components }}
+          <div class="flex items-start gap-3">
+            <UIcon name="i-heroicons-arrow-trending-up" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+            <div>
+              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                Range
+              </div>
+              <div class="text-lg text-gray-900 dark:text-gray-100">
+                {{ spell.range }}
+              </div>
             </div>
           </div>
 
-          <div>
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-              Duration
+          <div class="flex items-start gap-3">
+            <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+            <div>
+              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                Components
+              </div>
+              <div class="text-lg text-gray-900 dark:text-gray-100">
+                {{ spell.components }}
+              </div>
+              <div v-if="spell.material_components" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {{ spell.material_components }}
+              </div>
             </div>
-            <div class="text-gray-900 dark:text-gray-100">
-              {{ spell.duration }}
+          </div>
+
+          <div class="flex items-start gap-3">
+            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+            <div>
+              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
+                Duration
+              </div>
+              <div class="text-lg text-gray-900 dark:text-gray-100">
+                {{ spell.duration }}
+              </div>
             </div>
           </div>
         </div>
@@ -146,19 +187,19 @@ const damageEffects = computed(() => {
       <!-- Description -->
       <UCard>
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Description
           </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">{{ spell.description }}</p>
+          <p class="whitespace-pre-line text-lg text-gray-700 dark:text-gray-300 leading-relaxed">{{ spell.description }}</p>
         </div>
       </UCard>
 
       <!-- Damage Effects (if any) -->
       <UCard v-if="damageEffects.length > 0">
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Damage
           </h2>
         </template>
@@ -186,7 +227,7 @@ const damageEffects = computed(() => {
       <!-- Sources -->
       <UCard v-if="spell.sources && spell.sources.length > 0">
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Source
           </h2>
         </template>
@@ -206,17 +247,25 @@ const damageEffects = computed(() => {
         </div>
       </UCard>
 
-      <!-- Back Button -->
-      <div class="flex justify-center pt-4">
-        <UButton
-          to="/search"
-          variant="soft"
-          color="gray"
-          icon="i-heroicons-arrow-left"
-        >
-          Back to Search
-        </UButton>
-      </div>
+      <!-- JSON Debug Panel -->
+      <UCard v-if="showJson">
+        <template #header>
+          <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              Raw JSON Data
+            </h2>
+            <div class="flex gap-2">
+              <UButton @click="copyJson" size="xs" variant="ghost" icon="i-heroicons-clipboard">
+                Copy
+              </UButton>
+              <UButton @click="showJson = false" size="xs" variant="ghost" icon="i-heroicons-x-mark">
+                Close
+              </UButton>
+            </div>
+          </div>
+        </template>
+        <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ JSON.stringify(spell, null, 2) }}</code></pre>
+      </UCard>
     </div>
   </div>
 </template>

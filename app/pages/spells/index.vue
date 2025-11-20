@@ -59,6 +59,16 @@ const meta = computed(() => spellsResponse.value?.meta || null)
 const totalResults = computed(() => meta.value?.total || 0)
 const lastPage = computed(() => meta.value?.last_page || 1)
 
+// Check if filters are active
+const hasActiveFilters = computed(() =>
+  searchQuery.value || selectedLevel.value !== null || selectedSchool.value !== null
+)
+
+// Get school name by ID for filter chips
+const getSchoolName = (schoolId: number) => {
+  return spellSchools.value?.find((s: any) => s.id === schoolId)?.name || 'Unknown'
+}
+
 // Spell level options (0 = Cantrip, 1-9 = Spell levels)
 const levelOptions = [
   { label: 'All Levels', value: null },
@@ -116,9 +126,12 @@ useHead({
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
         Spells
+        <span v-if="!loading" class="text-2xl text-gray-500 dark:text-gray-400 font-normal">
+          ({{ totalResults }} {{ hasActiveFilters ? 'filtered' : 'total' }})
+        </span>
       </h1>
       <p class="text-gray-600 dark:text-gray-400">
-        Browse all {{ totalResults }} D&D 5e spells
+        Browse and search D&D 5e spells
       </p>
     </div>
 
@@ -184,14 +197,53 @@ useHead({
           Clear Filters
         </UButton>
       </div>
+
+      <!-- Active Filter Chips -->
+      <div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 pt-2">
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <UButton
+          v-if="selectedLevel !== null"
+          size="xs"
+          color="purple"
+          variant="soft"
+          @click="selectedLevel = null"
+        >
+          Level {{ selectedLevel === 0 ? 'Cantrip' : selectedLevel }} ✕
+        </UButton>
+        <UButton
+          v-if="selectedSchool !== null"
+          size="xs"
+          color="blue"
+          variant="soft"
+          @click="selectedSchool = null"
+        >
+          {{ getSchoolName(selectedSchool) }} ✕
+        </UButton>
+        <UButton
+          v-if="searchQuery"
+          size="xs"
+          color="gray"
+          variant="soft"
+          @click="searchQuery = ''"
+        >
+          "{{ searchQuery }}" ✕
+        </UButton>
+      </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Loading spells...</p>
-      </div>
+    <!-- Loading State (Skeleton Cards) -->
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <UCard v-for="i in 6" :key="i" class="animate-pulse">
+        <div class="space-y-3">
+          <div class="flex gap-2">
+            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+          </div>
+          <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div class="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </UCard>
     </div>
 
     <!-- Error State -->
@@ -213,16 +265,16 @@ useHead({
     <!-- Empty State -->
     <div v-else-if="spells.length === 0" class="py-12">
       <UCard>
-        <div class="text-center">
-          <UIcon name="i-heroicons-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            No Spells Found
+        <div class="text-center py-8">
+          <UIcon name="i-heroicons-magnifying-glass" class="w-16 h-16 mx-auto mb-4 text-gray-400" />
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            No spells found
           </h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Try adjusting your filters or search query
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Try adjusting your filters or searching for different keywords
           </p>
-          <UButton color="gray" @click="clearFilters">
-            Clear Filters
+          <UButton color="primary" @click="clearFilters">
+            Clear All Filters
           </UButton>
         </div>
       </UCard>
@@ -237,11 +289,10 @@ useHead({
 
       <!-- Spells Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <SpellCard
           v-for="spell in spells"
           :key="spell.id"
-          :result="spell"
-          type="spell"
+          :spell="spell"
         />
       </div>
 
