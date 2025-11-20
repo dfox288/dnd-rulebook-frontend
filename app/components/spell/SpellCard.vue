@@ -6,6 +6,7 @@ interface Spell {
   level: number
   school?: {
     id: number
+    code: string
     name: string
   }
   casting_time: string
@@ -13,6 +14,11 @@ interface Spell {
   description: string
   is_ritual: boolean
   needs_concentration: boolean
+  sources?: Array<{
+    code: string
+    name: string
+    pages: string
+  }>
 }
 
 interface Props {
@@ -38,18 +44,41 @@ const truncatedDescription = computed(() => {
   if (props.spell.description.length <= maxLength) return props.spell.description
   return props.spell.description.substring(0, maxLength).trim() + '...'
 })
+
+/**
+ * Get badge color for spell school
+ * Maps D&D schools to thematic colors
+ */
+const getSchoolColor = (schoolCode: string): string => {
+  const colorMap: Record<string, string> = {
+    'A': 'blue',      // Abjuration (protection)
+    'C': 'purple',    // Conjuration (summoning)
+    'D': 'cyan',      // Divination (knowledge)
+    'EN': 'pink',     // Enchantment (mind)
+    'EV': 'red',      // Evocation (energy/damage)
+    'I': 'indigo',    // Illusion (deception)
+    'N': 'gray',      // Necromancy (death)
+    'T': 'green',     // Transmutation (transformation)
+  }
+  return colorMap[schoolCode] || 'blue'
+}
 </script>
 
 <template>
   <NuxtLink :to="`/spells/${spell.slug}`" class="block h-full">
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="space-y-3">
-        <!-- Level and School Badges -->
+        <!-- Level and School Badges (ENHANCED) -->
         <div class="flex items-center gap-2 flex-wrap">
-          <UBadge color="purple" variant="subtle" size="sm">
+          <UBadge color="purple" variant="subtle" size="md">
             {{ levelText }}
           </UBadge>
-          <UBadge v-if="spell.school" color="blue" variant="soft" size="sm">
+          <UBadge
+            v-if="spell.school"
+            :color="getSchoolColor(spell.school.code)"
+            variant="soft"
+            size="md"
+          >
             {{ spell.school.name }}
           </UBadge>
         </div>
@@ -71,12 +100,12 @@ const truncatedDescription = computed(() => {
           </div>
         </div>
 
-        <!-- Conditional Badges -->
+        <!-- Ritual/Concentration Badges (BIGGER) -->
         <div v-if="spell.is_ritual || spell.needs_concentration" class="flex items-center gap-2">
-          <UBadge v-if="spell.is_ritual" color="blue" variant="soft" size="xs">
+          <UBadge v-if="spell.is_ritual" color="cyan" variant="soft" size="sm">
             🔮 Ritual
           </UBadge>
-          <UBadge v-if="spell.needs_concentration" color="orange" variant="soft" size="xs">
+          <UBadge v-if="spell.needs_concentration" color="amber" variant="soft" size="sm">
             ⭐ Concentration
           </UBadge>
         </div>
@@ -85,6 +114,21 @@ const truncatedDescription = computed(() => {
         <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
           {{ truncatedDescription }}
         </p>
+
+        <!-- Sourcebook Display (NEW) -->
+        <div v-if="spell.sources && spell.sources.length > 0" class="pt-2 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex items-center gap-2 flex-wrap">
+            <UTooltip
+              v-for="source in spell.sources"
+              :key="source.code"
+              :text="`${source.name} p.${source.pages}`"
+            >
+              <UBadge color="gray" variant="subtle" size="xs">
+                {{ source.code }}
+              </UBadge>
+            </UTooltip>
+          </div>
+        </div>
       </div>
     </UCard>
   </NuxtLink>

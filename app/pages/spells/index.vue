@@ -293,7 +293,7 @@ useHead({
       <div v-if="lastPage > 1" class="flex justify-center">
         <UPagination
           v-model="currentPage"
-          :page-count="perPage"
+          :page-count="lastPage"
           :total="totalResults"
           :max="7"
         />
