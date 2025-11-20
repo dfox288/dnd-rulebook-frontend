@@ -52,6 +52,18 @@ const damageEffects = computed(() => {
 
 // JSON debug toggle
 const showJson = ref(false)
+const jsonPanelRef = ref<HTMLElement | null>(null)
+
+// Toggle JSON and scroll to it
+const toggleJson = () => {
+  showJson.value = !showJson.value
+  if (showJson.value) {
+    // Wait for DOM update, then scroll
+    nextTick(() => {
+      jsonPanelRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
+}
 
 // Copy JSON to clipboard
 const copyJson = () => {
@@ -118,7 +130,7 @@ const copyJson = () => {
           </h1>
         </div>
         <UButton
-          @click="showJson = !showJson"
+          @click="toggleJson"
           variant="ghost"
           color="gray"
           icon="i-heroicons-code-bracket"
@@ -248,12 +260,13 @@ const copyJson = () => {
       </UCard>
 
       <!-- JSON Debug Panel -->
-      <UCard v-if="showJson">
-        <template #header>
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Raw JSON Data
-            </h2>
+      <div v-if="showJson" ref="jsonPanelRef">
+        <UCard>
+          <template #header>
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Raw JSON Data
+              </h2>
             <div class="flex gap-2">
               <UButton @click="copyJson" size="xs" variant="ghost" icon="i-heroicons-clipboard">
                 Copy
@@ -263,9 +276,10 @@ const copyJson = () => {
               </UButton>
             </div>
           </div>
-        </template>
-        <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ JSON.stringify(spell, null, 2) }}</code></pre>
-      </UCard>
+          </template>
+          <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ JSON.stringify(spell, null, 2) }}</code></pre>
+        </UCard>
+      </div>
     </div>
   </div>
 </template>

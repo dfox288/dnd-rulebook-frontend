@@ -42,7 +42,7 @@ const truncatedDescription = computed(() => {
 
 <template>
   <NuxtLink :to="`/spells/${spell.slug}`" class="block h-full">
-    <UCard class="hover:shadow-lg transition-shadow h-full">
+    <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="space-y-3">
         <!-- Level and School Badges -->
         <div class="flex items-center gap-2 flex-wrap">
