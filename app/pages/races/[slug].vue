@@ -18,6 +18,22 @@ useSeoMeta({
   description: computed(() => race.value?.description?.substring(0, 160) || `Learn about the ${race.value?.name} race in D&D 5e`),
 })
 
+/**
+ * Get size color based on size code (NuxtUI v4 semantic colors)
+ */
+const getSizeColor = computed(() => {
+  if (!race.value?.size) return 'info'
+  const colors: Record<string, string> = {
+    'T': 'neutral',    // Tiny - gray
+    'S': 'success',    // Small - green
+    'M': 'info',       // Medium - blue
+    'L': 'warning',    // Large - amber
+    'H': 'error',      // Huge - red
+    'G': 'error'       // Gargantuan - red
+  }
+  return colors[race.value.size.code] || 'info'
+})
+
 // JSON debug toggle
 const showJson = ref(false)
 const jsonPanelRef = ref<HTMLElement | null>(null)
@@ -83,11 +99,14 @@ const copyJson = () => {
       <div>
         <div class="flex items-center justify-between mb-3 flex-wrap gap-4">
           <div class="flex items-center gap-2">
-            <UBadge color="blue" variant="subtle" size="lg">
-              Race
+            <UBadge v-if="race.size" :color="getSizeColor" variant="subtle" size="lg">
+              {{ race.size.name }}
             </UBadge>
-            <UBadge v-if="race.parent_race_id" color="purple" variant="soft" size="sm">
+            <UBadge v-if="race.parent_race_id" color="primary" variant="subtle" size="lg">
               Subrace
+            </UBadge>
+            <UBadge v-else color="info" variant="subtle" size="lg">
+              Race
             </UBadge>
           </div>
 
@@ -102,7 +121,7 @@ const copyJson = () => {
             {{ showJson ? 'Hide JSON' : 'View JSON' }}
           </UButton>
         </div>
-        <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
           {{ race.name }}
         </h1>
       </div>
@@ -130,22 +149,22 @@ const copyJson = () => {
         </div>
       </UCard>
 
-      <!-- Description -->
+      <!-- Description (Always Visible) -->
       <UCard v-if="race.description">
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Description
           </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">{{ race.description }}</p>
+          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">{{ race.description }}</p>
         </div>
       </UCard>
 
-      <!-- Ability Score Increases -->
+      <!-- Ability Score Increases (Always Visible) -->
       <UCard v-if="race.ability_score_increases && race.ability_score_increases.length > 0">
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Ability Score Increases
           </h2>
         </template>
@@ -165,88 +184,99 @@ const copyJson = () => {
         </div>
       </UCard>
 
-      <!-- Traits -->
-      <UCard v-if="race.traits && race.traits.length > 0">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Racial Traits
-          </h2>
-        </template>
-        <div class="space-y-4">
-          <div
-            v-for="trait in race.traits"
-            :key="trait.id"
-            class="border-l-4 border-primary-500 pl-4 py-2"
-          >
-            <div class="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-              {{ trait.name }}
+      <!-- Additional Details (Accordion) -->
+      <UAccordion
+        :items="[
+          ...(race.traits && race.traits.length > 0 ? [{
+            label: 'Racial Traits',
+            slot: 'traits',
+            defaultOpen: false
+          }] : []),
+          ...(race.languages && race.languages.length > 0 ? [{
+            label: 'Languages',
+            slot: 'languages',
+            defaultOpen: false
+          }] : []),
+          ...(race.proficiencies && race.proficiencies.length > 0 ? [{
+            label: 'Proficiencies',
+            slot: 'proficiencies',
+            defaultOpen: false
+          }] : []),
+          ...(race.sources && race.sources.length > 0 ? [{
+            label: 'Source',
+            slot: 'source',
+            defaultOpen: false
+          }] : [])
+        ]"
+        type="multiple"
+      >
+        <!-- Traits Slot -->
+        <template v-if="race.traits && race.traits.length > 0" #traits>
+          <div class="p-4 space-y-4">
+            <div
+              v-for="trait in race.traits"
+              :key="trait.id"
+              class="border-l-4 border-primary-500 pl-4 py-2"
+            >
+              <div class="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                {{ trait.name }}
+              </div>
+              <div class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                {{ trait.description }}
+              </div>
             </div>
-            <div class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-              {{ trait.description }}
+          </div>
+        </template>
+
+        <!-- Languages Slot -->
+        <template v-if="race.languages && race.languages.length > 0" #languages>
+          <div class="p-4">
+            <div class="flex flex-wrap gap-2">
+              <UBadge
+                v-for="language in race.languages"
+                :key="language.id"
+                color="neutral"
+                variant="soft"
+              >
+                {{ language.name }}
+              </UBadge>
             </div>
           </div>
-        </div>
-      </UCard>
-
-      <!-- Languages -->
-      <UCard v-if="race.languages && race.languages.length > 0">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Languages
-          </h2>
         </template>
-        <div class="flex flex-wrap gap-2">
-          <UBadge
-            v-for="language in race.languages"
-            :key="language.id"
-            color="gray"
-            variant="soft"
-          >
-            {{ language.name }}
-          </UBadge>
-        </div>
-      </UCard>
 
-      <!-- Proficiencies -->
-      <UCard v-if="race.proficiencies && race.proficiencies.length > 0">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Proficiencies
-          </h2>
-        </template>
-        <div class="space-y-2">
-          <div
-            v-for="prof in race.proficiencies"
-            :key="prof.id"
-            class="text-gray-700 dark:text-gray-300"
-          >
-            • {{ prof.proficiency_name }}
+        <!-- Proficiencies Slot -->
+        <template v-if="race.proficiencies && race.proficiencies.length > 0" #proficiencies>
+          <div class="p-4 space-y-2">
+            <div
+              v-for="prof in race.proficiencies"
+              :key="prof.id"
+              class="text-gray-700 dark:text-gray-300"
+            >
+              • {{ prof.proficiency_name }}
+            </div>
           </div>
-        </div>
-      </UCard>
-
-      <!-- Sources -->
-      <UCard v-if="race.sources && race.sources.length > 0">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Source
-          </h2>
         </template>
-        <div class="flex flex-wrap gap-2">
-          <div
-            v-for="source in race.sources"
-            :key="source.code"
-            class="flex items-center gap-2"
-          >
-            <UBadge color="gray" variant="soft">
-              {{ source.name }}
-            </UBadge>
-            <span class="text-sm text-gray-600 dark:text-gray-400">
-              p. {{ source.pages }}
-            </span>
+
+        <!-- Source Slot -->
+        <template v-if="race.sources && race.sources.length > 0" #source>
+          <div class="p-4">
+            <div class="flex flex-wrap gap-3">
+              <div
+                v-for="source in race.sources"
+                :key="source.code"
+                class="flex items-center gap-2"
+              >
+                <UBadge color="neutral" variant="soft">
+                  {{ source.name }}
+                </UBadge>
+                <span class="text-sm text-gray-600 dark:text-gray-400">
+                  p. {{ source.pages }}
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-      </UCard>
+        </template>
+      </UAccordion>
 
       <!-- JSON Debug Panel -->
       <div

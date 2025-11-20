@@ -3,10 +3,11 @@ import { ref, computed, watch } from 'vue'
 
 // API configuration
 const { apiFetch } = useApi()
+const route = useRoute()
 
-// Reactive filters
-const searchQuery = ref('')
-const currentPage = ref(1)
+// Reactive filters - initialize from URL query params
+const searchQuery = ref((route.query.q as string) || '')
+const currentPage = ref(route.query.page ? Number(route.query.page) : 1)
 const perPage = 24
 
 // Computed query params for API
@@ -33,7 +34,7 @@ const { data: racesResponse, pending: loading, error, refresh } = await useAsync
     return response
   },
   {
-    watch: [queryParams]
+    watch: [currentPage, searchQuery]
   }
 )
 
@@ -46,6 +47,16 @@ const lastPage = computed(() => meta.value?.last_page || 1)
 // Reset to page 1 when search changes
 watch(searchQuery, () => {
   currentPage.value = 1
+})
+
+// Sync URL query params with filter state
+watch([currentPage, searchQuery], () => {
+  const query: Record<string, any> = {}
+
+  if (currentPage.value > 1) query.page = currentPage.value.toString()
+  if (searchQuery.value) query.q = searchQuery.value
+
+  navigateTo({ query }, { replace: true })
 })
 
 // SEO meta tags
@@ -152,12 +163,12 @@ useHead({
       </div>
 
       <!-- Pagination -->
-      <div v-if="lastPage > 1" class="flex justify-center">
+      <div v-if="totalResults > perPage" class="flex justify-center">
         <UPagination
-          v-model="currentPage"
-          :page-count="perPage"
+          v-model:page="currentPage"
           :total="totalResults"
-          :max="7"
+          :items-per-page="perPage"
+          show-edges
         />
       </div>
     </div>

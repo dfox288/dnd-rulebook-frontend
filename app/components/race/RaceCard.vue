@@ -6,12 +6,23 @@ interface Race {
   size?: {
     id: number
     name: string
+    code: string
   }
   speed: number
   parent_race_id?: number
+  subraces?: Array<{
+    id: number
+    slug: string
+    name: string
+  }>
   modifiers?: any[]
   traits?: any[]
   description?: string
+  sources?: Array<{
+    code: string
+    name: string
+    pages: string
+  }>
 }
 
 interface Props {
@@ -26,6 +37,21 @@ const props = defineProps<Props>()
 const isSubrace = computed(() => {
   return props.race.parent_race_id !== null && props.race.parent_race_id !== undefined
 })
+
+/**
+ * Get size color based on size code (NuxtUI v4 semantic colors)
+ */
+const getSizeColor = (sizeCode: string): string => {
+  const colors: Record<string, string> = {
+    'T': 'neutral',    // Tiny - gray
+    'S': 'success',    // Small - green
+    'M': 'info',       // Medium - blue
+    'L': 'warning',    // Large - amber
+    'H': 'error',      // Huge - red
+    'G': 'error'       // Gargantuan - red
+  }
+  return colors[sizeCode] || 'info'
+}
 
 /**
  * Get ability score modifiers summary
@@ -53,45 +79,64 @@ const truncatedDescription = computed(() => {
 <template>
   <NuxtLink :to="`/races/${race.slug}`" class="block h-full">
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
-      <div class="space-y-3">
-        <!-- Size and Type Badges -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <UBadge v-if="race.size" color="blue" variant="subtle" size="sm">
-            {{ race.size.name }}
-          </UBadge>
-          <UBadge v-if="isSubrace" color="purple" variant="soft" size="sm">
-            Subrace
-          </UBadge>
-        </div>
-
-        <!-- Race Name -->
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
-          {{ race.name }}
-        </h3>
-
-        <!-- Quick Stats -->
-        <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
-          <div class="flex items-center gap-1">
-            <UIcon name="i-heroicons-bolt" class="w-4 h-4" />
-            <span>{{ race.speed }} ft</span>
+      <div class="flex flex-col h-full">
+        <!-- Top content -->
+        <div class="space-y-3 flex-1">
+          <!-- Size and Race/Subrace Badges -->
+          <div class="flex items-center gap-2 flex-wrap justify-between">
+            <UBadge
+              v-if="race.size"
+              :color="getSizeColor(race.size.code)"
+              variant="subtle"
+              size="md"
+            >
+              {{ race.size.name }}
+            </UBadge>
+            <UBadge v-if="isSubrace" color="primary" variant="subtle" size="md">
+              Subrace
+            </UBadge>
+            <UBadge v-else color="info" variant="subtle" size="md">
+              Race
+            </UBadge>
           </div>
-          <div v-if="abilityModifiers" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
-            <span>{{ abilityModifiers }}</span>
+
+          <!-- Race Name -->
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
+            {{ race.name }}
+          </h3>
+
+          <!-- Quick Stats (with badges) -->
+          <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
+            <div class="flex items-center gap-1">
+              <UIcon name="i-heroicons-bolt" class="w-4 h-4" />
+              <span>{{ race.speed }} ft</span>
+            </div>
+            <div v-if="abilityModifiers" class="flex items-center gap-1">
+              <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
+              <span>{{ abilityModifiers }}</span>
+            </div>
+            <UBadge v-if="race.traits && race.traits.length > 0" color="success" variant="soft" size="sm">
+              👥 {{ race.traits.length }} {{ race.traits.length === 1 ? 'Trait' : 'Traits' }}
+            </UBadge>
+            <UBadge v-if="race.subraces && race.subraces.length > 0" color="primary" variant="soft" size="sm">
+              🌟 {{ race.subraces.length }} {{ race.subraces.length === 1 ? 'Subrace' : 'Subraces' }}
+            </UBadge>
+          </div>
+
+          <!-- Description Preview -->
+          <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
+            {{ truncatedDescription }}
+          </p>
+        </div>
+
+        <!-- Sourcebook Display (BOTTOM ALIGNED, FULL LENGTH) -->
+        <div v-if="race.sources && race.sources.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
+            <span v-for="(source, index) in race.sources" :key="source.code">
+              <span class="font-medium">{{ source.name }}</span> p.{{ source.pages }}<span v-if="index < race.sources.length - 1">, </span>
+            </span>
           </div>
         </div>
-
-        <!-- Traits Count -->
-        <div v-if="race.traits && race.traits.length > 0" class="flex items-center gap-2">
-          <UBadge color="green" variant="soft" size="xs">
-            👥 {{ race.traits.length }} {{ race.traits.length === 1 ? 'Trait' : 'Traits' }}
-          </UBadge>
-        </div>
-
-        <!-- Description Preview -->
-        <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
-          {{ truncatedDescription }}
-        </p>
       </div>
     </UCard>
   </NuxtLink>
