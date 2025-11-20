@@ -26,6 +26,13 @@ useHead({
 // Get current route for active link highlighting
 const route = useRoute()
 
+// Dark mode
+const colorMode = useColorMode()
+
+const toggleColorMode = () => {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
+
 // Navigation items
 const navItems = [
   { label: 'Spells', to: '/spells' },
@@ -70,7 +77,13 @@ const navItems = [
 
           <!-- Dark Mode Toggle (Right) -->
           <div class="flex items-center space-x-4">
-            <UColorModeButton />
+            <UButton
+              :icon="colorMode.value === 'dark' ? 'i-heroicons-moon-20-solid' : 'i-heroicons-sun-20-solid'"
+              color="gray"
+              variant="ghost"
+              aria-label="Toggle dark mode"
+              @click="toggleColorMode"
+            />
           </div>
         </div>
 
