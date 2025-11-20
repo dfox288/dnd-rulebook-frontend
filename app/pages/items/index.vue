@@ -2,10 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
-
-// Page configuration
-
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -15,9 +12,9 @@ const selectedMagic = ref<string | null>(null)
 const currentPage = ref(1)
 const perPage = 24
 
-// Fetch item types for filter options
+// Fetch item types for filter options (via Nitro proxy)
 const { data: itemTypes } = await useAsyncData('item-types', async () => {
-  const response = await $fetch(`${apiBase}/item-types`)
+  const response = await apiFetch('/item-types')
   return response.data
 })
 
@@ -65,11 +62,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch items with reactive filters
+// Fetch items with reactive filters (via Nitro proxy)
 const { data: itemsResponse, pending: loading, error, refresh } = await useAsyncData(
   'items-list',
   async () => {
-    const response = await $fetch(`${apiBase}/items`, {
+    const response = await apiFetch('/items', {
       query: queryParams.value
     })
     return response
@@ -173,10 +170,10 @@ useHead({
         <!-- Type filter -->
         <USelectMenu
           v-model="selectedType"
-          :options="typeOptions"
-          value-attribute="value"
-          option-attribute="label"
+          :items="typeOptions"
+          value-key="value"
           placeholder="Select type"
+          class="w-48"
         >
           <template #label>
             <span v-if="selectedType === null">All Types</span>
@@ -187,10 +184,10 @@ useHead({
         <!-- Rarity filter -->
         <USelectMenu
           v-model="selectedRarity"
-          :options="rarityOptions"
-          value-attribute="value"
-          option-attribute="label"
+          :items="rarityOptions"
+          value-key="value"
           placeholder="Select rarity"
+          class="w-44"
         >
           <template #label>
             <span v-if="selectedRarity === null">All Rarities</span>
@@ -201,10 +198,10 @@ useHead({
         <!-- Magic filter -->
         <USelectMenu
           v-model="selectedMagic"
-          :options="magicOptions"
-          value-attribute="value"
-          option-attribute="label"
+          :items="magicOptions"
+          value-key="value"
           placeholder="Filter by magic"
+          class="w-44"
         >
           <template #label>
             <span v-if="selectedMagic === null">All Items</span>

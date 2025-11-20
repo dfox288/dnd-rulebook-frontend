@@ -12,13 +12,13 @@ import type { SearchResult, EntityType, SearchOptions } from '~/types/search'
  * await search('fireball', { limit: 5 })
  */
 export const useSearch = () => {
-  const config = useRuntimeConfig()
+  const { apiFetch } = useApi()
   const results = ref<SearchResult | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
   /**
-   * Perform a search query against the D&D 5e API
+   * Perform a search query against the D&D 5e API via Nitro proxy
    *
    * @param query - The search term (minimum 1 character after trimming)
    * @param options - Optional search parameters (entity types, result limit)
@@ -50,8 +50,8 @@ export const useSearch = () => {
         params.limit = options.limit
       }
 
-      // Fetch results from API
-      const data = await $fetch<SearchResult>(`${config.public.apiBase}/search`, {
+      // Fetch results from Nitro API proxy
+      const data = await apiFetch<SearchResult>('/search', {
         query: params,
       })
 

@@ -2,10 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
-
-// Page configuration
-
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -26,11 +23,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch classes with reactive filters
+// Fetch classes with reactive filters (via Nitro proxy)
 const { data: classesResponse, pending: loading, error, refresh } = await useAsyncData(
   'classes-list',
   async () => {
-    const response = await $fetch(`${apiBase}/classes`, {
+    const response = await apiFetch('/classes', {
       query: queryParams.value
     })
     return response

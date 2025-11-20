@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -11,9 +11,9 @@ const selectedSchool = ref<number | null>(null)
 const currentPage = ref(1)
 const perPage = 24
 
-// Fetch spell schools for filter options
+// Fetch spell schools for filter options (via Nitro proxy)
 const { data: spellSchools } = await useAsyncData('spell-schools', async () => {
-  const response = await $fetch(`${apiBase}/spell-schools`)
+  const response = await apiFetch('/spell-schools')
   return response.data
 })
 
@@ -39,11 +39,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch spells with reactive filters
+// Fetch spells with reactive filters (via Nitro proxy)
 const { data: spellsResponse, pending: loading, error, refresh } = await useAsyncData(
   'spells-list',
   async () => {
-    const response = await $fetch(`${apiBase}/spells`, {
+    const response = await apiFetch('/spells', {
       query: queryParams.value
     })
     return response
@@ -70,6 +70,7 @@ const getSchoolName = (schoolId: number) => {
 }
 
 // Spell level options (0 = Cantrip, 1-9 = Spell levels)
+// Note: Using "label" key for NuxtUI v4 USelectMenu
 const levelOptions = [
   { label: 'All Levels', value: null },
   { label: 'Cantrip', value: 0 },
@@ -85,6 +86,7 @@ const levelOptions = [
 ]
 
 // School filter options
+// Note: Using "label" key for NuxtUI v4 USelectMenu
 const schoolOptions = computed(() => {
   const options = [{ label: 'All Schools', value: null }]
   if (spellSchools.value) {
@@ -161,10 +163,10 @@ useHead({
         <!-- Level filter -->
         <USelectMenu
           v-model="selectedLevel"
-          :options="levelOptions"
-          value-attribute="value"
-          option-attribute="label"
+          :items="levelOptions"
+          value-key="value"
           placeholder="Select level"
+          class="w-40"
         >
           <template #label>
             <span v-if="selectedLevel === null">All Levels</span>
@@ -176,10 +178,10 @@ useHead({
         <!-- School filter -->
         <USelectMenu
           v-model="selectedSchool"
-          :options="schoolOptions"
-          value-attribute="value"
-          option-attribute="label"
+          :items="schoolOptions"
+          value-key="value"
           placeholder="Select school"
+          class="w-48"
         >
           <template #label>
             <span v-if="selectedSchool === null">All Schools</span>

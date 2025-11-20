@@ -86,7 +86,8 @@
       "Bash(/usr/bin/curl:*)",
       "Bash(do /usr/bin/curl -s \"http://localhost:3000/$path\" -o /dev/null -w \"$path: %{http_code}\\n\")",
       "Bash(for entity in races classes backgrounds feats)",
-      "Bash(do /usr/bin/curl -s \"http://localhost:3000/$entity\" -o /dev/null -w \"$entity list: %{http_code}  \")"
+      "Bash(do /usr/bin/curl -s \"http://localhost:3000/$entity\" -o /dev/null -w \"$entity list: %{http_code}  \")",
+      "Skill(superpowers:using-superpowers)"
     ],
     "deny": [],
     "ask": []

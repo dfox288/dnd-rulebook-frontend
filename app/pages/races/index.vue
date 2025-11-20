@@ -2,10 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
-
-// Page configuration
-
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -26,11 +23,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch races with reactive filters
+// Fetch races with reactive filters (via Nitro proxy)
 const { data: racesResponse, pending: loading, error, refresh } = await useAsyncData(
   'races-list',
   async () => {
-    const response = await $fetch(`${apiBase}/races`, {
+    const response = await apiFetch('/races', {
       query: queryParams.value
     })
     return response

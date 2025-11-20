@@ -2,10 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
-
-// Page configuration
-
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -26,11 +23,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch feats with reactive filters
+// Fetch feats with reactive filters (via Nitro proxy)
 const { data: featsResponse, pending: loading, error, refresh } = await useAsyncData(
   'feats-list',
   async () => {
-    const response = await $fetch(`${apiBase}/feats`, {
+    const response = await apiFetch('/feats', {
       query: queryParams.value
     })
     return response

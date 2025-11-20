@@ -1,33 +1,21 @@
 /**
- * API composable that provides the correct API base URL
- * depending on whether we're in SSR (server-side) or client-side context.
+ * API composable that provides a configured fetch client
+ * for calling Nitro API proxy routes.
  *
- * - SSR (inside container): Uses host.docker.internal to reach host machine
- * - Client (browser): Uses localhost which the browser can reach
+ * All API calls now go through Nitro server routes (e.g., /api/spells)
+ * which proxy to the Laravel backend. This eliminates SSR/CSR URL issues.
+ *
+ * @example
+ * const { apiFetch } = useApi()
+ * const data = await apiFetch('/spells', { query: { level: 3 } })
  */
 export const useApi = () => {
-  const config = useRuntimeConfig()
-
   /**
-   * Get the appropriate API base URL based on execution context
-   */
-  const getApiBase = () => {
-    // During SSR (server-side rendering inside Docker container)
-    if (import.meta.server) {
-      return 'http://host.docker.internal:8080/api/v1'
-    }
-
-    // Client-side (browser)
-    return 'http://localhost:8080/api/v1'
-  }
-
-  const apiBase = getApiBase()
-
-  /**
-   * Create a configured $fetch instance with the correct base URL
+   * Create a configured $fetch instance that targets Nitro routes
+   * Base URL is '/api' - relative to current origin
    */
   const apiFetch = $fetch.create({
-    baseURL: apiBase,
+    baseURL: '/api',  // Nitro routes (works in both SSR and CSR)
     onRequest({ options }) {
       // Add any auth headers here if needed in the future
       // options.headers = {
@@ -42,7 +30,6 @@ export const useApi = () => {
   })
 
   return {
-    apiBase,
     apiFetch
   }
 }

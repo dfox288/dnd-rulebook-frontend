@@ -2,10 +2,7 @@
 import { ref, computed, watch } from 'vue'
 
 // API configuration
-const { apiBase } = useApi()
-
-// Page configuration
-
+const { apiFetch } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -26,11 +23,11 @@ const queryParams = computed(() => {
   return params
 })
 
-// Fetch backgrounds with reactive filters
+// Fetch backgrounds with reactive filters (via Nitro proxy)
 const { data: backgroundsResponse, pending: loading, error, refresh } = await useAsyncData(
   'backgrounds-list',
   async () => {
-    const response = await $fetch(`${apiBase}/backgrounds`, {
+    const response = await apiFetch('/backgrounds', {
       query: queryParams.value
     })
     return response

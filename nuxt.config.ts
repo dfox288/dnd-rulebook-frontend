@@ -15,9 +15,13 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-15',
 
   runtimeConfig: {
+    // Server-side only (NEVER exposed to client)
+    // This is used by Nitro API routes to proxy to Laravel backend
+    apiBaseServer: process.env.NUXT_API_BASE_SERVER || 'http://localhost:8080/api/v1',
+
     // Public keys (exposed to client)
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8080/api/v1',
+      // apiBase no longer needed - frontend uses /api/* (Nitro routes)
       apiDocsUrl: process.env.NUXT_PUBLIC_API_DOCS_URL || 'http://localhost:8080/docs/api',
     }
   },
