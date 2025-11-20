@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
-// Page configuration
-const config = useRuntimeConfig()
+// API configuration
+const { apiBase } = useApi()
 
 // Reactive filters
 const searchQuery = ref('')
@@ -13,7 +13,7 @@ const perPage = 24
 
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData('spell-schools', async () => {
-  const response = await $fetch(`${config.public.apiBase}/spell-schools`)
+  const response = await $fetch(`${apiBase}/spell-schools`)
   return response.data
 })
 
@@ -43,7 +43,7 @@ const queryParams = computed(() => {
 const { data: spellsResponse, pending: loading, error, refresh } = await useAsyncData(
   'spells-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/spells`, {
+    const response = await $fetch(`${apiBase}/spells`, {
       query: queryParams.value
     })
     return response

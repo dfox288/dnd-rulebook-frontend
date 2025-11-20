@@ -4,7 +4,7 @@ interface Spell {
   name: string
   slug: string
   level: number
-  school: {
+  school?: {
     id: number
     name: string
   }
@@ -49,7 +49,7 @@ const truncatedDescription = computed(() => {
           <UBadge color="purple" variant="subtle" size="sm">
             {{ levelText }}
           </UBadge>
-          <UBadge color="blue" variant="soft" size="sm">
+          <UBadge v-if="spell.school" color="blue" variant="soft" size="sm">
             {{ spell.school.name }}
           </UBadge>
         </div>

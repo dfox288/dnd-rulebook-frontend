@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { apiBase } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
 
@@ -6,8 +7,8 @@ const slug = route.params.slug as string
 const { data: race, error, pending } = await useAsyncData(
   `race-${slug}`,
   async () => {
-    const config = useRuntimeConfig()
-    const response = await $fetch(`${config.public.apiBase}/races/${slug}`)
+    
+    const response = await $fetch(`${apiBase}/races/${slug}`)
     return response.data
   }
 )

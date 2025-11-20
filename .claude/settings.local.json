@@ -79,7 +79,12 @@
       "Bash(for url in / /spells /items /search)",
       "Bash(do echo -n \"$url: \")",
       "Bash(for url in / /spells /items /races /classes /backgrounds /feats /search)",
-      "Skill(superpowers:brainstorming)"
+      "Skill(superpowers:brainstorming)",
+      "Bash(docker network:*)",
+      "Bash(for path in spells items races classes backgrounds feats)",
+      "Bash(do curl -s \"http://localhost:3000/$path\" -o /dev/null -w \"$path: %{http_code}\\n\")",
+      "Bash(/usr/bin/curl:*)",
+      "Bash(do /usr/bin/curl -s \"http://localhost:3000/$path\" -o /dev/null -w \"$path: %{http_code}\\n\")"
     ],
     "deny": [],
     "ask": []

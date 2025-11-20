@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// API configuration
+const { apiBase } = useApi()
+
 // Page configuration
-const config = useRuntimeConfig()
+
 
 // Reactive filters
 const searchQuery = ref('')
@@ -27,7 +30,7 @@ const queryParams = computed(() => {
 const { data: classesResponse, pending: loading, error, refresh } = await useAsyncData(
   'classes-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/classes`, {
+    const response = await $fetch(`${apiBase}/classes`, {
       query: queryParams.value
     })
     return response
@@ -143,11 +146,11 @@ useHead({
 
       <!-- Classes Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <ClassCard
           v-for="charClass in classes"
           :key="charClass.id"
-          :result="charClass"
-          type="class"
+          :character-class="charClass"
+          
         />
       </div>
 

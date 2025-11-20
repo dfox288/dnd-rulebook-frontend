@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// API configuration
+const { apiBase } = useApi()
+
 // Page configuration
-const config = useRuntimeConfig()
+
 
 // Reactive filters
 const searchQuery = ref('')
@@ -27,7 +30,7 @@ const queryParams = computed(() => {
 const { data: featsResponse, pending: loading, error, refresh } = await useAsyncData(
   'feats-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/feats`, {
+    const response = await $fetch(`${apiBase}/feats`, {
       query: queryParams.value
     })
     return response
@@ -143,11 +146,11 @@ useHead({
 
       <!-- Feats Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <FeatCard
           v-for="feat in feats"
           :key="feat.id"
-          :result="feat"
-          type="feat"
+          :feat="feat"
+          
         />
       </div>
 

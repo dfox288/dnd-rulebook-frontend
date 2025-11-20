@@ -2,12 +2,14 @@
 const route = useRoute()
 const slug = route.params.slug as string
 
+// API configuration
+const { apiBase } = useApi()
+
 // Fetch spell data using useAsyncData for SSR support
 const { data: spell, error, pending } = await useAsyncData(
   `spell-${slug}`,
   async () => {
-    const config = useRuntimeConfig()
-    const response = await $fetch(`${config.public.apiBase}/spells/${slug}`)
+    const response = await $fetch(`${apiBase}/spells/${slug}`)
     return response.data
   }
 )

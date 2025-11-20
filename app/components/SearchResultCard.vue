@@ -41,7 +41,8 @@ const getUrl = () => {
 /**
  * Truncate description to specified length
  */
-const truncateDescription = (text: string, length: number = 200): string => {
+const truncateDescription = (text: string | undefined | null, length: number = 200): string => {
+  if (!text) return ''
   if (text.length <= length) return text
   return text.substring(0, length).trim() + '...'
 }

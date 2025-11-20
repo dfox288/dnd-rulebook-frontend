@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// API configuration
+const { apiBase } = useApi()
+
 // Page configuration
-const config = useRuntimeConfig()
+
 
 // Reactive filters
 const searchQuery = ref('')
@@ -27,7 +30,7 @@ const queryParams = computed(() => {
 const { data: racesResponse, pending: loading, error, refresh } = await useAsyncData(
   'races-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/races`, {
+    const response = await $fetch(`${apiBase}/races`, {
       query: queryParams.value
     })
     return response
@@ -117,7 +120,7 @@ useHead({
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="races.length === 0" class="py-12">
+    <div v-else-if="!loading && races && races.length === 0" class="py-12">
       <UCard>
         <div class="text-center">
           <UIcon name="i-heroicons-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
@@ -143,11 +146,11 @@ useHead({
 
       <!-- Races Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <RaceCard
           v-for="race in races"
           :key="race.id"
-          :result="race"
-          type="race"
+          :race="race"
+          
         />
       </div>
 

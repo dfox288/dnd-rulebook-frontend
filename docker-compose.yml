@@ -19,8 +19,8 @@ services:
       - NODE_ENV=development
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
-      - NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-http://localhost:8080/api/v1}
-      - NUXT_PUBLIC_API_DOCS_URL=${NUXT_PUBLIC_API_DOCS_URL:-http://localhost:8080/docs/api.json}
+      - NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-http://host.docker.internal:8080/api/v1}
+      - NUXT_PUBLIC_API_DOCS_URL=${NUXT_PUBLIC_API_DOCS_URL:-http://host.docker.internal:8080/docs/api.json}
     networks:
       - dnd-network
 

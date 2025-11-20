@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// API configuration
+const { apiBase } = useApi()
+
 // Page configuration
-const config = useRuntimeConfig()
+
 
 // Reactive filters
 const searchQuery = ref('')
@@ -27,7 +30,7 @@ const queryParams = computed(() => {
 const { data: backgroundsResponse, pending: loading, error, refresh } = await useAsyncData(
   'backgrounds-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/backgrounds`, {
+    const response = await $fetch(`${apiBase}/backgrounds`, {
       query: queryParams.value
     })
     return response
@@ -143,11 +146,11 @@ useHead({
 
       <!-- Backgrounds Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <BackgroundCard
           v-for="background in backgrounds"
           :key="background.id"
-          :result="background"
-          type="background"
+          :background="background"
+          
         />
       </div>
 

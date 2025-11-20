@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
+// API configuration
+const { apiBase } = useApi()
+
 // Page configuration
-const config = useRuntimeConfig()
+
 
 // Reactive filters
 const searchQuery = ref('')
@@ -14,7 +17,7 @@ const perPage = 24
 
 // Fetch item types for filter options
 const { data: itemTypes } = await useAsyncData('item-types', async () => {
-  const response = await $fetch(`${config.public.apiBase}/item-types`)
+  const response = await $fetch(`${apiBase}/item-types`)
   return response.data
 })
 
@@ -66,7 +69,7 @@ const queryParams = computed(() => {
 const { data: itemsResponse, pending: loading, error, refresh } = await useAsyncData(
   'items-list',
   async () => {
-    const response = await $fetch(`${config.public.apiBase}/items`, {
+    const response = await $fetch(`${apiBase}/items`, {
       query: queryParams.value
     })
     return response
@@ -81,6 +84,16 @@ const items = computed(() => itemsResponse.value?.data || [])
 const meta = computed(() => itemsResponse.value?.meta || null)
 const totalResults = computed(() => meta.value?.total || 0)
 const lastPage = computed(() => meta.value?.last_page || 1)
+
+// Check if filters are active
+const hasActiveFilters = computed(() =>
+  searchQuery.value || selectedType.value !== null || selectedRarity.value !== null || selectedMagic.value !== null
+)
+
+// Get type name by ID for filter chips
+const getTypeName = (typeId: number) => {
+  return itemTypes.value?.find((t: any) => t.id === typeId)?.name || 'Unknown'
+}
 
 // Item type filter options
 const typeOptions = computed(() => {
@@ -125,9 +138,12 @@ useHead({
     <div class="mb-8">
       <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
         Items & Equipment
+        <span v-if="!loading" class="text-2xl text-gray-500 dark:text-gray-400 font-normal">
+          ({{ totalResults }} {{ hasActiveFilters ? 'filtered' : 'total' }})
+        </span>
       </h1>
       <p class="text-gray-600 dark:text-gray-400">
-        Browse all {{ totalResults }} D&D 5e items
+        Browse D&D 5e items and equipment
       </p>
     </div>
 
@@ -207,14 +223,62 @@ useHead({
           Clear Filters
         </UButton>
       </div>
+
+      <!-- Active Filter Chips -->
+      <div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 pt-2">
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <UButton
+          v-if="selectedType !== null"
+          size="xs"
+          color="amber"
+          variant="soft"
+          @click="selectedType = null"
+        >
+          {{ getTypeName(selectedType) }} ✕
+        </UButton>
+        <UButton
+          v-if="selectedRarity !== null"
+          size="xs"
+          color="purple"
+          variant="soft"
+          @click="selectedRarity = null"
+        >
+          {{ selectedRarity }} ✕
+        </UButton>
+        <UButton
+          v-if="selectedMagic !== null"
+          size="xs"
+          color="blue"
+          variant="soft"
+          @click="selectedMagic = null"
+        >
+          {{ selectedMagic === 'true' ? 'Magic' : 'Non-Magic' }} ✕
+        </UButton>
+        <UButton
+          v-if="searchQuery"
+          size="xs"
+          color="gray"
+          variant="soft"
+          @click="searchQuery = ''"
+        >
+          "{{ searchQuery }}" ✕
+        </UButton>
+      </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Loading items...</p>
-      </div>
+    <!-- Loading State (Skeleton Cards) -->
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <UCard v-for="i in 6" :key="i" class="animate-pulse">
+        <div class="space-y-3">
+          <div class="flex gap-2">
+            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+          </div>
+          <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div class="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </UCard>
     </div>
 
     <!-- Error State -->
@@ -260,11 +324,10 @@ useHead({
 
       <!-- Items Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <SearchResultCard
+        <ItemCard
           v-for="item in items"
           :key="item.id"
-          :result="item"
-          type="item"
+          :item="item"
         />
       </div>
 
