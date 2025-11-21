@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import type { Background } from '~/types'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
 
 describe('BackgroundCard', () => {
-  const mockBackground = {
+  const mockBackground: Background = {
     id: 1,
     name: 'Acolyte',
     slug: 'acolyte',
