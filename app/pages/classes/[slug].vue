@@ -16,94 +16,38 @@ useSeoMeta({
   description: computed(() => entity.value?.description?.substring(0, 160)),
 })
 
-// JSON debug toggle
-const showJson = ref(false)
-const jsonPanelRef = ref<HTMLElement | null>(null)
-
-const toggleJson = () => {
-  showJson.value = !showJson.value
-  if (showJson.value) {
-    nextTick(() => {
-      jsonPanelRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
-  }
-}
-
-
-const copyJson = () => {
-  if (entity.value) {
-    navigator.clipboard.writeText(JSON.stringify(entity.value, null, 2))
-  }
-}
-
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
-    <div v-if="pending" class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Loading class...</p>
-      </div>
-    </div>
+    <UiDetailPageLoading v-if="pending" entityType="class" />
 
-    <div v-else-if="error" class="py-12">
-      <UCard>
-        <div class="text-center">
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Class Not Found</h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">The class you're looking for doesn't exist.</p>
-          <UButton to="/search" color="primary">Back to Search</UButton>
-        </div>
-      </UCard>
-    </div>
+    <UiDetailPageError v-else-if="error" entityType="Class" />
 
     <div v-else-if="entity" class="space-y-8">
       <!-- Breadcrumb Navigation -->
-      <div>
-        <NuxtLink to="/classes">
-          <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-left" size="sm">
-            Back to Classes
-          </UButton>
-        </NuxtLink>
-      </div>
+      <UiBackLink to="/classes" label="Back to Classes" />
 
       <!-- Header -->
-      <div>
-        <div class="flex items-center justify-between mb-3 flex-wrap gap-4">
-          <UBadge color="red" variant="subtle" size="lg">Class</UBadge>
+      <UiDetailPageHeader
+        :title="entity.name"
+        :badges="[
+          { label: entity.is_base_class ? 'Base Class' : 'Subclass', color: entity.is_base_class ? 'error' : 'warning', variant: 'subtle', size: 'lg' },
+          ...(entity.spellcasting_ability ? [{ label: `✨ ${entity.spellcasting_ability.name}`, color: 'primary', variant: 'soft', size: 'sm' }] : [])
+        ]"
+      />
 
-          <!-- JSON Debug Button -->
-          <UButton
-            color="gray"
-            variant="soft"
-            size="sm"
-            @click="toggleJson"
-          >
-            <UIcon :name="showJson ? 'i-heroicons-eye-slash' : 'i-heroicons-code-bracket'" class="w-4 h-4" />
-            {{ showJson ? 'Hide JSON' : 'View JSON' }}
-          </UButton>
-        </div>
-        <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100">{{ entity.name }}</h1>
-      </div>
+      <!-- Quick Stats -->
+      <UiQuickStatsCard
+        :columns="3"
+        :stats="[
+          ...(entity.hit_die ? [{ icon: 'i-heroicons-heart', label: 'Hit Die', value: `1d${entity.hit_die}` }] : []),
+          ...(entity.primary_ability ? [{ icon: 'i-heroicons-star', label: 'Primary Ability', value: entity.primary_ability }] : []),
+          ...(entity.spellcasting_ability ? [{ icon: 'i-heroicons-sparkles', label: 'Spellcasting Ability', value: `${entity.spellcasting_ability.name} (${entity.spellcasting_ability.code})` }] : [])
+        ]"
+      />
 
-      <UCard>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div v-if="entity.hit_dice">
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Hit Dice</div>
-            <div class="text-gray-900 dark:text-gray-100">1d{{ entity.hit_dice }}</div>
-          </div>
-          <div v-if="entity.primary_ability">
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Primary Ability</div>
-            <div class="text-gray-900 dark:text-gray-100">{{ entity.primary_ability }}</div>
-          </div>
-          <div v-if="entity.saving_throw_proficiencies">
-            <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">Saving Throws</div>
-            <div class="text-gray-900 dark:text-gray-100">{{ entity.saving_throw_proficiencies }}</div>
-          </div>
-        </div>
-      </UCard>
-
+      <!-- Description (Always Visible) -->
       <UCard v-if="entity.description">
         <template #header>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Description</h2>
@@ -113,58 +57,55 @@ const copyJson = () => {
         </div>
       </UCard>
 
-      <UCard v-if="entity.sources && entity.sources.length > 0">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Source</h2>
+      <!-- Additional Details (Accordion) -->
+      <UAccordion
+        :items="[
+          ...(entity.proficiencies && entity.proficiencies.length > 0 ? [{
+            label: `Proficiencies (${entity.proficiencies.length})`,
+            slot: 'proficiencies',
+            defaultOpen: false
+          }] : []),
+          ...(entity.features && entity.features.length > 0 ? [{
+            label: `Features (${entity.features.length})`,
+            slot: 'features',
+            defaultOpen: false
+          }] : []),
+          ...(entity.subclasses && entity.subclasses.length > 0 ? [{
+            label: `Subclasses (${entity.subclasses.length})`,
+            slot: 'subclasses',
+            defaultOpen: false
+          }] : []),
+          ...(entity.sources && entity.sources.length > 0 ? [{
+            label: 'Source',
+            slot: 'source',
+            defaultOpen: false
+          }] : [])
+        ]"
+        type="multiple"
+      >
+        <!-- Proficiencies Slot -->
+        <template v-if="entity.proficiencies && entity.proficiencies.length > 0" #proficiencies>
+          <UiAccordionBulletList :items="entity.proficiencies" />
         </template>
-        <div class="flex flex-wrap gap-2">
-          <div v-for="source in entity.sources" :key="source.code" class="flex items-center gap-2">
-            <UBadge color="gray" variant="soft">{{ source.name }}</UBadge>
-            <span class="text-sm text-gray-600 dark:text-gray-400">p. {{ source.pages }}</span>
-          </div>
-        </div>
-      </UCard>
+
+        <!-- Features Slot -->
+        <template v-if="entity.features && entity.features.length > 0" #features>
+          <UiAccordionTraitsList :traits="entity.features" :showLevel="true" borderColor="primary-500" />
+        </template>
+
+        <!-- Subclasses Slot -->
+        <template v-if="entity.subclasses && entity.subclasses.length > 0" #subclasses>
+          <UiAccordionEntityGrid :entities="entity.subclasses" basePath="/classes" />
+        </template>
+
+        <!-- Source Slot -->
+        <template v-if="entity.sources && entity.sources.length > 0" #source>
+          <UiSourceDisplay :sources="entity.sources" />
+        </template>
+      </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <div
-        v-if="showJson"
-        ref="jsonPanelRef"
-        class="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden"
-      >
-        <div class="bg-gray-900 text-gray-100 p-4 flex items-center justify-between">
-          <h3 class="text-lg font-semibold">Raw JSON Data</h3>
-          <div class="flex gap-2">
-            <UButton
-              color="gray"
-              variant="soft"
-              size="xs"
-              icon="i-heroicons-clipboard"
-              @click="copyJson"
-            >
-              Copy
-            </UButton>
-            <UButton
-              color="gray"
-              variant="soft"
-              size="xs"
-              icon="i-heroicons-x-mark"
-              @click="showJson = false"
-            >
-              Close
-            </UButton>
-          </div>
-        </div>
-        <pre class="bg-gray-900 text-gray-100 p-4 overflow-x-auto text-sm"><code>{{ JSON.stringify(entity, null, 2) }}</code></pre>
-      </div>
-
-      <!-- Back Button -->
-      <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
-        <NuxtLink to="/classes">
-          <UButton color="gray" variant="soft" icon="i-heroicons-arrow-left">
-            Back to Classes
-          </UButton>
-        </NuxtLink>
-      </div>
+      <JsonDebugPanel :data="entity" title="Class Data" />
     </div>
   </div>
 </template>

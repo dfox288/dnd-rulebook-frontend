@@ -78,143 +78,41 @@ const damageEffects = computed(() => {
     .filter((e: any) => e.effect_type === 'damage')
     .sort((a: any, b: any) => a.min_spell_slot - b.min_spell_slot)
 })
-
-// JSON debug toggle
-const showJson = ref(false)
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <div v-if="pending" class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Loading spell...</p>
-      </div>
-    </div>
+    <UiDetailPageLoading v-if="pending" entityType="spell" />
 
     <!-- Error State -->
-    <div v-else-if="error" class="py-12">
-      <UCard>
-        <div class="text-center">
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Spell Not Found
-          </h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            The spell you're looking for doesn't exist or has been removed.
-          </p>
-          <UButton to="/search" color="primary">
-            Back to Search
-          </UButton>
-        </div>
-      </UCard>
-    </div>
+    <UiDetailPageError v-else-if="error" entityType="Spell" />
 
     <!-- Spell Content -->
     <div v-else-if="spell" class="space-y-8">
       <!-- Breadcrumb -->
-      <div>
-        <UButton to="/spells" variant="ghost" color="gray" icon="i-heroicons-arrow-left" size="sm">
-          Back to Spells
-        </UButton>
-      </div>
+      <UiBackLink to="/spells" label="Back to Spells" />
 
       <!-- Header -->
-      <div class="flex justify-between items-start gap-4">
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-3 flex-wrap">
-            <UBadge
-              :color="getLevelColor(spell.level)"
-              variant="subtle"
-              size="lg"
-            >
-              {{ spellLevelText }}
-            </UBadge>
-            <UBadge
-              :color="getSchoolColor(spell.school.code)"
-              variant="subtle"
-              size="lg"
-            >
-              {{ spell.school.name }}
-            </UBadge>
-            <UBadge v-if="spell.is_ritual" color="info" variant="soft" size="sm">
-              🔮 Ritual
-            </UBadge>
-            <UBadge v-if="spell.needs_concentration" color="warning" variant="soft" size="sm">
-              ⭐ Concentration
-            </UBadge>
-          </div>
-          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-            {{ spell.name }}
-          </h1>
-        </div>
-        <UButton
-          @click="showJson = !showJson"
-          variant="ghost"
-          color="gray"
-          icon="i-heroicons-code-bracket"
-          size="sm"
-        >
-          {{ showJson ? 'Hide' : 'View' }} JSON
-        </UButton>
-      </div>
+      <UiDetailPageHeader
+        :title="spell.name"
+        :badges="[
+          { label: spellLevelText, color: getLevelColor(spell.level), variant: 'subtle', size: 'lg' },
+          { label: spell.school.name, color: getSchoolColor(spell.school.code), variant: 'subtle', size: 'lg' },
+          ...(spell.is_ritual ? [{ label: '🔮 Ritual', color: 'info', variant: 'soft', size: 'sm' }] : []),
+          ...(spell.needs_concentration ? [{ label: '⭐ Concentration', color: 'warning', variant: 'soft', size: 'sm' }] : [])
+        ]"
+      />
 
       <!-- Quick Stats -->
-      <UCard>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="flex items-start gap-3">
-            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Casting Time
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ spell.casting_time }}
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <UIcon name="i-heroicons-arrow-trending-up" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Range
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ spell.range }}
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Components
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ spell.components }}
-              </div>
-              <div v-if="spell.material_components" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {{ spell.material_components }}
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-start gap-3">
-            <UIcon name="i-heroicons-clock" class="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Duration
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ spell.duration }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </UCard>
+      <UiQuickStatsCard
+        :stats="[
+          { icon: 'i-heroicons-clock', label: 'Casting Time', value: spell.casting_time },
+          { icon: 'i-heroicons-arrow-trending-up', label: 'Range', value: spell.range },
+          { icon: 'i-heroicons-sparkles', label: 'Components', value: spell.components, subtext: spell.material_components },
+          { icon: 'i-heroicons-clock', label: 'Duration', value: spell.duration }
+        ]"
+      />
 
       <!-- Description (Always Visible) -->
       <UCard>
@@ -286,32 +184,17 @@ const showJson = ref(false)
 
         <!-- Classes Slot -->
         <template v-if="spell.classes && spell.classes.length > 0" #classes>
-          <div class="p-4">
-            <div class="flex flex-wrap gap-2">
-              <UBadge
-                v-for="cls in spell.classes"
-                :key="cls.id"
-                color="primary"
-                variant="soft"
-              >
-                {{ cls.name }}
-              </UBadge>
-            </div>
-          </div>
+          <UiAccordionBadgeList :items="spell.classes" color="primary" />
         </template>
 
         <!-- Source Slot -->
         <template v-if="spell.sources && spell.sources.length > 0" #source>
-          <SourceDisplay :sources="spell.sources" />
+          <UiSourceDisplay :sources="spell.sources" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel
-        :data="spell"
-        :visible="showJson"
-        @close="showJson = false"
-      />
+      <JsonDebugPanel :data="spell" title="Spell Data" />
     </div>
   </div>
 </template>

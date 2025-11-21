@@ -92,172 +92,43 @@ const getItemTypeColor = computed(() => {
   // Default
   return 'neutral'
 })
-
-// JSON debug toggle
-const showJson = ref(false)
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <div v-if="pending" class="flex justify-center items-center py-12">
-      <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Loading item...</p>
-      </div>
-    </div>
+    <UiDetailPageLoading v-if="pending" entityType="item" />
 
     <!-- Error State -->
-    <div v-else-if="error" class="py-12">
-      <UCard>
-        <div class="text-center">
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Item Not Found
-          </h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            The item you're looking for doesn't exist or has been removed.
-          </p>
-          <UButton to="/search" color="primary">
-            Back to Search
-          </UButton>
-        </div>
-      </UCard>
-    </div>
+    <UiDetailPageError v-else-if="error" entityType="Item" />
 
     <!-- Item Content -->
     <div v-else-if="item" class="space-y-8">
       <!-- Breadcrumb Navigation -->
-      <div>
-        <NuxtLink to="/items">
-          <UButton color="gray" variant="ghost" icon="i-heroicons-arrow-left" size="sm">
-            Back to Items
-          </UButton>
-        </NuxtLink>
-      </div>
+      <UiBackLink to="/items" label="Back to Items" />
 
       <!-- Header -->
-      <div>
-        <div class="flex items-center justify-between mb-3 flex-wrap gap-4">
-          <div class="flex items-center gap-2 flex-wrap">
-            <UBadge :color="getItemTypeColor" variant="subtle" size="lg">
-              {{ item.item_type.name }}
-            </UBadge>
-            <UBadge :color="rarityColor" variant="subtle" size="lg">
-              {{ rarityText }}
-            </UBadge>
-            <UBadge v-if="item.is_magic" color="primary" variant="soft" size="sm">
-              ✨ Magic
-            </UBadge>
-            <UBadge v-if="item.requires_attunement" color="info" variant="soft" size="sm">
-              🔮 Attunement
-            </UBadge>
-          </div>
-
-          <!-- JSON Debug Button -->
-          <UButton
-            color="gray"
-            variant="soft"
-            size="sm"
-            @click="showJson = !showJson"
-          >
-            <UIcon :name="showJson ? 'i-heroicons-eye-slash' : 'i-heroicons-code-bracket'" class="w-4 h-4" />
-            {{ showJson ? 'Hide JSON' : 'View JSON' }}
-          </UButton>
-        </div>
-        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-          {{ item.name }}
-        </h1>
-      </div>
+      <UiDetailPageHeader
+        :title="item.name"
+        :badges="[
+          { label: item.item_type.name, color: getItemTypeColor, variant: 'subtle', size: 'lg' },
+          { label: rarityText, color: rarityColor, variant: 'subtle', size: 'lg' },
+          ...(item.is_magic ? [{ label: '✨ Magic', color: 'primary', variant: 'soft', size: 'sm' }] : []),
+          ...(item.requires_attunement ? [{ label: '🔮 Attunement', color: 'info', variant: 'soft', size: 'sm' }] : [])
+        ]"
+      />
 
       <!-- Quick Stats -->
-      <UCard>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Cost -->
-          <div v-if="costInGold" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Cost
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ costInGold }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Weight -->
-          <div v-if="item.weight" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-scale" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Weight
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ item.weight }} lb
-              </div>
-            </div>
-          </div>
-
-          <!-- Damage (for weapons) -->
-          <div v-if="item.damage_dice" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-bolt" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Damage
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ item.damage_dice }}
-                <span v-if="item.damage_type" class="text-gray-600 dark:text-gray-400">
-                  {{ item.damage_type.name }}
-                </span>
-              </div>
-              <div v-if="item.versatile_damage" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Versatile: {{ item.versatile_damage }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Armor Class (for armor) -->
-          <div v-if="item.armor_class !== null" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-shield-check" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Armor Class
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ item.armor_class }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Range (for ranged weapons) -->
-          <div v-if="item.range_normal" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-arrow-trending-up" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Range
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ item.range_normal }}{{ item.range_long ? `/${item.range_long}` : '' }} ft.
-              </div>
-            </div>
-          </div>
-
-          <!-- Strength Requirement -->
-          <div v-if="item.strength_requirement" class="flex items-start gap-3">
-            <UIcon name="i-heroicons-hand-raised" class="w-5 h-5 text-gray-400 mt-0.5" />
-            <div>
-              <div class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1">
-                Strength Required
-              </div>
-              <div class="text-lg text-gray-900 dark:text-gray-100">
-                {{ item.strength_requirement }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </UCard>
+      <UiQuickStatsCard
+        :stats="[
+          ...(costInGold ? [{ icon: 'i-heroicons-currency-dollar', label: 'Cost', value: costInGold }] : []),
+          ...(item.weight ? [{ icon: 'i-heroicons-scale', label: 'Weight', value: `${item.weight} lb` }] : []),
+          ...(item.damage_dice ? [{ icon: 'i-heroicons-bolt', label: 'Damage', value: item.damage_dice + (item.damage_type ? ` ${item.damage_type.name}` : ''), subtext: item.versatile_damage ? `Versatile: ${item.versatile_damage}` : undefined }] : []),
+          ...(item.armor_class !== null ? [{ icon: 'i-heroicons-shield-check', label: 'Armor Class', value: String(item.armor_class) }] : []),
+          ...(item.range_normal ? [{ icon: 'i-heroicons-arrow-trending-up', label: 'Range', value: `${item.range_normal}${item.range_long ? `/${item.range_long}` : ''} ft.` }] : []),
+          ...(item.strength_requirement ? [{ icon: 'i-heroicons-hand-raised', label: 'Strength Required', value: String(item.strength_requirement) }] : [])
+        ]"
+      />
 
       <!-- Description (Always Visible) -->
       <UCard>
@@ -361,25 +232,12 @@ const showJson = ref(false)
 
         <!-- Source Slot -->
         <template v-if="item.sources && item.sources.length > 0" #source>
-          <SourceDisplay :sources="item.sources" />
+          <UiSourceDisplay :sources="item.sources" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel
-        :data="item"
-        :visible="showJson"
-        @close="showJson = false"
-      />
-
-      <!-- Back Button -->
-      <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
-        <NuxtLink to="/items">
-          <UButton color="gray" variant="soft" icon="i-heroicons-arrow-left">
-            Back to Items
-          </UButton>
-        </NuxtLink>
-      </div>
+      <JsonDebugPanel :data="item" title="Item Data" />
     </div>
   </div>
 </template>
