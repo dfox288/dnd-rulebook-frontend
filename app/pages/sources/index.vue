@@ -39,11 +39,11 @@ const totalResults = computed(() => sources.value.length)
 // SEO meta tags
 useSeoMeta({
   title: 'Source Books - D&D 5e Compendium',
-  description: 'Browse all D&D 5e source books and official publications.',
+  description: 'Browse all D&D 5e source books and official publications.'
 })
 
 useHead({
-  title: 'Source Books - D&D 5e Compendium',
+  title: 'Source Books - D&D 5e Compendium'
 })
 </script>
 
@@ -66,7 +66,10 @@ useHead({
         placeholder="Search source books..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -121,6 +124,9 @@ useHead({
     <UiBackLink />
 
     <!-- JSON Debug Panel -->
-    <JsonDebugPanel :data="{ sources, total: totalResults }" title="Sources Data" />
+    <JsonDebugPanel
+      :data="{ sources, total: totalResults }"
+      title="Sources Data"
+    />
   </div>
 </template>

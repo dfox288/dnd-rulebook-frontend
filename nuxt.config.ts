@@ -12,7 +12,11 @@ export default defineNuxtConfig({
 
   css: ['./app/assets/css/main.css'],
 
-  compatibilityDate: '2025-01-15',
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    classSuffix: ''
+  },
 
   runtimeConfig: {
     // Server-side only (NEVER exposed to client)
@@ -22,9 +26,11 @@ export default defineNuxtConfig({
     // Public keys (exposed to client)
     public: {
       // apiBase no longer needed - frontend uses /api/* (Nitro routes)
-      apiDocsUrl: process.env.NUXT_PUBLIC_API_DOCS_URL || 'http://localhost:8080/docs/api',
+      apiDocsUrl: process.env.NUXT_PUBLIC_API_DOCS_URL || 'http://localhost:8080/docs/api'
     }
   },
+
+  compatibilityDate: '2025-01-15',
 
   eslint: {
     config: {
@@ -33,11 +39,5 @@ export default defineNuxtConfig({
         braceStyle: '1tbs'
       }
     }
-  },
-
-  colorMode: {
-    preference: 'system',
-    fallback: 'light',
-    classSuffix: ''
   }
 })

@@ -16,7 +16,7 @@ const {
 } = useEntityList({
   endpoint: '/classes',
   cacheKey: 'classes-list',
-  queryBuilder: computed(() => ({})),  // No custom filters for classes
+  queryBuilder: computed(() => ({})), // No custom filters for classes
   seo: {
     title: 'Classes - D&D 5e Compendium',
     description: 'Browse all D&D 5e player classes and subclasses.'
@@ -46,7 +46,10 @@ const perPage = 24
         placeholder="Search classes..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -93,7 +96,6 @@ const perPage = 24
           v-for="charClass in classes"
           :key="charClass.id"
           :character-class="charClass"
-          
         />
       </div>
 

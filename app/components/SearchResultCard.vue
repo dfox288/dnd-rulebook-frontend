@@ -18,7 +18,7 @@ const getBadgeColor = () => {
     race: 'blue',
     class: 'red',
     background: 'green',
-    feat: 'orange',
+    feat: 'orange'
   }
   return colors[props.type]
 }
@@ -33,7 +33,7 @@ const getUrl = () => {
     race: 'races',
     class: 'classes',
     background: 'backgrounds',
-    feat: 'feats',
+    feat: 'feats'
   }
   return `/${pluralTypes[props.type]}/${props.result.slug}`
 }
@@ -59,7 +59,10 @@ const isItem = (result: any): result is Item => props.type === 'item'
 </script>
 
 <template>
-  <NuxtLink :to="getUrl()" class="block">
+  <NuxtLink
+    :to="getUrl()"
+    class="block"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full">
       <div class="space-y-3">
         <!-- Header with name and type badge -->
@@ -67,13 +70,20 @@ const isItem = (result: any): result is Item => props.type === 'item'
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex-1">
             {{ result.name }}
           </h3>
-          <UBadge :color="getBadgeColor()" variant="subtle" size="sm">
+          <UBadge
+            :color="getBadgeColor()"
+            variant="subtle"
+            size="sm"
+          >
             {{ type }}
           </UBadge>
         </div>
 
         <!-- Spell-specific metadata -->
-        <div v-if="isSpell(result)" class="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div
+          v-if="isSpell(result)"
+          class="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400"
+        >
           <span class="inline-flex items-center gap-1">
             <span class="font-medium">Level {{ result.level }}</span>
           </span>
@@ -90,15 +100,30 @@ const isItem = (result: any): result is Item => props.type === 'item'
         </div>
 
         <!-- Item-specific metadata -->
-        <div v-if="isItem(result)" class="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <UBadge :color="result.is_magic ? 'primary' : 'gray'" variant="soft" size="xs">
+        <div
+          v-if="isItem(result)"
+          class="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400"
+        >
+          <UBadge
+            :color="result.is_magic ? 'primary' : 'gray'"
+            variant="soft"
+            size="xs"
+          >
             {{ result.rarity }}
           </UBadge>
           <span v-if="result.is_magic">
-            <UBadge color="purple" variant="soft" size="xs">Magic</UBadge>
+            <UBadge
+              color="purple"
+              variant="soft"
+              size="xs"
+            >Magic</UBadge>
           </span>
           <span v-if="result.requires_attunement">
-            <UBadge color="blue" variant="soft" size="xs">Attunement</UBadge>
+            <UBadge
+              color="blue"
+              variant="soft"
+              size="xs"
+            >Attunement</UBadge>
           </span>
         </div>
 

@@ -4,9 +4,9 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'Search and browse D&D 5th Edition spells, items, races, classes, backgrounds, and feats',
-    },
-  ],
+      content: 'Search and browse D&D 5th Edition spells, items, races, classes, backgrounds, and feats'
+    }
+  ]
 })
 </script>
 
@@ -29,7 +29,10 @@ useHead({
 
     <!-- Quick Links -->
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-12">
-      <NuxtLink to="/spells" class="block">
+      <NuxtLink
+        to="/spells"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">✨</div>
@@ -39,7 +42,10 @@ useHead({
         </UCard>
       </NuxtLink>
 
-      <NuxtLink to="/items" class="block">
+      <NuxtLink
+        to="/items"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">⚔️</div>
@@ -49,7 +55,10 @@ useHead({
         </UCard>
       </NuxtLink>
 
-      <NuxtLink to="/races" class="block">
+      <NuxtLink
+        to="/races"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">🧝</div>
@@ -59,7 +68,10 @@ useHead({
         </UCard>
       </NuxtLink>
 
-      <NuxtLink to="/classes" class="block">
+      <NuxtLink
+        to="/classes"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">🛡️</div>
@@ -69,7 +81,10 @@ useHead({
         </UCard>
       </NuxtLink>
 
-      <NuxtLink to="/backgrounds" class="block">
+      <NuxtLink
+        to="/backgrounds"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">📜</div>
@@ -79,7 +94,10 @@ useHead({
         </UCard>
       </NuxtLink>
 
-      <NuxtLink to="/feats" class="block">
+      <NuxtLink
+        to="/feats"
+        class="block"
+      >
         <UCard class="hover:shadow-lg transition-shadow h-full">
           <div class="text-center">
             <div class="text-3xl mb-2">💪</div>

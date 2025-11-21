@@ -24,7 +24,11 @@ const handlePageChange = (page: number) => {
 </script>
 
 <template>
-  <div v-if="shouldRender" data-testid="list-pagination" class="flex justify-center">
+  <div
+    v-if="shouldRender"
+    data-testid="list-pagination"
+    class="flex justify-center"
+  >
     <UPagination
       :page="modelValue"
       :total="total"

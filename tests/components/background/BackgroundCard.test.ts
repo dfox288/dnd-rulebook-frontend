@@ -19,7 +19,7 @@ describe('BackgroundCard', () => {
     feature_name: 'Shelter of the Faithful',
     description: 'You have spent your life in the service of a temple to a specific god or pantheon of gods.',
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '127' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
     ]
   }
 
@@ -112,7 +112,7 @@ describe('BackgroundCard', () => {
     const bgWithTools = {
       ...mockBackground,
       tool_proficiencies: [
-        { id: 1, name: "Thieves' Tools" },
+        { id: 1, name: 'Thieves\' Tools' },
         { id: 2, name: 'Disguise Kit' }
       ]
     }
@@ -213,7 +213,7 @@ describe('BackgroundCard', () => {
       props: { background: mockBackground }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles backgrounds without sources', async () => {
@@ -228,7 +228,7 @@ describe('BackgroundCard', () => {
   it('displays all key information in organized layout', async () => {
     const fullBg = {
       ...mockBackground,
-      tool_proficiencies: [{ id: 1, name: "Thieves' Tools" }]
+      tool_proficiencies: [{ id: 1, name: 'Thieves\' Tools' }]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: fullBg }
@@ -257,11 +257,11 @@ describe('BackgroundCard', () => {
     const fullBg = {
       ...mockBackground,
       skill_proficiencies: [{ id: 1, name: 'Insight' }],
-      tool_proficiencies: [{ id: 1, name: "Thieves' Tools" }],
+      tool_proficiencies: [{ id: 1, name: 'Thieves\' Tools' }],
       languages: [{ id: 1, name: 'Common' }],
       feature_name: 'Feature Name',
       description: 'Full description',
-      sources: [{ code: 'PHB', name: "Player's Handbook", pages: '127' }]
+      sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '127' }]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: fullBg }
@@ -287,7 +287,7 @@ describe('BackgroundCard', () => {
     const manyToolsBg = {
       ...mockBackground,
       tool_proficiencies: [
-        { id: 1, name: "Thieves' Tools" },
+        { id: 1, name: 'Thieves\' Tools' },
         { id: 2, name: 'Disguise Kit' },
         { id: 3, name: 'Forgery Kit' }
       ]

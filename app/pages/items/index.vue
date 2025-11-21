@@ -23,14 +23,14 @@ const rarityOptions = [
   { label: 'Rare', value: 'rare' },
   { label: 'Very Rare', value: 'very rare' },
   { label: 'Legendary', value: 'legendary' },
-  { label: 'Artifact', value: 'artifact' },
+  { label: 'Artifact', value: 'artifact' }
 ]
 
 // Magic filter options
 const magicOptions = [
   { label: 'All Items', value: null },
   { label: 'Magic Items', value: 'true' },
-  { label: 'Non-Magic Items', value: 'false' },
+  { label: 'Non-Magic Items', value: 'false' }
 ]
 
 // Item type filter options
@@ -114,7 +114,10 @@ const perPage = 24
         placeholder="Search items..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -151,7 +154,10 @@ const perPage = 24
         >
           <template #label>
             <span v-if="selectedRarity === null">All Rarities</span>
-            <span v-else class="capitalize">{{ selectedRarity }}</span>
+            <span
+              v-else
+              class="capitalize"
+            >{{ selectedRarity }}</span>
           </template>
         </USelectMenu>
 
@@ -182,7 +188,10 @@ const perPage = 24
       </div>
 
       <!-- Active Filter Chips -->
-      <div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 pt-2">
+      <div
+        v-if="hasActiveFilters"
+        class="flex flex-wrap items-center gap-2 pt-2"
+      >
         <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
         <UButton
           v-if="selectedType !== null"
@@ -227,10 +236,20 @@ const perPage = 24
     <UiListSkeletonCards v-if="loading" />
 
     <!-- Error State -->
-    <UiListErrorState v-else-if="error" :error="error" entity-name="Items" @retry="refresh" />
+    <UiListErrorState
+      v-else-if="error"
+      :error="error"
+      entity-name="Items"
+      @retry="refresh"
+    />
 
     <!-- Empty State -->
-    <UiListEmptyState v-else-if="items.length === 0" entity-name="items" :has-filters="hasActiveFilters" @clear-filters="clearFilters" />
+    <UiListEmptyState
+      v-else-if="items.length === 0"
+      entity-name="items"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
+    />
 
     <!-- Results -->
     <div v-else>
@@ -252,7 +271,11 @@ const perPage = 24
       </div>
 
       <!-- Pagination -->
-      <UiListPagination v-model="currentPage" :total="totalResults" :items-per-page="perPage" />
+      <UiListPagination
+        v-model="currentPage"
+        :total="totalResults"
+        :items-per-page="perPage"
+      />
     </div>
 
     <!-- Back to Home -->

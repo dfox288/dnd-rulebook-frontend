@@ -16,7 +16,7 @@ const {
 } = useEntityList({
   endpoint: '/backgrounds',
   cacheKey: 'backgrounds-list',
-  queryBuilder: computed(() => ({})),  // No custom filters for backgrounds
+  queryBuilder: computed(() => ({})), // No custom filters for backgrounds
   seo: {
     title: 'Backgrounds - D&D 5e Compendium',
     description: 'Browse all D&D 5e character backgrounds.'
@@ -46,7 +46,10 @@ const perPage = 24
         placeholder="Search backgrounds..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -93,7 +96,6 @@ const perPage = 24
           v-for="background in backgrounds"
           :key="background.id"
           :background="background"
-          
         />
       </div>
 

@@ -21,7 +21,11 @@ defineProps<Props>()
 
       <!-- Type Badge -->
       <div class="flex items-center gap-2">
-        <UBadge color="neutral" variant="soft" size="sm">
+        <UBadge
+          color="neutral"
+          variant="soft"
+          size="sm"
+        >
           Damage Type
         </UBadge>
       </div>

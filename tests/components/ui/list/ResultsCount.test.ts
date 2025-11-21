@@ -169,7 +169,7 @@ describe('UiListResultsCount', () => {
     it('renders correctly with different entity names', () => {
       const entities = ['spell', 'item', 'race', 'class', 'background', 'feat']
 
-      entities.forEach(entity => {
+      entities.forEach((entity) => {
         const wrapper = mount(ResultsCount, {
           props: {
             from: 1,

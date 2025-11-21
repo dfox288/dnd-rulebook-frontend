@@ -13,20 +13,31 @@ const { data: entity, error, pending } = await useAsyncData(
 
 useSeoMeta({
   title: computed(() => entity.value ? `${entity.value.name} - D&D 5e Class` : 'Class - D&D 5e Compendium'),
-  description: computed(() => entity.value?.description?.substring(0, 160)),
+  description: computed(() => entity.value?.description?.substring(0, 160))
 })
-
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
-    <UiDetailPageLoading v-if="pending" entityType="class" />
+    <UiDetailPageLoading
+      v-if="pending"
+      entity-type="class"
+    />
 
-    <UiDetailPageError v-else-if="error" entityType="Class" />
+    <UiDetailPageError
+      v-else-if="error"
+      entity-type="Class"
+    />
 
-    <div v-else-if="entity" class="space-y-8">
+    <div
+      v-else-if="entity"
+      class="space-y-8"
+    >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink to="/classes" label="Back to Classes" />
+      <UiBackLink
+        to="/classes"
+        label="Back to Classes"
+      />
 
       <!-- Header -->
       <UiDetailPageHeader
@@ -50,10 +61,14 @@ useSeoMeta({
       <!-- Description (Always Visible) -->
       <UCard v-if="entity.description">
         <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Description</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Description
+          </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">{{ entity.description }}</p>
+          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">
+            {{ entity.description }}
+          </p>
         </div>
       </UCard>
 
@@ -89,33 +104,58 @@ useSeoMeta({
         type="multiple"
       >
         <!-- Proficiencies Slot -->
-        <template v-if="entity.proficiencies && entity.proficiencies.length > 0" #proficiencies>
+        <template
+          v-if="entity.proficiencies && entity.proficiencies.length > 0"
+          #proficiencies
+        >
           <UiAccordionBulletList :items="entity.proficiencies" />
         </template>
 
         <!-- Features Slot -->
-        <template v-if="entity.features && entity.features.length > 0" #features>
-          <UiAccordionTraitsList :traits="entity.features" :showLevel="true" borderColor="primary-500" />
+        <template
+          v-if="entity.features && entity.features.length > 0"
+          #features
+        >
+          <UiAccordionTraitsList
+            :traits="entity.features"
+            :show-level="true"
+            border-color="primary-500"
+          />
         </template>
 
         <!-- Subclasses Slot -->
-        <template v-if="entity.subclasses && entity.subclasses.length > 0" #subclasses>
-          <UiAccordionEntityGrid :entities="entity.subclasses" basePath="/classes" />
+        <template
+          v-if="entity.subclasses && entity.subclasses.length > 0"
+          #subclasses
+        >
+          <UiAccordionEntityGrid
+            :entities="entity.subclasses"
+            base-path="/classes"
+          />
         </template>
 
         <!-- Source Slot -->
-        <template v-if="entity.sources && entity.sources.length > 0" #source>
+        <template
+          v-if="entity.sources && entity.sources.length > 0"
+          #source
+        >
           <UiSourceDisplay :sources="entity.sources" />
         </template>
 
         <!-- Tags Slot -->
-        <template v-if="entity.tags && entity.tags.length > 0" #tags>
+        <template
+          v-if="entity.tags && entity.tags.length > 0"
+          #tags
+        >
           <UiTagsDisplay :tags="entity.tags" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel :data="entity" title="Class Data" />
+      <JsonDebugPanel
+        :data="entity"
+        title="Class Data"
+      />
     </div>
   </div>
 </template>

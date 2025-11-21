@@ -25,9 +25,16 @@ defineProps<Props>()
       </h3>
 
       <!-- Ability Score (if present) -->
-      <div v-if="skill.ability_score" class="space-y-2">
+      <div
+        v-if="skill.ability_score"
+        class="space-y-2"
+      >
         <div class="flex items-center gap-2">
-          <UBadge color="info" variant="solid" size="md">
+          <UBadge
+            color="info"
+            variant="solid"
+            size="md"
+          >
             {{ skill.ability_score.code }}
           </UBadge>
         </div>
@@ -38,7 +45,11 @@ defineProps<Props>()
 
       <!-- Category Badge -->
       <div class="flex items-center gap-2">
-        <UBadge color="neutral" variant="soft" size="xs">
+        <UBadge
+          color="neutral"
+          variant="soft"
+          size="xs"
+        >
           Skill
         </UBadge>
       </div>

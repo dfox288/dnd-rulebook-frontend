@@ -19,7 +19,7 @@ describe('ItemCard', () => {
     weight: 3,
     description: 'A versatile martial weapon used by warriors across the realms.',
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '149' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '149' }
     ]
   }
 
@@ -260,7 +260,7 @@ describe('ItemCard', () => {
       props: { item: mockItem }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles items without sources', async () => {

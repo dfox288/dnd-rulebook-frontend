@@ -6,12 +6,12 @@ describe('SourceDisplay', () => {
   const mockSources = [
     {
       code: 'PHB',
-      name: "Player's Handbook",
+      name: 'Player\'s Handbook',
       pages: '32'
     },
     {
       code: 'XGE',
-      name: "Xanathar's Guide to Everything",
+      name: 'Xanathar\'s Guide to Everything',
       pages: '154-155'
     }
   ]
@@ -21,8 +21,8 @@ describe('SourceDisplay', () => {
       props: { sources: mockSources }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
-    expect(wrapper.text()).toContain("Xanathar's Guide to Everything")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
+    expect(wrapper.text()).toContain('Xanathar\'s Guide to Everything')
   })
 
   it('displays page numbers next to source names', () => {
@@ -64,7 +64,7 @@ describe('SourceDisplay', () => {
   it('handles single source correctly', () => {
     const singleSource = [{
       code: 'DMG',
-      name: "Dungeon Master's Guide",
+      name: 'Dungeon Master\'s Guide',
       pages: '42'
     }]
 
@@ -72,7 +72,7 @@ describe('SourceDisplay', () => {
       props: { sources: singleSource }
     })
 
-    expect(wrapper.text()).toContain("Dungeon Master's Guide")
+    expect(wrapper.text()).toContain('Dungeon Master\'s Guide')
     expect(wrapper.text()).toContain('p. 42')
   })
 })

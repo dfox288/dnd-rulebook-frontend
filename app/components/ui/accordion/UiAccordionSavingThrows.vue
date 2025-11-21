@@ -21,8 +21,8 @@ const formatSaveEffect = (effect: string | null): string | null => {
   if (!effect) return null
 
   const effectMap: Record<string, string> = {
-    'negates': 'Negates effect',
-    'ends_effect': 'Ends effect'
+    negates: 'Negates effect',
+    ends_effect: 'Ends effect'
   }
 
   return effectMap[effect] || effect
@@ -38,7 +38,11 @@ const formatSaveEffect = (effect: string | null): string | null => {
     >
       <div class="flex items-center gap-2 mb-2">
         <!-- Ability Score Code Badge -->
-        <UBadge color="warning" variant="solid" size="sm">
+        <UBadge
+          color="warning"
+          variant="solid"
+          size="sm"
+        >
           {{ save.ability_score.code }}
         </UBadge>
 
@@ -76,7 +80,10 @@ const formatSaveEffect = (effect: string | null): string | null => {
       </div>
 
       <!-- Save Effect (if present) -->
-      <div v-if="save.save_effect" class="text-sm text-gray-700 dark:text-gray-300">
+      <div
+        v-if="save.save_effect"
+        class="text-sm text-gray-700 dark:text-gray-300"
+      >
         <span class="font-medium">Effect:</span> {{ formatSaveEffect(save.save_effect) }}
       </div>
     </div>

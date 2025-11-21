@@ -29,14 +29,17 @@ const copyJson = () => {
 
 <template>
   <div>
-    <!--JSON Toggle Button (shown in header) -->
+    <!-- JSON Toggle Button (shown in header) -->
     <UButton
       color="gray"
       variant="soft"
       size="sm"
       @click="toggleJson"
     >
-      <UIcon :name="showJson ? 'i-heroicons-eye-slash' : 'i-heroicons-code-bracket'" class="w-4 h-4" />
+      <UIcon
+        :name="showJson ? 'i-heroicons-eye-slash' : 'i-heroicons-code-bracket'"
+        class="w-4 h-4"
+      />
       {{ showJson ? 'Hide JSON' : 'View JSON' }}
     </UButton>
 

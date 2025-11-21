@@ -10,10 +10,14 @@ const handleRetry = () => {
 
 <template>
   <div class="container mx-auto p-6 space-y-8">
-    <h1 class="text-3xl font-bold">UiListErrorState Component Test</h1>
+    <h1 class="text-3xl font-bold">
+      UiListErrorState Component Test
+    </h1>
 
     <section>
-      <h2 class="text-xl font-semibold mb-4">Error Object with Entity Name</h2>
+      <h2 class="text-xl font-semibold mb-4">
+        Error Object with Entity Name
+      </h2>
       <UiListErrorState
         :error="testError"
         entity-name="Spells"
@@ -22,7 +26,9 @@ const handleRetry = () => {
     </section>
 
     <section>
-      <h2 class="text-xl font-semibold mb-4">Error String with Entity Name</h2>
+      <h2 class="text-xl font-semibold mb-4">
+        Error String with Entity Name
+      </h2>
       <UiListErrorState
         :error="testErrorString"
         entity-name="Items"
@@ -31,7 +37,9 @@ const handleRetry = () => {
     </section>
 
     <section>
-      <h2 class="text-xl font-semibold mb-4">Error without Entity Name (Generic)</h2>
+      <h2 class="text-xl font-semibold mb-4">
+        Error without Entity Name (Generic)
+      </h2>
       <UiListErrorState
         :error="testError"
         @retry="handleRetry"

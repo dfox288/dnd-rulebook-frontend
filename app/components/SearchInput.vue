@@ -44,35 +44,35 @@ watch(query, (newQuery) => {
 const flatResults = computed(() => {
   if (!results.value?.data) return []
 
-  const flattened: Array<{ type: string; slug: string; name: string; entityType: string }> = []
+  const flattened: Array<{ type: string, slug: string, name: string, entityType: string }> = []
 
   if (results.value.data.spells) {
-    results.value.data.spells.forEach(spell => {
+    results.value.data.spells.forEach((spell) => {
       flattened.push({ type: 'spells', slug: spell.slug, name: spell.name, entityType: 'Spell' })
     })
   }
   if (results.value.data.items) {
-    results.value.data.items.forEach(item => {
+    results.value.data.items.forEach((item) => {
       flattened.push({ type: 'items', slug: item.slug, name: item.name, entityType: 'Item' })
     })
   }
   if (results.value.data.races) {
-    results.value.data.races.forEach(race => {
+    results.value.data.races.forEach((race) => {
       flattened.push({ type: 'races', slug: race.slug, name: race.name, entityType: 'Race' })
     })
   }
   if (results.value.data.classes) {
-    results.value.data.classes.forEach(charClass => {
+    results.value.data.classes.forEach((charClass) => {
       flattened.push({ type: 'classes', slug: charClass.slug, name: charClass.name, entityType: 'Class' })
     })
   }
   if (results.value.data.backgrounds) {
-    results.value.data.backgrounds.forEach(background => {
+    results.value.data.backgrounds.forEach((background) => {
       flattened.push({ type: 'backgrounds', slug: background.slug, name: background.name, entityType: 'Background' })
     })
   }
   if (results.value.data.feats) {
-    results.value.data.feats.forEach(feat => {
+    results.value.data.feats.forEach((feat) => {
       flattened.push({ type: 'feats', slug: feat.slug, name: feat.name, entityType: 'Feat' })
     })
   }
@@ -208,7 +208,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
       <div>
         {{ resetGlobalIndex() }}
         <!-- Spells -->
-        <div v-if="results.data.spells && results.data.spells.length > 0" class="mb-3">
+        <div
+          v-if="results.data.spells && results.data.spells.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Spells
           </div>
@@ -234,7 +237,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
         </div>
 
         <!-- Items -->
-        <div v-if="results.data.items && results.data.items.length > 0" class="mb-3">
+        <div
+          v-if="results.data.items && results.data.items.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Items
           </div>
@@ -260,7 +266,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
         </div>
 
         <!-- Races -->
-        <div v-if="results.data.races && results.data.races.length > 0" class="mb-3">
+        <div
+          v-if="results.data.races && results.data.races.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Races
           </div>
@@ -283,7 +292,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
         </div>
 
         <!-- Classes -->
-        <div v-if="results.data.classes && results.data.classes.length > 0" class="mb-3">
+        <div
+          v-if="results.data.classes && results.data.classes.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Classes
           </div>
@@ -306,7 +318,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
         </div>
 
         <!-- Backgrounds -->
-        <div v-if="results.data.backgrounds && results.data.backgrounds.length > 0" class="mb-3">
+        <div
+          v-if="results.data.backgrounds && results.data.backgrounds.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Backgrounds
           </div>
@@ -329,7 +344,10 @@ const resetGlobalIndex = () => { globalIndex = 0 }
         </div>
 
         <!-- Feats -->
-        <div v-if="results.data.feats && results.data.feats.length > 0" class="mb-3">
+        <div
+          v-if="results.data.feats && results.data.feats.length > 0"
+          class="mb-3"
+        >
           <div class="px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
             Feats
           </div>

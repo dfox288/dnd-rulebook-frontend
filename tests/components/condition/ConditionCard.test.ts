@@ -7,7 +7,7 @@ describe('ConditionCard', () => {
     id: 1,
     name: 'Blinded',
     slug: 'blinded',
-    description: "A blinded creature can't see and automatically fails any ability check that requires sight."
+    description: 'A blinded creature can\'t see and automatically fails any ability check that requires sight.'
   }
 
   it('displays condition name as title', async () => {
@@ -23,7 +23,7 @@ describe('ConditionCard', () => {
       props: { condition: mockCondition }
     })
 
-    expect(wrapper.text()).toContain("can't see")
+    expect(wrapper.text()).toContain('can\'t see')
   })
 
   it('truncates long descriptions with line-clamp-3', async () => {

@@ -20,10 +20,18 @@ defineProps<Props>()
     <div class="space-y-3">
       <!-- Source Code Badge -->
       <div class="flex items-center gap-2 flex-wrap">
-        <UBadge color="neutral" variant="solid" size="lg">
+        <UBadge
+          color="neutral"
+          variant="solid"
+          size="lg"
+        >
           {{ source.code }}
         </UBadge>
-        <UBadge color="neutral" variant="soft" size="xs">
+        <UBadge
+          color="neutral"
+          variant="soft"
+          size="xs"
+        >
           {{ source.edition }}
         </UBadge>
       </div>
@@ -36,11 +44,17 @@ defineProps<Props>()
       <!-- Publisher & Year -->
       <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
         <div class="flex items-center gap-1">
-          <UIcon name="i-heroicons-building-office" class="w-4 h-4" />
+          <UIcon
+            name="i-heroicons-building-office"
+            class="w-4 h-4"
+          />
           <span>{{ source.publisher }}</span>
         </div>
         <div class="flex items-center gap-1">
-          <UIcon name="i-heroicons-calendar" class="w-4 h-4" />
+          <UIcon
+            name="i-heroicons-calendar"
+            class="w-4 h-4"
+          />
           <span>{{ source.publication_year }}</span>
         </div>
       </div>

@@ -32,7 +32,7 @@ const filterOptions = computed(() => [
   { label: `Races (${getCount('races')})`, value: 'races', disabled: getCount('races') === 0 },
   { label: `Classes (${getCount('classes')})`, value: 'classes', disabled: getCount('classes') === 0 },
   { label: `Backgrounds (${getCount('backgrounds')})`, value: 'backgrounds', disabled: getCount('backgrounds') === 0 },
-  { label: `Feats (${getCount('feats')})`, value: 'feats', disabled: getCount('feats') === 0 },
+  { label: `Feats (${getCount('feats')})`, value: 'feats', disabled: getCount('feats') === 0 }
 ])
 
 /**
@@ -74,13 +74,13 @@ const getTypeLabel = (type: EntityType): string => {
     races: 'race',
     classes: 'class',
     backgrounds: 'background',
-    feats: 'feat',
+    feats: 'feat'
   }
   return labels[type]
 }
 
 useHead({
-  title: computed(() => `Search: ${route.query.q} - D&D 5e Compendium`),
+  title: computed(() => `Search: ${route.query.q} - D&D 5e Compendium`)
 })
 </script>
 
@@ -93,43 +93,75 @@ useHead({
       </h1>
 
       <!-- Query display -->
-      <div v-if="route.query.q" class="flex items-center gap-2">
+      <div
+        v-if="route.query.q"
+        class="flex items-center gap-2"
+      >
         <span class="text-gray-600 dark:text-gray-400">Searching for:</span>
-        <UBadge size="lg" color="primary" variant="subtle">
+        <UBadge
+          size="lg"
+          color="primary"
+          variant="subtle"
+        >
           {{ route.query.q }}
         </UBadge>
-        <span v-if="!loading" class="text-gray-600 dark:text-gray-400">
+        <span
+          v-if="!loading"
+          class="text-gray-600 dark:text-gray-400"
+        >
           ({{ totalCount }} {{ totalCount === 1 ? 'result' : 'results' }})
         </span>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-12">
+    <div
+      v-if="loading"
+      class="flex justify-center items-center py-12"
+    >
       <div class="flex flex-col items-center gap-4">
-        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary-500" />
-        <p class="text-gray-600 dark:text-gray-400">Searching...</p>
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="w-8 h-8 animate-spin text-primary-500"
+        />
+        <p class="text-gray-600 dark:text-gray-400">
+          Searching...
+        </p>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="py-12">
+    <div
+      v-else-if="error"
+      class="py-12"
+    >
       <UCard>
         <div class="text-center">
-          <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+          <UIcon
+            name="i-heroicons-exclamation-triangle"
+            class="w-12 h-12 mx-auto mb-4 text-red-500"
+          />
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Search Error
           </h2>
-          <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
+          <p class="text-gray-600 dark:text-gray-400">
+            {{ error }}
+          </p>
         </div>
       </UCard>
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="!results || totalCount === 0" class="py-12">
+    <div
+      v-else-if="!results || totalCount === 0"
+      class="py-12"
+    >
       <UCard>
         <div class="text-center">
-          <UIcon name="i-heroicons-magnifying-glass" class="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <UIcon
+            name="i-heroicons-magnifying-glass"
+            class="w-12 h-12 mx-auto mb-4 text-gray-400"
+          />
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             No Results Found
           </h2>
@@ -153,12 +185,14 @@ useHead({
           @click="() => {
             if (option.value === 'all') {
               selectedTypes = []
-            } else {
+            }
+            else {
               const type = option.value as EntityType
               const index = selectedTypes.indexOf(type)
               if (index > -1) {
                 selectedTypes = selectedTypes.filter(t => t !== type)
-              } else {
+              }
+              else {
                 selectedTypes = [...selectedTypes, type]
               }
             }

@@ -17,7 +17,7 @@ const { data: item, error, pending } = await useAsyncData(
 // Set page meta
 useSeoMeta({
   title: computed(() => item.value ? `${item.value.name} - D&D 5e Item` : 'Item - D&D 5e Compendium'),
-  description: computed(() => item.value?.description?.substring(0, 160)),
+  description: computed(() => item.value?.description?.substring(0, 160))
 })
 
 /**
@@ -59,15 +59,27 @@ const itemTypeColor = computed(() => {
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <UiDetailPageLoading v-if="pending" entityType="item" />
+    <UiDetailPageLoading
+      v-if="pending"
+      entity-type="item"
+    />
 
     <!-- Error State -->
-    <UiDetailPageError v-else-if="error" entityType="Item" />
+    <UiDetailPageError
+      v-else-if="error"
+      entity-type="Item"
+    />
 
     <!-- Item Content -->
-    <div v-else-if="item" class="space-y-8">
+    <div
+      v-else-if="item"
+      class="space-y-8"
+    >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink to="/items" label="Back to Items" />
+      <UiBackLink
+        to="/items"
+        label="Back to Items"
+      />
 
       <!-- Header -->
       <UiDetailPageHeader
@@ -100,7 +112,9 @@ const itemTypeColor = computed(() => {
           </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-base leading-relaxed text-gray-700 dark:text-gray-300">{{ item.description }}</p>
+          <p class="whitespace-pre-line text-base leading-relaxed text-gray-700 dark:text-gray-300">
+            {{ item.description }}
+          </p>
         </div>
       </UCard>
 
@@ -141,38 +155,59 @@ const itemTypeColor = computed(() => {
         type="multiple"
       >
         <!-- Properties Slot -->
-        <template v-if="item.properties && item.properties.length > 0" #properties>
+        <template
+          v-if="item.properties && item.properties.length > 0"
+          #properties
+        >
           <UiAccordionPropertiesList :properties="item.properties" />
         </template>
 
         <!-- Modifiers Slot -->
-        <template v-if="item.modifiers && item.modifiers.length > 0" #modifiers>
+        <template
+          v-if="item.modifiers && item.modifiers.length > 0"
+          #modifiers
+        >
           <UiModifiersDisplay :modifiers="item.modifiers" />
         </template>
 
         <!-- Abilities Slot -->
-        <template v-if="item.abilities && item.abilities.length > 0" #abilities>
+        <template
+          v-if="item.abilities && item.abilities.length > 0"
+          #abilities
+        >
           <UiAccordionAbilitiesList :abilities="item.abilities" />
         </template>
 
         <!-- Saving Throws Slot -->
-        <template v-if="item.saving_throws && item.saving_throws.length > 0" #saving_throws>
+        <template
+          v-if="item.saving_throws && item.saving_throws.length > 0"
+          #saving_throws
+        >
           <UiAccordionSavingThrows :saving-throws="item.saving_throws" />
         </template>
 
         <!-- Source Slot -->
-        <template v-if="item.sources && item.sources.length > 0" #source>
+        <template
+          v-if="item.sources && item.sources.length > 0"
+          #source
+        >
           <UiSourceDisplay :sources="item.sources" />
         </template>
 
         <!-- Tags Slot -->
-        <template v-if="item.tags && item.tags.length > 0" #tags>
+        <template
+          v-if="item.tags && item.tags.length > 0"
+          #tags
+        >
           <UiTagsDisplay :tags="item.tags" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel :data="item" title="Item Data" />
+      <JsonDebugPanel
+        :data="item"
+        title="Item Data"
+      />
     </div>
   </div>
 </template>

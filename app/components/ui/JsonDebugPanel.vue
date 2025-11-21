@@ -21,7 +21,10 @@ const copyJson = () => {
 </script>
 
 <template>
-  <div v-if="visible" data-testid="json-panel">
+  <div
+    v-if="visible"
+    data-testid="json-panel"
+  >
     <UCard>
       <template #header>
         <div class="flex justify-between items-center">
@@ -31,19 +34,19 @@ const copyJson = () => {
           <div class="flex gap-2">
             <UButton
               data-testid="copy-button"
-              @click="copyJson"
               size="xs"
               variant="ghost"
               icon="i-heroicons-clipboard"
+              @click="copyJson"
             >
               Copy
             </UButton>
             <UButton
               data-testid="close-button"
-              @click="emit('close')"
               size="xs"
               variant="ghost"
               icon="i-heroicons-x-mark"
+              @click="emit('close')"
             >
               Close
             </UButton>

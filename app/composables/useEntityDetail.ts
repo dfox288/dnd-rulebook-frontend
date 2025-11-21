@@ -87,7 +87,7 @@ export function useEntityDetail<T = any>(config: UseEntityDetailConfig): UseEnti
     ),
     description: computed(() =>
       data.value ? config.seo.descriptionExtractor(data.value) : undefined
-    ),
+    )
   })
 
   useHead({
@@ -95,7 +95,7 @@ export function useEntityDetail<T = any>(config: UseEntityDetailConfig): UseEnti
       data.value
         ? config.seo.titleTemplate((data.value as any).name)
         : config.seo.fallbackTitle
-    ),
+    )
   })
 
   return {

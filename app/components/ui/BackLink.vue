@@ -15,7 +15,11 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
     <NuxtLink :to="to">
-      <UButton color="gray" variant="soft" :icon="icon">
+      <UButton
+        color="gray"
+        variant="soft"
+        :icon="icon"
+      >
         {{ label }}
       </UButton>
     </NuxtLink>

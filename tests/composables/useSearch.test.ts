@@ -60,10 +60,10 @@ describe('useSearch', () => {
             needs_concentration: false,
             is_ritual: false,
             description: 'A bright streak flashes...',
-            higher_levels: 'When you cast this spell...',
-          },
-        ],
-      },
+            higher_levels: 'When you cast this spell...'
+          }
+        ]
+      }
     }
 
     mockApiFetch.mockResolvedValue(mockData)
@@ -110,8 +110,8 @@ describe('useSearch', () => {
       expect.objectContaining({
         query: expect.objectContaining({
           q: 'dragon',
-          types: ['spells', 'items'],
-        }),
+          types: ['spells', 'items']
+        })
       })
     )
   })
@@ -127,8 +127,8 @@ describe('useSearch', () => {
       expect.objectContaining({
         query: expect.objectContaining({
           q: 'sword',
-          limit: 5,
-        }),
+          limit: 5
+        })
       })
     )
   })

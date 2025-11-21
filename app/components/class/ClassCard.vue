@@ -70,18 +70,35 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/classes/${characterClass.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/classes/${characterClass.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="space-y-3">
         <!-- Type, Hit Die, and Ability Badges -->
         <div class="flex items-center gap-2 flex-wrap">
-          <UBadge :color="typeBadgeColor" variant="subtle" size="sm">
+          <UBadge
+            :color="typeBadgeColor"
+            variant="subtle"
+            size="sm"
+          >
             {{ typeBadgeText }}
           </UBadge>
-          <UBadge v-if="characterClass.primary_ability" color="info" variant="soft" size="sm">
+          <UBadge
+            v-if="characterClass.primary_ability"
+            color="info"
+            variant="soft"
+            size="sm"
+          >
             🎯 {{ characterClass.primary_ability.code }}
           </UBadge>
-          <UBadge v-if="characterClass.spellcasting_ability" color="primary" variant="soft" size="sm">
+          <UBadge
+            v-if="characterClass.spellcasting_ability"
+            color="primary"
+            variant="soft"
+            size="sm"
+          >
             ✨ {{ characterClass.spellcasting_ability.name }}
           </UBadge>
         </div>
@@ -94,11 +111,20 @@ const truncatedDescription = computed(() => {
         <!-- Quick Stats -->
         <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
           <div class="flex items-center gap-1">
-            <UIcon name="i-heroicons-heart" class="w-4 h-4" />
+            <UIcon
+              name="i-heroicons-heart"
+              class="w-4 h-4"
+            />
             <span>Hit Die: {{ hitDieText }}</span>
           </div>
-          <div v-if="isBaseClass && characterClass.subclasses && characterClass.subclasses.length > 0" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-users" class="w-4 h-4" />
+          <div
+            v-if="isBaseClass && characterClass.subclasses && characterClass.subclasses.length > 0"
+            class="flex items-center gap-1"
+          >
+            <UIcon
+              name="i-heroicons-users"
+              class="w-4 h-4"
+            />
             <span>{{ characterClass.subclasses.length }} {{ characterClass.subclasses.length === 1 ? 'Subclass' : 'Subclasses' }}</span>
           </div>
         </div>

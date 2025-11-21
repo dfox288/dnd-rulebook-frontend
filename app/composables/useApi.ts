@@ -15,7 +15,7 @@ export const useApi = () => {
    * Base URL is '/api' - relative to current origin
    */
   const apiFetch = $fetch.create({
-    baseURL: '/api',  // Nitro routes (works in both SSR and CSR)
+    baseURL: '/api', // Nitro routes (works in both SSR and CSR)
     onRequest({ options }) {
       // Add any auth headers here if needed in the future
       // options.headers = {

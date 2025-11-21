@@ -36,11 +36,17 @@ const truncatedDescription = computed(() => {
       <!-- Script & Speakers -->
       <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
         <div class="flex items-center gap-1">
-          <UIcon name="i-heroicons-pencil-square" class="w-4 h-4" />
+          <UIcon
+            name="i-heroicons-pencil-square"
+            class="w-4 h-4"
+          />
           <span>{{ language.script }} Script</span>
         </div>
         <div class="flex items-center gap-1">
-          <UIcon name="i-heroicons-user-group" class="w-4 h-4" />
+          <UIcon
+            name="i-heroicons-user-group"
+            class="w-4 h-4"
+          />
           <span>{{ language.typical_speakers }}</span>
         </div>
       </div>

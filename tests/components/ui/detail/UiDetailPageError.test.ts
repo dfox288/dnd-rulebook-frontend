@@ -61,7 +61,7 @@ describe('UiDetailPageError', () => {
       ...mountOptions
     })
 
-    expect(wrapper.text()).toContain("The race you're looking for doesn't exist or has been removed.")
+    expect(wrapper.text()).toContain('The race you\'re looking for doesn\'t exist or has been removed.')
   })
 
   it('renders back button with default link', () => {
@@ -133,6 +133,6 @@ describe('UiDetailPageError', () => {
     })
 
     // Should lowercase entity type in message
-    expect(wrapper.text()).toContain("The item you're looking for")
+    expect(wrapper.text()).toContain('The item you\'re looking for')
   })
 })

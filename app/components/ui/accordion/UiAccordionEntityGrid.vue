@@ -25,10 +25,16 @@ defineProps<Props>()
         class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
       >
         <div class="font-medium text-gray-900 dark:text-gray-100">{{ entity.name }}</div>
-        <div v-if="entity.speed" class="text-sm text-gray-600 dark:text-gray-400">
+        <div
+          v-if="entity.speed"
+          class="text-sm text-gray-600 dark:text-gray-400"
+        >
           Speed: {{ entity.speed }} ft
         </div>
-        <div v-else-if="entity.description" class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+        <div
+          v-else-if="entity.description"
+          class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1"
+        >
           {{ entity.description }}
         </div>
       </NuxtLink>

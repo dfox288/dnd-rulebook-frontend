@@ -48,12 +48,12 @@ const isSubrace = computed(() => {
  */
 const getSizeColor = (sizeCode: string): string => {
   const colors: Record<string, string> = {
-    'T': 'neutral',    // Tiny - gray
-    'S': 'success',    // Small - green
-    'M': 'info',       // Medium - blue
-    'L': 'warning',    // Large - amber
-    'H': 'error',      // Huge - red
-    'G': 'error'       // Gargantuan - red
+    T: 'neutral', // Tiny - gray
+    S: 'success', // Small - green
+    M: 'info', // Medium - blue
+    L: 'warning', // Large - amber
+    H: 'error', // Huge - red
+    G: 'error' // Gargantuan - red
   }
   return colors[sizeCode] || 'info'
 }
@@ -82,7 +82,10 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/races/${race.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/races/${race.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="flex flex-col h-full">
         <!-- Top content -->
@@ -98,10 +101,20 @@ const truncatedDescription = computed(() => {
               {{ race.size.name }}
             </UBadge>
             <!-- Only show race/subrace badge if we have parent_race data (from detail API) -->
-            <UBadge v-if="race.parent_race !== undefined && isSubrace" color="primary" variant="subtle" size="md">
+            <UBadge
+              v-if="race.parent_race !== undefined && isSubrace"
+              color="primary"
+              variant="subtle"
+              size="md"
+            >
               Subrace
             </UBadge>
-            <UBadge v-else-if="race.parent_race !== undefined && !isSubrace" color="info" variant="subtle" size="md">
+            <UBadge
+              v-else-if="race.parent_race !== undefined && !isSubrace"
+              color="info"
+              variant="subtle"
+              size="md"
+            >
               Race
             </UBadge>
           </div>
@@ -114,17 +127,36 @@ const truncatedDescription = computed(() => {
           <!-- Quick Stats (with badges) -->
           <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
             <div class="flex items-center gap-1">
-              <UIcon name="i-heroicons-bolt" class="w-4 h-4" />
+              <UIcon
+                name="i-heroicons-bolt"
+                class="w-4 h-4"
+              />
               <span>{{ race.speed }} ft</span>
             </div>
-            <div v-if="abilityModifiers" class="flex items-center gap-1">
-              <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
+            <div
+              v-if="abilityModifiers"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-arrow-trending-up"
+                class="w-4 h-4"
+              />
               <span>{{ abilityModifiers }}</span>
             </div>
-            <UBadge v-if="race.traits && race.traits.length > 0" color="success" variant="soft" size="sm">
+            <UBadge
+              v-if="race.traits && race.traits.length > 0"
+              color="success"
+              variant="soft"
+              size="sm"
+            >
               👥 {{ race.traits.length }} {{ race.traits.length === 1 ? 'Trait' : 'Traits' }}
             </UBadge>
-            <UBadge v-if="race.subraces && race.subraces.length > 0" color="primary" variant="soft" size="sm">
+            <UBadge
+              v-if="race.subraces && race.subraces.length > 0"
+              color="primary"
+              variant="soft"
+              size="sm"
+            >
               🌟 {{ race.subraces.length }} {{ race.subraces.length === 1 ? 'Subrace' : 'Subraces' }}
             </UBadge>
           </div>

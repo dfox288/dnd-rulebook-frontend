@@ -6,7 +6,7 @@ describe('SourceCard', () => {
   const mockSource = {
     id: 1,
     code: 'PHB',
-    name: "Player's Handbook",
+    name: 'Player\'s Handbook',
     publisher: 'Wizards of the Coast',
     publication_year: 2014,
     edition: '5e'
@@ -17,7 +17,7 @@ describe('SourceCard', () => {
       props: { source: mockSource }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('renders source code badge', async () => {
@@ -99,7 +99,7 @@ describe('SourceCard', () => {
 
     const text = wrapper.text()
     expect(text).toContain('PHB')
-    expect(text).toContain("Player's Handbook")
+    expect(text).toContain('Player\'s Handbook')
     expect(text).toContain('2014')
     expect(text).toContain('Wizards of the Coast')
   })

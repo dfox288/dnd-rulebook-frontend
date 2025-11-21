@@ -9,7 +9,11 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div v-if="sources && sources.length > 0" data-testid="source-container" class="p-4">
+  <div
+    v-if="sources && sources.length > 0"
+    data-testid="source-container"
+    class="p-4"
+  >
     <div class="flex flex-wrap gap-3">
       <div
         v-for="source in sources"
@@ -17,7 +21,10 @@ defineProps<Props>()
         class="flex items-center gap-2"
         data-testid="source-badge"
       >
-        <UBadge color="gray" variant="soft">
+        <UBadge
+          color="gray"
+          variant="soft"
+        >
           {{ source.name }}
         </UBadge>
         <span class="text-sm text-gray-600 dark:text-gray-400">

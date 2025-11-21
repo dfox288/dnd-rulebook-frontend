@@ -16,7 +16,10 @@ defineProps<Props>()
 
 <template>
   <div>
-    <div v-if="badges && badges.length > 0" class="flex items-center gap-2 mb-3 flex-wrap">
+    <div
+      v-if="badges && badges.length > 0"
+      class="flex items-center gap-2 mb-3 flex-wrap"
+    >
       <UBadge
         v-for="(badge, index) in badges"
         :key="index"

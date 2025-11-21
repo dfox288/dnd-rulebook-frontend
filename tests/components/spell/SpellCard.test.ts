@@ -20,7 +20,7 @@ describe('SpellCard', () => {
     is_ritual: false,
     needs_concentration: false,
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '241' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '241' }
     ]
   }
 
@@ -223,7 +223,7 @@ describe('SpellCard', () => {
       props: { spell: mockSpell }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles spells without sources', async () => {
@@ -246,7 +246,7 @@ describe('SpellCard', () => {
     expect(text).toContain('Fireball')
     expect(text).toContain('1 action')
     expect(text).toContain('150 feet')
-    expect(text).toContain("Player's Handbook")
+    expect(text).toContain('Player\'s Handbook')
   })
 
   it('applies correct level color for cantrips', async () => {

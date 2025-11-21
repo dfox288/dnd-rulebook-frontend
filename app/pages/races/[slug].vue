@@ -17,7 +17,7 @@ const { data: race, error, pending } = await useAsyncData(
 // Set page meta
 useSeoMeta({
   title: computed(() => race.value ? `${race.value.name} - D&D 5e Race` : 'Race - D&D 5e Compendium'),
-  description: computed(() => race.value?.description?.substring(0, 160) || `Learn about the ${race.value?.name} race in D&D 5e`),
+  description: computed(() => race.value?.description?.substring(0, 160) || `Learn about the ${race.value?.name} race in D&D 5e`)
 })
 
 /**
@@ -32,15 +32,27 @@ const sizeColor = computed(() => {
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <UiDetailPageLoading v-if="pending" entityType="race" />
+    <UiDetailPageLoading
+      v-if="pending"
+      entity-type="race"
+    />
 
     <!-- Error State -->
-    <UiDetailPageError v-else-if="error" entityType="Race" />
+    <UiDetailPageError
+      v-else-if="error"
+      entity-type="Race"
+    />
 
     <!-- Race Content -->
-    <div v-else-if="race" class="space-y-8">
+    <div
+      v-else-if="race"
+      class="space-y-8"
+    >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink to="/races" label="Back to Races" />
+      <UiBackLink
+        to="/races"
+        label="Back to Races"
+      />
 
       <!-- Header -->
       <UiDetailPageHeader
@@ -67,7 +79,9 @@ const sizeColor = computed(() => {
           </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">{{ race.description }}</p>
+          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+            {{ race.description }}
+          </p>
         </div>
       </UCard>
 
@@ -151,10 +165,16 @@ const sizeColor = computed(() => {
         type="multiple"
       >
         <!-- Parent Race Slot -->
-        <template v-if="race.parent_race" #parent>
+        <template
+          v-if="race.parent_race"
+          #parent
+        >
           <div class="p-4">
             <NuxtLink :to="`/races/${race.parent_race.slug}`">
-              <UButton color="primary" variant="soft">
+              <UButton
+                color="primary"
+                variant="soft"
+              >
                 View {{ race.parent_race.name }}
               </UButton>
             </NuxtLink>
@@ -162,37 +182,70 @@ const sizeColor = computed(() => {
         </template>
 
         <!-- Subraces Slot -->
-        <template v-if="race.subraces && race.subraces.length > 0" #subraces>
-          <UiAccordionEntityGrid :entities="race.subraces" basePath="/races" />
+        <template
+          v-if="race.subraces && race.subraces.length > 0"
+          #subraces
+        >
+          <UiAccordionEntityGrid
+            :entities="race.subraces"
+            base-path="/races"
+          />
         </template>
 
         <!-- Traits Slot -->
-        <template v-if="race.traits && race.traits.length > 0" #traits>
-          <UiAccordionTraitsList :traits="race.traits" borderColor="primary-500" />
+        <template
+          v-if="race.traits && race.traits.length > 0"
+          #traits
+        >
+          <UiAccordionTraitsList
+            :traits="race.traits"
+            border-color="primary-500"
+          />
         </template>
 
         <!-- Languages Slot -->
-        <template v-if="race.languages && race.languages.length > 0" #languages>
-          <UiAccordionBadgeList :items="race.languages.map(l => l.language)" color="neutral" />
+        <template
+          v-if="race.languages && race.languages.length > 0"
+          #languages
+        >
+          <UiAccordionBadgeList
+            :items="race.languages.map(l => l.language)"
+            color="neutral"
+          />
         </template>
 
         <!-- Modifiers Slot -->
-        <template v-if="race.modifiers && race.modifiers.length > 0" #modifiers>
+        <template
+          v-if="race.modifiers && race.modifiers.length > 0"
+          #modifiers
+        >
           <UiModifiersDisplay :modifiers="race.modifiers" />
         </template>
 
         <!-- Proficiencies Slot -->
-        <template v-if="race.proficiencies && race.proficiencies.length > 0" #proficiencies>
+        <template
+          v-if="race.proficiencies && race.proficiencies.length > 0"
+          #proficiencies
+        >
           <UiAccordionBulletList :items="race.proficiencies" />
         </template>
 
         <!-- Spells Slot -->
-        <template v-if="race.spells && race.spells.length > 0" #spells>
-          <UiAccordionBadgeList :items="race.spells" color="primary" />
+        <template
+          v-if="race.spells && race.spells.length > 0"
+          #spells
+        >
+          <UiAccordionBadgeList
+            :items="race.spells"
+            color="primary"
+          />
         </template>
 
         <!-- Conditions Slot -->
-        <template v-if="race.conditions && race.conditions.length > 0" #conditions>
+        <template
+          v-if="race.conditions && race.conditions.length > 0"
+          #conditions
+        >
           <div class="p-4 space-y-3">
             <div
               v-for="conditionRelation in race.conditions"
@@ -200,17 +253,26 @@ const sizeColor = computed(() => {
               class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
             >
               <div class="flex items-start gap-3">
-                <UBadge color="warning" variant="soft">
+                <UBadge
+                  color="warning"
+                  variant="soft"
+                >
                   {{ conditionRelation.condition.name }}
                 </UBadge>
                 <div class="flex-1">
-                  <div v-if="conditionRelation.effect_type" class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                  <div
+                    v-if="conditionRelation.effect_type"
+                    class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1"
+                  >
                     Effect: {{ conditionRelation.effect_type.charAt(0).toUpperCase() + conditionRelation.effect_type.slice(1) }}
                   </div>
                   <div class="text-sm text-gray-700 dark:text-gray-300">
                     {{ conditionRelation.condition.description }}
                   </div>
-                  <div v-if="conditionRelation.description" class="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">
+                  <div
+                    v-if="conditionRelation.description"
+                    class="text-sm text-gray-600 dark:text-gray-400 mt-2 italic"
+                  >
                     {{ conditionRelation.description }}
                   </div>
                 </div>
@@ -220,18 +282,27 @@ const sizeColor = computed(() => {
         </template>
 
         <!-- Source Slot -->
-        <template v-if="race.sources && race.sources.length > 0" #source>
+        <template
+          v-if="race.sources && race.sources.length > 0"
+          #source
+        >
           <UiSourceDisplay :sources="race.sources" />
         </template>
 
         <!-- Tags Slot -->
-        <template v-if="race.tags && race.tags.length > 0" #tags>
+        <template
+          v-if="race.tags && race.tags.length > 0"
+          #tags
+        >
           <UiTagsDisplay :tags="race.tags" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel :data="race" title="Race Data" />
+      <JsonDebugPanel
+        :data="race"
+        title="Race Data"
+      />
     </div>
   </div>
 </template>

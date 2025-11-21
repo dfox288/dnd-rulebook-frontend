@@ -13,12 +13,12 @@ const props = defineProps<Props>()
  */
 const rarityColor = computed(() => {
   const colors: Record<string, string> = {
-    'common': 'neutral',      // Gray - most basic
-    'uncommon': 'success',     // Green - slightly better
-    'rare': 'info',            // Blue - notable
-    'very rare': 'primary',    // Teal/cyan - very valuable
-    'legendary': 'warning',    // Orange/amber - extremely rare
-    'artifact': 'error'        // Red - unique/powerful
+    'common': 'neutral', // Gray - most basic
+    'uncommon': 'success', // Green - slightly better
+    'rare': 'info', // Blue - notable
+    'very rare': 'primary', // Teal/cyan - very valuable
+    'legendary': 'warning', // Orange/amber - extremely rare
+    'artifact': 'error' // Red - unique/powerful
   }
   return colors[props.item.rarity?.toLowerCase()] || 'neutral'
 })
@@ -31,8 +31,8 @@ const getItemTypeColor = (typeName: string): string => {
   const type = typeName.toLowerCase()
 
   // Weapons (red/error)
-  if (type.includes('weapon') || type.includes('sword') || type.includes('axe') ||
-      type.includes('bow') || type.includes('dagger')) {
+  if (type.includes('weapon') || type.includes('sword') || type.includes('axe')
+    || type.includes('bow') || type.includes('dagger')) {
     return 'error'
   }
 
@@ -52,8 +52,8 @@ const getItemTypeColor = (typeName: string): string => {
   }
 
   // Wondrous Items & Magical (primary/teal)
-  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet') ||
-      type.includes('staff') || type.includes('rod') || type.includes('wand')) {
+  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet')
+    || type.includes('staff') || type.includes('rod') || type.includes('wand')) {
     return 'primary'
   }
 
@@ -94,7 +94,10 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/items/${item.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/items/${item.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="flex flex-col h-full">
         <!-- Top content -->
@@ -109,7 +112,11 @@ const truncatedDescription = computed(() => {
             >
               {{ item.item_type.name }}
             </UBadge>
-            <UBadge :color="rarityColor" variant="subtle" size="md">
+            <UBadge
+              :color="rarityColor"
+              variant="subtle"
+              size="md"
+            >
               {{ rarityText }}
             </UBadge>
           </div>
@@ -121,18 +128,40 @@ const truncatedDescription = computed(() => {
 
           <!-- Quick Stats (with Magic/Attunement) -->
           <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
-            <div v-if="costText" class="flex items-center gap-1">
-              <UIcon name="i-heroicons-currency-dollar" class="w-4 h-4" />
+            <div
+              v-if="costText"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-currency-dollar"
+                class="w-4 h-4"
+              />
               <span>{{ costText }}</span>
             </div>
-            <div v-if="item.weight" class="flex items-center gap-1">
-              <UIcon name="i-heroicons-scale" class="w-4 h-4" />
+            <div
+              v-if="item.weight"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-scale"
+                class="w-4 h-4"
+              />
               <span>{{ item.weight }} lb</span>
             </div>
-            <UBadge v-if="item.is_magic" color="primary" variant="soft" size="sm">
+            <UBadge
+              v-if="item.is_magic"
+              color="primary"
+              variant="soft"
+              size="sm"
+            >
               ✨ Magic
             </UBadge>
-            <UBadge v-if="item.requires_attunement" color="info" variant="soft" size="sm">
+            <UBadge
+              v-if="item.requires_attunement"
+              color="info"
+              variant="soft"
+              size="sm"
+            >
               🔮 Attunement
             </UBadge>
           </div>

@@ -26,10 +26,10 @@
  * getSpellLevelColor(9) // 'error' (max level)
  */
 export function getSpellLevelColor(level: number): string {
-  if (level === 0) return 'primary'   // Cantrip
-  if (level <= 3) return 'info'        // Low-level (1-3)
-  if (level <= 6) return 'warning'     // Mid-level (4-6)
-  return 'error'                       // High-level (7-9)
+  if (level === 0) return 'primary' // Cantrip
+  if (level <= 3) return 'info' // Low-level (1-3)
+  if (level <= 6) return 'warning' // Mid-level (4-6)
+  return 'error' // High-level (7-9)
 }
 
 /**
@@ -54,14 +54,14 @@ export function getSpellLevelColor(level: number): string {
  */
 export function getSpellSchoolColor(schoolCode: string): string {
   const colorMap: Record<string, string> = {
-    'A': 'info',      // Abjuration
-    'C': 'primary',   // Conjuration
-    'D': 'info',      // Divination
-    'EN': 'warning',  // Enchantment
-    'EV': 'error',    // Evocation
-    'I': 'primary',   // Illusion
-    'N': 'neutral',   // Necromancy
-    'T': 'success',   // Transmutation
+    A: 'info', // Abjuration
+    C: 'primary', // Conjuration
+    D: 'info', // Divination
+    EN: 'warning', // Enchantment
+    EV: 'error', // Evocation
+    I: 'primary', // Illusion
+    N: 'neutral', // Necromancy
+    T: 'success' // Transmutation
   }
   return colorMap[schoolCode] || 'info'
 }
@@ -87,12 +87,12 @@ export function getSpellSchoolColor(schoolCode: string): string {
  */
 export function getItemRarityColor(rarity: string): string {
   const colors: Record<string, string> = {
-    'common': 'neutral',        // Gray - most basic
-    'uncommon': 'success',      // Green - slightly better
-    'rare': 'info',             // Blue - notable
-    'very rare': 'primary',     // Teal/cyan - very valuable
-    'legendary': 'warning',     // Orange/amber - extremely rare
-    'artifact': 'error'         // Red - unique/powerful
+    'common': 'neutral', // Gray - most basic
+    'uncommon': 'success', // Green - slightly better
+    'rare': 'info', // Blue - notable
+    'very rare': 'primary', // Teal/cyan - very valuable
+    'legendary': 'warning', // Orange/amber - extremely rare
+    'artifact': 'error' // Red - unique/powerful
   }
   return colors[rarity.toLowerCase()] || 'neutral'
 }
@@ -120,9 +120,9 @@ export function getItemTypeColor(typeName: string): string {
   const type = typeName.toLowerCase()
 
   // Weapons (red/error)
-  if (type.includes('weapon') || type.includes('sword') || type.includes('axe') ||
-      type.includes('bow') || type.includes('dagger') || type.includes('mace') ||
-      type.includes('spear') || type.includes('hammer')) {
+  if (type.includes('weapon') || type.includes('sword') || type.includes('axe')
+    || type.includes('bow') || type.includes('dagger') || type.includes('mace')
+    || type.includes('spear') || type.includes('hammer')) {
     return 'error'
   }
 
@@ -142,8 +142,8 @@ export function getItemTypeColor(typeName: string): string {
   }
 
   // Wondrous Items & Magical (primary/teal)
-  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet') ||
-      type.includes('staff') || type.includes('rod') || type.includes('wand')) {
+  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet')
+    || type.includes('staff') || type.includes('rod') || type.includes('wand')) {
     return 'primary'
   }
 
@@ -172,12 +172,12 @@ export function getItemTypeColor(typeName: string): string {
  */
 export function getSizeColor(sizeCode: string): string {
   const colors: Record<string, string> = {
-    'T': 'neutral',    // Tiny - gray
-    'S': 'success',    // Small - green
-    'M': 'info',       // Medium - blue (standard humanoid)
-    'L': 'warning',    // Large - amber
-    'H': 'error',      // Huge - red
-    'G': 'error'       // Gargantuan - red
+    T: 'neutral', // Tiny - gray
+    S: 'success', // Small - green
+    M: 'info', // Medium - blue (standard humanoid)
+    L: 'warning', // Large - amber
+    H: 'error', // Huge - red
+    G: 'error' // Gargantuan - red
   }
   return colors[sizeCode] || 'info'
 }

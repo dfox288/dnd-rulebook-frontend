@@ -52,12 +52,22 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/backgrounds/${background.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/backgrounds/${background.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="space-y-3">
         <!-- Feature Badge -->
-        <div v-if="background.feature_name" class="flex items-center gap-2 flex-wrap">
-          <UBadge color="purple" variant="soft" size="sm">
+        <div
+          v-if="background.feature_name"
+          class="flex items-center gap-2 flex-wrap"
+        >
+          <UBadge
+            color="purple"
+            variant="soft"
+            size="sm"
+          >
             {{ background.feature_name }}
           </UBadge>
         </div>
@@ -69,19 +79,38 @@ const truncatedDescription = computed(() => {
 
         <!-- Quick Stats -->
         <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
-          <div v-if="skillsSummary" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-academic-cap" class="w-4 h-4" />
+          <div
+            v-if="skillsSummary"
+            class="flex items-center gap-1"
+          >
+            <UIcon
+              name="i-heroicons-academic-cap"
+              class="w-4 h-4"
+            />
             <span>{{ skillsSummary }}</span>
           </div>
-          <div v-if="languagesCount" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-language" class="w-4 h-4" />
+          <div
+            v-if="languagesCount"
+            class="flex items-center gap-1"
+          >
+            <UIcon
+              name="i-heroicons-language"
+              class="w-4 h-4"
+            />
             <span>{{ languagesCount }} {{ languagesCount === 1 ? 'Language' : 'Languages' }}</span>
           </div>
         </div>
 
         <!-- Tool Proficiencies -->
-        <div v-if="background.tool_proficiencies && background.tool_proficiencies.length > 0" class="flex items-center gap-2">
-          <UBadge color="blue" variant="soft" size="xs">
+        <div
+          v-if="background.tool_proficiencies && background.tool_proficiencies.length > 0"
+          class="flex items-center gap-2"
+        >
+          <UBadge
+            color="blue"
+            variant="soft"
+            size="xs"
+          >
             🔧 {{ background.tool_proficiencies.length }} Tools
           </UBadge>
         </div>

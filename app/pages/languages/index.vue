@@ -39,11 +39,11 @@ const totalResults = computed(() => languages.value.length)
 // SEO meta tags
 useSeoMeta({
   title: 'Languages - D&D 5e Compendium',
-  description: 'Browse all D&D 5e languages including Common, Elvish, Dwarvish, and more.',
+  description: 'Browse all D&D 5e languages including Common, Elvish, Dwarvish, and more.'
 })
 
 useHead({
-  title: 'Languages - D&D 5e Compendium',
+  title: 'Languages - D&D 5e Compendium'
 })
 </script>
 
@@ -66,7 +66,10 @@ useHead({
         placeholder="Search languages..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -121,6 +124,9 @@ useHead({
     <UiBackLink />
 
     <!-- JSON Debug Panel -->
-    <JsonDebugPanel :data="{ languages, total: totalResults }" title="Languages Data" />
+    <JsonDebugPanel
+      :data="{ languages, total: totalResults }"
+      title="Languages Data"
+    />
   </div>
 </template>

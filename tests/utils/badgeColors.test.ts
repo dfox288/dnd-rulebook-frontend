@@ -34,14 +34,14 @@ describe('badgeColors', () => {
 
   describe('getSpellSchoolColor', () => {
     it('returns correct colors for each school', () => {
-      expect(getSpellSchoolColor('A')).toBe('info')      // Abjuration
-      expect(getSpellSchoolColor('C')).toBe('primary')   // Conjuration
-      expect(getSpellSchoolColor('D')).toBe('info')      // Divination
-      expect(getSpellSchoolColor('EN')).toBe('warning')  // Enchantment
-      expect(getSpellSchoolColor('EV')).toBe('error')    // Evocation
-      expect(getSpellSchoolColor('I')).toBe('primary')   // Illusion
-      expect(getSpellSchoolColor('N')).toBe('neutral')   // Necromancy
-      expect(getSpellSchoolColor('T')).toBe('success')   // Transmutation
+      expect(getSpellSchoolColor('A')).toBe('info') // Abjuration
+      expect(getSpellSchoolColor('C')).toBe('primary') // Conjuration
+      expect(getSpellSchoolColor('D')).toBe('info') // Divination
+      expect(getSpellSchoolColor('EN')).toBe('warning') // Enchantment
+      expect(getSpellSchoolColor('EV')).toBe('error') // Evocation
+      expect(getSpellSchoolColor('I')).toBe('primary') // Illusion
+      expect(getSpellSchoolColor('N')).toBe('neutral') // Necromancy
+      expect(getSpellSchoolColor('T')).toBe('success') // Transmutation
     })
 
     it('returns info for unknown schools', () => {
@@ -126,12 +126,12 @@ describe('badgeColors', () => {
 
   describe('getSizeColor', () => {
     it('returns correct colors for each size', () => {
-      expect(getSizeColor('T')).toBe('neutral')   // Tiny
-      expect(getSizeColor('S')).toBe('success')   // Small
-      expect(getSizeColor('M')).toBe('info')      // Medium
-      expect(getSizeColor('L')).toBe('warning')   // Large
-      expect(getSizeColor('H')).toBe('error')     // Huge
-      expect(getSizeColor('G')).toBe('error')     // Gargantuan
+      expect(getSizeColor('T')).toBe('neutral') // Tiny
+      expect(getSizeColor('S')).toBe('success') // Small
+      expect(getSizeColor('M')).toBe('info') // Medium
+      expect(getSizeColor('L')).toBe('warning') // Large
+      expect(getSizeColor('H')).toBe('error') // Huge
+      expect(getSizeColor('G')).toBe('error') // Gargantuan
     })
 
     it('returns info for unknown sizes', () => {

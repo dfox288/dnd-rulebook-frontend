@@ -114,7 +114,7 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   const queryParams = computed(() => {
     const params: Record<string, any> = {
       per_page: config.perPage ?? 24,
-      page: currentPage.value,
+      page: currentPage.value
     }
 
     // Add search if present
@@ -139,7 +139,7 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
       return result
     },
     {
-      watch: [queryParams]  // Refetch when params change
+      watch: [queryParams] // Refetch when params change
     }
   )
 
@@ -150,8 +150,8 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
 
   // Check if any filters are active
   const hasActiveFilters = computed(() => {
-    return searchQuery.value.trim() !== '' ||
-           Object.keys(config.queryBuilder.value).length > 0
+    return searchQuery.value.trim() !== ''
+      || Object.keys(config.queryBuilder.value).length > 0
   })
 
   // Clear base filters (search + page)
@@ -183,11 +183,11 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   // SEO setup
   useSeoMeta({
     title: config.seo.title,
-    description: config.seo.description,
+    description: config.seo.description
   })
 
   useHead({
-    title: config.seo.title,
+    title: config.seo.title
   })
 
   return {

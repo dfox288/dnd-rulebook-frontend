@@ -52,7 +52,7 @@ export const useSearch = () => {
 
       // Fetch results from Nitro API proxy
       const data = await apiFetch<SearchResult>('/search', {
-        query: params,
+        query: params
       })
 
       results.value = data
@@ -77,6 +77,6 @@ export const useSearch = () => {
     loading,
     error,
     search,
-    clearResults,
+    clearResults
   }
 }

@@ -16,7 +16,7 @@ const {
 } = useEntityList({
   endpoint: '/feats',
   cacheKey: 'feats-list',
-  queryBuilder: computed(() => ({})),  // No custom filters for feats
+  queryBuilder: computed(() => ({})), // No custom filters for feats
   seo: {
     title: 'Feats - D&D 5e Compendium',
     description: 'Browse all D&D 5e feats and character abilities.'
@@ -46,7 +46,10 @@ const perPage = 24
         placeholder="Search feats..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -93,7 +96,6 @@ const perPage = 24
           v-for="feat in feats"
           :key="feat.id"
           :feat="feat"
-          
         />
       </div>
 

@@ -53,7 +53,10 @@ useHead({
         placeholder="Search item types..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -99,6 +102,9 @@ useHead({
     </div>
 
     <UiBackLink />
-    <JsonDebugPanel :data="{ itemTypes, total: totalResults }" title="Item Types Data" />
+    <JsonDebugPanel
+      :data="{ itemTypes, total: totalResults }"
+      title="Item Types Data"
+    />
   </div>
 </template>

@@ -53,7 +53,10 @@ useHead({
         placeholder="Search spell schools..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -99,6 +102,9 @@ useHead({
     </div>
 
     <UiBackLink />
-    <JsonDebugPanel :data="{ spellSchools, total: totalResults }" title="Spell Schools Data" />
+    <JsonDebugPanel
+      :data="{ spellSchools, total: totalResults }"
+      title="Spell Schools Data"
+    />
   </div>
 </template>

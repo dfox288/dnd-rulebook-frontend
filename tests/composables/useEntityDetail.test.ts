@@ -16,8 +16,8 @@ describe('useEntityDetail', () => {
       endpoint: '/spells',
       cacheKey: 'spell',
       seo: {
-        titleTemplate: (name) => `${name} - Test`,
-        descriptionExtractor: (entity) => entity.description,
+        titleTemplate: name => `${name} - Test`,
+        descriptionExtractor: entity => entity.description,
         fallbackTitle: 'Fallback Title'
       }
     }

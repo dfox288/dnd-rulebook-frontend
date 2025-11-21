@@ -33,7 +33,7 @@ describe('RaceCard', () => {
     ],
     description: 'Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.',
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '21' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '21' }
     ]
   }
 
@@ -335,7 +335,7 @@ describe('RaceCard', () => {
       props: { race: mockRace }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles races without sources', async () => {
@@ -398,7 +398,7 @@ describe('RaceCard', () => {
       traits: [{ id: 1, name: 'Darkvision' }],
       subraces: [{ id: 2, slug: 'high-elf', name: 'High Elf' }],
       description: 'Full race description',
-      sources: [{ code: 'PHB', name: "Player's Handbook", pages: '21' }]
+      sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '21' }]
     }
     const wrapper = await mountSuspended(RaceCard, {
       props: { race: fullRace }

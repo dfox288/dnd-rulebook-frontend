@@ -23,7 +23,11 @@ defineProps<Props>()
 
       <!-- Category and Subcategory Badges -->
       <div class="flex items-center gap-2 flex-wrap">
-        <UBadge color="neutral" variant="solid" size="md">
+        <UBadge
+          color="neutral"
+          variant="solid"
+          size="md"
+        >
           {{ proficiencyType.category }}
         </UBadge>
         <UBadge
@@ -38,7 +42,11 @@ defineProps<Props>()
 
       <!-- Type Badge -->
       <div class="flex items-center gap-2">
-        <UBadge color="neutral" variant="soft" size="xs">
+        <UBadge
+          color="neutral"
+          variant="soft"
+          size="xs"
+        >
           Proficiency Type
         </UBadge>
       </div>

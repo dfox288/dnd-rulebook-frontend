@@ -30,7 +30,7 @@ describe('ClassCard', () => {
     ],
     description: 'Wizards are supreme magic-users, defined and united as a class by the spells they cast.',
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '112' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '112' }
     ]
   }
 
@@ -247,7 +247,7 @@ describe('ClassCard', () => {
       props: { characterClass: mockClass }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles classes without sources', async () => {
@@ -347,7 +347,7 @@ describe('ClassCard', () => {
       subclasses: [{ id: 1, name: 'Subclass' }],
       proficiencies: [{ id: 1, name: 'Daggers' }],
       description: 'Full description',
-      sources: [{ code: 'PHB', name: "Player's Handbook", pages: '112' }]
+      sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '112' }]
     }
     const wrapper = await mountSuspended(ClassCard, {
       props: { characterClass: fullClass }

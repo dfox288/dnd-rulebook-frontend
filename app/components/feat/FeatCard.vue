@@ -61,12 +61,20 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <NuxtLink :to="`/feats/${feat.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/feats/${feat.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="space-y-3">
         <!-- Feat Type Badge -->
         <div class="flex items-center gap-2 flex-wrap">
-          <UBadge v-if="hasPrerequisites" color="red" variant="soft" size="md">
+          <UBadge
+            v-if="hasPrerequisites"
+            color="red"
+            variant="soft"
+            size="md"
+          >
             Prerequisites
           </UBadge>
         </div>
@@ -78,19 +86,38 @@ const truncatedDescription = computed(() => {
 
         <!-- Quick Stats -->
         <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
-          <div v-if="prerequisitesSummary" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-exclamation-circle" class="w-4 h-4" />
+          <div
+            v-if="prerequisitesSummary"
+            class="flex items-center gap-1"
+          >
+            <UIcon
+              name="i-heroicons-exclamation-circle"
+              class="w-4 h-4"
+            />
             <span>{{ prerequisitesSummary }}</span>
           </div>
-          <div v-if="modifiersCount" class="flex items-center gap-1">
-            <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
+          <div
+            v-if="modifiersCount"
+            class="flex items-center gap-1"
+          >
+            <UIcon
+              name="i-heroicons-arrow-trending-up"
+              class="w-4 h-4"
+            />
             <span>{{ modifiersCount }} {{ modifiersCount === 1 ? 'Bonus' : 'Bonuses' }}</span>
           </div>
         </div>
 
         <!-- No Prerequisites Badge -->
-        <div v-if="!hasPrerequisites" class="flex items-center gap-2">
-          <UBadge color="green" variant="soft" size="xs">
+        <div
+          v-if="!hasPrerequisites"
+          class="flex items-center gap-2"
+        >
+          <UBadge
+            color="green"
+            variant="soft"
+            size="xs"
+          >
             ✅ No Prerequisites
           </UBadge>
         </div>

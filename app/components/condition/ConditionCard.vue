@@ -31,7 +31,11 @@ defineProps<Props>()
 
       <!-- Category Badge -->
       <div class="flex items-center gap-2">
-        <UBadge color="neutral" variant="soft" size="xs">
+        <UBadge
+          color="neutral"
+          variant="soft"
+          size="xs"
+        >
           Condition
         </UBadge>
       </div>

@@ -76,7 +76,10 @@ const perPage = 24
         placeholder="Search races..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -148,7 +151,6 @@ const perPage = 24
           v-for="race in races"
           :key="race.id"
           :race="race"
-          
         />
       </div>
 

@@ -19,7 +19,7 @@ describe('FeatCard', () => {
     ],
     description: 'You have practiced casting spells in the midst of combat, learning techniques that grant you the following benefits.',
     sources: [
-      { code: 'PHB', name: "Player's Handbook", pages: '170' }
+      { code: 'PHB', name: 'Player\'s Handbook', pages: '170' }
     ]
   }
 
@@ -221,7 +221,7 @@ describe('FeatCard', () => {
       props: { feat: mockFeat }
     })
 
-    expect(wrapper.text()).toContain("Player's Handbook")
+    expect(wrapper.text()).toContain('Player\'s Handbook')
   })
 
   it('handles feats without sources', async () => {
@@ -262,7 +262,7 @@ describe('FeatCard', () => {
       prerequisites: [{ ability_score: { id: 1, code: 'STR', name: 'Strength' }, minimum_value: 13 }],
       modifiers: [{ modifier_type: 'ability_score', ability_score: { id: 1, code: 'STR', name: 'Strength' }, value: 1 }],
       description: 'Full description',
-      sources: [{ code: 'PHB', name: "Player's Handbook", pages: '170' }]
+      sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '170' }]
     }
     const wrapper = await mountSuspended(FeatCard, {
       props: { feat: fullFeat }

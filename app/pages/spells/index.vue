@@ -26,7 +26,7 @@ const levelOptions = [
   { label: '6th Level', value: 6 },
   { label: '7th Level', value: 7 },
   { label: '8th Level', value: 8 },
-  { label: '9th Level', value: 9 },
+  { label: '9th Level', value: 9 }
 ]
 
 // School filter options
@@ -108,7 +108,10 @@ const perPage = 24
         placeholder="Search spells..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -153,7 +156,10 @@ const perPage = 24
       </div>
 
       <!-- Active Filter Chips -->
-      <div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 pt-2">
+      <div
+        v-if="hasActiveFilters"
+        class="flex flex-wrap items-center gap-2 pt-2"
+      >
         <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
         <UButton
           v-if="selectedLevel !== null"
@@ -189,10 +195,20 @@ const perPage = 24
     <UiListSkeletonCards v-if="loading" />
 
     <!-- Error State -->
-    <UiListErrorState v-else-if="error" :error="error" entity-name="Spells" @retry="refresh" />
+    <UiListErrorState
+      v-else-if="error"
+      :error="error"
+      entity-name="Spells"
+      @retry="refresh"
+    />
 
     <!-- Empty State -->
-    <UiListEmptyState v-else-if="spells.length === 0" entity-name="spells" :has-filters="hasActiveFilters" @clear-filters="clearFilters" />
+    <UiListEmptyState
+      v-else-if="spells.length === 0"
+      entity-name="spells"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
+    />
 
     <!-- Results -->
     <div v-else>
@@ -214,7 +230,11 @@ const perPage = 24
       </div>
 
       <!-- Pagination -->
-      <UiListPagination v-model="currentPage" :total="totalResults" :items-per-page="perPage" />
+      <UiListPagination
+        v-model="currentPage"
+        :total="totalResults"
+        :items-per-page="perPage"
+      />
     </div>
 
     <!-- Back to Home -->

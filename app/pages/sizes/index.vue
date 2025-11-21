@@ -39,11 +39,11 @@ const totalResults = computed(() => sizes.value.length)
 // SEO meta tags
 useSeoMeta({
   title: 'Creature Sizes - D&D 5e Compendium',
-  description: 'Browse all D&D 5e creature size categories from Tiny to Gargantuan.',
+  description: 'Browse all D&D 5e creature size categories from Tiny to Gargantuan.'
 })
 
 useHead({
-  title: 'Creature Sizes - D&D 5e Compendium',
+  title: 'Creature Sizes - D&D 5e Compendium'
 })
 </script>
 
@@ -66,7 +66,10 @@ useHead({
         placeholder="Search sizes..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -121,6 +124,9 @@ useHead({
     <UiBackLink />
 
     <!-- JSON Debug Panel -->
-    <JsonDebugPanel :data="{ sizes, total: totalResults }" title="Sizes Data" />
+    <JsonDebugPanel
+      :data="{ sizes, total: totalResults }"
+      title="Sizes Data"
+    />
   </div>
 </template>

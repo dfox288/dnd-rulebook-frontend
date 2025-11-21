@@ -31,14 +31,14 @@ const truncatedDescription = computed(() => {
  */
 const getSchoolColor = (schoolCode: string): string => {
   const colorMap: Record<string, string> = {
-    'A': 'info',      // Abjuration (protection)
-    'C': 'primary',   // Conjuration (summoning)
-    'D': 'info',      // Divination (knowledge)
-    'EN': 'warning',  // Enchantment (mind)
-    'EV': 'error',    // Evocation (energy/damage)
-    'I': 'primary',   // Illusion (deception)
-    'N': 'neutral',   // Necromancy (death)
-    'T': 'success',   // Transmutation (transformation)
+    A: 'info', // Abjuration (protection)
+    C: 'primary', // Conjuration (summoning)
+    D: 'info', // Divination (knowledge)
+    EN: 'warning', // Enchantment (mind)
+    EV: 'error', // Evocation (energy/damage)
+    I: 'primary', // Illusion (deception)
+    N: 'neutral', // Necromancy (death)
+    T: 'success' // Transmutation (transformation)
   }
   return colorMap[schoolCode] || 'info'
 }
@@ -48,15 +48,18 @@ const getSchoolColor = (schoolCode: string): string => {
  * Using NuxtUI v4 color names
  */
 const getLevelColor = (level: number): string => {
-  if (level === 0) return 'primary'   // Cantrip - primary
-  if (level <= 3) return 'info'       // Low level - info
-  if (level <= 6) return 'warning'    // Mid level - warning
-  return 'error'                      // High level - error
+  if (level === 0) return 'primary' // Cantrip - primary
+  if (level <= 3) return 'info' // Low level - info
+  if (level <= 6) return 'warning' // Mid level - warning
+  return 'error' // High level - error
 }
 </script>
 
 <template>
-  <NuxtLink :to="`/spells/${spell.slug}`" class="block h-full">
+  <NuxtLink
+    :to="`/spells/${spell.slug}`"
+    class="block h-full"
+  >
     <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
       <div class="flex flex-col h-full">
         <!-- Top content -->
@@ -88,17 +91,33 @@ const getLevelColor = (level: number): string => {
           <!-- Quick Stats (with Concentration) -->
           <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
             <div class="flex items-center gap-1">
-              <UIcon name="i-heroicons-clock" class="w-4 h-4" />
+              <UIcon
+                name="i-heroicons-clock"
+                class="w-4 h-4"
+              />
               <span>{{ spell.casting_time }}</span>
             </div>
             <div class="flex items-center gap-1">
-              <UIcon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
+              <UIcon
+                name="i-heroicons-arrow-trending-up"
+                class="w-4 h-4"
+              />
               <span>{{ spell.range }}</span>
             </div>
-            <UBadge v-if="spell.needs_concentration" color="warning" variant="soft" size="sm">
+            <UBadge
+              v-if="spell.needs_concentration"
+              color="warning"
+              variant="soft"
+              size="sm"
+            >
               ⭐ Concentration
             </UBadge>
-            <UBadge v-if="spell.is_ritual" color="info" variant="soft" size="sm">
+            <UBadge
+              v-if="spell.is_ritual"
+              color="info"
+              variant="soft"
+              size="sm"
+            >
               🔮 Ritual
             </UBadge>
           </div>

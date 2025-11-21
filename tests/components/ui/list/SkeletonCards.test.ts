@@ -37,7 +37,7 @@ describe('UiListSkeletonCards', () => {
 
       const cards = wrapper.findAll('.animate-pulse')
       expect(cards.length).toBeGreaterThan(0)
-      cards.forEach(card => {
+      cards.forEach((card) => {
         expect(card.classes()).toContain('animate-pulse')
       })
     })

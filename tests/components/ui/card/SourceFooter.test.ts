@@ -32,13 +32,13 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
           ]
         }
       })
 
       const text = wrapper.text()
-      expect(text).toContain("Player's Handbook")
+      expect(text).toContain('Player\'s Handbook')
       expect(text).toContain('p.127')
     })
 
@@ -46,7 +46,7 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
           ]
         }
       })
@@ -59,7 +59,7 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
           ]
         }
       })
@@ -83,14 +83,14 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
           ]
         }
       })
 
       const boldElement = wrapper.find('.font-medium')
       expect(boldElement.exists()).toBe(true)
-      expect(boldElement.text()).toBe("Player's Handbook")
+      expect(boldElement.text()).toBe('Player\'s Handbook')
     })
   })
 
@@ -99,19 +99,19 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' },
-            { code: 'XGE', name: "Xanathar's Guide to Everything", pages: '52' },
-            { code: 'TCE', name: "Tasha's Cauldron of Everything", pages: '98' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' },
+            { code: 'XGE', name: 'Xanathar\'s Guide to Everything', pages: '52' },
+            { code: 'TCE', name: 'Tasha\'s Cauldron of Everything', pages: '98' }
           ]
         }
       })
 
       const text = wrapper.text()
-      expect(text).toContain("Player's Handbook")
+      expect(text).toContain('Player\'s Handbook')
       expect(text).toContain('p.127')
-      expect(text).toContain("Xanathar's Guide to Everything")
+      expect(text).toContain('Xanathar\'s Guide to Everything')
       expect(text).toContain('p.52')
-      expect(text).toContain("Tasha's Cauldron of Everything")
+      expect(text).toContain('Tasha\'s Cauldron of Everything')
       expect(text).toContain('p.98')
     })
 
@@ -119,8 +119,8 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' },
-            { code: 'XGE', name: "Xanathar's Guide to Everything", pages: '52' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' },
+            { code: 'XGE', name: 'Xanathar\'s Guide to Everything', pages: '52' }
           ]
         }
       })
@@ -134,8 +134,8 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' },
-            { code: 'XGE', name: "Xanathar's Guide to Everything", pages: '52' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' },
+            { code: 'XGE', name: 'Xanathar\'s Guide to Everything', pages: '52' }
           ]
         }
       })
@@ -149,9 +149,9 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' },
-            { code: 'XGE', name: "Xanathar's Guide to Everything", pages: '52' },
-            { code: 'TCE', name: "Tasha's Cauldron of Everything", pages: '98' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' },
+            { code: 'XGE', name: 'Xanathar\'s Guide to Everything', pages: '52' },
+            { code: 'TCE', name: 'Tasha\'s Cauldron of Everything', pages: '98' }
           ]
         }
       })
@@ -167,7 +167,7 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127-129' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127-129' }
           ]
         }
       })
@@ -179,7 +179,7 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'LONG', name: "A Very Long Sourcebook Name That Goes On And On", pages: '1' }
+            { code: 'LONG', name: 'A Very Long Sourcebook Name That Goes On And On', pages: '1' }
           ]
         }
       })
@@ -192,8 +192,8 @@ describe('UiCardSourceFooter', () => {
       const wrapper = mount(SourceFooter, {
         props: {
           sources: [
-            { code: 'PHB', name: "Player's Handbook", pages: '127' },
-            { code: 'XGE', name: "Xanathar's Guide to Everything", pages: '52' }
+            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' },
+            { code: 'XGE', name: 'Xanathar\'s Guide to Everything', pages: '52' }
           ]
         }
       })

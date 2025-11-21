@@ -26,9 +26,15 @@ const handleRetry = () => {
 </script>
 
 <template>
-  <div data-testid="error-container" class="py-12">
+  <div
+    data-testid="error-container"
+    class="py-12"
+  >
     <UCard>
-      <div data-testid="error-content" class="text-center">
+      <div
+        data-testid="error-content"
+        class="text-center"
+      >
         <UIcon
           data-testid="error-icon"
           name="i-heroicons-exclamation-triangle"
@@ -37,8 +43,14 @@ const handleRetry = () => {
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           {{ heading }}
         </h2>
-        <p class="text-gray-600 dark:text-gray-400">{{ errorMessage }}</p>
-        <UButton color="primary" class="mt-4" @click="handleRetry">
+        <p class="text-gray-600 dark:text-gray-400">
+          {{ errorMessage }}
+        </p>
+        <UButton
+          color="primary"
+          class="mt-4"
+          @click="handleRetry"
+        >
           Try Again
         </UButton>
       </div>

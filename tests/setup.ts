@@ -4,8 +4,8 @@ import { vi } from 'vitest'
 global.useRuntimeConfig = vi.fn(() => ({
   public: {
     apiBase: 'http://localhost:8080/api/v1',
-    apiDocsUrl: 'http://localhost:8080/docs/api',
-  },
+    apiDocsUrl: 'http://localhost:8080/docs/api'
+  }
 }))
 
 // Mock $fetch globally

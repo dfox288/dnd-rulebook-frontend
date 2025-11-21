@@ -32,9 +32,15 @@ const handleClearFilters = () => {
 </script>
 
 <template>
-  <div data-testid="empty-state-container" class="py-12">
+  <div
+    data-testid="empty-state-container"
+    class="py-12"
+  >
     <UCard>
-      <div data-testid="empty-state-inner" class="text-center py-8">
+      <div
+        data-testid="empty-state-inner"
+        class="text-center py-8"
+      >
         <UIcon
           data-testid="empty-state-icon"
           name="i-heroicons-magnifying-glass"

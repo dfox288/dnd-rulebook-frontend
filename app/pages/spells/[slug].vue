@@ -9,8 +9,8 @@ const { data: spell, loading, error, refresh } = useEntityDetail({
   endpoint: '/spells',
   cacheKey: 'spell',
   seo: {
-    titleTemplate: (name) => `${name} - D&D 5e Spell`,
-    descriptionExtractor: (spell) => spell.description?.substring(0, 160) || '',
+    titleTemplate: name => `${name} - D&D 5e Spell`,
+    descriptionExtractor: spell => spell.description?.substring(0, 160) || '',
     fallbackTitle: 'Spell - D&D 5e Compendium'
   }
 })
@@ -50,15 +50,27 @@ const spellEffects = computed(() => {
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <UiDetailPageLoading v-if="loading" entityType="spell" />
+    <UiDetailPageLoading
+      v-if="loading"
+      entity-type="spell"
+    />
 
     <!-- Error State -->
-    <UiDetailPageError v-else-if="error" entityType="Spell" />
+    <UiDetailPageError
+      v-else-if="error"
+      entity-type="Spell"
+    />
 
     <!-- Spell Content -->
-    <div v-else-if="spell" class="space-y-8">
+    <div
+      v-else-if="spell"
+      class="space-y-8"
+    >
       <!-- Breadcrumb -->
-      <UiBackLink to="/spells" label="Back to Spells" />
+      <UiBackLink
+        to="/spells"
+        label="Back to Spells"
+      />
 
       <!-- Header -->
       <UiDetailPageHeader
@@ -89,7 +101,9 @@ const spellEffects = computed(() => {
           </h2>
         </template>
         <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">{{ spell.description }}</p>
+          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+            {{ spell.description }}
+          </p>
         </div>
       </UCard>
 
@@ -135,45 +149,74 @@ const spellEffects = computed(() => {
         type="multiple"
       >
         <!-- Higher Levels Slot -->
-        <template v-if="spell.higher_levels" #higher-levels>
+        <template
+          v-if="spell.higher_levels"
+          #higher-levels
+        >
           <div class="p-4">
-            <p class="text-gray-700 dark:text-gray-300">{{ spell.higher_levels }}</p>
+            <p class="text-gray-700 dark:text-gray-300">
+              {{ spell.higher_levels }}
+            </p>
           </div>
         </template>
 
         <!-- Effects Slot -->
-        <template v-if="spellEffects.length > 0" #effects>
+        <template
+          v-if="spellEffects.length > 0"
+          #effects
+        >
           <UiAccordionDamageEffects :effects="spellEffects" />
         </template>
 
         <!-- Saving Throws Slot -->
-        <template v-if="spell.saving_throws && spell.saving_throws.length > 0" #saving-throws>
+        <template
+          v-if="spell.saving_throws && spell.saving_throws.length > 0"
+          #saving-throws
+        >
           <UiAccordionSavingThrows :saving-throws="spell.saving_throws" />
         </template>
 
         <!-- Classes Slot -->
-        <template v-if="spell.classes && spell.classes.length > 0" #classes>
-          <UiAccordionBadgeList :items="spell.classes" color="primary" />
+        <template
+          v-if="spell.classes && spell.classes.length > 0"
+          #classes
+        >
+          <UiAccordionBadgeList
+            :items="spell.classes"
+            color="primary"
+          />
         </template>
 
         <!-- Random Tables Slot -->
-        <template v-if="spell.random_tables && spell.random_tables.length > 0" #random-tables>
+        <template
+          v-if="spell.random_tables && spell.random_tables.length > 0"
+          #random-tables
+        >
           <UiAccordionRandomTablesList :tables="spell.random_tables" />
         </template>
 
         <!-- Source Slot -->
-        <template v-if="spell.sources && spell.sources.length > 0" #source>
+        <template
+          v-if="spell.sources && spell.sources.length > 0"
+          #source
+        >
           <UiSourceDisplay :sources="spell.sources" />
         </template>
 
         <!-- Tags Slot -->
-        <template v-if="spell.tags && spell.tags.length > 0" #tags>
+        <template
+          v-if="spell.tags && spell.tags.length > 0"
+          #tags
+        >
           <UiTagsDisplay :tags="spell.tags" />
         </template>
       </UAccordion>
 
       <!-- JSON Debug Panel -->
-      <JsonDebugPanel :data="spell" title="Spell Data" />
+      <JsonDebugPanel
+        :data="spell"
+        title="Spell Data"
+      />
     </div>
   </div>
 </template>

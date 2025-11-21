@@ -39,11 +39,11 @@ const totalResults = computed(() => damageTypes.value.length)
 // SEO meta tags
 useSeoMeta({
   title: 'Damage Types - D&D 5e Compendium',
-  description: 'Browse all D&D 5e damage types including Fire, Cold, Lightning, and more.',
+  description: 'Browse all D&D 5e damage types including Fire, Cold, Lightning, and more.'
 })
 
 useHead({
-  title: 'Damage Types - D&D 5e Compendium',
+  title: 'Damage Types - D&D 5e Compendium'
 })
 </script>
 
@@ -66,7 +66,10 @@ useHead({
         placeholder="Search damage types..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -121,6 +124,9 @@ useHead({
     <UiBackLink />
 
     <!-- JSON Debug Panel -->
-    <JsonDebugPanel :data="{ damageTypes, total: totalResults }" title="Damage Types Data" />
+    <JsonDebugPanel
+      :data="{ damageTypes, total: totalResults }"
+      title="Damage Types Data"
+    />
   </div>
 </template>

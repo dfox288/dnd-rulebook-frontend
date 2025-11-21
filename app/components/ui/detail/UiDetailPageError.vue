@@ -22,7 +22,10 @@ const messageText = computed(() => {
   <div class="py-12">
     <UCard>
       <div class="text-center">
-        <UIcon name="i-heroicons-exclamation-triangle" class="w-12 h-12 mx-auto mb-4 text-red-500" />
+        <UIcon
+          name="i-heroicons-exclamation-triangle"
+          class="w-12 h-12 mx-auto mb-4 text-red-500"
+        />
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
           {{ headingText }}
         </h2>

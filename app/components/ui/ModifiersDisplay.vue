@@ -36,7 +36,11 @@ const formatChoiceDescription = (
 </script>
 
 <template>
-  <div v-if="modifiers && modifiers.length > 0" data-testid="modifiers-container" class="p-4 space-y-3">
+  <div
+    v-if="modifiers && modifiers.length > 0"
+    data-testid="modifiers-container"
+    class="p-4 space-y-3"
+  >
     <div
       v-for="modifier in modifiers"
       :key="modifier.id"
@@ -44,8 +48,17 @@ const formatChoiceDescription = (
       class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
     >
       <!-- Choice Modifier Display -->
-      <div v-if="modifier.is_choice" class="space-y-2">
-        <UBadge color="info" variant="soft" size="sm">CHOICE</UBadge>
+      <div
+        v-if="modifier.is_choice"
+        class="space-y-2"
+      >
+        <UBadge
+          color="info"
+          variant="soft"
+          size="sm"
+        >
+          CHOICE
+        </UBadge>
         <div class="font-medium text-gray-900 dark:text-gray-100">
           {{ formatChoiceDescription(modifier.choice_count, modifier.choice_constraint, modifier.modifier_category) }}
         </div>
@@ -64,7 +77,10 @@ const formatChoiceDescription = (
             {{ modifier.modifier_category }}: {{ formatValue(modifier.value) }}
           </template>
         </div>
-        <div v-if="modifier.condition" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <div
+          v-if="modifier.condition"
+          class="text-sm text-gray-600 dark:text-gray-400 mt-1"
+        >
           {{ modifier.condition }}
         </div>
       </div>

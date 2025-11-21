@@ -66,7 +66,10 @@ useHead({
         placeholder="Search ability scores..."
         :ui="{ icon: { trailing: { pointer: '' } } }"
       >
-        <template v-if="searchQuery" #trailing>
+        <template
+          v-if="searchQuery"
+          #trailing
+        >
           <UButton
             color="gray"
             variant="link"
@@ -121,6 +124,9 @@ useHead({
     <UiBackLink />
 
     <!-- JSON Debug Panel -->
-    <JsonDebugPanel :data="{ abilityScores, total: totalResults }" title="Ability Scores Data" />
+    <JsonDebugPanel
+      :data="{ abilityScores, total: totalResults }"
+      title="Ability Scores Data"
+    />
   </div>
 </template>

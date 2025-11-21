@@ -52,32 +52,32 @@ async function copyPage() {
 <template>
   <UButtonGroup>
     <UButton
-        label="Copy page"
-        :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
-        color="neutral"
-        variant="outline"
-        :loading="isCopying"
-        :ui="{
+      label="Copy page"
+      :icon="copied ? 'i-lucide-copy-check' : 'i-lucide-copy'"
+      color="neutral"
+      variant="outline"
+      :loading="isCopying"
+      :ui="{
         leadingIcon: [copied ? 'text-primary' : 'text-neutral', 'size-3.5']
       }"
-        @click="copyPage"
+      @click="copyPage"
     />
     <UDropdownMenu
-        :items="items"
-        :content="{
+      :items="items"
+      :content="{
         align: 'end',
         side: 'bottom',
         sideOffset: 8
       }"
-        :ui="{
+      :ui="{
         content: 'w-48'
       }"
     >
       <UButton
-          icon="i-lucide-chevron-down"
-          size="sm"
-          color="neutral"
-          variant="outline"
+        icon="i-lucide-chevron-down"
+        size="sm"
+        color="neutral"
+        variant="outline"
       />
     </UDropdownMenu>
   </UButtonGroup>
