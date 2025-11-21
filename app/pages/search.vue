@@ -180,7 +180,7 @@ useHead({
           v-for="option in filterOptions"
           :key="option.value"
           :variant="selectedTypes.length === 0 && option.value === 'all' ? 'solid' : selectedTypes.includes(option.value as EntityType) ? 'solid' : 'soft'"
-          :color="selectedTypes.length === 0 && option.value === 'all' ? 'primary' : selectedTypes.includes(option.value as EntityType) ? 'primary' : 'gray'"
+          :color="selectedTypes.length === 0 && option.value === 'all' ? 'primary' : selectedTypes.includes(option.value as EntityType) ? 'primary' : 'neutral'"
           :disabled="option.disabled"
           @click="() => {
             if (option.value === 'all') {

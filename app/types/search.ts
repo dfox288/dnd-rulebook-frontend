@@ -4,8 +4,11 @@
  * Used by: SearchInput.vue, search.vue, useSearch composable
  */
 
-// Re-export entity types for convenience
-export type { Spell, Item } from './api/entities'
+import type { Spell as SpellEntity, Item as ItemEntity } from './api/entities'
+
+// Re-export entity types
+export type Spell = SpellEntity
+export type Item = ItemEntity
 
 /**
  * Entity type identifiers for search filtering

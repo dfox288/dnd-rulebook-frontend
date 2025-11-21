@@ -61,10 +61,7 @@ useHead({
     <div class="mb-6">
       <UInput
         v-model="searchQuery"
-        icon="i-heroicons-magnifying-glass"
-        size="lg"
         placeholder="Search languages..."
-        :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template
           v-if="searchQuery"
@@ -73,7 +70,6 @@ useHead({
           <UButton
             color="neutral"
             variant="link"
-            icon="i-heroicons-x-mark-20-solid"
             :padded="false"
             @click="searchQuery = ''"
           />

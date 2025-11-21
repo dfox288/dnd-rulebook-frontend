@@ -109,10 +109,7 @@ const perPage = 24
       <!-- Search input -->
       <UInput
         v-model="searchQuery"
-        icon="i-heroicons-magnifying-glass"
-        size="lg"
         placeholder="Search items..."
-        :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template
           v-if="searchQuery"
@@ -121,7 +118,6 @@ const perPage = 24
           <UButton
             color="neutral"
             variant="link"
-            icon="i-heroicons-x-mark-20-solid"
             :padded="false"
             @click="searchQuery = ''"
           />

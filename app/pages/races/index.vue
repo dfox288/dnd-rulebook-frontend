@@ -71,10 +71,7 @@ const perPage = 24
     <div class="mb-6 space-y-4">
       <UInput
         v-model="searchQuery"
-        icon="i-heroicons-magnifying-glass"
-        size="lg"
         placeholder="Search races..."
-        :ui="{ icon: { trailing: { pointer: '' } } }"
       >
         <template
           v-if="searchQuery"
@@ -83,7 +80,6 @@ const perPage = 24
           <UButton
             color="neutral"
             variant="link"
-            icon="i-heroicons-x-mark-20-solid"
             :padded="false"
             @click="searchQuery = ''"
           />
@@ -95,7 +91,7 @@ const perPage = 24
         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Size:</span>
         <div class="flex gap-2 flex-wrap">
           <UButton
-            :color="selectedSize === '' ? 'primary' : 'gray'"
+            :color="selectedSize === '' ? 'primary' : 'neutral'"
             :variant="selectedSize === '' ? 'solid' : 'soft'"
             size="sm"
             @click="selectedSize = ''"
@@ -105,7 +101,7 @@ const perPage = 24
           <UButton
             v-for="size in sizes"
             :key="size.id"
-            :color="selectedSize === size.code ? 'primary' : 'gray'"
+            :color="selectedSize === size.code ? 'primary' : 'neutral'"
             :variant="selectedSize === size.code ? 'solid' : 'soft'"
             size="sm"
             @click="selectedSize = size.code"
