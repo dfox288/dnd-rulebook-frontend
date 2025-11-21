@@ -1,23 +1,5 @@
 <script setup lang="ts">
-import type { Source } from '~/types'
-
-interface Spell {
-  id: number
-  name: string
-  slug: string
-  level: number
-  school?: {
-    id: number
-    code: string
-    name: string
-  }
-  casting_time: string
-  range: string
-  description: string
-  is_ritual: boolean
-  needs_concentration: boolean
-  sources?: Source[]
-}
+import type { Spell } from '~/types'
 
 interface Props {
   spell: Spell
