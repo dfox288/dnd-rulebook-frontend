@@ -40,7 +40,8 @@ const navItems = [
   { label: 'Races', to: '/races' },
   { label: 'Classes', to: '/classes' },
   { label: 'Backgrounds', to: '/backgrounds' },
-  { label: 'Feats', to: '/feats' }
+  { label: 'Feats', to: '/feats' },
+  { label: 'Sources', to: '/sources' }
 ]
 </script>
 
