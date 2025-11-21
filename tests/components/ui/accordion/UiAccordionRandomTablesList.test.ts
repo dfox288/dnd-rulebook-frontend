@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { mount } from '@vue/test-utils'
 import UiAccordionRandomTablesList from '~/components/ui/accordion/UiAccordionRandomTablesList.vue'
 
 describe('UiAccordionRandomTablesList', () => {
@@ -54,8 +54,8 @@ describe('UiAccordionRandomTablesList', () => {
     }
   ]
 
-  it('renders table name and dice type', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('renders table name and dice type', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -63,29 +63,29 @@ describe('UiAccordionRandomTablesList', () => {
     expect(wrapper.text()).toContain('(d10)')
   })
 
-  it('displays table description when present', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('displays table description when present', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
     expect(wrapper.text()).toContain('Choose your performance style')
   })
 
-  it('hides description when null', async () => {
+  it('hides description when null', () => {
     const tableWithoutDescription = [{
       ...mockTables[0],
       description: null
     }]
 
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: tableWithoutDescription }
     })
 
     expect(wrapper.find('p').exists()).toBe(false)
   })
 
-  it('renders table header correctly', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('renders table header correctly', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -95,8 +95,8 @@ describe('UiAccordionRandomTablesList', () => {
     expect(headers[1].text()).toContain('Result')
   })
 
-  it('renders all table entries', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('renders all table entries', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -104,8 +104,8 @@ describe('UiAccordionRandomTablesList', () => {
     expect(rows).toHaveLength(3)
   })
 
-  it('formats single roll correctly', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('formats single roll correctly', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -114,8 +114,8 @@ describe('UiAccordionRandomTablesList', () => {
     expect(rollCell.text()).toBe('1')
   })
 
-  it('formats roll range correctly', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('formats roll range correctly', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -124,8 +124,8 @@ describe('UiAccordionRandomTablesList', () => {
     expect(rollCell.text()).toBe('3-5')
   })
 
-  it('renders result text correctly', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('renders result text correctly', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -134,8 +134,8 @@ describe('UiAccordionRandomTablesList', () => {
     expect(resultCell.text()).toBe('Actor')
   })
 
-  it('handles multiple tables with proper spacing', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('handles multiple tables with proper spacing', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockMultipleTables }
     })
 
@@ -147,16 +147,16 @@ describe('UiAccordionRandomTablesList', () => {
     expect(wrapper.text()).toContain('Personality Trait')
   })
 
-  it('handles empty tables array gracefully', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('handles empty tables array gracefully', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: [] }
     })
 
     expect(wrapper.find('table').exists()).toBe(false)
   })
 
-  it('maintains sort order', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('maintains sort order', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
@@ -166,16 +166,16 @@ describe('UiAccordionRandomTablesList', () => {
     expect(results).toEqual(['Actor', 'Dancer', 'Fire-eater'])
   })
 
-  it('component mounts without errors', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('component mounts without errors', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: { tables: mockTables }
     })
 
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('accepts borderColor prop', async () => {
-    const wrapper = await mountSuspended(UiAccordionRandomTablesList, {
+  it('accepts borderColor prop', () => {
+    const wrapper = mount(UiAccordionRandomTablesList, {
       props: {
         tables: mockTables,
         borderColor: 'purple-500'
