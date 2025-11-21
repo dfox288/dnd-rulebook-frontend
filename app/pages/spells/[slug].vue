@@ -138,6 +138,11 @@ const spellEffects = computed(() => {
             slot: 'effects',
             defaultOpen: false
           }] : []),
+          ...(spell.saving_throws && spell.saving_throws.length > 0 ? [{
+            label: 'Saving Throws',
+            slot: 'saving-throws',
+            defaultOpen: false
+          }] : []),
           ...(spell.classes && spell.classes.length > 0 ? [{
             label: 'Available to Classes',
             slot: 'classes',
@@ -166,6 +171,11 @@ const spellEffects = computed(() => {
         <!-- Effects Slot -->
         <template v-if="spellEffects.length > 0" #effects>
           <UiAccordionDamageEffects :effects="spellEffects" />
+        </template>
+
+        <!-- Saving Throws Slot -->
+        <template v-if="spell.saving_throws && spell.saving_throws.length > 0" #saving-throws>
+          <UiAccordionSavingThrows :saving-throws="spell.saving_throws" />
         </template>
 
         <!-- Classes Slot -->
