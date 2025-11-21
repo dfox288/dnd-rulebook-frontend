@@ -70,12 +70,11 @@ const componentsText = computed(() => {
 })
 
 /**
- * Get damage effects grouped by spell slot level
+ * Get all effects (damage and other) grouped by spell slot level
  */
-const damageEffects = computed(() => {
+const spellEffects = computed(() => {
   if (!spell.value?.effects) return []
   return spell.value.effects
-    .filter((e: any) => e.effect_type === 'damage')
     .sort((a: any, b: any) => a.min_spell_slot - b.min_spell_slot)
 })
 </script>
@@ -134,9 +133,9 @@ const damageEffects = computed(() => {
             slot: 'higher-levels',
             defaultOpen: false
           }] : []),
-          ...(damageEffects.length > 0 ? [{
-            label: 'Damage',
-            slot: 'damage',
+          ...(spellEffects.length > 0 ? [{
+            label: 'Effects',
+            slot: 'effects',
             defaultOpen: false
           }] : []),
           ...(spell.classes && spell.classes.length > 0 ? [{
@@ -159,9 +158,9 @@ const damageEffects = computed(() => {
           </div>
         </template>
 
-        <!-- Damage Slot -->
-        <template v-if="damageEffects.length > 0" #damage>
-          <UiAccordionDamageEffects :effects="damageEffects" />
+        <!-- Effects Slot -->
+        <template v-if="spellEffects.length > 0" #effects>
+          <UiAccordionDamageEffects :effects="spellEffects" />
         </template>
 
         <!-- Classes Slot -->

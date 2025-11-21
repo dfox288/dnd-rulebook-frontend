@@ -174,4 +174,61 @@ describe('UiAccordionDamageEffects', () => {
     expect(wrapper.text()).toContain('Character Level 5+')
     expect(wrapper.text()).not.toContain('Spell Slot Level 0')
   })
+
+  it('renders effects with type "other" (non-damage effects)', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Hit Points',
+            dice_formula: '5d8',
+            min_spell_slot: 1,
+            min_character_level: null
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('Hit Points')
+    expect(wrapper.text()).toContain('5d8')
+    expect(wrapper.text()).toContain('Spell Slot Level 1')
+  })
+
+  it('renders multiple "other" type effects at different spell levels', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Hit Points',
+            dice_formula: '5d8',
+            min_spell_slot: 1,
+            min_character_level: null
+          },
+          {
+            id: 2,
+            description: 'Hit Points',
+            dice_formula: '7d8',
+            min_spell_slot: 3,
+            min_character_level: null
+          },
+          {
+            id: 3,
+            description: 'Hit Points',
+            dice_formula: '9d8',
+            min_spell_slot: 5,
+            min_character_level: null
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('5d8')
+    expect(wrapper.text()).toContain('7d8')
+    expect(wrapper.text()).toContain('9d8')
+    expect(wrapper.text()).toContain('Spell Slot Level 1')
+    expect(wrapper.text()).toContain('Spell Slot Level 3')
+    expect(wrapper.text()).toContain('Spell Slot Level 5')
+  })
 })
