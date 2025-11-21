@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getItemRarityColor, getItemTypeColor } from '~/utils/badgeColors'
+
 const { apiFetch } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
@@ -38,59 +40,19 @@ const rarityText = computed(() => {
 })
 
 /**
- * Get rarity color for badge (NuxtUI v4 semantic colors)
- * Progressive rarity scale from common to artifact
+ * Get rarity color for badge
  */
 const rarityColor = computed(() => {
   if (!item.value) return 'neutral'
-  const colors: Record<string, string> = {
-    common: 'neutral',      // Gray - most basic
-    uncommon: 'success',     // Green - slightly better
-    rare: 'info',            // Blue - notable
-    'very rare': 'primary',  // Teal/cyan - very valuable
-    legendary: 'warning',    // Orange/amber - extremely rare
-    artifact: 'error'        // Red - unique/powerful
-  }
-  return colors[item.value.rarity.toLowerCase()] || 'neutral'
+  return getItemRarityColor(item.value.rarity)
 })
 
 /**
  * Get item type color for badge
- * Color-coded by general category
  */
-const getItemTypeColor = computed(() => {
+const itemTypeColor = computed(() => {
   if (!item.value?.item_type) return 'neutral'
-  const type = item.value.item_type.name.toLowerCase()
-
-  // Weapons (red/error)
-  if (type.includes('weapon') || type.includes('sword') || type.includes('axe') ||
-      type.includes('bow') || type.includes('dagger')) {
-    return 'error'
-  }
-
-  // Armor (info/blue)
-  if (type.includes('armor') || type.includes('shield')) {
-    return 'info'
-  }
-
-  // Tools & Equipment (warning/amber)
-  if (type.includes('tool') || type.includes('kit') || type.includes('instrument')) {
-    return 'warning'
-  }
-
-  // Potions & Consumables (success/green)
-  if (type.includes('potion') || type.includes('scroll') || type.includes('elixir')) {
-    return 'success'
-  }
-
-  // Wondrous Items & Magical (primary/teal)
-  if (type.includes('wondrous') || type.includes('ring') || type.includes('amulet') ||
-      type.includes('staff') || type.includes('rod') || type.includes('wand')) {
-    return 'primary'
-  }
-
-  // Default
-  return 'neutral'
+  return getItemTypeColor(item.value.item_type.name)
 })
 </script>
 
@@ -111,7 +73,7 @@ const getItemTypeColor = computed(() => {
       <UiDetailPageHeader
         :title="item.name"
         :badges="[
-          { label: item.item_type.name, color: getItemTypeColor, variant: 'subtle', size: 'lg' },
+          { label: item.item_type.name, color: itemTypeColor, variant: 'subtle', size: 'lg' },
           { label: rarityText, color: rarityColor, variant: 'subtle', size: 'lg' },
           ...(item.is_magic ? [{ label: '✨ Magic', color: 'primary', variant: 'soft', size: 'sm' }] : []),
           ...(item.requires_attunement ? [{ label: '🔮 Attunement', color: 'info', variant: 'soft', size: 'sm' }] : [])

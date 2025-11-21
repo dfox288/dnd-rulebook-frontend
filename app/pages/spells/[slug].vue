@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getSpellLevelColor, getSpellSchoolColor } from '~/utils/badgeColors'
+
 const route = useRoute()
 const slug = route.params.slug as string
 
@@ -29,33 +31,6 @@ const spellLevelText = computed(() => {
   const suffix = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th']
   return `${spell.value.level}${suffix[spell.value.level]} Level`
 })
-
-/**
- * Get badge color for spell level
- */
-const getLevelColor = (level: number): string => {
-  if (level === 0) return 'primary'
-  if (level <= 3) return 'info'
-  if (level <= 6) return 'warning'
-  return 'error'
-}
-
-/**
- * Get badge color for spell school
- */
-const getSchoolColor = (schoolCode: string): string => {
-  const colorMap: Record<string, string> = {
-    'A': 'info',
-    'C': 'primary',
-    'D': 'info',
-    'EN': 'warning',
-    'EV': 'error',
-    'I': 'primary',
-    'N': 'neutral',
-    'T': 'success',
-  }
-  return colorMap[schoolCode] || 'info'
-}
 
 /**
  * Format components for display
@@ -96,8 +71,8 @@ const spellEffects = computed(() => {
       <UiDetailPageHeader
         :title="spell.name"
         :badges="[
-          { label: spellLevelText, color: getLevelColor(spell.level), variant: 'subtle', size: 'lg' },
-          { label: spell.school.name, color: getSchoolColor(spell.school.code), variant: 'subtle', size: 'lg' },
+          { label: spellLevelText, color: getSpellLevelColor(spell.level), variant: 'subtle', size: 'lg' },
+          { label: spell.school.name, color: getSpellSchoolColor(spell.school.code), variant: 'subtle', size: 'lg' },
           ...(spell.is_ritual ? [{ label: '🔮 Ritual', color: 'info', variant: 'soft', size: 'sm' }] : []),
           ...(spell.needs_concentration ? [{ label: '⭐ Concentration', color: 'warning', variant: 'soft', size: 'sm' }] : [])
         ]"

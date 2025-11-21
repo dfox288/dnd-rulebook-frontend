@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getSizeColor } from '~/utils/badgeColors'
+
 const { apiFetch } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
@@ -19,21 +21,12 @@ useSeoMeta({
 })
 
 /**
- * Get size color based on size code (NuxtUI v4 semantic colors)
+ * Get size color for badge
  */
-const getSizeColor = computed(() => {
+const sizeColor = computed(() => {
   if (!race.value?.size) return 'info'
-  const colors: Record<string, string> = {
-    'T': 'neutral',    // Tiny - gray
-    'S': 'success',    // Small - green
-    'M': 'info',       // Medium - blue
-    'L': 'warning',    // Large - amber
-    'H': 'error',      // Huge - red
-    'G': 'error'       // Gargantuan - red
-  }
-  return colors[race.value.size.code] || 'info'
+  return getSizeColor(race.value.size.code)
 })
-
 </script>
 
 <template>
@@ -53,7 +46,7 @@ const getSizeColor = computed(() => {
       <UiDetailPageHeader
         :title="race.name"
         :badges="[
-          ...(race.size ? [{ label: race.size.name, color: getSizeColor, variant: 'subtle', size: 'lg' }] : []),
+          ...(race.size ? [{ label: race.size.name, color: sizeColor, variant: 'subtle', size: 'lg' }] : []),
           { label: race.parent_race ? 'Subrace' : 'Race', color: race.parent_race ? 'primary' : 'info', variant: 'subtle', size: 'lg' }
         ]"
       />
