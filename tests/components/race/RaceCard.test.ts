@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import type { Race } from '~/types'
 import RaceCard from '~/components/race/RaceCard.vue'
 
 describe('RaceCard', () => {
-  const mockRace = {
+  const mockRace: Race = {
     id: 1,
     name: 'Elf',
     slug: 'elf',
