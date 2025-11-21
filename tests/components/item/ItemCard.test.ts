@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import type { Item } from '~/types'
 import ItemCard from '~/components/item/ItemCard.vue'
 
 describe('ItemCard', () => {
-  const mockItem = {
+  const mockItem: Item = {
     id: 1,
     name: 'Longsword',
     slug: 'longsword',
