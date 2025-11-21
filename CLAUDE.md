@@ -249,6 +249,26 @@ User Request → Understand Requirements → 🔴 WRITE TEST FIRST
 
 ---
 
+## 📝 CHANGELOG UPDATES
+
+**⚠️ MANDATORY:** After completing ANY user-facing feature or fix, update `CHANGELOG.md`:
+
+1. Add entry to the `[Unreleased]` section
+2. Use appropriate category: `Added`, `Changed`, `Fixed`, `Deprecated`, `Removed`, `Security`
+3. Include date in format `(YYYY-MM-DD)`
+4. Be concise but descriptive
+
+**Example:**
+```markdown
+### Added
+- Random tables display for spells (2025-11-21)
+
+### Fixed
+- Query parameter forwarding in item-types API endpoint (2025-11-21)
+```
+
+---
+
 ## 🔴 CRITICAL: Always Commit When Task Complete
 
 **⚠️ MANDATORY WORKFLOW:**
@@ -256,7 +276,8 @@ User Request → Understand Requirements → 🔴 WRITE TEST FIRST
 When you complete ANY task (feature, refactoring, bug fix, etc.), you MUST:
 1. ✅ Verify all tests pass
 2. ✅ Verify pages work in browser (HTTP 200)
-3. ✅ **COMMIT THE WORK IMMEDIATELY**
+3. ✅ **UPDATE CHANGELOG.md** (if user-facing change)
+4. ✅ **COMMIT THE WORK IMMEDIATELY**
 
 **Why This Matters:**
 - Prevents work from being lost
