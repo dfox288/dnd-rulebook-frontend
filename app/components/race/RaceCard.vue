@@ -9,7 +9,13 @@ interface Race {
     code: string
   }
   speed: number
-  parent_race_id?: number
+  parent_race_id?: number | null
+  parent_race?: {
+    id: number
+    slug: string
+    name: string
+    speed: number
+  } | null
   subraces?: Array<{
     id: number
     slug: string
@@ -33,15 +39,10 @@ const props = defineProps<Props>()
 
 /**
  * Check if this is a subrace
- * Subraces don't have their own subraces array, parent races do
+ * A race is a subrace if it has a parent_race object
  */
 const isSubrace = computed(() => {
-  // If parent_race_id exists (from detail page), use it
-  if (props.race.parent_race_id !== undefined) {
-    return props.race.parent_race_id !== null
-  }
-  // Otherwise infer from presence of subraces array (parent races have subraces, subraces don't)
-  return !props.race.subraces || props.race.subraces.length === 0
+  return !!props.race.parent_race
 })
 
 /**
@@ -88,8 +89,8 @@ const truncatedDescription = computed(() => {
       <div class="flex flex-col h-full">
         <!-- Top content -->
         <div class="space-y-3 flex-1">
-          <!-- Size and Race/Subrace Badges -->
-          <div class="flex items-center gap-2 flex-wrap justify-between">
+          <!-- Size Badge -->
+          <div class="flex items-center gap-2 flex-wrap">
             <UBadge
               v-if="race.size"
               :color="getSizeColor(race.size.code)"
@@ -98,10 +99,11 @@ const truncatedDescription = computed(() => {
             >
               {{ race.size.name }}
             </UBadge>
-            <UBadge v-if="isSubrace" color="primary" variant="subtle" size="md">
+            <!-- Only show race/subrace badge if we have parent_race data (from detail API) -->
+            <UBadge v-if="race.parent_race !== undefined && isSubrace" color="primary" variant="subtle" size="md">
               Subrace
             </UBadge>
-            <UBadge v-else color="info" variant="subtle" size="md">
+            <UBadge v-else-if="race.parent_race !== undefined && !isSubrace" color="info" variant="subtle" size="md">
               Race
             </UBadge>
           </div>

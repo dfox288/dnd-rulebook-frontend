@@ -8,7 +8,19 @@ const route = useRoute()
 // Reactive filters - initialize from URL query params
 const searchQuery = ref((route.query.q as string) || '')
 const currentPage = ref(route.query.page ? Number(route.query.page) : 1)
+const selectedSize = ref((route.query.size as string) || '')
 const perPage = 24
+
+// Fetch available sizes
+const { data: sizesResponse } = await useAsyncData(
+  'sizes',
+  async () => {
+    const response = await apiFetch('/sizes')
+    return response
+  }
+)
+
+const sizes = computed(() => sizesResponse.value?.data || [])
 
 // Computed query params for API
 const queryParams = computed(() => {
@@ -19,6 +31,11 @@ const queryParams = computed(() => {
 
   if (searchQuery.value.trim()) {
     params.q = searchQuery.value.trim()
+  }
+
+  // Size filter ready for when backend adds support
+  if (selectedSize.value) {
+    params.size = selectedSize.value
   }
 
   return params
@@ -34,7 +51,7 @@ const { data: racesResponse, pending: loading, error, refresh } = await useAsync
     return response
   },
   {
-    watch: [currentPage, searchQuery]
+    watch: [currentPage, searchQuery, selectedSize]
   }
 )
 
@@ -44,17 +61,18 @@ const meta = computed(() => racesResponse.value?.meta || null)
 const totalResults = computed(() => meta.value?.total || 0)
 const lastPage = computed(() => meta.value?.last_page || 1)
 
-// Reset to page 1 when search changes
-watch(searchQuery, () => {
+// Reset to page 1 when filters change
+watch([searchQuery, selectedSize], () => {
   currentPage.value = 1
 })
 
 // Sync URL query params with filter state
-watch([currentPage, searchQuery], () => {
+watch([currentPage, searchQuery, selectedSize], () => {
   const query: Record<string, any> = {}
 
   if (currentPage.value > 1) query.page = currentPage.value.toString()
   if (searchQuery.value) query.q = searchQuery.value
+  if (selectedSize.value) query.size = selectedSize.value
 
   navigateTo({ query }, { replace: true })
 })
@@ -85,8 +103,8 @@ useHead({
       </p>
     </div>
 
-    <!-- Search -->
-    <div class="mb-6">
+    <!-- Search and Filters -->
+    <div class="mb-6 space-y-4">
       <UInput
         v-model="searchQuery"
         icon="i-heroicons-magnifying-glass"
@@ -104,6 +122,31 @@ useHead({
           />
         </template>
       </UInput>
+
+      <!-- Size Filter -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Size:</span>
+        <div class="flex gap-2 flex-wrap">
+          <UButton
+            :color="selectedSize === '' ? 'primary' : 'gray'"
+            :variant="selectedSize === '' ? 'solid' : 'soft'"
+            size="sm"
+            @click="selectedSize = ''"
+          >
+            All
+          </UButton>
+          <UButton
+            v-for="size in sizes"
+            :key="size.id"
+            :color="selectedSize === size.code ? 'primary' : 'gray'"
+            :variant="selectedSize === size.code ? 'solid' : 'soft'"
+            size="sm"
+            @click="selectedSize = size.code"
+          >
+            {{ size.name }}
+          </UButton>
+        </div>
+      </div>
     </div>
 
     <!-- Loading State -->

@@ -87,7 +87,11 @@
       "Bash(do /usr/bin/curl -s \"http://localhost:3000/$path\" -o /dev/null -w \"$path: %{http_code}\\n\")",
       "Bash(for entity in races classes backgrounds feats)",
       "Bash(do /usr/bin/curl -s \"http://localhost:3000/$entity\" -o /dev/null -w \"$entity list: %{http_code}  \")",
-      "Skill(superpowers:using-superpowers)"
+      "Skill(superpowers:using-superpowers)",
+      "Bash(for entity in spells items races)",
+      "Bash(do echo -n \"$entity: \")",
+      "Bash(echo:*)",
+      "Bash(do curl -s \"http://localhost:3000/$entity\" -o /dev/null -w \"$entity list: %{http_code}\\n\")"
     ],
     "deny": [],
     "ask": []
