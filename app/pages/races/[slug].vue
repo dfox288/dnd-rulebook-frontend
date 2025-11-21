@@ -282,25 +282,7 @@ const showJson = ref(false)
 
         <!-- Modifiers Slot -->
         <template v-if="race.modifiers && race.modifiers.length > 0" #modifiers>
-          <div class="p-4 space-y-3">
-            <div
-              v-for="modifier in race.modifiers"
-              :key="modifier.id"
-              class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800"
-            >
-              <div class="font-medium text-gray-900 dark:text-gray-100">
-                <template v-if="modifier.ability_score">
-                  {{ modifier.ability_score.name }} ({{ modifier.ability_score.code }}): {{ modifier.value > 0 ? '+' : '' }}{{ modifier.value }}
-                </template>
-                <template v-else>
-                  {{ modifier.modifier_category }}: {{ modifier.value > 0 ? '+' : '' }}{{ modifier.value }}
-                </template>
-              </div>
-              <div v-if="modifier.condition" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {{ modifier.condition }}
-              </div>
-            </div>
-          </div>
+          <ModifiersDisplay :modifiers="race.modifiers" />
         </template>
 
         <!-- Proficiencies Slot -->
