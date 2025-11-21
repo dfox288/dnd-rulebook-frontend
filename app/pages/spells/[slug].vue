@@ -153,6 +153,11 @@ const spellEffects = computed(() => {
             slot: 'source',
             defaultOpen: false
           }] : []),
+          ...(spell.random_tables && spell.random_tables.length > 0 ? [{
+            label: 'Random Tables',
+            slot: 'random-tables',
+            defaultOpen: false
+          }] : []),
           ...(spell.tags && spell.tags.length > 0 ? [{
             label: 'Tags',
             slot: 'tags',
@@ -181,6 +186,11 @@ const spellEffects = computed(() => {
         <!-- Classes Slot -->
         <template v-if="spell.classes && spell.classes.length > 0" #classes>
           <UiAccordionBadgeList :items="spell.classes" color="primary" />
+        </template>
+
+        <!-- Random Tables Slot -->
+        <template v-if="spell.random_tables && spell.random_tables.length > 0" #random-tables>
+          <UiAccordionRandomTablesList :random-tables="spell.random_tables" />
         </template>
 
         <!-- Source Slot -->
