@@ -1,17 +1,5 @@
 <script setup lang="ts">
-import type { Source } from '~/types'
-
-interface Background {
-  id: number
-  name: string
-  slug: string
-  skill_proficiencies?: any[]
-  tool_proficiencies?: any[]
-  languages?: any[]
-  feature_name?: string
-  description?: string
-  sources?: Source[]
-}
+import type { Background } from '~/types'
 
 interface Props {
   background: Background
