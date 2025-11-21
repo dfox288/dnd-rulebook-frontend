@@ -1,9 +1,5 @@
 <script setup lang="ts">
-interface Source {
-  code: string
-  name: string
-  pages: string
-}
+import type { Source } from '~/types'
 
 interface Props {
   sources?: Source[]
