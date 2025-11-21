@@ -1,10 +1,10 @@
 # D&D 5e Compendium Frontend - Current Status
 
-**Last Updated:** 2025-11-21 (Card Component Tests Complete)
+**Last Updated:** 2025-11-21 (Empty Stats Card Fix Complete)
 **Status:** ✅ **PRODUCTION-READY**
 **Framework:** Nuxt 4.x + NuxtUI 4.x
 **6 of 6 Entity Types + 10 Reference Pages** (All Complete!)
-**Test Coverage:** 517 tests (241 added for card components)
+**Test Coverage:** 525 tests (all passing)
 
 ---
 
@@ -450,48 +450,48 @@ If you find issues:
 
 ## 🎉 Latest Session Summary (2025-11-21)
 
-### Session: Reference Pages & Navigation (COMPLETE) ✅
-**Focus:** Saving throws, source books, navigation dropdown, three reference pages
+### Session: Empty Stats Card Fix (COMPLETE) ✅
+**Focus:** UI improvement for entities with no quick stats
+
+**Problem:**
+- Items like "acid-absorbing-tattoo" showed empty stats card (no cost/weight)
+- Visual clutter between header and description sections
+
+**Solution:**
+- Added `v-if="stats.length > 0"` to `UiDetailQuickStatsCard` component
+- Component now renders nothing when stats array is empty
+- Followed strict TDD (RED-GREEN-REFACTOR)
 
 **Accomplished:**
-- ✅ Added saving throws display to spell detail pages (10 tests)
-- ✅ Created Sources reference page with search (10 tests)
-- ✅ Implemented scalable navigation dropdown (desktop + mobile)
-- ✅ Added 3 new reference pages: Languages, Sizes, Damage Types
-- ✅ Fixed all failing tests - now 244/244 passing
-- ✅ Created 4 Nitro API proxies for reference endpoints
+- ✅ Wrote 2 failing tests for empty stats array (RED phase)
+- ✅ Implemented 1-line fix: `v-if` conditional (GREEN phase)
+- ✅ Verified all 525 tests passing (REFACTOR phase)
+- ✅ Manual browser verification on 3 test cases
+- ✅ Updated CHANGELOG.md
+- ✅ Created comprehensive handover documentation
 
 **Impact:**
-- **Reference Section:** 1 page → 4 pages (Sources, Languages, Sizes, Damage Types)
-- **Navigation:** Scalable dropdown menu replaces flat list
-- **Data Coverage:** +57 reference items (8 sources + 30 languages + 13 damage types + 6 sizes)
-- **Test Coverage:** +20 tests (244 total, ALL passing)
-- **User Value:** Comprehensive game mechanics reference library
+- **UI Improvement:** Items without cost/weight show clean UI (no empty card)
+- **Automatic Benefit:** All 6 entity types benefit from smarter component
+- **Test Coverage:** +2 tests (525 total, ALL passing)
+- **No Breaking Changes:** Existing pages with stats render identically
 
-**Components Created:**
-- `UiAccordionSavingThrows.vue` (10 tests)
-- `SourceCard.vue` (10 tests)
-- `LanguageCard.vue`, `SizeCard.vue`, `DamageTypeCard.vue` (no tests yet)
+**Files Changed:**
+- `app/components/ui/detail/UiDetailQuickStatsCard.vue` (+1 line)
+- `tests/components/ui/detail/UiDetailQuickStatsCard.test.ts` (+2 tests)
+- `CHANGELOG.md` (documented fix)
 
 **Git Commits:**
-- `22d5250` - Saving throws display
-- `c7bcd1d` - Test fixes (BackLink, useSearch)
-- `1549663` - Sources page
-- `a7a463c` - Sources navigation + API proxy
-- `1c93e03` - Navigation dropdown
-- `20d4b45` - UDropdownMenu fix (NuxtUI v4)
-- `dca004f` - Three new reference pages
+- `04a6738` - Design document
+- `9ab219f` - Implementation with tests
 
 **Documentation:**
-- `docs/HANDOVER-2025-11-21-REFERENCE-PAGES.md` (comprehensive session doc)
+- `docs/HANDOVER-2025-11-21-EMPTY-STATS-CARD-FIX.md` (detailed session doc)
+- `docs/plans/2025-11-21-empty-stats-card-fix.md` (design document)
 
-**Status:** Reference section complete. Navigation scalable. All tests passing. Production-ready.
+**Status:** Bug fixed. All tests green. Production-ready.
 
-**What Works:** 6 entity types + 4 reference pages, saving throws, dropdown navigation, all 244 tests passing.
-
-**What's Missing:** Tests for new reference cards, entity card tests, advanced filtering.
-
-**Ready for:** More reference pages (spell schools, item types), advanced features, performance optimization.
+**Previous Sessions:** See `docs/archive/2025-11-21-development-session/` for earlier today's work (spell enhancements, reference pages, component enhancements)
 
 ---
 
@@ -521,11 +521,13 @@ If you find issues:
 **Next Agent: Read the following in order:**
 1. This document (`docs/CURRENT_STATUS.md`) for complete project overview
 2. `CLAUDE.md` - Setup, patterns, TDD requirements (streamlined + mandatory workflows)
-3. `docs/HANDOVER-2025-01-21-DETAIL-PAGE-REFACTORING.md` - Latest refactoring session
-4. `docs/archive/2025-01-21-development-session/` - Previous session details
+3. `docs/HANDOVER-2025-11-21-EMPTY-STATS-CARD-FIX.md` - Latest session (empty stats fix)
+4. `docs/archive/2025-11-21-development-session/` - Earlier today's sessions
+5. `docs/archive/2025-01-21-development-session/` - Previous refactoring sessions
 
 **Priority Tasks:**
 1. 🔴 **Write comprehensive tests** (TDD mandate)
 2. 🟡 Generate TypeScript types from OpenAPI spec
 3. 🟡 Add toast notifications
 4. 🟢 Advanced filtering features
+5. 🟢 Audit other components for empty-state issues (similar to stats card fix)
