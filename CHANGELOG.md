@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Centralized entity type definitions** - Extracted entity types to `app/types/api/entities.ts` (2025-11-21)
+  - Extracted Spell, Item, Race, CharacterClass, Background, Feat interfaces
+  - Updated 6 card components to import from centralized types
+  - Added type annotations to 6 test files for type-safe mock data
+  - Eliminated ~90 lines of duplicate interface definitions
 - **Centralized type system** - Extracted shared TypeScript interfaces to `app/types/` (2025-11-21)
   - Created `app/types/api/common.ts` with Source, AbilityScore, Modifier, Tag
   - Migrated 12 components to use centralized types
