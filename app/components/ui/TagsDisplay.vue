@@ -1,10 +1,5 @@
 <script setup lang="ts">
-interface Tag {
-  id: number
-  name: string
-  slug: string
-  type: string | null
-}
+import type { Tag } from '~/types'
 
 interface Props {
   tags?: Tag[]

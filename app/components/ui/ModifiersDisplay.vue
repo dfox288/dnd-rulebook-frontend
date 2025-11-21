@@ -1,20 +1,5 @@
 <script setup lang="ts">
-interface AbilityScore {
-  id: number
-  code: string
-  name: string
-}
-
-interface Modifier {
-  id: number
-  modifier_category: string
-  ability_score?: AbilityScore | null
-  value: string | number
-  condition?: string | null
-  is_choice: boolean
-  choice_count: number | null
-  choice_constraint: string | null
-}
+import type { AbilityScore, Modifier } from '~/types'
 
 interface Props {
   modifiers?: Modifier[]

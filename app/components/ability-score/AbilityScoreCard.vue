@@ -1,9 +1,5 @@
 <script setup lang="ts">
-interface AbilityScore {
-  id: number
-  code: string
-  name: string
-}
+import type { AbilityScore } from '~/types'
 
 interface Props {
   abilityScore: AbilityScore
