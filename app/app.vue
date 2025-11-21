@@ -45,7 +45,10 @@ const navItems = [
 
 // Reference dropdown items (metadata/reference endpoints)
 const referenceItems = ref([
-  { label: 'Source Books', to: '/sources', icon: 'i-heroicons-book-open' }
+  { label: 'Source Books', to: '/sources', icon: 'i-heroicons-book-open' },
+  { label: 'Languages', to: '/languages', icon: 'i-heroicons-language' },
+  { label: 'Creature Sizes', to: '/sizes', icon: 'i-heroicons-arrows-pointing-out' },
+  { label: 'Damage Types', to: '/damage-types', icon: 'i-heroicons-bolt' }
   // Future additions:
   // { label: 'Spell Schools', to: '/spell-schools', icon: 'i-heroicons-academic-cap' },
   // { label: 'Item Types', to: '/item-types', icon: 'i-heroicons-cube' },
