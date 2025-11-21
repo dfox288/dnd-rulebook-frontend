@@ -122,6 +122,11 @@ const itemTypeColor = computed(() => {
             slot: 'abilities',
             defaultOpen: false
           }] : []),
+          ...(item.saving_throws && item.saving_throws.length > 0 ? [{
+            label: 'Saving Throws',
+            slot: 'saving_throws',
+            defaultOpen: false
+          }] : []),
           ...(item.sources && item.sources.length > 0 ? [{
             label: 'Source',
             slot: 'source',
@@ -148,6 +153,11 @@ const itemTypeColor = computed(() => {
         <!-- Abilities Slot -->
         <template v-if="item.abilities && item.abilities.length > 0" #abilities>
           <UiAccordionAbilitiesList :abilities="item.abilities" />
+        </template>
+
+        <!-- Saving Throws Slot -->
+        <template v-if="item.saving_throws && item.saving_throws.length > 0" #saving_throws>
+          <UiAccordionSavingThrows :saving-throws="item.saving_throws" />
         </template>
 
         <!-- Source Slot -->
