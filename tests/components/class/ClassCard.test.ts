@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import type { CharacterClass } from '~/types'
 import ClassCard from '~/components/class/ClassCard.vue'
 
 describe('ClassCard', () => {
-  const mockClass = {
+  const mockClass: CharacterClass = {
     id: 1,
     name: 'Wizard',
     slug: 'wizard',
