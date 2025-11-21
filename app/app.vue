@@ -44,20 +44,16 @@ const navItems = [
 ]
 
 // Reference dropdown items (metadata/reference endpoints)
-const referenceItems = [
-  [
-    { label: 'Source Books', to: '/sources', icon: 'i-heroicons-book-open' }
-    // Future additions:
-    // { label: 'Spell Schools', to: '/spell-schools', icon: 'i-heroicons-academic-cap' },
-    // { label: 'Item Types', to: '/item-types', icon: 'i-heroicons-cube' },
-  ]
-]
+const referenceItems = ref([
+  { label: 'Source Books', to: '/sources', icon: 'i-heroicons-book-open' }
+  // Future additions:
+  // { label: 'Spell Schools', to: '/spell-schools', icon: 'i-heroicons-academic-cap' },
+  // { label: 'Item Types', to: '/item-types', icon: 'i-heroicons-cube' },
+])
 
 // Check if current route is in reference section
 const isReferenceActive = computed(() => {
-  return referenceItems.some(group =>
-    group.some(item => route.path.startsWith(item.to))
-  )
+  return referenceItems.value.some(item => route.path.startsWith(item.to))
 })
 
 // Mobile menu state
@@ -98,7 +94,7 @@ const isReferenceExpanded = ref(false)
             </NuxtLink>
 
             <!-- Reference dropdown -->
-            <UDropdown :items="referenceItems" :popper="{ placement: 'bottom-start' }">
+            <UDropdownMenu :items="referenceItems">
               <UButton
                 color="gray"
                 variant="ghost"
@@ -109,7 +105,7 @@ const isReferenceExpanded = ref(false)
               >
                 Reference
               </UButton>
-            </UDropdown>
+            </UDropdownMenu>
           </div>
 
           <!-- Dark Mode Toggle (Right) -->
@@ -157,20 +153,18 @@ const isReferenceExpanded = ref(false)
 
             <!-- Reference submenu -->
             <div v-show="isReferenceExpanded" class="pl-4 space-y-1 mt-1">
-              <template v-for="group in referenceItems" :key="group">
-                <NuxtLink
-                  v-for="item in group"
-                  :key="item.to"
-                  :to="item.to"
-                  class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  :class="route.path.startsWith(item.to)
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
-                >
-                  <UIcon v-if="item.icon" :name="item.icon" class="w-4 h-4" />
-                  {{ item.label }}
-                </NuxtLink>
-              </template>
+              <NuxtLink
+                v-for="item in referenceItems"
+                :key="item.to"
+                :to="item.to"
+                class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                :class="route.path.startsWith(item.to)
+                  ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
+              >
+                <UIcon v-if="item.icon" :name="item.icon" class="w-4 h-4" />
+                {{ item.label }}
+              </NuxtLink>
             </div>
           </div>
         </div>
