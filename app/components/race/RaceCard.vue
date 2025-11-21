@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Source } from '~/types'
+
 interface Race {
   id: number
   name: string
@@ -24,11 +26,7 @@ interface Race {
   modifiers?: any[]
   traits?: any[]
   description?: string
-  sources?: Array<{
-    code: string
-    name: string
-    pages: string
-  }>
+  sources?: Source[]
 }
 
 interface Props {

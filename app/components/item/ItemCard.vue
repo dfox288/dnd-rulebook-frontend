@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Source } from '~/types'
+
 interface Item {
   id: number
   name: string
@@ -13,11 +15,7 @@ interface Item {
   cost_cp?: number
   weight?: number
   description?: string
-  sources?: Array<{
-    code: string
-    name: string
-    pages: string
-  }>
+  sources?: Source[]
 }
 
 interface Props {

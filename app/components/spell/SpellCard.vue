@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Source } from '~/types'
+
 interface Spell {
   id: number
   name: string
@@ -14,11 +16,7 @@ interface Spell {
   description: string
   is_ritual: boolean
   needs_concentration: boolean
-  sources?: Array<{
-    code: string
-    name: string
-    pages: string
-  }>
+  sources?: Source[]
 }
 
 interface Props {
