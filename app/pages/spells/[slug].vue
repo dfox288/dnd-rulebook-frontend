@@ -2,24 +2,17 @@
 import { getSpellLevelColor, getSpellSchoolColor } from '~/utils/badgeColors'
 
 const route = useRoute()
-const slug = route.params.slug as string
 
-// API configuration
-const { apiFetch } = useApi()
-
-// Fetch spell data using useAsyncData for SSR support (via Nitro proxy)
-const { data: spell, error, pending } = await useAsyncData(
-  `spell-${slug}`,
-  async () => {
-    const response = await apiFetch(`/spells/${slug}`)
-    return response.data
+// Fetch spell data and setup SEO
+const { data: spell, loading, error, refresh } = useEntityDetail({
+  slug: route.params.slug as string,
+  endpoint: '/spells',
+  cacheKey: 'spell',
+  seo: {
+    titleTemplate: (name) => `${name} - D&D 5e Spell`,
+    descriptionExtractor: (spell) => spell.description?.substring(0, 160) || '',
+    fallbackTitle: 'Spell - D&D 5e Compendium'
   }
-)
-
-// Set page meta
-useSeoMeta({
-  title: computed(() => spell.value ? `${spell.value.name} - D&D 5e Spell` : 'Spell - D&D 5e Compendium'),
-  description: computed(() => spell.value?.description?.substring(0, 160)),
 })
 
 /**
@@ -57,7 +50,7 @@ const spellEffects = computed(() => {
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <UiDetailPageLoading v-if="pending" entityType="spell" />
+    <UiDetailPageLoading v-if="loading" entityType="spell" />
 
     <!-- Error State -->
     <UiDetailPageError v-else-if="error" entityType="Spell" />
