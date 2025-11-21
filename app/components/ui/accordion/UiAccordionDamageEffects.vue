@@ -4,6 +4,7 @@ interface Effect {
   description: string
   dice_formula: string
   min_spell_slot: number
+  min_character_level?: number | null
 }
 
 interface Props {
@@ -24,8 +25,13 @@ defineProps<Props>()
         <div class="font-medium text-gray-900 dark:text-gray-100">
           {{ effect.description }}
         </div>
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          Spell Slot Level {{ effect.min_spell_slot }}
+        <div class="text-sm text-gray-600 dark:text-gray-400 space-y-0.5">
+          <div v-if="effect.min_spell_slot > 0">
+            Spell Slot Level {{ effect.min_spell_slot }}
+          </div>
+          <div v-if="effect.min_character_level">
+            Character Level {{ effect.min_character_level }}+
+          </div>
         </div>
       </div>
       <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">

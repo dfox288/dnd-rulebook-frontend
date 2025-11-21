@@ -91,4 +91,87 @@ describe('UiAccordionDamageEffects', () => {
     const formula = wrapper.find('.text-primary-600')
     expect(formula.classes()).toContain('dark:text-primary-400')
   })
+
+  it('renders min_character_level when provided', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Eldritch blast damage',
+            dice_formula: '2d10',
+            min_spell_slot: 0,
+            min_character_level: 5
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('Character Level 5+')
+  })
+
+  it('does not render min_character_level when null', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Fire damage',
+            dice_formula: '8d6',
+            min_spell_slot: 3,
+            min_character_level: null
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).not.toContain('Character Level')
+  })
+
+  it('renders both spell slot level and character level when both provided', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Combined scaling',
+            dice_formula: '3d10',
+            min_spell_slot: 5,
+            min_character_level: 11
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('Spell Slot Level 5')
+    expect(wrapper.text()).toContain('Character Level 11+')
+  })
+
+  it('handles cantrip (level 0) with character level scaling', () => {
+    const wrapper = mount(UiAccordionDamageEffects, {
+      props: {
+        effects: [
+          {
+            id: 1,
+            description: 'Cantrip damage',
+            dice_formula: '1d10',
+            min_spell_slot: 0,
+            min_character_level: 1
+          },
+          {
+            id: 2,
+            description: 'Cantrip damage (higher)',
+            dice_formula: '2d10',
+            min_spell_slot: 0,
+            min_character_level: 5
+          }
+        ]
+      }
+    })
+
+    // Should show character levels but not spell slot levels for cantrips
+    expect(wrapper.text()).toContain('Character Level 1+')
+    expect(wrapper.text()).toContain('Character Level 5+')
+    expect(wrapper.text()).not.toContain('Spell Slot Level 0')
+  })
 })
