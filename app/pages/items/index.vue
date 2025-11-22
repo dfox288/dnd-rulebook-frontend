@@ -11,7 +11,7 @@ const selectedMagic = ref((route.query.is_magic as string) || null)
 
 // Fetch item types for filter options
 const { data: itemTypes } = await useAsyncData('item-types', async () => {
-  const response = await apiFetch<{ data: any }>('/item-types')
+  const response = await apiFetch<{ data: unknown[] }>('/item-types')
   return response.data
 })
 
@@ -37,7 +37,7 @@ const magicOptions = [
 const typeOptions = computed(() => {
   const options = [{ label: 'All Types', value: null }]
   if (itemTypes.value) {
-    options.push(...itemTypes.value.map((type: any) => ({
+    options.push(...itemTypes.value.map(type => ({
       label: type.name,
       value: type.id
     })))
@@ -47,7 +47,7 @@ const typeOptions = computed(() => {
 
 // Query builder for custom filters
 const queryBuilder = computed(() => {
-  const params: Record<string, any> = {}
+  const params: Record<string, unknown> = {}
   if (selectedType.value !== null) params.type = selectedType.value
   if (selectedRarity.value !== null) params.rarity = selectedRarity.value
   if (selectedMagic.value !== null) params.is_magic = selectedMagic.value
@@ -86,7 +86,7 @@ const clearFilters = () => {
 
 // Get type name by ID for filter chips
 const getTypeName = (typeId: number) => {
-  return itemTypes.value?.find((t: any) => t.id === typeId)?.name || 'Unknown'
+  return itemTypes.value?.find(t => t.id === typeId)?.name || 'Unknown'
 }
 
 // Pagination settings
@@ -136,7 +136,7 @@ const perPage = 24
         >
           <template #label>
             <span v-if="selectedType === null">All Types</span>
-            <span v-else>{{ itemTypes?.find((t: any) => t.id === selectedType)?.name }}</span>
+            <span v-else>{{ itemTypes?.find(t => t.id === selectedType)?.name }}</span>
           </template>
         </USelectMenu>
 

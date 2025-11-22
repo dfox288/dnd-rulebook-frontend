@@ -4,13 +4,16 @@ import { getSpellLevelColor, getSpellSchoolColor } from '~/utils/badgeColors'
 const route = useRoute()
 
 // Fetch spell data and setup SEO
-const { data: spell, loading, error, refresh } = useEntityDetail({
+const { data: spell, loading, error } = useEntityDetail({
   slug: route.params.slug as string,
   endpoint: '/spells',
   cacheKey: 'spell',
   seo: {
     titleTemplate: name => `${name} - D&D 5e Spell`,
-    descriptionExtractor: spell => spell.description?.substring(0, 160) || '',
+    descriptionExtractor: (spell: unknown) => {
+      const s = spell as { description?: string }
+      return s.description?.substring(0, 160) || ''
+    },
     fallbackTitle: 'Spell - D&D 5e Compendium'
   }
 })
@@ -26,24 +29,12 @@ const spellLevelText = computed(() => {
 })
 
 /**
- * Format components for display
- */
-const componentsText = computed(() => {
-  if (!spell.value) return ''
-  const parts = []
-  if (spell.value.components.includes('V')) parts.push('Verbal')
-  if (spell.value.components.includes('S')) parts.push('Somatic')
-  if (spell.value.components.includes('M')) parts.push(`Material (${spell.value.material_components})`)
-  return parts.join(', ')
-})
-
-/**
  * Get all effects (damage and other) grouped by spell slot level
  */
 const spellEffects = computed(() => {
   if (!spell.value?.effects) return []
-  return spell.value.effects
-    .sort((a: any, b: any) => a.min_spell_slot - b.min_spell_slot)
+  return [...spell.value.effects]
+    .sort((a, b) => a.min_spell_slot - b.min_spell_slot)
 })
 </script>
 

@@ -42,7 +42,7 @@ const filteredResults = computed(() => {
   if (!results.value?.data) return {}
   if (selectedTypes.value.length === 0) return results.value.data
 
-  const filtered: any = {}
+  const filtered: Record<string, unknown> = {}
   selectedTypes.value.forEach((type) => {
     if (results.value?.data[type]) {
       filtered[type] = results.value.data[type]

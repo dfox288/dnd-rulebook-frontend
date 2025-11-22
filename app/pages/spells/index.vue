@@ -10,7 +10,7 @@ const selectedSchool = ref(route.query.school ? Number(route.query.school) : nul
 
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData('spell-schools', async () => {
-  const response = await apiFetch<{ data: any }>('/spell-schools')
+  const response = await apiFetch<{ data: unknown[] }>('/spell-schools')
   return response.data
 })
 
@@ -33,7 +33,7 @@ const levelOptions = [
 const schoolOptions = computed(() => {
   const options = [{ label: 'All Schools', value: null }]
   if (spellSchools.value) {
-    options.push(...spellSchools.value.map((school: any) => ({
+    options.push(...spellSchools.value.map(school => ({
       label: school.name,
       value: school.id
     })))
@@ -43,7 +43,7 @@ const schoolOptions = computed(() => {
 
 // Query builder for custom filters
 const queryBuilder = computed(() => {
-  const params: Record<string, any> = {}
+  const params: Record<string, unknown> = {}
   if (selectedLevel.value !== null) params.level = selectedLevel.value
   if (selectedSchool.value !== null) params.school = selectedSchool.value
   return params
@@ -80,7 +80,7 @@ const clearFilters = () => {
 
 // Get school name by ID for filter chips
 const getSchoolName = (schoolId: number) => {
-  return spellSchools.value?.find((s: any) => s.id === schoolId)?.name || 'Unknown'
+  return spellSchools.value?.find(s => s.id === schoolId)?.name || 'Unknown'
 }
 
 // Pagination settings

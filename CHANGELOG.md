@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Modifier display for non-numeric values - Now correctly shows "disadvantage" and "advantage" instead of "NaN" (2025-11-22)
 - Skill-based modifiers now display skill name with ability score code (e.g., "Stealth (DEX): disadvantage") (2025-11-22)
+- **ESLint clean** - Eliminated all 97 ESLint errors by replacing `any` types with proper TypeScript types (2025-11-22)
+- Side effect in computed property - Fixed spell effects sorting by creating array copy first (2025-11-22)
 
 ### Changed
 - Item detail pages now show complete item information including spells, proficiencies, charges, and random tables (2025-11-22)

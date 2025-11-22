@@ -9,7 +9,7 @@ const searchQuery = ref('')
 
 // Computed query params for API
 const queryParams = computed(() => {
-  const params: Record<string, any> = {}
+  const params: Record<string, string> = {}
 
   if (searchQuery.value.trim()) {
     params.q = searchQuery.value.trim()
@@ -19,10 +19,10 @@ const queryParams = computed(() => {
 })
 
 // Fetch sources with reactive filters (via Nitro proxy)
-const { data: sourcesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Array<any> }>(
+const { data: sourcesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
   'sources-list',
   async () => {
-    const response = await apiFetch<{ data: Array<any> }>('/sources', {
+    const response = await apiFetch<{ data: unknown[] }>('/sources', {
       query: queryParams.value
     })
     return response

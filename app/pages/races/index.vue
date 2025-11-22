@@ -8,10 +8,10 @@ const { apiFetch } = useApi()
 const selectedSize = ref((route.query.size as string) || '')
 
 // Fetch available sizes for filter options
-const { data: sizesResponse } = await useAsyncData<{ data: Array<any> }>(
+const { data: sizesResponse } = await useAsyncData<{ data: unknown[] }>(
   'sizes',
   async () => {
-    const response = await apiFetch<{ data: Array<any> }>('/sizes')
+    const response = await apiFetch<{ data: unknown[] }>('/sizes')
     return response
   }
 )
@@ -20,7 +20,7 @@ const sizes = computed(() => sizesResponse.value?.data || [])
 
 // Query builder for custom filters
 const queryBuilder = computed(() => {
-  const params: Record<string, any> = {}
+  const params: Record<string, unknown> = {}
   if (selectedSize.value) params.size = selectedSize.value
   return params
 })

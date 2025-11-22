@@ -12,10 +12,10 @@ const queryParams = computed(() => {
   return params
 })
 
-const { data: conditionsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Array<any> }>(
+const { data: conditionsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
   'conditions-list',
   async () => {
-    const response = await apiFetch<{ data: Array<any> }>('/conditions', {
+    const response = await apiFetch<{ data: unknown[] }>('/conditions', {
       query: queryParams.value
     })
     return response
