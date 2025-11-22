@@ -68,14 +68,14 @@ describe('SkillCard', () => {
     expect(wrapper.text()).toContain('Skill')
   })
 
-  it('uses info color for ability score badge', async () => {
+  it('uses skill color for ability score badge', async () => {
     const wrapper = await mountSuspended(SkillCard, {
       props: { skill: mockSkill }
     })
 
     const html = wrapper.html()
-    // Info color badge should be present (bg-info class)
-    expect(html).toContain('bg-info')
+    // Skill color badge should be present (bg-skill class)
+    expect(html).toContain('bg-skill')
   })
 
   describe('background images', () => {
