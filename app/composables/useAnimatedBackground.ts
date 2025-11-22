@@ -233,21 +233,22 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
 
   function animate(currentTime: number) {
     frameCount++
+    animationFrameId = requestAnimationFrame(animate) // ALWAYS schedule next frame
 
     if (!lastTime) lastTime = currentTime
     const deltaTime = currentTime - lastTime
-    lastTime = currentTime
 
     // Log every 60 frames (~2 seconds at 30fps)
     if (frameCount % 60 === 0) {
       console.log(`[Animation] Frame ${frameCount}, Canvas: ${canvas.width}x${canvas.height}, Delta: ${deltaTime.toFixed(2)}ms`)
     }
 
-    // Throttle to 30 FPS (33.33ms per frame)
+    // Throttle to 30 FPS (33.33ms per frame) - skip drawing, not scheduling
     if (deltaTime < 33) {
-      animationFrameId = requestAnimationFrame(animate)
-      return
+      return // Skip drawing but still schedule next frame
     }
+
+    lastTime = currentTime // Only update lastTime when we actually draw
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -273,9 +274,6 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
       rune.update(deltaTime)
       rune.draw(ctx, colors.runeColor)
     }
-
-    // Continue animation
-    animationFrameId = requestAnimationFrame(animate)
   }
 
   function start() {
