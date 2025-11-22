@@ -67,15 +67,15 @@ export class ParchmentBackground {
       if (pattern) {
         ctx.translate(this.offsetX, this.offsetY + this.scrollOffsetY * 0.3)
         ctx.fillStyle = pattern
-        // Reduced opacity: lighter in light mode, darker in dark mode
-        ctx.globalAlpha = this.isDark ? 0.35 : 0.2
+        // Very subtle opacity
+        ctx.globalAlpha = this.isDark ? 0.15 : 0.08
         ctx.fillRect(-100, -100, this.width + 200, this.height + 200)
       }
     } else {
       // Fallback: solid color background
       const baseColor = this.isDark
-        ? 'rgba(35, 32, 28, 0.35)'  // Dark vellum
-        : 'rgba(245, 237, 220, 0.2)' // Aged parchment
+        ? 'rgba(35, 32, 28, 0.15)'  // Dark vellum
+        : 'rgba(245, 237, 220, 0.08)' // Aged parchment
 
       ctx.fillStyle = baseColor
       ctx.fillRect(0, 0, this.width, this.height)
@@ -117,8 +117,8 @@ export class MagicParticle {
     this.baseVx = this.vx
     this.baseVy = this.vy
 
-    // Size (larger particles: 4-10px)
-    this.size = 4 + Math.random() * 6
+    // Size (wide variety: 3-14px)
+    this.size = 3 + Math.random() * 11
 
     // Opacity (0.2-0.5)
     this.opacity = 0.2 + Math.random() * 0.3
@@ -159,8 +159,8 @@ export class MagicParticle {
    * Apply scroll momentum
    */
   applyScrollMomentum(scrollDelta: number): void {
-    // Add upward/downward momentum based on scroll (slower reaction)
-    this.vy += scrollDelta * 0.25
+    // Add upward/downward momentum based on scroll (stronger reaction)
+    this.vy += scrollDelta * 1.5
   }
 
   update(deltaTime: number): void {
@@ -307,8 +307,8 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
     // Create parchment background
     parchment = new ParchmentBackground(width, height, isDark)
 
-    // Create 60-80 magic particles (increased count)
-    const particleCount = 60 + Math.floor(Math.random() * 21)
+    // Create 80-120 magic particles (high count for rich atmosphere)
+    const particleCount = 80 + Math.floor(Math.random() * 41)
     particles = Array.from({ length: particleCount }, () => new MagicParticle(width, height, colors.particleHue))
 
     // Listen for events
