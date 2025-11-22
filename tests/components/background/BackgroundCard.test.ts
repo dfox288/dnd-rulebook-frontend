@@ -29,11 +29,10 @@ describe('BackgroundCard', () => {
     id: 1,
     name: 'Acolyte',
     slug: 'acolyte',
-    skill_proficiencies: [
-      { id: 1, name: 'Insight' },
-      { id: 2, name: 'Religion' }
+    proficiencies: [
+      { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 },
+      { id: 2, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 2, name: 'Religion', code: 'RELIGION', description: null, ability_score: null }, proficiency_name: 'Religion', grants: true, is_choice: false, quantity: 1 }
     ],
-    tool_proficiencies: [],
     languages: [
       { id: 1, name: 'Common' },
       { id: 2, name: 'Elvish' }
@@ -114,7 +113,9 @@ describe('BackgroundCard', () => {
   it('uses singular form for single skill', async () => {
     const oneSkillBg = {
       ...mockBackground,
-      skill_proficiencies: [{ id: 1, name: 'Insight' }]
+      proficiencies: [
+        { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 }
+      ]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: oneSkillBg }
@@ -124,7 +125,7 @@ describe('BackgroundCard', () => {
   })
 
   it('hides skills summary when none provided', async () => {
-    const noSkillsBg = { ...mockBackground, skill_proficiencies: [] }
+    const noSkillsBg = { ...mockBackground, proficiencies: [] }
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: noSkillsBg }
     })
@@ -164,9 +165,10 @@ describe('BackgroundCard', () => {
   it('shows tool proficiencies badge when provided', async () => {
     const bgWithTools = {
       ...mockBackground,
-      tool_proficiencies: [
-        { id: 1, name: 'Thieves\' Tools' },
-        { id: 2, name: 'Disguise Kit' }
+      proficiencies: [
+        ...mockBackground.proficiencies!,
+        { id: 3, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 1, name: 'Thieves\' Tools' }, proficiency_name: 'Thieves\' Tools', grants: true, is_choice: false, quantity: 1 },
+        { id: 4, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 2, name: 'Disguise Kit' }, proficiency_name: 'Disguise Kit', grants: true, is_choice: false, quantity: 1 }
       ]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
@@ -204,7 +206,10 @@ describe('BackgroundCard', () => {
   it('displays all key information in organized layout', async () => {
     const fullBg = {
       ...mockBackground,
-      tool_proficiencies: [{ id: 1, name: 'Thieves\' Tools' }]
+      proficiencies: [
+        ...mockBackground.proficiencies!,
+        { id: 3, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 1, name: 'Thieves\' Tools' }, proficiency_name: 'Thieves\' Tools', grants: true, is_choice: false, quantity: 1 }
+      ]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: fullBg }
@@ -221,8 +226,10 @@ describe('BackgroundCard', () => {
   it('handles backgrounds with all optional fields', async () => {
     const fullBg = {
       ...mockBackground,
-      skill_proficiencies: [{ id: 1, name: 'Insight' }],
-      tool_proficiencies: [{ id: 1, name: 'Thieves\' Tools' }],
+      proficiencies: [
+        { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 },
+        { id: 2, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 1, name: 'Thieves\' Tools' }, proficiency_name: 'Thieves\' Tools', grants: true, is_choice: false, quantity: 1 }
+      ],
       languages: [{ id: 1, name: 'Common' }],
       feature_name: 'Feature Name',
       description: 'Full description',
@@ -251,10 +258,11 @@ describe('BackgroundCard', () => {
   it('handles backgrounds with many tools', async () => {
     const manyToolsBg = {
       ...mockBackground,
-      tool_proficiencies: [
-        { id: 1, name: 'Thieves\' Tools' },
-        { id: 2, name: 'Disguise Kit' },
-        { id: 3, name: 'Forgery Kit' }
+      proficiencies: [
+        ...mockBackground.proficiencies!,
+        { id: 3, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 1, name: 'Thieves\' Tools' }, proficiency_name: 'Thieves\' Tools', grants: true, is_choice: false, quantity: 1 },
+        { id: 4, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 2, name: 'Disguise Kit' }, proficiency_name: 'Disguise Kit', grants: true, is_choice: false, quantity: 1 },
+        { id: 5, proficiency_type: 'tool', proficiency_subcategory: null, proficiency_type_id: null, item: { id: 3, name: 'Forgery Kit' }, proficiency_name: 'Forgery Kit', grants: true, is_choice: false, quantity: 1 }
       ]
     }
     const wrapper = await mountSuspended(BackgroundCard, {
