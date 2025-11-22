@@ -9,22 +9,6 @@ interface Props {
 const props = defineProps<Props>()
 
 /**
- * Get badge color based on entity type
- * Returns NuxtUI 4 semantic colors
- */
-const getBadgeColor = computed<'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'>(() => {
-  const colors: Record<string, 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'> = {
-    spell: 'primary', // purple → primary
-    item: 'warning', // amber → warning
-    race: 'info', // blue → info
-    class: 'error', // red → error
-    background: 'success', // green → success
-    feat: 'warning' // orange → warning
-  }
-  return colors[props.type] || 'neutral'
-})
-
-/**
  * Get URL path for entity detail page
  */
 const getUrl = () => {
@@ -72,7 +56,7 @@ const isItem = (result: Props['result']): result is Item => props.type === 'item
             {{ result.name }}
           </h3>
           <UBadge
-            :color="getBadgeColor"
+            :color="type"
             variant="subtle"
             size="sm"
           >

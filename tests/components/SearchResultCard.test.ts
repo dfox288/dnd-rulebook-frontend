@@ -129,16 +129,20 @@ describe('SearchResultCard', () => {
   })
 
   describe('Badge Colors', () => {
-    it('uses correct badge colors for entity types', async () => {
-      const spellWrapper = await mountSuspended(SearchResultCard, {
+    it('uses spell entity color for spell results', async () => {
+      const wrapper = await mountSuspended(SearchResultCard, {
         props: { result: mockSpell, type: 'spell' }
       })
-      expect(spellWrapper.vm.getBadgeColor).toBe('primary')
+      const badge = wrapper.findComponent({ name: 'UBadge' })
+      expect(badge.props('color')).toBe('spell')
+    })
 
-      const itemWrapper = await mountSuspended(SearchResultCard, {
+    it('uses item entity color for item results', async () => {
+      const wrapper = await mountSuspended(SearchResultCard, {
         props: { result: mockItem, type: 'item' }
       })
-      expect(itemWrapper.vm.getBadgeColor).toBe('warning')
+      const badge = wrapper.findComponent({ name: 'UBadge' })
+      expect(badge.props('color')).toBe('item')
     })
   })
 
