@@ -4,9 +4,36 @@ import UiAccordionBulletList from '~/components/ui/accordion/UiAccordionBulletLi
 
 describe('UiAccordionBulletList', () => {
   const mockItems = [
-    { id: 1, proficiency_name: 'Stealth' },
-    { id: 2, proficiency_name: 'Perception' },
-    { id: 3, proficiency_name: 'Athletics' }
+    {
+      id: 1,
+      proficiency_name: 'Stealth',
+      proficiency_type: 'skill',
+      proficiency_subcategory: null,
+      proficiency_type_id: 1,
+      grants: true,
+      is_choice: false,
+      quantity: 1
+    },
+    {
+      id: 2,
+      proficiency_name: 'Perception',
+      proficiency_type: 'skill',
+      proficiency_subcategory: null,
+      proficiency_type_id: 2,
+      grants: true,
+      is_choice: false,
+      quantity: 1
+    },
+    {
+      id: 3,
+      proficiency_name: 'Athletics',
+      proficiency_type: 'skill',
+      proficiency_subcategory: null,
+      proficiency_type_id: 3,
+      grants: true,
+      is_choice: false,
+      quantity: 1
+    }
   ]
 
   it('renders bullet list with proficiency names', async () => {
@@ -20,14 +47,34 @@ describe('UiAccordionBulletList', () => {
     expect(text).toContain('• Athletics')
   })
 
-  it('uses name property when proficiency_name is not available', async () => {
-    const itemsWithNameOnly = [
-      { id: 1, name: 'Common' },
-      { id: 2, name: 'Elvish' }
+  it('uses proficiency_type_detail.name when proficiency_name is not available', async () => {
+    const itemsWithDetailName = [
+      {
+        id: 1,
+        proficiency_name: null,
+        proficiency_type: 'skill',
+        proficiency_subcategory: null,
+        proficiency_type_id: 1,
+        proficiency_type_detail: { id: 1, name: 'Common' },
+        grants: true,
+        is_choice: false,
+        quantity: 1
+      },
+      {
+        id: 2,
+        proficiency_name: null,
+        proficiency_type: 'skill',
+        proficiency_subcategory: null,
+        proficiency_type_id: 2,
+        proficiency_type_detail: { id: 2, name: 'Elvish' },
+        grants: true,
+        is_choice: false,
+        quantity: 1
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionBulletList, {
-      props: { items: itemsWithNameOnly }
+      props: { items: itemsWithDetailName }
     })
 
     const text = wrapper.text()
@@ -35,9 +82,19 @@ describe('UiAccordionBulletList', () => {
     expect(text).toContain('• Elvish')
   })
 
-  it('prefers proficiency_name over name when both are present', async () => {
+  it('prefers proficiency_name over proficiency_type_detail.name when both are present', async () => {
     const itemsWithBoth = [
-      { id: 1, proficiency_name: 'Tool Proficiency: Smith\'s Tools', name: 'Smith\'s Tools' }
+      {
+        id: 1,
+        proficiency_name: 'Tool Proficiency: Smith\'s Tools',
+        proficiency_type: 'tool',
+        proficiency_subcategory: null,
+        proficiency_type_id: 1,
+        proficiency_type_detail: { id: 1, name: 'Smith\'s Tools' },
+        grants: true,
+        is_choice: false,
+        quantity: 1
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionBulletList, {
@@ -97,7 +154,18 @@ describe('UiAccordionBulletList', () => {
   })
 
   it('handles single item correctly', async () => {
-    const singleItem = [{ id: 1, proficiency_name: 'Investigation' }]
+    const singleItem = [
+      {
+        id: 1,
+        proficiency_name: 'Investigation',
+        proficiency_type: 'skill',
+        proficiency_subcategory: null,
+        proficiency_type_id: 1,
+        grants: true,
+        is_choice: false,
+        quantity: 1
+      }
+    ]
 
     const wrapper = await mountSuspended(UiAccordionBulletList, {
       props: { items: singleItem }
@@ -113,7 +181,13 @@ describe('UiAccordionBulletList', () => {
     const longNameItems = [
       {
         id: 1,
-        proficiency_name: 'Tool Proficiency: Thieves\' Tools (includes lockpicking and disarming traps)'
+        proficiency_name: 'Tool Proficiency: Thieves\' Tools (includes lockpicking and disarming traps)',
+        proficiency_type: 'tool',
+        proficiency_subcategory: null,
+        proficiency_type_id: 1,
+        grants: true,
+        is_choice: false,
+        quantity: 1
       }
     ]
 

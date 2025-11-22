@@ -9,6 +9,24 @@ interface Props {
 }
 
 defineProps<Props>()
+
+/**
+ * Get display name for a proficiency item
+ * Tries multiple fallback strategies to handle various nested structures
+ */
+function getDisplayName(item: ProficiencyResource): string {
+  // Prefer proficiency_name if available
+  if (item.proficiency_name) return item.proficiency_name
+
+  // Fallback to nested detail structures
+  if (item.proficiency_type_detail?.name) return item.proficiency_type_detail.name
+  if (item.skill?.name) return item.skill.name
+  if (item.item?.name) return item.item.name
+  if (item.ability_score?.name) return item.ability_score?.name
+
+  // Last resort fallback
+  return 'Unknown'
+}
 </script>
 
 <template>
@@ -18,7 +36,7 @@ defineProps<Props>()
       :key="item.id"
       class="text-gray-700 dark:text-gray-300"
     >
-      • {{ item.proficiency_name || '' }}
+      • {{ getDisplayName(item) }}
     </div>
   </div>
 </template>

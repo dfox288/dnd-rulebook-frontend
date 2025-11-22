@@ -12,7 +12,7 @@ const { data: race, loading, error } = useEntityDetail<Race>({
   seo: {
     titleTemplate: name => `${name} - D&D 5e Race`,
     descriptionExtractor: (race: unknown) => {
-      const r = race as { description?: string; name?: string }
+      const r = race as { description?: string, name?: string }
       return r.description?.substring(0, 160) || `Learn about the ${r.name} race in D&D 5e`
     },
     fallbackTitle: 'Race - D&D 5e Compendium'

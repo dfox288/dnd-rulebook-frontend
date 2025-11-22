@@ -47,7 +47,7 @@ const filteredResults = computed<SearchResultData>(() => {
     const data = results.value?.data[type]
     if (data) {
       // Type assertion needed due to TypeScript's inability to narrow indexed access types
-      ;(filtered as any)[type] = data
+      filtered[type] = data as SearchResultData[typeof type]
     }
   })
   return filtered
