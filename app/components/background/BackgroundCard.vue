@@ -54,7 +54,7 @@ const backgroundImage = computed(() => {
     :to="`/backgrounds/${background.slug}`"
     class="block h-full group"
   >
-    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-background-300 dark:border-background-700 hover:border-background-500">
       <!-- Background Image Layer -->
       <div
         v-if="backgroundImage"
@@ -73,7 +73,7 @@ const backgroundImage = computed(() => {
             class="flex items-center gap-2 flex-wrap"
           >
             <UBadge
-              color="primary"
+              color="background"
               variant="soft"
               size="sm"
             >
@@ -116,7 +116,7 @@ const backgroundImage = computed(() => {
             class="flex items-center gap-2"
           >
             <UBadge
-              color="info"
+              color="background"
               variant="soft"
               size="xs"
             >
