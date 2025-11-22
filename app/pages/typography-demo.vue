@@ -330,6 +330,260 @@ const sampleSpell = {
       </div>
     </section>
 
+    <!-- Color Palette Showcase -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-8 border-b border-gray-200 dark:border-gray-800 pb-3">
+        Color Palette - Current vs Fantasy Options
+      </h2>
+
+      <div class="space-y-12">
+        <!-- Current Colors -->
+        <div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Current Palette
+          </h3>
+          <p class="text-base text-gray-600 dark:text-gray-400 mb-6">
+            Primary: <strong>Green</strong> | Gray: <strong>Slate</strong>
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Primary Color -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold">Primary (Green)</h4>
+                <div class="flex gap-2">
+                  <UBadge color="primary" variant="solid">Solid Badge</UBadge>
+                  <UBadge color="primary" variant="subtle">Subtle Badge</UBadge>
+                  <UBadge color="primary" variant="outline">Outline Badge</UBadge>
+                </div>
+                <UButton color="primary">Primary Button</UButton>
+              </div>
+            </UCard>
+
+            <!-- Semantic Colors -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold">Semantic Colors</h4>
+                <div class="grid grid-cols-2 gap-2">
+                  <UBadge color="success">Success</UBadge>
+                  <UBadge color="error">Error</UBadge>
+                  <UBadge color="warning">Warning</UBadge>
+                  <UBadge color="info">Info</UBadge>
+                </div>
+              </div>
+            </UCard>
+          </div>
+        </div>
+
+        <!-- Fantasy Color Options -->
+        <div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            🎨 Fantasy-Friendly Options
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Option 1: Mystic Purple -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-purple-700 dark:text-purple-400">
+                  ✨ Mystic Purple
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Arcane magic, wizardry, enchantments
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-purple-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-purple-600 text-purple-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Option 2: Royal Blue -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                  🔵 Royal Blue
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Noble, trustworthy, arcane knowledge
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-blue-600 text-blue-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Option 3: Amber Gold -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-amber-700 dark:text-amber-400">
+                  ⚜️ Amber Gold
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Treasure, legendary items, divine
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-amber-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-amber-600 text-amber-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Option 4: Crimson Red -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-red-700 dark:text-red-400">
+                  🔥 Crimson Red
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Fire, blood magic, danger, power
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-red-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-red-600 text-red-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Option 5: Emerald Green (Enhanced) -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
+                  🌿 Emerald Green
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Nature, druids, healing, growth
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-emerald-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-emerald-600 text-emerald-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Option 6: Indigo Violet -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-lg font-semibold text-indigo-700 dark:text-indigo-400">
+                  🌌 Indigo Violet
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Cosmic, otherworldly, psionics
+                </p>
+                <div class="flex flex-col gap-2">
+                  <div class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm font-semibold">
+                    Primary Action
+                  </div>
+                  <div class="px-3 py-2 bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-100 rounded-md text-sm">
+                    Subtle Background
+                  </div>
+                  <div class="px-3 py-2 border-2 border-indigo-600 text-indigo-600 rounded-md text-sm">
+                    Outline Style
+                  </div>
+                </div>
+              </div>
+            </UCard>
+          </div>
+
+          <div class="mt-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <p class="text-sm text-gray-700 dark:text-gray-300">
+              <strong>💡 Recommendation:</strong> Choose a primary color that matches your campaign theme.
+              Purple for arcane magic, Blue for classic fantasy, Amber for treasure hunting, Red for dark campaigns,
+              Emerald for nature-focused, or Indigo for cosmic/psionic themes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Gray Palette Options -->
+        <div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Gray Palette Options
+          </h3>
+          <p class="text-base text-gray-600 dark:text-gray-400 mb-6">
+            Gray affects text, borders, backgrounds throughout the app
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <UCard>
+              <div class="space-y-2">
+                <h4 class="text-lg font-semibold">Current: Slate (Cool)</h4>
+                <div class="h-8 bg-slate-500 rounded"></div>
+                <p class="text-sm text-slate-600 dark:text-slate-400">
+                  Cool-toned, modern, professional
+                </p>
+              </div>
+            </UCard>
+
+            <UCard>
+              <div class="space-y-2">
+                <h4 class="text-lg font-semibold">Option: Stone (Warm)</h4>
+                <div class="h-8 bg-stone-500 rounded"></div>
+                <p class="text-sm text-stone-600 dark:text-stone-400">
+                  Warm-toned, earthy, parchment-like
+                </p>
+              </div>
+            </UCard>
+
+            <UCard>
+              <div class="space-y-2">
+                <h4 class="text-lg font-semibold">Option: Zinc (Neutral)</h4>
+                <div class="h-8 bg-zinc-500 rounded"></div>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                  True neutral, balanced
+                </p>
+              </div>
+            </UCard>
+
+            <UCard>
+              <div class="space-y-2">
+                <h4 class="text-lg font-semibold">Option: Neutral (True Gray)</h4>
+                <div class="h-8 bg-neutral-500 rounded"></div>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                  Pure gray, no undertones
+                </p>
+              </div>
+            </UCard>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Performance Note -->
     <section class="mb-8">
       <UCard>
