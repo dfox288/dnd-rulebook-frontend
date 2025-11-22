@@ -17,6 +17,14 @@ const { data: entity, loading, error } = useEntityDetail<Feat>({
     fallbackTitle: 'Feat - D&D 5e Compendium'
   }
 })
+
+/**
+ * Get entity image path (512px variant)
+ */
+const imagePath = computed(() => {
+  if (!entity.value) return null
+  return useEntityImage(entity.value.slug, 'feats', '512')
+})
 </script>
 
 <template>
@@ -41,12 +49,14 @@ const { data: entity, loading, error } = useEntityDetail<Feat>({
         label="Back to Feats"
       />
 
-      <!-- Header -->
-      <UiDetailPageHeader
+      <!-- Header with Image -->
+      <UiEntityHeaderWithImage
         :title="entity.name"
         :badges="[
           { label: 'Feat', color: 'warning', variant: 'subtle', size: 'lg' }
         ]"
+        :image-path="imagePath"
+        :image-alt="`${entity.name} feat illustration`"
       />
 
       <UCard v-if="entity.prerequisites && entity.prerequisites.length > 0">
