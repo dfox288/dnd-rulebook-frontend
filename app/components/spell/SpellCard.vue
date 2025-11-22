@@ -44,17 +44,6 @@ const getSchoolColor = (schoolCode: string): 'primary' | 'secondary' | 'success'
 }
 
 /**
- * Get badge color for spell level (progressive color scale)
- * Using NuxtUI v4 color names
- */
-const getLevelColor = (level: number): 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral' => {
-  if (level === 0) return 'primary' // Cantrip - primary
-  if (level <= 3) return 'info' // Low level - info
-  if (level <= 6) return 'warning' // Mid level - warning
-  return 'error' // High level - error
-}
-
-/**
  * Get background image path (256px variant)
  */
 const { getImagePath } = useEntityImage()
@@ -68,7 +57,7 @@ const backgroundImage = computed(() => {
     :to="`/spells/${spell.slug}`"
     class="block h-full group"
   >
-    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-spell-300 dark:border-spell-700 hover:border-spell-500">
       <!-- Background Image Layer -->
       <div
         v-if="backgroundImage"
@@ -84,7 +73,7 @@ const backgroundImage = computed(() => {
           <!-- Level and School Badges -->
           <div class="flex items-center gap-2 flex-wrap justify-between">
             <UBadge
-              :color="getLevelColor(spell.level)"
+              color="spell"
               variant="subtle"
               size="md"
             >
@@ -123,7 +112,7 @@ const backgroundImage = computed(() => {
             </div>
             <UBadge
               v-if="spell.needs_concentration"
-              color="warning"
+              color="spell"
               variant="soft"
               size="sm"
             >
@@ -131,7 +120,7 @@ const backgroundImage = computed(() => {
             </UBadge>
             <UBadge
               v-if="spell.is_ritual"
-              color="info"
+              color="spell"
               variant="soft"
               size="sm"
             >

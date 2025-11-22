@@ -66,7 +66,7 @@ const backgroundImage = computed(() => {
     :to="`/races/${race.slug}`"
     class="block h-full group"
   >
-    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-race-300 dark:border-race-700 hover:border-race-500">
       <!-- Background Image Layer -->
       <div
         v-if="backgroundImage"
@@ -92,7 +92,7 @@ const backgroundImage = computed(() => {
             <!-- Only show race/subrace badge if we have parent_race data (from detail API) -->
             <UBadge
               v-if="race.parent_race !== undefined && isSubrace"
-              color="primary"
+              color="race"
               variant="subtle"
               size="md"
             >
@@ -100,7 +100,7 @@ const backgroundImage = computed(() => {
             </UBadge>
             <UBadge
               v-else-if="race.parent_race !== undefined && !isSubrace"
-              color="info"
+              color="race"
               variant="subtle"
               size="md"
             >
@@ -134,7 +134,7 @@ const backgroundImage = computed(() => {
             </div>
             <UBadge
               v-if="race.traits && race.traits.length > 0"
-              color="success"
+              color="race"
               variant="soft"
               size="sm"
             >
@@ -142,7 +142,7 @@ const backgroundImage = computed(() => {
             </UBadge>
             <UBadge
               v-if="race.subraces && race.subraces.length > 0"
-              color="primary"
+              color="race"
               variant="soft"
               size="sm"
             >
