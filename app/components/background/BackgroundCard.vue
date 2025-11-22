@@ -59,7 +59,7 @@ const backgroundImage = computed(() => {
       <div
         v-if="backgroundImage"
         data-test="card-background"
-        class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300 group-hover:opacity-30 group-hover:scale-110"
+        class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300 group-hover:opacity-30 group-hover:scale-110 group-hover:rotate-3"
         :style="{ backgroundImage: `url(${backgroundImage})` }"
       />
 
