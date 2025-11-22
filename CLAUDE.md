@@ -247,6 +247,38 @@ User Request → Understand Requirements → 🔴 WRITE TEST FIRST
 
 **Remember: Tests are not optional. Tests are the foundation of maintainable software. Write tests first, always.**
 
+### 🔧 Test Helpers (For Card Components)
+
+The project includes reusable test helpers for card components to reduce redundancy:
+
+**Location:** `tests/helpers/`
+
+**Available Helpers:**
+- `cardBehavior.ts` - Link routing, hover effects, border styling tests
+- `descriptionBehavior.ts` - Description truncation and fallback tests
+- `sourceBehavior.ts` - Source footer display tests
+
+**Usage Example:**
+```typescript
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+
+describe('MyNewCard', () => {
+  const mountCard = () => mountSuspended(MyNewCard, { props: mockData })
+
+  // Shared behavior tests (1 line each)
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
+
+  // Domain-specific tests (focus here)
+  it('displays my unique field', ...)
+})
+```
+
+**When to use helpers:**
+- ✅ Creating new card components
+- ✅ Testing shared UI behavior (hover, links, borders)
+- ❌ Don't use for unique domain logic (test directly)
+
 ---
 
 ## 📝 CHANGELOG UPDATES
