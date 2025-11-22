@@ -38,7 +38,7 @@ export interface Item extends Omit<ItemFromAPI, 'sources' | 'item_type' | 'damag
     id: number
     name: string
   }
-  damage_type?: { id: number; name: string }
+  damage_type?: { id: number, name: string }
   modifiers?: Modifier[]
   sources?: Source[]
   // All other fields inherited from ItemFromAPI
@@ -56,6 +56,7 @@ type RaceFromAPI = components['schemas']['RaceResource']
 
 export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'> {
   // Override with our custom types that have better structure
+  description?: string
   size?: {
     id: number
     name: string
@@ -96,6 +97,8 @@ type BackgroundFromAPI = components['schemas']['BackgroundResource']
 
 export interface Background extends Omit<BackgroundFromAPI, 'sources'> {
   // Override with our custom types that have better structure
+  description?: string
+  feature_name?: string
   sources?: Source[]
   // All other fields inherited from BackgroundFromAPI
 }
