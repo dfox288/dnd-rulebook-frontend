@@ -51,15 +51,13 @@ const imagePath = computed(() => {
         label="Back to Classes"
       />
 
-      <!-- Header with Image -->
-      <UiEntityHeaderWithImage
+      <!-- Header - UPDATED -->
+      <UiDetailPageHeader
         :title="entity.name"
         :badges="[
           { label: entity.is_base_class ? 'Base Class' : 'Subclass', color: (entity.is_base_class ? 'error' : 'warning') as BadgeColor, variant: 'subtle' as BadgeVariant, size: 'lg' as BadgeSize },
           ...(entity.spellcasting_ability ? [{ label: `✨ ${entity.spellcasting_ability.name}`, color: 'primary' as BadgeColor, variant: 'soft' as BadgeVariant, size: 'sm' as BadgeSize }] : [])
         ]"
-        :image-path="imagePath"
-        :image-alt="`${entity.name} class illustration`"
       />
 
       <!-- Quick Stats -->
@@ -72,19 +70,13 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Description (Always Visible) -->
-      <UCard v-if="entity.description">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Description
-          </h2>
-        </template>
-        <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">
-            {{ entity.description }}
-          </p>
-        </div>
-      </UCard>
+      <!-- Description + Image - NEW -->
+      <UiDetailDescriptionWithImage
+        v-if="entity.description"
+        :description="entity.description"
+        :image-path="imagePath"
+        :image-alt="`${entity.name} class illustration`"
+      />
 
       <!-- Additional Details (Accordion) -->
       <UAccordion
