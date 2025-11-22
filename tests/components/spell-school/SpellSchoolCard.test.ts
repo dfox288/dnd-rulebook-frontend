@@ -84,13 +84,12 @@ describe('SpellSchoolCard', () => {
   })
 
   describe('background images', () => {
-    it('computes background image URL correctly', async () => {
+    it('computes background image URL correctly using code field', async () => {
       const wrapper = await mountSuspended(SpellSchoolCard, {
         props: {
           spellSchool: {
             id: 1,
-            slug: 'evocation',
-            code: 'EVO',
+            code: 'EV',
             name: 'Evocation',
             description: 'Evocation spells'
           }
@@ -98,24 +97,26 @@ describe('SpellSchoolCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/spell_schools/stability-ai/evocation.png')
+      // Uses code field (EV) not slug or name
+      expect(url).toBe('/images/generated/conversions/256/spell_schools/stability-ai/EV.png')
     })
 
-    it('applies background image styles when URL exists', async () => {
+    it('applies background image with opacity layer', async () => {
       const wrapper = await mountSuspended(SpellSchoolCard, {
         props: {
           spellSchool: {
             id: 1,
-            slug: 'evocation',
-            code: 'EVO',
-            name: 'Evocation'
+            code: 'A',
+            name: 'Abjuration'
           }
         }
       })
 
-      const card = wrapper.find('.group')
-      const style = card.attributes('style')
-      expect(style).toContain('background-image')
+      const html = wrapper.html()
+      // Check for absolute positioned background div with opacity
+      expect(html).toContain('absolute inset-0')
+      expect(html).toContain('opacity-10')
+      expect(html).toContain('A.png')
     })
   })
 })

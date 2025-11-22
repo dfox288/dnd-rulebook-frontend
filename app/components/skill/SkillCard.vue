@@ -1,7 +1,6 @@
 <script setup lang="ts">
 interface Skill {
   id: number
-  slug: string
   name: string
   ability_score?: {
     id: number
@@ -16,25 +15,29 @@ interface Props {
 
 const props = defineProps<Props>()
 const { getImagePath } = useEntityImage()
+
+// Generate slug from name (API doesn't provide slug field)
+// Transform: "Animal Handling" -> "animal-handling"
+const skillSlug = computed(() =>
+  props.skill.name.toLowerCase().replace(/ /g, '-')
+)
+
 const backgroundImageUrl = computed(() =>
-  getImagePath('skills', props.skill.slug, 256)
+  getImagePath('skills', skillSlug.value, 256)
 )
 </script>
 
 <template>
-  <div
-    :style="backgroundImageUrl ? {
-      backgroundImage: `url(${backgroundImageUrl})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center'
-    } : {}"
-    class="group relative overflow-hidden rounded-lg border border-default
-           transition-all duration-200 hover:border-primary hover:scale-[1.02]
-           hover:shadow-lg dark:hover:shadow-primary/20
-           after:absolute after:inset-0 after:bg-background/90 hover:after:bg-background/80
-           after:transition-colors after:duration-200"
-  >
-    <div class="relative z-10 p-4 space-y-3">
+  <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700 group">
+    <!-- Background Image Layer -->
+    <div
+      v-if="backgroundImageUrl"
+      class="absolute inset-0 bg-cover bg-center opacity-10 transition-opacity duration-300 group-hover:opacity-20"
+      :style="{ backgroundImage: `url(${backgroundImageUrl})` }"
+    />
+
+    <!-- Content Layer -->
+    <div class="relative z-10 space-y-3">
       <!-- Skill Name -->
       <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
         {{ skill.name }}
@@ -70,5 +73,5 @@ const backgroundImageUrl = computed(() =>
         </UBadge>
       </div>
     </div>
-  </div>
+  </UCard>
 </template>

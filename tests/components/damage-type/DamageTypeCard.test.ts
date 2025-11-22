@@ -94,7 +94,7 @@ describe('DamageTypeCard', () => {
       expect(url).toBe('/images/generated/conversions/256/damage_types/stability-ai/fire.png')
     })
 
-    it('applies background image styles when URL exists', async () => {
+    it('applies background image with opacity layer', async () => {
       const wrapper = await mountSuspended(DamageTypeCard, {
         props: {
           damageType: {
@@ -104,9 +104,11 @@ describe('DamageTypeCard', () => {
         }
       })
 
-      const card = wrapper.find('.group')
-      const style = card.attributes('style')
-      expect(style).toContain('background-image')
+      const html = wrapper.html()
+      // Check for absolute positioned background div with opacity
+      expect(html).toContain('absolute inset-0')
+      expect(html).toContain('opacity-10')
+      expect(html).toContain('fire.png')
     })
   })
 })

@@ -151,7 +151,7 @@ describe('LanguageCard', () => {
       expect(url).toBe('/images/generated/conversions/256/languages/stability-ai/common.png')
     })
 
-    it('applies background image styles when URL exists', async () => {
+    it('applies background image with opacity layer', async () => {
       const wrapper = await mountSuspended(LanguageCard, {
         props: {
           language: {
@@ -164,9 +164,11 @@ describe('LanguageCard', () => {
         }
       })
 
-      const card = wrapper.find('.group')
-      const style = card.attributes('style')
-      expect(style).toContain('background-image')
+      const html = wrapper.html()
+      // Check for absolute positioned background div with opacity
+      expect(html).toContain('absolute inset-0')
+      expect(html).toContain('opacity-10')
+      expect(html).toContain('common.png')
     })
   })
 })

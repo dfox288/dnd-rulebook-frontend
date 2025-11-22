@@ -6,7 +6,6 @@ import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardB
 describe('SkillCard', () => {
   const mockSkill = {
     id: 1,
-    slug: 'acrobatics',
     name: 'Acrobatics',
     ability_score: {
       id: 2,
@@ -80,41 +79,41 @@ describe('SkillCard', () => {
   })
 
   describe('background images', () => {
-    it('computes background image URL correctly', async () => {
+    it('computes background image URL correctly from skill name', async () => {
       const wrapper = await mountSuspended(SkillCard, {
         props: {
           skill: {
             id: 1,
-            slug: 'acrobatics',
-            name: 'Acrobatics',
+            name: 'Animal Handling',
             ability_score: {
-              id: 2,
-              code: 'DEX',
-              name: 'Dexterity'
+              id: 3,
+              code: 'WIS',
+              name: 'Wisdom'
             }
           }
         }
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/skills/stability-ai/acrobatics.png')
+      // Slug is generated from name: "Animal Handling" -> "animal-handling"
+      expect(url).toBe('/images/generated/conversions/256/skills/stability-ai/animal-handling.png')
     })
 
-    it('applies background image styles when URL exists', async () => {
+    it('applies background image with opacity layer', async () => {
       const wrapper = await mountSuspended(SkillCard, {
         props: {
           skill: {
             id: 1,
-            slug: 'acrobatics',
             name: 'Acrobatics'
           }
         }
       })
 
-      const card = wrapper.find('.group')
-      const style = card.attributes('style')
-      expect(style).toContain('background-image')
-      expect(style).toContain('acrobatics.png')
+      const html = wrapper.html()
+      // Check for absolute positioned background div with opacity
+      expect(html).toContain('absolute inset-0')
+      expect(html).toContain('opacity-10')
+      expect(html).toContain('acrobatics.png')
     })
   })
 })
