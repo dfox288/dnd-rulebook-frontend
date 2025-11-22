@@ -19,17 +19,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 6 new type compatibility tests (one per entity type)
 
 ### Fixed
-- **TypeScript errors reduced by 70% (2025-11-22)** - Systematic cleanup from 176 to 53 errors
-  - Added proper type annotations to all 6 detail pages (54 errors eliminated)
-  - Added type annotations to search page (18 errors eliminated)
-  - Fixed empty object types in useAsyncData calls (61 errors eliminated)
-  - Updated 8 accordion components to use generated API types (32 errors eliminated)
-  - Added missing entity fields (description, feature_name) to types (15 errors eliminated)
-  - Fixed null vs undefined type mismatches (18 errors eliminated)
-  - Fixed index page array type annotations (10 errors eliminated)
-  - Fixed badge color type safety (5 errors eliminated)
-  - Added missing type exports (Condition, DamageType) (2 errors eliminated)
-  - Fixed BackgroundCard property names (6 errors eliminated)
+- **TypeScript errors reduced by 93% (2025-11-22)** - Systematic cleanup from 176 to 13 errors
+  - **Session 1: OpenAPI migration (176 → 53 errors, 70% reduction)**
+    - Added proper type annotations to all 6 detail pages (54 errors eliminated)
+    - Added type annotations to search page (18 errors eliminated)
+    - Fixed empty object types in useAsyncData calls (61 errors eliminated)
+    - Updated 8 accordion components to use generated API types (32 errors eliminated)
+    - Added missing entity fields (description, feature_name) to types (15 errors eliminated)
+    - Fixed null vs undefined type mismatches (18 errors eliminated)
+    - Fixed index page array type annotations (10 errors eliminated)
+    - Fixed badge color type safety (5 errors eliminated)
+    - Added missing type exports (Condition, DamageType) (2 errors eliminated)
+    - Fixed BackgroundCard property names (6 errors eliminated)
+  - **Session 2: Quick wins cleanup (53 → 13 errors, 75% reduction)**
+    - Added taxonomy type definitions (Language, ProficiencyType, Size, Skill, SpellSchool) (19 errors)
+    - Fixed FeatCard prerequisite null checks with optional chaining (4 errors)
+    - Fixed ItemCard undefined rarity index access (1 error)
+    - Fixed Items/Spells index select menu type definitions (6 errors)
+    - Added null coalescing for spell effect sorting (2 errors)
+    - Added optional chaining for race condition relations (2 errors)
+    - Added type assertions for entity list composable data (4 errors)
+    - Added missing Race and Spell type imports (2 errors)
+- **All 11 test failures fixed - 100% pass rate achieved! (2025-11-22)**
+  - Fixed ClassCard is_base_class type handling (boolean/string/number support) (6 tests)
+  - Updated BackgroundCard test mocks to new proficiencies array structure (5 tests)
+  - All 564 tests now passing (553 → 564)
 
 ### Changed
 - **Test suite refactored for maintainability** - Extracted shared test helpers to reduce redundancy by 30 tests (573→543→558 adjusted) (2025-11-22)
