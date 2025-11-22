@@ -256,7 +256,7 @@ const sizeColor = computed(() => {
                   color="warning"
                   variant="soft"
                 >
-                  {{ conditionRelation.condition.name }}
+                  {{ conditionRelation.condition?.name }}
                 </UBadge>
                 <div class="flex-1">
                   <div
@@ -266,7 +266,7 @@ const sizeColor = computed(() => {
                     Effect: {{ conditionRelation.effect_type.charAt(0).toUpperCase() + conditionRelation.effect_type.slice(1) }}
                   </div>
                   <div class="text-sm text-gray-700 dark:text-gray-300">
-                    {{ conditionRelation.condition.description }}
+                    {{ conditionRelation.condition?.description }}
                   </div>
                   <div
                     v-if="conditionRelation.description"

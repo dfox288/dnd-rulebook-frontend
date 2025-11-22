@@ -23,10 +23,10 @@ const prerequisitesSummary = computed(() => {
   const prereqs = props.feat.prerequisites!
   if (prereqs.length === 1) {
     const p = prereqs[0]
-    if (p.ability_score) {
+    if (p?.ability_score) {
       return `${p.ability_score.code} ${p.minimum_value}+`
     }
-    return p.description || 'Prerequisites required'
+    return p?.description || 'Prerequisites required'
   }
   return `${prereqs.length} prerequisites`
 })

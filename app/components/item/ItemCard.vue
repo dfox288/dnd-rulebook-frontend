@@ -20,7 +20,8 @@ const rarityColor = computed<'primary' | 'secondary' | 'success' | 'info' | 'war
     'legendary': 'warning', // Orange/amber - extremely rare
     'artifact': 'error' // Red - unique/powerful
   }
-  return colors[props.item.rarity?.toLowerCase()] || 'neutral'
+  const rarity = props.item.rarity?.toLowerCase()
+  return (rarity && colors[rarity]) || 'neutral'
 })
 
 /**

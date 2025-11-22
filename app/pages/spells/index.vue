@@ -32,7 +32,7 @@ const levelOptions = [
 
 // School filter options
 const schoolOptions = computed(() => {
-  const options = [{ label: 'All Schools', value: null }]
+  const options: Array<{ label: string; value: number | null }> = [{ label: 'All Schools', value: null }]
   if (spellSchools.value) {
     options.push(...spellSchools.value.map(school => ({
       label: school.name,
@@ -54,7 +54,7 @@ const queryBuilder = computed(() => {
 const {
   searchQuery,
   currentPage,
-  data: spells,
+  data: spellsData,
   meta,
   totalResults,
   loading,
@@ -71,6 +71,8 @@ const {
     description: 'Browse all D&D 5e spells. Filter by level, school, and search for specific spells.'
   }
 })
+
+const spells = computed(() => spellsData.value as Spell[])
 
 // Clear all filters (base + custom)
 const clearFilters = () => {

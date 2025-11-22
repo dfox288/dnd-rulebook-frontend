@@ -35,7 +35,7 @@ const spellLevelText = computed(() => {
 const spellEffects = computed(() => {
   if (!spell.value?.effects) return []
   return [...spell.value.effects]
-    .sort((a, b) => a.min_spell_slot - b.min_spell_slot)
+    .sort((a, b) => (a.min_spell_slot || 0) - (b.min_spell_slot || 0))
 })
 </script>
 

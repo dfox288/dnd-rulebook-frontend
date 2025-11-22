@@ -43,7 +43,7 @@ const magicOptions = [
 
 // Item type filter options
 const typeOptions = computed(() => {
-  const options = [{ label: 'All Types', value: null }]
+  const options: Array<{ label: string; value: number | null }> = [{ label: 'All Types', value: null }]
   if (itemTypes.value) {
     options.push(...itemTypes.value.map((type: ItemType) => ({
       label: type.name,
@@ -142,46 +142,30 @@ const perPage = 24
           v-model="selectedType"
           :items="typeOptions"
           value-key="value"
+          text-key="label"
           placeholder="Select type"
           class="w-48"
-        >
-          <template #label>
-            <span v-if="selectedType === null">All Types</span>
-            <span v-else>{{ itemTypes?.find(t => t.id === selectedType)?.name }}</span>
-          </template>
-        </USelectMenu>
+        />
 
         <!-- Rarity filter -->
         <USelectMenu
           v-model="selectedRarity"
           :items="rarityOptions"
           value-key="value"
+          text-key="label"
           placeholder="Select rarity"
           class="w-44"
-        >
-          <template #label>
-            <span v-if="selectedRarity === null">All Rarities</span>
-            <span
-              v-else
-              class="capitalize"
-            >{{ selectedRarity }}</span>
-          </template>
-        </USelectMenu>
+        />
 
         <!-- Magic filter -->
         <USelectMenu
           v-model="selectedMagic"
           :items="magicOptions"
           value-key="value"
+          text-key="label"
           placeholder="Filter by magic"
           class="w-44"
-        >
-          <template #label>
-            <span v-if="selectedMagic === null">All Items</span>
-            <span v-else-if="selectedMagic === 'true'">Magic Items</span>
-            <span v-else>Non-Magic Items</span>
-          </template>
-        </USelectMenu>
+        />
 
         <!-- Clear filters button -->
         <UButton
@@ -203,7 +187,7 @@ const perPage = 24
         <UButton
           v-if="selectedType !== null"
           size="xs"
-          color="amber"
+          color="warning"
           variant="soft"
           @click="selectedType = null"
         >

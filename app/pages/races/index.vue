@@ -30,7 +30,7 @@ const queryBuilder = computed(() => {
 const {
   searchQuery,
   currentPage,
-  data: races,
+  data: racesData,
   meta,
   totalResults,
   loading,
@@ -47,6 +47,8 @@ const {
     description: 'Browse all D&D 5e player races and subraces.'
   }
 })
+
+const races = computed(() => racesData.value as Race[])
 
 // Clear all filters (base + custom)
 const clearFilters = () => {
