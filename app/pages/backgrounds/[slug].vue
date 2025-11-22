@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import type { Background } from '~/types'
+import type { Background } from '~/types/api/entities'
 
-const { apiFetch } = useApi()
 const route = useRoute()
-const slug = route.params.slug as string
 
-const { data: entity, error, pending } = await useAsyncData(
-  `background-${slug}`,
-  async () => {
-    const response = await apiFetch<{ data: Background }>(`/backgrounds/${slug}`)
-    return response.data
+// Fetch background data and setup SEO
+const { data: entity, loading, error } = useEntityDetail<Background>({
+  slug: route.params.slug as string,
+  endpoint: '/backgrounds',
+  cacheKey: 'background',
+  seo: {
+    titleTemplate: name => `${name} - D&D 5e Background`,
+    descriptionExtractor: (background: unknown) => {
+      const b = background as { description?: string }
+      return b.description?.substring(0, 160) || ''
+    },
+    fallbackTitle: 'Background - D&D 5e Compendium'
   }
-)
-
-useSeoMeta({
-  title: computed(() => entity.value ? `${entity.value.name} - D&D 5e Background` : 'Background - D&D 5e Compendium'),
-  description: computed(() => entity.value?.description?.substring(0, 160))
 })
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <UiDetailPageLoading
-      v-if="pending"
+      v-if="loading"
       entity-type="background"
     />
 

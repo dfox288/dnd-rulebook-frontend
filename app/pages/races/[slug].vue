@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import type { Race } from '~/types'
+import type { Race } from '~/types/api/entities'
 import { getSizeColor } from '~/utils/badgeColors'
 
-const { apiFetch } = useApi()
 const route = useRoute()
-const slug = route.params.slug as string
 
-// Fetch race data using useAsyncData for SSR support (via Nitro proxy)
-const { data: race, error, pending } = await useAsyncData(
-  `race-${slug}`,
-  async () => {
-    const response = await apiFetch<{ data: Race }>(`/races/${slug}`)
-    return response.data
+// Fetch race data and setup SEO
+const { data: race, loading, error } = useEntityDetail<Race>({
+  slug: route.params.slug as string,
+  endpoint: '/races',
+  cacheKey: 'race',
+  seo: {
+    titleTemplate: name => `${name} - D&D 5e Race`,
+    descriptionExtractor: (race: unknown) => {
+      const r = race as { description?: string; name?: string }
+      return r.description?.substring(0, 160) || `Learn about the ${r.name} race in D&D 5e`
+    },
+    fallbackTitle: 'Race - D&D 5e Compendium'
   }
-)
-
-// Set page meta
-useSeoMeta({
-  title: computed(() => race.value ? `${race.value.name} - D&D 5e Race` : 'Race - D&D 5e Compendium'),
-  description: computed(() => race.value?.description?.substring(0, 160) || `Learn about the ${race.value?.name} race in D&D 5e`)
 })
 
 /**
@@ -34,7 +32,7 @@ const sizeColor = computed(() => {
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
     <UiDetailPageLoading
-      v-if="pending"
+      v-if="loading"
       entity-type="race"
     />
 

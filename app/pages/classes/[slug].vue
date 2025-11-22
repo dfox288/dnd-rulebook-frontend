@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import type { CharacterClass } from '~/types'
+import type { CharacterClass } from '~/types/api/entities'
 
 type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
 type BadgeVariant = 'solid' | 'outline' | 'soft' | 'subtle'
 type BadgeSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-const { apiFetch } = useApi()
 const route = useRoute()
-const slug = route.params.slug as string
 
-const { data: entity, error, pending } = await useAsyncData(
-  `class-${slug}`,
-  async () => {
-    const response = await apiFetch<{ data: CharacterClass }>(`/classes/${slug}`)
-    return response.data
+// Fetch class data and setup SEO
+const { data: entity, loading, error } = useEntityDetail<CharacterClass>({
+  slug: route.params.slug as string,
+  endpoint: '/classes',
+  cacheKey: 'class',
+  seo: {
+    titleTemplate: name => `${name} - D&D 5e Class`,
+    descriptionExtractor: (charClass: unknown) => {
+      const c = charClass as { description?: string }
+      return c.description?.substring(0, 160) || ''
+    },
+    fallbackTitle: 'Class - D&D 5e Compendium'
   }
-)
-
-useSeoMeta({
-  title: computed(() => entity.value ? `${entity.value.name} - D&D 5e Class` : 'Class - D&D 5e Compendium'),
-  description: computed(() => entity.value?.description?.substring(0, 160))
 })
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <UiDetailPageLoading
-      v-if="pending"
+      v-if="loading"
       entity-type="class"
     />
 

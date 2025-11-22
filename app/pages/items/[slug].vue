@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import type { Item } from '~/types'
+import type { Item } from '~/types/api/entities'
 import { getItemRarityColor, getItemTypeColor } from '~/utils/badgeColors'
 
-const { apiFetch } = useApi()
 const route = useRoute()
-const slug = route.params.slug as string
 
-// Fetch item data using useAsyncData for SSR support (via Nitro proxy)
-const { data: item, error, pending } = await useAsyncData(
-  `item-${slug}`,
-  async () => {
-    const response = await apiFetch<{ data: Item }>(`/items/${slug}`)
-    return response.data
+// Fetch item data and setup SEO
+const { data: item, loading, error } = useEntityDetail<Item>({
+  slug: route.params.slug as string,
+  endpoint: '/items',
+  cacheKey: 'item',
+  seo: {
+    titleTemplate: name => `${name} - D&D 5e Item`,
+    descriptionExtractor: (item: unknown) => {
+      const i = item as { description?: string }
+      return i.description?.substring(0, 160) || ''
+    },
+    fallbackTitle: 'Item - D&D 5e Compendium'
   }
-)
-
-// Set page meta
-useSeoMeta({
-  title: computed(() => item.value ? `${item.value.name} - D&D 5e Item` : 'Item - D&D 5e Compendium'),
-  description: computed(() => item.value?.description?.substring(0, 160))
 })
 
 /**
@@ -61,7 +59,7 @@ const itemTypeColor = computed(() => {
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
     <UiDetailPageLoading
-      v-if="pending"
+      v-if="loading"
       entity-type="item"
     />
 

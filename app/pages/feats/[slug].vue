@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import type { Feat } from '~/types'
+import type { Feat } from '~/types/api/entities'
 
-const { apiFetch } = useApi()
 const route = useRoute()
-const slug = route.params.slug as string
 
-const { data: entity, error, pending } = await useAsyncData(
-  `feat-${slug}`,
-  async () => {
-    const response = await apiFetch<{ data: Feat }>(`/feats/${slug}`)
-    return response.data
+// Fetch feat data and setup SEO
+const { data: entity, loading, error } = useEntityDetail<Feat>({
+  slug: route.params.slug as string,
+  endpoint: '/feats',
+  cacheKey: 'feat',
+  seo: {
+    titleTemplate: name => `${name} - D&D 5e Feat`,
+    descriptionExtractor: (feat: unknown) => {
+      const f = feat as { description?: string }
+      return f.description?.substring(0, 160) || ''
+    },
+    fallbackTitle: 'Feat - D&D 5e Compendium'
   }
-)
-
-useSeoMeta({
-  title: computed(() => entity.value ? `${entity.value.name} - D&D 5e Feat` : 'Feat - D&D 5e Compendium'),
-  description: computed(() => entity.value?.description?.substring(0, 160))
 })
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <UiDetailPageLoading
-      v-if="pending"
+      v-if="loading"
       entity-type="feat"
     />
 
