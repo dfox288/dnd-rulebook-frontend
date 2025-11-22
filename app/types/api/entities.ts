@@ -103,19 +103,16 @@ export interface Background extends Omit<BackgroundFromAPI, 'sources'> {
 /**
  * Feat entity from D&D 5e API
  *
+ * Base type generated from OpenAPI spec, extended with application-specific utilities.
+ *
  * Used in: FeatCard, feat detail pages, tests
  * API endpoint: /api/v1/feats
  */
-export interface Feat {
-  id: number
-  name: string
-  slug: string
-  prerequisites?: unknown[] // Complex prerequisite structure
+type FeatFromAPI = components['schemas']['FeatResource']
+
+export interface Feat extends Omit<FeatFromAPI, 'sources' | 'modifiers'> {
+  // Override with our custom types that have better structure
   modifiers?: Modifier[]
-  abilities?: unknown[] // Special abilities granted
-  proficiencies?: unknown[] // Proficiencies granted
-  spells?: unknown[] // Spells granted
-  description?: string
   sources?: Source[]
-  tags?: unknown[] // Feat tags
+  // All other fields inherited from FeatFromAPI
 }
