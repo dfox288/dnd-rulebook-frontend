@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Entity Images Feature - Planning Complete (2025-11-22)** - Ready for implementation
+  - Comprehensive design document for AI-generated images on entity pages
+  - CV-style header layout with hero images on detail pages (512px variants)
+  - Subtle background images on list cards (256px, 10% opacity, 20% hover)
+  - Reusable `useEntityImage` composable for all entity types
+  - New `UiEntityHeaderWithImage` component for detail pages
+  - Configurable image provider via `NUXT_PUBLIC_IMAGE_PROVIDER` env variable
+  - Docker volume mounted: `../image-generator/output` at `/images/generated/`
+  - Pre-optimized image variants (256px, 512px, original) from image-generator
+  - Implementation plan with 8 TDD tasks (~90 min estimated)
+  - @nuxt/image module installed for optimization
 - **Monsters entity type complete (2025-11-22)** - 7th entity type with full feature parity
   - Monster list page with CR/Type filtering
   - Monster detail page with full stat blocks (AC, HP, speeds, ability scores)

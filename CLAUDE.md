@@ -31,6 +31,9 @@ Both Nuxt and NuxtUI provide official documentation in LLM-friendly format:
 - **Quick Reference:** `https://ui.nuxt.com/llms.txt` (~5K tokens) - Component API and patterns
 - **Full Documentation:** `https://ui.nuxt.com/llms-full.txt` (800K+ tokens) - Complete component docs
 
+**Nuxt Image:**
+- **Quick Reference:** `https://image.nuxt.com/llms.txt` - Image optimization and component API
+
 **⚠️ IMPORTANT:** Before starting ANY work on this frontend project, ALWAYS fetch BOTH llms.txt files to ensure AI assistance aligns with official Nuxt 4 and NuxtUI 4 patterns and best practices.
 
 ## Backend API

@@ -528,13 +528,15 @@ If you find issues:
 **Next Agent: Read the following in order:**
 1. This document (`docs/CURRENT_STATUS.md`) for complete project overview
 2. `CLAUDE.md` - Setup, patterns, TDD requirements (streamlined + mandatory workflows)
-3. `docs/HANDOVER-2025-11-22-TYPESCRIPT-TEST-CLEANUP.md` - Latest session (TS cleanup + test fixes)
-4. `docs/HANDOVER-2025-11-22-OPENAPI-TYPES-TYPESCRIPT-CLEANUP.md` - OpenAPI type generation
-5. `docs/archive/2025-11-21-development-session/` - Previous development sessions
+3. `docs/HANDOVER-2025-11-22-ENTITY-IMAGES-PLANNING.md` - Latest session (Entity images planning complete)
+4. `docs/HANDOVER-2025-11-22-TYPESCRIPT-TEST-CLEANUP.md` - TS cleanup + test fixes
+5. `docs/HANDOVER-2025-11-22-OPENAPI-TYPES-TYPESCRIPT-CLEANUP.md` - OpenAPI type generation
+6. `docs/archive/2025-11-21-development-session/` - Previous development sessions
 
 **Priority Tasks:**
-1. 🟡 **Fix remaining 13 TypeScript errors** (~2-3 hours, see handover doc for details)
-2. 🟡 Add toast notifications for better UX feedback
-3. 🟢 Advanced filtering features (multi-select, saved filters)
-4. 🟢 Performance optimization (lazy loading, code splitting)
-5. 🟢 E2E testing with Playwright for critical user flows
+1. 🟢 **Implement Entity Images Feature** (~90 min, PLANNED - see `docs/plans/2025-11-22-entity-images-implementation.md`)
+2. 🟡 **Fix remaining 13 TypeScript errors** (~2-3 hours, see handover doc for details)
+3. 🟡 Add toast notifications for better UX feedback
+4. 🟢 Advanced filtering features (multi-select, saved filters)
+5. 🟢 Performance optimization (lazy loading, code splitting)
+6. 🟢 E2E testing with Playwright for critical user flows
