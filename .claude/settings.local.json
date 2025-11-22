@@ -118,7 +118,8 @@
       "WebFetch(domain:localhost)",
       "Bash(git reset:*)",
       "Bash(1)",
-      "Bash(cut:*)"
+      "Bash(cut:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []
