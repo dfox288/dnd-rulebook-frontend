@@ -36,6 +36,9 @@ export interface UseEntityListConfig {
 
   /** Parse URL params on mount (default: true) */
   initialRoute?: boolean
+
+  /** Disable pagination for small datasets (default: false) */
+  noPagination?: boolean
 }
 
 /**
@@ -113,8 +116,8 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   // Build complete query params (base + custom)
   const queryParams = computed(() => {
     const params: Record<string, unknown> = {
-      per_page: config.perPage ?? 24,
-      page: currentPage.value
+      per_page: config.noPagination ? 9999 : (config.perPage ?? 24),
+      page: config.noPagination ? 1 : currentPage.value
     }
 
     // Add search if present
