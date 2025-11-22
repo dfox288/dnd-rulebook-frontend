@@ -87,6 +87,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - All 564 tests now passing (553 → 564)
 
 ### Changed
+- **Applied entity-specific colors across all card components and search interface (2025-11-22)**
+  - Main entities: Spells (purple), Items (gold), Races (green), Classes (red), Backgrounds (yellow-brown), Feats (blue), Monsters (orange)
+  - Reference entities: Ability scores (indigo), Conditions (rose), Damage types (slate), Item types (teal), Languages (cyan), Proficiencies (lime), Sizes (zinc), Skills (yellow), Spell schools (fuchsia), Sources (neutral)
+  - Search results and filter buttons now use entity colors for instant visual recognition
+  - Simplified component code by removing generic color mapping functions
 - **Test suite refactored for maintainability** - Extracted shared test helpers to reduce redundancy by 30 tests (573→543→558 adjusted) (2025-11-22)
   - Created 3 test helper modules (cardBehavior, descriptionBehavior, sourceBehavior)
   - Refactored 6 entity card test files (Spell, Item, Race, Class, Background, Feat)
