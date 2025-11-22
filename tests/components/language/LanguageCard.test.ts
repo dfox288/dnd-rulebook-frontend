@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import LanguageCard from '~/components/language/LanguageCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('LanguageCard', () => {
   const mockLanguage = {
@@ -11,6 +12,13 @@ describe('LanguageCard', () => {
     typical_speakers: 'Elves',
     description: 'Fluid and melodic language spoken by elves across the multiverse.'
   }
+
+  const mountCard = () => mountSuspended(LanguageCard, {
+    props: { language: mockLanguage }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('renders language name', async () => {
     const wrapper = await mountSuspended(LanguageCard, {
@@ -73,44 +81,6 @@ describe('LanguageCard', () => {
 
     expect(wrapper.text()).toContain(shortDescription)
     expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(LanguageCard, {
-      props: { language: mockLanguage }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(LanguageCard, {
-      props: { language: mockLanguage }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(LanguageCard, {
-      props: { language: mockLanguage }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('displays all key information in organized layout', async () => {
-    const wrapper = await mountSuspended(LanguageCard, {
-      props: { language: mockLanguage }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('Elvish')
-    expect(text).toContain('Elvish Script')
-    expect(text).toContain('Elves')
   })
 
   it('handles different script types', async () => {

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SizeCard from '~/components/size/SizeCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('SizeCard', () => {
   const mockSize = {
@@ -8,6 +9,9 @@ describe('SizeCard', () => {
     code: 'M',
     name: 'Medium'
   }
+
+  testCardHoverEffects(() => mountSuspended(SizeCard, { props: { size: mockSize } }))
+  testCardBorderStyling(() => mountSuspended(SizeCard, { props: { size: mockSize } }))
 
   it('renders size name', async () => {
     const wrapper = await mountSuspended(SizeCard, {
@@ -31,33 +35,6 @@ describe('SizeCard', () => {
     })
 
     expect(wrapper.text()).toContain('Creature Size')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(SizeCard, {
-      props: { size: mockSize }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(SizeCard, {
-      props: { size: mockSize }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(SizeCard, {
-      props: { size: mockSize }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
   })
 
   it('displays all key information in organized layout', async () => {
@@ -91,24 +68,4 @@ describe('SizeCard', () => {
     }
   })
 
-  it('uses neutral color theme', async () => {
-    const wrapper = await mountSuspended(SizeCard, {
-      props: { size: mockSize }
-    })
-
-    const html = wrapper.html()
-    // Neutral badges should be present
-    expect(html).toBeTruthy()
-  })
-
-  it('displays size code in large solid badge', async () => {
-    const wrapper = await mountSuspended(SizeCard, {
-      props: { size: mockSize }
-    })
-
-    const html = wrapper.html()
-    // Check that badge is rendered with solid variant and prominent styling
-    expect(html).toContain('M')
-    expect(html).toBeTruthy()
-  })
 })

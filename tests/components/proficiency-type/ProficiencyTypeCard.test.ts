@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ProficiencyTypeCard from '~/components/proficiency-type/ProficiencyTypeCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('ProficiencyTypeCard', () => {
   const mockProficiencyType = {
@@ -9,6 +10,13 @@ describe('ProficiencyTypeCard', () => {
     category: 'armor',
     subcategory: 'light'
   }
+
+  const mountCard = () => mountSuspended(ProficiencyTypeCard, {
+    props: { proficiencyType: mockProficiencyType }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('displays proficiency type name as title', async () => {
     const wrapper = await mountSuspended(ProficiencyTypeCard, {

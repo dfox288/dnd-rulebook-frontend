@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SkillCard from '~/components/skill/SkillCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('SkillCard', () => {
   const mockSkill = {
@@ -12,6 +13,13 @@ describe('SkillCard', () => {
       name: 'Dexterity'
     }
   }
+
+  const mountCard = () => mountSuspended(SkillCard, {
+    props: { skill: mockSkill }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('displays skill name as title', async () => {
     const wrapper = await mountSuspended(SkillCard, {

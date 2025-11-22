@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SourceCard from '~/components/source/SourceCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('SourceCard', () => {
   const mockSource = {
@@ -11,6 +12,13 @@ describe('SourceCard', () => {
     publication_year: 2014,
     edition: '5e'
   }
+
+  const mountCard = () => mountSuspended(SourceCard, {
+    props: { source: mockSource }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('renders source name', async () => {
     const wrapper = await mountSuspended(SourceCard, {
@@ -52,33 +60,6 @@ describe('SourceCard', () => {
     expect(wrapper.text()).toContain('5e')
   })
 
-  it('applies neutral color theme', async () => {
-    const wrapper = await mountSuspended(SourceCard, {
-      props: { source: mockSource }
-    })
-
-    const html = wrapper.html()
-    expect(html).toBeTruthy()
-  })
-
-  it('wraps card in UCard component', async () => {
-    const wrapper = await mountSuspended(SourceCard, {
-      props: { source: mockSource }
-    })
-
-    const card = wrapper.find('[class*="border"]')
-    expect(card.exists()).toBe(true)
-  })
-
-  it('uses hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(SourceCard, {
-      props: { source: mockSource }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
   it('handles long source names gracefully', async () => {
     const longSource = {
       ...mockSource,
@@ -92,15 +73,4 @@ describe('SourceCard', () => {
     expect(wrapper.text()).toContain('Eberron')
   })
 
-  it('displays all key information in organized layout', async () => {
-    const wrapper = await mountSuspended(SourceCard, {
-      props: { source: mockSource }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('PHB')
-    expect(text).toContain('Player\'s Handbook')
-    expect(text).toContain('2014')
-    expect(text).toContain('Wizards of the Coast')
-  })
 })

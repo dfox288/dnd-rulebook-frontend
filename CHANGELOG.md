@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **Test suite refactored for maintainability** - Extracted shared test helpers to reduce redundancy by 16 tests (573→557) (2025-11-22)
+- **Test suite refactored for maintainability** - Extracted shared test helpers to reduce redundancy by 30 tests (573→543→558 adjusted) (2025-11-22)
   - Created 3 test helper modules (cardBehavior, descriptionBehavior, sourceBehavior)
-  - Refactored 6 entity card test files using shared helpers
-  - Eliminated duplicate tests for link behavior, hover effects, description truncation, and source footers
-  - All 557 tests passing with improved maintainability
+  - Refactored 6 entity card test files (Spell, Item, Race, Class, Background, Feat)
+  - Refactored 9 taxonomy card test files (Size, Condition, DamageType, Language, ItemType, SpellSchool, ProficiencyType, AbilityScore, Skill, Source)
+  - Eliminated 30 redundant tests across 15 components
+  - Removed implementation detail tests (CSS classes, truthy assertions)
+  - All 558 tests passing with significantly improved maintainability
 
 ### Added
 - **Test coverage for SearchResultCard component** - Added 12 comprehensive tests for global search results (573 total tests) (2025-11-22)

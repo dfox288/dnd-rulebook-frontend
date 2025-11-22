@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SpellSchoolCard from '~/components/spell-school/SpellSchoolCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('SpellSchoolCard', () => {
   const mockSpellSchool = {
@@ -9,6 +10,13 @@ describe('SpellSchoolCard', () => {
     name: 'Abjuration',
     description: 'Abjuration spells are protective in nature.'
   }
+
+  const mountCard = () => mountSuspended(SpellSchoolCard, {
+    props: { spellSchool: mockSpellSchool }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('displays spell school code as large badge', async () => {
     const wrapper = await mountSuspended(SpellSchoolCard, {

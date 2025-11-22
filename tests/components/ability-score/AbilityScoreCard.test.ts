@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import AbilityScoreCard from '~/components/ability-score/AbilityScoreCard.vue'
+import { testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 
 describe('AbilityScoreCard', () => {
   const mockAbilityScore = {
@@ -8,6 +9,13 @@ describe('AbilityScoreCard', () => {
     code: 'STR',
     name: 'Strength'
   }
+
+  const mountCard = () => mountSuspended(AbilityScoreCard, {
+    props: { abilityScore: mockAbilityScore }
+  })
+
+  testCardHoverEffects(mountCard)
+  testCardBorderStyling(mountCard)
 
   it('displays ability score code as large badge', async () => {
     const wrapper = await mountSuspended(AbilityScoreCard, {
@@ -31,16 +39,6 @@ describe('AbilityScoreCard', () => {
     })
 
     expect(wrapper.text()).toContain('Ability Score')
-  })
-
-  it('uses neutral color theme', async () => {
-    const wrapper = await mountSuspended(AbilityScoreCard, {
-      props: { abilityScore: mockAbilityScore }
-    })
-
-    const html = wrapper.html()
-    // UCard with border styling indicates neutral theme
-    expect(html).toContain('border-gray')
   })
 
   it('handles missing optional fields gracefully', async () => {
