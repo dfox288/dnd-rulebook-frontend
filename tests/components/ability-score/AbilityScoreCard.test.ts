@@ -55,4 +55,37 @@ describe('AbilityScoreCard', () => {
     expect(wrapper.text()).toContain('DEX')
     expect(wrapper.text()).toContain('Dexterity')
   })
+
+  describe('background images', () => {
+    it('computes background image URL correctly', async () => {
+      const wrapper = await mountSuspended(AbilityScoreCard, {
+        props: {
+          abilityScore: {
+            id: 1,
+            code: 'STR',
+            name: 'Strength'
+          }
+        }
+      })
+
+      const url = wrapper.vm.backgroundImageUrl
+      expect(url).toBe('/images/generated/conversions/256/ability_scores/stability-ai/str.png')
+    })
+
+    it('applies background image styles when URL exists', async () => {
+      const wrapper = await mountSuspended(AbilityScoreCard, {
+        props: {
+          abilityScore: {
+            id: 1,
+            code: 'STR',
+            name: 'Strength'
+          }
+        }
+      })
+
+      const card = wrapper.find('.group')
+      const style = card.attributes('style')
+      expect(style).toContain('background-image')
+    })
+  })
 })
