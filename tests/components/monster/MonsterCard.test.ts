@@ -60,14 +60,14 @@ describe('MonsterCard', () => {
     expect(wrapper.text()).toContain('Ancient Red Dragon')
   })
 
-  it('renders CR badge with correct color', async () => {
+  it('renders CR badge with monster color', async () => {
     const wrapper = await mountSuspended(MonsterCard, {
       props: { monster: mockMonster }
     })
 
     expect(wrapper.text()).toContain('CR 24')
-    // CR 24 should use error color (deadly tier)
-    const badge = wrapper.find('[class*="bg-error"]')
+    // CR badge should use monster entity color
+    const badge = wrapper.find('[class*="bg-monster"]')
     expect(badge.exists()).toBe(true)
   })
 
@@ -155,11 +155,11 @@ describe('MonsterCard', () => {
 
   it('handles different CR values correctly', async () => {
     const crTests = [
-      { cr: '0', expected: 'success' },
-      { cr: '1/4', expected: 'success' },
-      { cr: '5', expected: 'info' },
-      { cr: '11', expected: 'warning' },
-      { cr: '24', expected: 'error' }
+      { cr: '0' },
+      { cr: '1/4' },
+      { cr: '5' },
+      { cr: '11' },
+      { cr: '24' }
     ]
 
     for (const test of crTests) {
@@ -169,6 +169,9 @@ describe('MonsterCard', () => {
       })
 
       expect(wrapper.text()).toContain(`CR ${test.cr}`)
+      // All CR badges use monster entity color
+      const badge = wrapper.find('[class*="bg-monster"]')
+      expect(badge.exists()).toBe(true)
     }
   })
 })

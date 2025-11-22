@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Monster } from '~/types'
-import { getChallengeRatingColor } from '~/utils/badgeColors'
 
 interface Props {
   monster: Monster
@@ -24,13 +23,6 @@ const truncatedDescription = computed(() => {
 const isLegendary = computed(() => {
   return props.monster.legendary_actions && props.monster.legendary_actions.length > 0
 })
-
-/**
- * Get CR badge color
- */
-const crBadgeColor = computed(() => {
-  return getChallengeRatingColor(props.monster.challenge_rating)
-})
 </script>
 
 <template>
@@ -38,21 +30,21 @@ const crBadgeColor = computed(() => {
     :to="`/monsters/${monster.slug}`"
     class="block h-full"
   >
-    <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+    <UCard class="hover:shadow-lg transition-shadow h-full border-2 border-monster-300 dark:border-monster-700 hover:border-monster-500">
       <div class="flex flex-col h-full">
         <!-- Top content -->
         <div class="space-y-3 flex-1">
           <!-- CR and Type Badges -->
           <div class="flex items-center gap-2 flex-wrap justify-between">
             <UBadge
-              :color="crBadgeColor"
+              color="monster"
               variant="subtle"
               size="md"
             >
               CR {{ monster.challenge_rating }}
             </UBadge>
             <UBadge
-              color="neutral"
+              color="monster"
               variant="subtle"
               size="md"
             >
@@ -78,7 +70,7 @@ const crBadgeColor = computed(() => {
             </div>
             <div v-if="isLegendary">
               <UBadge
-                color="warning"
+                color="monster"
                 variant="soft"
                 size="sm"
               >
