@@ -92,15 +92,31 @@ const truncatedDescription = computed(() => {
   if (props.item.description.length <= maxLength) return props.item.description
   return props.item.description.substring(0, maxLength).trim() + '...'
 })
+
+/**
+ * Get background image path (256px variant)
+ */
+const backgroundImage = computed(() => {
+  return useEntityImage(props.item.slug, 'items', '256')
+})
 </script>
 
 <template>
   <NuxtLink
     :to="`/items/${item.slug}`"
-    class="block h-full"
+    class="block h-full group"
   >
-    <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
-      <div class="flex flex-col h-full">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+      <!-- Background Image Layer -->
+      <div
+        v-if="backgroundImage"
+        data-test="card-background"
+        class="absolute inset-0 bg-cover bg-center opacity-10 transition-opacity duration-300 group-hover:opacity-20"
+        :style="{ backgroundImage: `url(${backgroundImage})` }"
+      />
+
+      <!-- Content Layer -->
+      <div class="relative z-10 flex flex-col h-full">
         <!-- Top content -->
         <div class="space-y-3 flex-1">
           <!-- Type and Rarity Badges -->
