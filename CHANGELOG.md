@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Entity Images Feature - Complete for All 16 Entity Types (2025-11-22)** - AI-generated images across main + reference entities
+  - Extended to all 10 reference entity types: ability-scores, conditions, damage-types, item-types, languages, proficiency-types, sizes, skills, spell-schools, sources
+  - Refactored `useEntityImage` composable to support all 16 entity types
+  - Handles kebab-case to snake_case conversion transparently
+  - Background images on all reference entity list cards (256px, 10% opacity, 20% hover)
+  - Total test suite: 696 tests passing (51 new tests added)
 - Animated fantasy background with mystical swirls and D&D runes (2025-11-22)
   - Canvas-based particle system with 40 swirls and 6 runic symbols
   - 30 FPS performance-optimized animation
@@ -17,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pauses when tab not visible (battery friendly)
   - Light/dark mode color palettes
   - 19 new tests (composable + component)
-- **Entity Images Feature - Complete for All 6 Main Entities (2025-11-22)** - AI-generated images across all entity types
+- **Entity Images Feature - Initial Implementation for 6 Main Entities (2025-11-22)** - AI-generated images on primary entity types
   - CV-style hero images on detail pages (512px variants, right-aligned 1/3 width)
   - Subtle background images on list cards (256px, 10% opacity, 20% hover)
   - Implemented on: Races, Classes, Backgrounds, Feats, Spells, Items
