@@ -189,5 +189,51 @@ describe('useAnimatedBackground', () => {
 
       expect(isRunning()).toBe(false)
     })
+
+    it('pauses animation when document becomes hidden', async () => {
+      const { useAnimatedBackground } = await import('~/composables/useAnimatedBackground')
+
+      const canvas = document.createElement('canvas')
+      const { initialize, start, isRunning } = useAnimatedBackground(canvas, false)
+
+      initialize()
+      start()
+      expect(isRunning()).toBe(true)
+
+      // Simulate document visibility change
+      Object.defineProperty(document, 'visibilityState', {
+        writable: true,
+        configurable: true,
+        value: 'hidden'
+      })
+      document.dispatchEvent(new Event('visibilitychange'))
+
+      // Wait for next tick
+      await new Promise(resolve => setTimeout(resolve, 0))
+
+      expect(isRunning()).toBe(false)
+    })
+
+    it('respects prefers-reduced-motion', async () => {
+      const { shouldAnimate } = await import('~/composables/useAnimatedBackground')
+
+      // Mock matchMedia
+      const mockMatchMedia = (matches: boolean) => ({
+        matches,
+        media: '(prefers-reduced-motion: reduce)',
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn()
+      })
+
+      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(true))
+      expect(shouldAnimate()).toBe(false)
+
+      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(false))
+      expect(shouldAnimate()).toBe(true)
+    })
   })
 })

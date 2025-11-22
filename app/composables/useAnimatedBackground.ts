@@ -185,6 +185,13 @@ const DARK_MODE_COLORS: ColorPalette = {
   runeColor: 'rgba(34, 211, 238, OPACITY)'    // cyan-400
 }
 
+export function shouldAnimate(): boolean {
+  if (typeof window === 'undefined') return false
+
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  return !mediaQuery.matches
+}
+
 export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean) {
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas context not available')
@@ -196,6 +203,15 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
 
   const colors = isDark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS
 
+  // Visibility change handler
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'hidden') {
+      stop()
+    } else {
+      start()
+    }
+  }
+
   function initialize() {
     const width = canvas.width
     const height = canvas.height
@@ -205,6 +221,11 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
 
     // Create 6 runes
     runes = Array.from({ length: 6 }, () => new Rune(width, height))
+
+    // Listen for visibility changes
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+    }
   }
 
   function animate(currentTime: number) {
@@ -251,6 +272,13 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
     }
   }
 
+  function cleanup() {
+    stop()
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }
+
   function isRunning() {
     return animationFrameId !== null
   }
@@ -263,6 +291,7 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
     initialize,
     start,
     stop,
+    cleanup,
     isRunning,
     getParticleCount
   }
