@@ -240,6 +240,264 @@ git commit -m "chore: Sync API types from backend"
 
 ---
 
+## 📋 List Page Standard Pattern
+
+**Status:** ✅ All 17 entity list pages standardized (2025-11-22)
+
+All list pages in this project follow a consistent pattern using the `useEntityList` composable. This ensures maintainability, reduces boilerplate, and provides a uniform user experience.
+
+### The useEntityList Composable
+
+**Location:** `app/composables/useEntityList.ts`
+
+**Purpose:** Single source of truth for all list page functionality including data fetching, pagination, search, URL sync, and SEO.
+
+**Configuration Options:**
+```typescript
+interface UseEntityListConfig {
+  endpoint: string                      // API endpoint (e.g., '/spells')
+  cacheKey: string                      // Cache key (e.g., 'spells-list')
+  queryBuilder: ComputedRef<Record<string, unknown>>  // Custom filters
+  perPage?: number                      // Items per page (default: 24)
+  noPagination?: boolean                // Disable pagination for small datasets
+  seo: {
+    title: string                       // Page title
+    description: string                 // Meta description
+  }
+  initialRoute?: boolean                // Sync from initial route params
+}
+```
+
+**Returns:**
+```typescript
+{
+  searchQuery: Ref<string>              // Search query (URL-synced)
+  currentPage: Ref<number>              // Current page number
+  data: Ref<T[]>                        // Entity data array
+  meta: ComputedRef<PaginationMeta>     // Pagination metadata
+  totalResults: ComputedRef<number>     // Total result count
+  loading: Ref<boolean>                 // Loading state
+  error: Ref<Error | null>              // Error state
+  refresh: () => Promise<void>          // Manual refresh function
+  clearFilters: () => void              // Clear all filters
+  hasActiveFilters: ComputedRef<boolean> // Whether any filters are active
+}
+```
+
+### Two Patterns: Paginated vs Non-Paginated
+
+#### Pattern 1: Paginated Main Entities
+Used for: Spells, Items, Races, Classes, Backgrounds, Feats, Monsters
+
+```typescript
+const {
+  searchQuery,
+  currentPage,
+  data,
+  meta,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/spells',
+  cacheKey: 'spells-list',
+  queryBuilder,  // Custom filters (level, school, etc.)
+  perPage: 24,
+  seo: {
+    title: 'Spells - D&D 5e Compendium',
+    description: 'Browse D&D 5e spells'
+  }
+})
+```
+
+#### Pattern 2: Non-Paginated Reference Entities
+Used for: Ability Scores, Conditions, Damage Types, Item Types, Languages, Proficiency Types, Sizes, Skills, Spell Schools, Sources
+
+```typescript
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/sizes',
+  cacheKey: 'sizes-list',
+  queryBuilder: computed(() => ({})),  // No custom filters
+  noPagination: true,  // <-- Key difference!
+  seo: {
+    title: 'Sizes - D&D 5e Compendium',
+    description: 'Browse D&D 5e creature sizes'
+  }
+})
+```
+
+**Key Difference:** `noPagination: true` sets `per_page: 9999` and fixes page to 1, effectively returning all results. Search still works via URL sync.
+
+### Required UI Components
+
+All list pages MUST use these standard components:
+
+1. **`<UiListPageHeader>`** - Page title, description, count, loading state
+   - Props: `title`, `total`, `description`, `loading`, `has-active-filters`
+
+2. **`<UiListSkeletonCards>`** - Loading state (6 animated skeleton cards)
+
+3. **`<UiListErrorState>`** - Error state with retry button
+   - Props: `error`, `entity-name`
+   - Events: `@retry`
+
+4. **`<UiListEmptyState>`** - Empty results state
+   - Props: `entity-name`, `has-filters`
+   - Events: `@clear-filters`
+
+5. **`<UiListResultsCount>`** - Results range display (e.g., "1-24 of 150")
+   - Props: `from`, `to`, `total`, `entity-name`
+
+6. **`<UiListPagination>`** - Pagination controls (paginated pages only)
+   - Props: `v-model` (page number), `total`, `items-per-page`
+
+7. **`<UiBackLink>`** - Breadcrumb navigation back to home
+
+8. **`<JsonDebugPanel>`** - Debug panel (development only, optional)
+
+### Active Filter Chips Pattern
+
+**When to use:** Pages with dropdown/button filters (level, school, CR, type, etc.)
+
+**Implementation:**
+```vue
+<!-- Filter chips section -->
+<div v-if="hasActiveFilters" class="flex flex-wrap items-center gap-2 pt-2">
+  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+
+  <!-- Custom filter chips -->
+  <UButton
+    v-if="selectedLevel !== null"
+    size="xs"
+    color="spell"
+    variant="soft"
+    @click="selectedLevel = null"
+  >
+    Level {{ selectedLevel }} ✕
+  </UButton>
+
+  <!-- Search query chip -->
+  <UButton
+    v-if="searchQuery"
+    size="xs"
+    color="neutral"
+    variant="soft"
+    @click="searchQuery = ''"
+  >
+    "{{ searchQuery }}" ✕
+  </UButton>
+</div>
+```
+
+**Benefits:**
+- Users can see active filters at a glance
+- One-click removal of individual filters
+- Improves discoverability and UX
+
+### Template Structure (Standard Order)
+
+```vue
+<template>
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- 1. Page Header -->
+    <UiListPageHeader ... />
+
+    <!-- 2. Filters Section (if applicable) -->
+    <div class="mb-6 space-y-4">
+      <!-- Search input -->
+      <UInput v-model="searchQuery" ... />
+
+      <!-- Filter dropdowns/buttons + Clear button -->
+      <div class="flex flex-wrap gap-2">...</div>
+
+      <!-- Active filter chips (if has filters) -->
+      <div v-if="hasActiveFilters" ...>...</div>
+    </div>
+
+    <!-- 3. Loading State -->
+    <UiListSkeletonCards v-if="loading" />
+
+    <!-- 4. Error State -->
+    <UiListErrorState v-else-if="error" ... />
+
+    <!-- 5. Empty State -->
+    <UiListEmptyState v-else-if="data.length === 0" ... />
+
+    <!-- 6. Results -->
+    <div v-else>
+      <UiListResultsCount ... />
+      <div class="grid ...">
+        <EntityCard v-for="item in data" :key="item.id" :entity="item" />
+      </div>
+      <UiListPagination v-if="!noPagination" ... />
+    </div>
+
+    <!-- 7. Back Link -->
+    <UiBackLink />
+
+    <!-- 8. Debug Panel (optional) -->
+    <JsonDebugPanel ... />
+  </div>
+</template>
+```
+
+### Custom Filters (Optional)
+
+If your page has custom filters (level, school, CR, type, etc.):
+
+```typescript
+// Define filter state
+const selectedLevel = ref(route.query.level ? Number(route.query.level) : null)
+
+// Build query params
+const queryBuilder = computed(() => {
+  const params: Record<string, unknown> = {}
+  if (selectedLevel.value !== null) params.level = selectedLevel.value
+  return params
+})
+
+// Clear all filters (base + custom)
+const clearFilters = () => {
+  clearBaseFilters()  // From composable
+  selectedLevel.value = null
+}
+```
+
+### Gold Standard References
+
+**Best examples to copy:**
+- `app/pages/spells/index.vue` - Paginated with complex filters
+- `app/pages/items/index.vue` - Paginated with multiple filters
+- `app/pages/sizes/index.vue` - Non-paginated reference page
+
+**Design Documents:**
+- `docs/plans/2025-11-22-list-page-standardization-design.md`
+- `docs/plans/2025-11-22-list-page-standardization-implementation.md`
+
+### Key Benefits
+
+1. **Consistency:** All 17 pages follow same pattern
+2. **Maintainability:** Change once, affect all pages
+3. **DRY:** Eliminated ~400-500 lines of duplicate code
+4. **URL Sync:** Search queries persist in URL (shareable!)
+5. **Type Safety:** Full TypeScript support
+6. **SEO:** Automatic meta tag management
+7. **Testing:** Composable is fully tested
+
+---
+
 ## 🔴 ABSOLUTE MANDATE: Test-Driven Development (TDD)
 
 **THIS IS NOT A SUGGESTION. THIS IS NOT OPTIONAL. THIS IS MANDATORY.**

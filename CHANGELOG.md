@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **List Page Standardization - Complete for All 17 Pages (2025-11-22)** - Unified UI patterns across entire application
+  - Enhanced `useEntityList` composable with `noPagination` flag for reference pages
+  - Migrated 10 reference pages to use composable (ability-scores, conditions, damage-types, item-types, languages, proficiency-types, sizes, skills, spell-schools, sources)
+  - Added active filter chips to all main entity pages (races, classes, backgrounds, feats, monsters)
+  - Standardized monsters page to use all standard UI components (10+ inconsistencies fixed)
+  - Removed ~400-500 lines of duplicate boilerplate code
+  - Added search URL sync to all reference pages (shareable search URLs)
+  - Improved JSON debug panel with monospace fonts for better readability
+  - 702 tests passing (100%), all 17 pages verified (HTTP 200)
+
+### Fixed
+- **ItemType export added to types/index.ts (2025-11-22)** - Resolves TypeScript import error for item-types page
+
 ### Added
 - **Entity Images Feature - Complete for All 16 Entity Types (2025-11-22)** - AI-generated images across main + reference entities
   - Extended to all 10 reference entity types: ability-scores, conditions, damage-types, item-types, languages, proficiency-types, sizes, skills, spell-schools, sources
