@@ -67,16 +67,98 @@ const isReferenceActive = computed(() => {
 const isReferenceExpanded = ref(false)
 </script>
 
+<style>
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #e9d5ff,  /* purple-200 */
+    #f0abfc,  /* fuchsia-300 */
+    #fda4af,  /* rose-300 */
+    #a5b4fc,  /* indigo-300 */
+    #e9d5ff   /* purple-200 */
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+.dark .animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #581c87,  /* purple-900 */
+    #86198f,  /* fuchsia-900 */
+    #881337,  /* rose-900 */
+    #312e81,  /* indigo-900 */
+    #581c87   /* purple-900 */
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+/* Make all content semi-transparent to show animation through */
+:deep(.bg-white) {
+  background-color: rgb(255 255 255 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.dark .bg-white) {
+  background-color: rgb(255 255 255 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.bg-gray-50) {
+  background-color: rgb(249 250 251 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.dark .bg-gray-900) {
+  background-color: rgb(17 24 39 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.dark .bg-gray-950) {
+  background-color: rgb(3 7 18 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.bg-gray-100) {
+  background-color: rgb(243 244 246 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+
+:deep(.dark .bg-gray-800) {
+  background-color: rgb(31 41 55 / 0.9) !important;
+  backdrop-filter: blur(4px);
+}
+</style>
+
 <template>
   <UApp>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-      <!-- Animated background -->
-      <ClientOnly>
-        <AnimatedBackground />
-      </ClientOnly>
+    <!-- Layer 0: Animated gradient background -->
+    <div class="fixed inset-0 animated-gradient" style="z-index: 0;" />
+
+    <!-- Layer 1: Animated canvas -->
+    <ClientOnly>
+      <AnimatedBackground />
+    </ClientOnly>
+
+    <!-- Layer 10: Main content -->
+    <div class="min-h-screen text-gray-900 dark:text-gray-100 relative" style="z-index: 10;">
+      <!-- Main content (above animated background) -->
 
       <!-- Navigation Bar -->
-      <nav class="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+      <nav class="border-b border-gray-200/90 dark:border-gray-800/90 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">
             <!-- Site Title (Left) -->
