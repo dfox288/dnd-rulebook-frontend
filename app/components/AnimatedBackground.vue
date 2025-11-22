@@ -29,13 +29,18 @@ onMounted(() => {
     return
   }
 
-  // Use nextTick to ensure canvas is in DOM before sizing
-  nextTick(() => {
-    if (!canvasRef.value) return
+  // Use setTimeout to ensure canvas is fully rendered
+  setTimeout(() => {
+    if (!canvasRef.value) {
+      console.error('[AnimatedBackground] Canvas ref still null after timeout!')
+      return
+    }
+
+    console.log('[AnimatedBackground] Window size:', window.innerWidth, 'x', window.innerHeight)
 
     // Set initial canvas size
     handleResize()
-    console.log('[AnimatedBackground] Canvas size:', canvasRef.value.width, 'x', canvasRef.value.height)
+    console.log('[AnimatedBackground] Canvas size AFTER resize:', canvasRef.value.width, 'x', canvasRef.value.height)
 
     // Listen for resize
     window.addEventListener('resize', handleResize)
@@ -65,7 +70,7 @@ onMounted(() => {
       start()
       cleanup = cleanupFn
     })
-  })
+  }, 100) // Wait 100ms for everything to settle
 })
 
 onBeforeUnmount(() => {
