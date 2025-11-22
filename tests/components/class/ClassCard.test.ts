@@ -341,4 +341,33 @@ describe('ClassCard', () => {
     expect(wrapper.text()).toContain('d12')
     expect(wrapper.text()).toContain('Base Class')
   })
+
+  // Background Image Tests
+  it('renders background image element when slug exists', async () => {
+    const wrapper = await mountSuspended(ClassCard, {
+      props: { characterClass: mockClass }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.exists()).toBe(true)
+  })
+
+  it('has correct opacity classes for background', async () => {
+    const wrapper = await mountSuspended(ClassCard, {
+      props: { characterClass: mockClass }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.classes()).toContain('opacity-10')
+    expect(bgDiv.classes()).toContain('group-hover:opacity-20')
+  })
+
+  it('applies transition to background opacity', async () => {
+    const wrapper = await mountSuspended(ClassCard, {
+      props: { characterClass: mockClass }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.classes()).toContain('transition-opacity')
+  })
 })
