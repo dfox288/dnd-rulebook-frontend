@@ -62,23 +62,23 @@ export class ParchmentBackground {
 
     // If image loaded, draw it as tiled background
     if (this.imageLoaded && this.image) {
-      // Apply grayscale filter to desaturate colors
-      ctx.filter = 'grayscale(100%) brightness(1.1)'
+      // Apply grayscale filter with enhanced contrast
+      ctx.filter = 'grayscale(100%) contrast(1.3) brightness(1.05)'
 
       // Draw tiled pattern with parallax offset
       const pattern = ctx.createPattern(this.image, 'repeat')
       if (pattern) {
-        ctx.translate(this.offsetX, this.offsetY + this.scrollOffsetY * 0.3)
+        ctx.translate(this.offsetX, this.offsetY + this.scrollOffsetY * 0.2)
         ctx.fillStyle = pattern
-        // Extremely subtle opacity
-        ctx.globalAlpha = this.isDark ? 0.08 : 0.04
+        // Reduced opacity for even more subtlety
+        ctx.globalAlpha = this.isDark ? 0.05 : 0.03
         ctx.fillRect(-100, -100, this.width + 200, this.height + 200)
       }
     } else {
       // Fallback: solid color background
       const baseColor = this.isDark
-        ? 'rgba(35, 32, 28, 0.08)'  // Dark vellum
-        : 'rgba(245, 237, 220, 0.04)' // Aged parchment
+        ? 'rgba(35, 32, 28, 0.05)'  // Dark vellum
+        : 'rgba(245, 237, 220, 0.03)' // Aged parchment
 
       ctx.fillStyle = baseColor
       ctx.fillRect(0, 0, this.width, this.height)
@@ -89,32 +89,45 @@ export class ParchmentBackground {
 }
 
 /**
- * D&D themed color palette with subtle variations
- * Using lighter shades (200-400 range) for gentle atmosphere
+ * D&D themed color palette with very subtle variations
+ * Using even lighter, more pastel shades for gentle atmosphere
  */
 const PARTICLE_COLORS = [
-  // Arcane (purple) - 3 variations
-  { h: 258, s: 89, l: 80, name: 'arcane-light', weight: 2 },  // arcane-200
-  { h: 258, s: 89, l: 66, name: 'arcane', weight: 3 },        // arcane-400
-  { h: 258, s: 89, l: 53, name: 'arcane-dark', weight: 1 },   // arcane-600
+  // Arcane (purple) - very light variations
+  { h: 258, s: 70, l: 85, name: 'arcane-light', weight: 4 },  // arcane-100 (desaturated)
+  { h: 258, s: 75, l: 75, name: 'arcane', weight: 2 },        // arcane-200 (desaturated)
+  { h: 258, s: 80, l: 70, name: 'arcane-accent', weight: 1 }, // arcane-300 (desaturated)
 
-  // Treasure (gold) - 3 variations
-  { h: 43, s: 96, l: 75, name: 'treasure-light', weight: 2 }, // treasure-200
-  { h: 43, s: 96, l: 56, name: 'treasure', weight: 3 },       // treasure-400
-  { h: 43, s: 96, l: 38, name: 'treasure-dark', weight: 1 },  // treasure-600
+  // Treasure (gold) - very light variations
+  { h: 43, s: 75, l: 85, name: 'treasure-light', weight: 4 }, // treasure-100 (desaturated)
+  { h: 43, s: 80, l: 75, name: 'treasure', weight: 2 },       // treasure-200 (desaturated)
+  { h: 43, s: 85, l: 70, name: 'treasure-accent', weight: 1 },// treasure-300 (desaturated)
 
-  // Emerald (green) - 2 variations
-  { h: 160, s: 84, l: 51, name: 'emerald-light', weight: 3 }, // emerald-400
-  { h: 160, s: 84, l: 39, name: 'emerald', weight: 2 },       // emerald-600
+  // Emerald (green) - very light variations
+  { h: 160, s: 65, l: 80, name: 'emerald-light', weight: 4 }, // emerald-200 (desaturated)
+  { h: 160, s: 70, l: 70, name: 'emerald', weight: 2 },       // emerald-300 (desaturated)
 
-  // Glory (blue) - 3 variations
-  { h: 210, s: 95, l: 73, name: 'glory-light', weight: 2 },   // glory-200
-  { h: 210, s: 95, l: 57, name: 'glory', weight: 3 },         // glory-400
-  { h: 210, s: 95, l: 41, name: 'glory-dark', weight: 1 },    // glory-600
+  // Glory (blue) - very light variations
+  { h: 210, s: 75, l: 85, name: 'glory-light', weight: 4 },   // glory-100 (desaturated)
+  { h: 210, s: 80, l: 75, name: 'glory', weight: 2 },         // glory-200 (desaturated)
+  { h: 210, s: 85, l: 70, name: 'glory-accent', weight: 1 },  // glory-300 (desaturated)
 
-  // Danger (orange) - 2 variations
-  { h: 24, s: 95, l: 66, name: 'danger-light', weight: 2 },   // danger-300
-  { h: 24, s: 95, l: 53, name: 'danger', weight: 2 }          // danger-500
+  // Danger (orange) - very light variations
+  { h: 24, s: 75, l: 82, name: 'danger-light', weight: 4 },   // danger-200 (desaturated)
+  { h: 24, s: 80, l: 72, name: 'danger', weight: 2 }          // danger-300 (desaturated)
+]
+
+/**
+ * Particle shape types
+ */
+type ParticleShape = 'star4' | 'circle' | 'diamond' | 'star8' | 'hexagon' | 'cross'
+
+const PARTICLE_SHAPES: Array<{ type: ParticleShape; weight: number }> = [
+  { type: 'star4', weight: 3 },    // Classic 4-point star (most common)
+  { type: 'circle', weight: 3 },   // Simple orb/bubble
+  { type: 'diamond', weight: 2 },  // Crystal/gem
+  { type: 'hexagon', weight: 1 },  // Spell grid cell
+  { type: 'cross', weight: 1 }     // Runic symbol
 ]
 
 /**
@@ -128,6 +141,7 @@ export class MagicParticle {
   size: number
   opacity: number
   color: { h: number; s: number; l: number; name: string; weight: number }
+  shape: ParticleShape
   trail: Array<{ x: number; y: number; opacity: number }>
   private width: number
   private height: number
@@ -149,7 +163,7 @@ export class MagicParticle {
     this.baseVx = this.vx
     this.baseVy = this.vy
 
-    // Size (reduced max: 3-8px instead of 3-14px)
+    // Size (reduced max: 3-8px)
     this.size = 3 + Math.random() * 5
 
     // Opacity (0.2-0.5)
@@ -157,6 +171,9 @@ export class MagicParticle {
 
     // Select random D&D themed color using weighted distribution
     this.color = this.selectWeightedColor()
+
+    // Select random shape using weighted distribution
+    this.shape = this.selectWeightedShape()
 
     // Trail positions
     this.trail = []
@@ -178,6 +195,21 @@ export class MagicParticle {
     }
 
     return PARTICLE_COLORS[0]! // Fallback
+  }
+
+  /**
+   * Select shape using weighted random distribution
+   */
+  private selectWeightedShape(): ParticleShape {
+    const totalWeight = PARTICLE_SHAPES.reduce((sum, shape) => sum + shape.weight, 0)
+    let random = Math.random() * totalWeight
+
+    for (const shape of PARTICLE_SHAPES) {
+      random -= shape.weight
+      if (random <= 0) return shape.type
+    }
+
+    return 'star4' // Fallback
   }
 
   /**
@@ -252,29 +284,77 @@ export class MagicParticle {
       ctx.fill()
     }
 
-    // Draw main particle (star shape)
+    // Draw main particle
     ctx.fillStyle = `hsla(${this.color.h}, ${this.color.s}%, ${this.color.l}%, ${this.opacity})`
-    ctx.shadowBlur = 8
-    ctx.shadowColor = `hsla(${this.color.h}, ${this.color.s}%, ${this.color.l}%, ${this.opacity})`
+    ctx.shadowBlur = 6
+    ctx.shadowColor = `hsla(${this.color.h}, ${this.color.s}%, ${this.color.l}%, ${this.opacity * 0.5})`
 
-    // Draw 4-pointed star
-    ctx.beginPath()
-    for (let i = 0; i < 4; i++) {
-      const angle = (i / 4) * Math.PI * 2 - Math.PI / 2
-      const outerX = this.x + Math.cos(angle) * this.size
-      const outerY = this.y + Math.sin(angle) * this.size
-      const innerAngle = angle + Math.PI / 4
-      const innerX = this.x + Math.cos(innerAngle) * this.size * 0.4
-      const innerY = this.y + Math.sin(innerAngle) * this.size * 0.4
-
-      if (i === 0) ctx.moveTo(outerX, outerY)
-      else ctx.lineTo(outerX, outerY)
-      ctx.lineTo(innerX, innerY)
-    }
-    ctx.closePath()
-    ctx.fill()
+    this.drawShape(ctx)
 
     ctx.restore()
+  }
+
+  /**
+   * Draw particle shape
+   */
+  private drawShape(ctx: CanvasRenderingContext2D): void {
+    ctx.beginPath()
+
+    switch (this.shape) {
+      case 'star4': // 4-pointed star
+        for (let i = 0; i < 4; i++) {
+          const angle = (i / 4) * Math.PI * 2 - Math.PI / 2
+          const outerX = this.x + Math.cos(angle) * this.size
+          const outerY = this.y + Math.sin(angle) * this.size
+          const innerAngle = angle + Math.PI / 4
+          const innerX = this.x + Math.cos(innerAngle) * this.size * 0.4
+          const innerY = this.y + Math.sin(innerAngle) * this.size * 0.4
+          if (i === 0) ctx.moveTo(outerX, outerY)
+          else ctx.lineTo(outerX, outerY)
+          ctx.lineTo(innerX, innerY)
+        }
+        break
+
+      case 'circle': // Simple circle/orb
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+        break
+
+      case 'diamond': // Diamond/rhombus
+        ctx.moveTo(this.x, this.y - this.size)
+        ctx.lineTo(this.x + this.size, this.y)
+        ctx.lineTo(this.x, this.y + this.size)
+        ctx.lineTo(this.x - this.size, this.y)
+        break
+
+      case 'hexagon': // Hexagon (D&D hex grid)
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2
+          const x = this.x + Math.cos(angle) * this.size
+          const y = this.y + Math.sin(angle) * this.size
+          if (i === 0) ctx.moveTo(x, y)
+          else ctx.lineTo(x, y)
+        }
+        break
+
+      case 'cross': // Cross/plus symbol
+        const thickness = this.size * 0.3
+        ctx.moveTo(this.x - thickness, this.y - this.size)
+        ctx.lineTo(this.x + thickness, this.y - this.size)
+        ctx.lineTo(this.x + thickness, this.y - thickness)
+        ctx.lineTo(this.x + this.size, this.y - thickness)
+        ctx.lineTo(this.x + this.size, this.y + thickness)
+        ctx.lineTo(this.x + thickness, this.y + thickness)
+        ctx.lineTo(this.x + thickness, this.y + this.size)
+        ctx.lineTo(this.x - thickness, this.y + this.size)
+        ctx.lineTo(this.x - thickness, this.y + thickness)
+        ctx.lineTo(this.x - this.size, this.y + thickness)
+        ctx.lineTo(this.x - this.size, this.y - thickness)
+        ctx.lineTo(this.x - thickness, this.y - thickness)
+        break
+    }
+
+    ctx.closePath()
+    ctx.fill()
   }
 }
 
