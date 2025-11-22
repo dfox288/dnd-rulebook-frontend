@@ -10,17 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Entity Images Feature - Planning Complete (2025-11-22)** - Ready for implementation
-  - Comprehensive design document for AI-generated images on entity pages
-  - CV-style header layout with hero images on detail pages (512px variants)
-  - Subtle background images on list cards (256px, 10% opacity, 20% hover)
-  - Reusable `useEntityImage` composable for all entity types
-  - New `UiEntityHeaderWithImage` component for detail pages
-  - Configurable image provider via `NUXT_PUBLIC_IMAGE_PROVIDER` env variable
-  - Docker volume mounted: `../image-generator/output` at `/images/generated/`
-  - Pre-optimized image variants (256px, 512px, original) from image-generator
-  - Implementation plan with 8 TDD tasks (~90 min estimated)
-  - @nuxt/image module installed for optimization
+- **Entity Images Feature - Complete (2025-11-22)** - AI-generated images on race pages
+  - CV-style hero images on race detail pages (512px variants, right-aligned 1/3 width)
+  - Subtle background images on race list cards (256px, 10% opacity, 20% hover)
+  - `useEntityImage` composable for path generation across all entity types
+  - `UiEntityHeaderWithImage` component for detail pages with responsive layout
+  - Environment configuration: `NUXT_PUBLIC_IMAGE_PROVIDER=stability-ai`
+  - Graceful degradation for missing images (null returns, v-if checks)
+  - 19 new tests added (all passing): 9 composable, 7 component, 3 integration
+  - Total test suite: 630 tests passing
+  - ESLint clean, TypeScript pre-existing errors only
+  - Verified on 5+ race pages (dragonborn, elf, dwarf, halfling, human)
+  - Ready to extend to other entity types (classes, backgrounds, spells, items)
 - **Monsters entity type complete (2025-11-22)** - 7th entity type with full feature parity
   - Monster list page with CR/Type filtering
   - Monster detail page with full stat blocks (AC, HP, speeds, ability scores)
