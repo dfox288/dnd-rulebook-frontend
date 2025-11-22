@@ -57,16 +57,15 @@ export default defineNuxtConfig({
 
     ui: {
         theme: {
-            colors:
-                [
-                    'primary',
-                    'secondary',
-                    'tertiary',
-                    'info',
-                    'success',
-                    'warning',
-                    'error'
-                ]
+            colors: [
+                // Standard semantic colors
+                'primary', 'secondary', 'info', 'success', 'warning', 'error',
+                // Main entity types (7)
+                'spell', 'item', 'race', 'class', 'background', 'feat', 'monster',
+                // Reference entity types (10)
+                'ability', 'condition', 'damage', 'itemtype', 'language',
+                'proficiency', 'size', 'skill', 'school', 'source'
+            ]
         }
     }
 })
