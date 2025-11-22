@@ -21,7 +21,7 @@ const sampleSpell = {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-12 max-w-5xl" style="font-family: 'Crimson Pro', Georgia, 'Times New Roman', serif;">
+  <div class="container mx-auto px-4 py-12 max-w-5xl">
     <!-- Header with Color Mode Toggle -->
     <div class="flex justify-between items-center mb-8">
       <div>
