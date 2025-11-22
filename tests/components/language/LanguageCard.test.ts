@@ -131,4 +131,42 @@ describe('LanguageCard', () => {
     const html = wrapper.html()
     expect(html).toContain('line-clamp-2')
   })
+
+  describe('background images', () => {
+    it('computes background image URL correctly', async () => {
+      const wrapper = await mountSuspended(LanguageCard, {
+        props: {
+          language: {
+            id: 1,
+            slug: 'common',
+            name: 'Common',
+            script: 'Common',
+            typical_speakers: 'Humans',
+            description: 'Test'
+          }
+        }
+      })
+
+      const url = wrapper.vm.backgroundImageUrl
+      expect(url).toBe('/images/generated/conversions/256/languages/stability-ai/common.png')
+    })
+
+    it('applies background image styles when URL exists', async () => {
+      const wrapper = await mountSuspended(LanguageCard, {
+        props: {
+          language: {
+            id: 1,
+            slug: 'common',
+            name: 'Common',
+            script: 'Common',
+            typical_speakers: 'Humans'
+          }
+        }
+      })
+
+      const card = wrapper.find('.group')
+      const style = card.attributes('style')
+      expect(style).toContain('background-image')
+    })
+  })
 })
