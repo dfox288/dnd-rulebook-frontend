@@ -4,7 +4,8 @@ import {
   getSpellSchoolColor,
   getItemRarityColor,
   getItemTypeColor,
-  getSizeColor
+  getSizeColor,
+  getChallengeRatingColor
 } from '~/utils/badgeColors'
 
 describe('badgeColors', () => {
@@ -137,6 +138,70 @@ describe('badgeColors', () => {
     it('returns info for unknown sizes', () => {
       expect(getSizeColor('X')).toBe('info')
       expect(getSizeColor('')).toBe('info')
+    })
+  })
+
+  describe('getChallengeRatingColor', () => {
+    it('returns success for CR 0 (easy tier)', () => {
+      expect(getChallengeRatingColor('0')).toBe('success')
+    })
+
+    it('returns success for CR 1/8 (fractional easy)', () => {
+      expect(getChallengeRatingColor('1/8')).toBe('success')
+    })
+
+    it('returns success for CR 1/4', () => {
+      expect(getChallengeRatingColor('1/4')).toBe('success')
+    })
+
+    it('returns success for CR 4 (easy tier max)', () => {
+      expect(getChallengeRatingColor('4')).toBe('success')
+    })
+
+    it('returns info for CR 5 (medium tier)', () => {
+      expect(getChallengeRatingColor('5')).toBe('info')
+    })
+
+    it('returns info for CR 10 (medium tier max)', () => {
+      expect(getChallengeRatingColor('10')).toBe('info')
+    })
+
+    it('returns warning for CR 11 (hard tier)', () => {
+      expect(getChallengeRatingColor('11')).toBe('warning')
+    })
+
+    it('returns warning for CR 16 (hard tier max)', () => {
+      expect(getChallengeRatingColor('16')).toBe('warning')
+    })
+
+    it('returns error for CR 17 (deadly tier)', () => {
+      expect(getChallengeRatingColor('17')).toBe('error')
+    })
+
+    it('returns error for CR 30 (max CR)', () => {
+      expect(getChallengeRatingColor('30')).toBe('error')
+    })
+
+    // Edge case tests for invalid input
+    it('returns info for invalid CR string', () => {
+      expect(getChallengeRatingColor('invalid')).toBe('info')
+    })
+
+    it('returns info for malformed fraction with missing numerator', () => {
+      expect(getChallengeRatingColor('/4')).toBe('info')
+    })
+
+    it('returns info for malformed fraction with missing denominator', () => {
+      expect(getChallengeRatingColor('1/')).toBe('info')
+    })
+
+    it('returns info for division by zero', () => {
+      expect(getChallengeRatingColor('0/0')).toBe('info')
+      expect(getChallengeRatingColor('5/0')).toBe('info')
+    })
+
+    it('returns info for empty string', () => {
+      expect(getChallengeRatingColor('')).toBe('info')
     })
   })
 })

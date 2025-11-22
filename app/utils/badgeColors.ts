@@ -187,3 +187,63 @@ export function getSizeColor(sizeCode: string): BadgeColor {
   }
   return colors[sizeCode] || 'info'
 }
+
+/**
+ * Get badge color for Challenge Rating
+ * Maps CR to D&D difficulty tiers:
+ * - CR 0-4: Easy (success/green)
+ * - CR 5-10: Medium (info/blue)
+ * - CR 11-16: Hard (warning/yellow)
+ * - CR 17+: Deadly (error/red)
+ *
+ * @param cr - Challenge Rating as string (supports fractions like "1/8", "1/4", "1/2")
+ * @returns NuxtUI v4 semantic color name
+ *
+ * @example
+ * getChallengeRatingColor('0') // 'success' (Easy)
+ * getChallengeRatingColor('1/4') // 'success' (Easy - fractional)
+ * getChallengeRatingColor('5') // 'info' (Medium)
+ * getChallengeRatingColor('24') // 'error' (Deadly)
+ */
+export function getChallengeRatingColor(cr: string): BadgeColor {
+  // CR can be fractional like "1/8", "1/4", "1/2" or whole numbers "1" through "30"
+  let numericCR: number
+
+  if (cr.includes('/')) {
+    // Parse fractional CR (e.g., "1/8" -> 0.125)
+    const stringParts = cr.split('/')
+
+    // Check for empty parts (malformed fractions like "/4" or "1/")
+    if (!stringParts[0] || !stringParts[1]) {
+      return 'info' // Fallback for invalid CR
+    }
+
+    const parts = stringParts.map(Number)
+    const numerator = parts[0]
+    const denominator = parts[1]
+
+    // Check for invalid numerator or denominator (undefined or NaN)
+    if (numerator === undefined || isNaN(numerator) || denominator === undefined || isNaN(denominator)) {
+      return 'info' // Fallback for invalid CR
+    }
+
+    // Check for division by zero
+    if (denominator === 0) {
+      return 'info' // Fallback for invalid CR
+    }
+
+    numericCR = numerator / denominator
+  } else {
+    numericCR = parseFloat(cr)
+  }
+
+  // Check for NaN (invalid input)
+  if (isNaN(numericCR)) {
+    return 'info' // Fallback for invalid CR
+  }
+
+  if (numericCR <= 4) return 'success'  // Easy
+  if (numericCR <= 10) return 'info'    // Medium
+  if (numericCR <= 16) return 'warning' // Hard
+  return 'error'                         // Deadly
+}
