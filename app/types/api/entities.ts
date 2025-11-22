@@ -25,42 +25,23 @@ export interface Spell extends Omit<SpellFromAPI, 'sources' | 'school'> {
 /**
  * Item entity from D&D 5e API
  *
+ * Base type generated from OpenAPI spec, extended with application-specific utilities.
+ *
  * Used in: ItemCard, item detail pages, tests
  * API endpoint: /api/v1/items
  */
-export interface Item {
-  id: number
-  name: string
-  slug: string
-  rarity: string
+type ItemFromAPI = components['schemas']['ItemResource']
+
+export interface Item extends Omit<ItemFromAPI, 'sources' | 'item_type' | 'damage_type' | 'modifiers'> {
+  // Override with our custom types that have better structure
   item_type?: {
     id: number
     name: string
   }
-  is_magic: boolean
-  requires_attunement: boolean
-  cost_cp?: number
-  weight?: number
-  description?: string
-  sources?: Source[]
-  properties?: unknown[] // Item properties (e.g., versatile, finesse)
-  damage_dice?: string
   damage_type?: { id: number; name: string }
-  versatile_damage?: string
-  armor_class?: { base: number; dex_bonus: boolean; max_bonus?: number }
-  range_normal?: number
-  range_long?: number
-  strength_requirement?: number
-  charges_max?: number
-  recharge_formula?: string
-  recharge_timing?: string
   modifiers?: Modifier[]
-  spells?: unknown[] // Spells granted by item
-  abilities?: unknown[] // Special abilities
-  proficiencies?: unknown[] // Proficiencies required or granted
-  saving_throws?: unknown[] // Saving throw requirements
-  random_tables?: unknown[] // Random tables for item effects
-  tags?: unknown[] // Item tags
+  sources?: Source[]
+  // All other fields inherited from ItemFromAPI
 }
 
 /**

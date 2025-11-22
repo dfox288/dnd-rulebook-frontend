@@ -2,9 +2,28 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ItemCard from '~/components/item/ItemCard.vue'
 import type { Item } from '~/types'
+import type { components } from '~/types/api/generated'
 import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
+
+describe('ItemCard - Type Compatibility', () => {
+  it('should accept OpenAPI-generated Item type', () => {
+    const generatedItem: components['schemas']['ItemResource'] = {
+      id: 1,
+      name: 'Longsword',
+      slug: 'longsword',
+      rarity: 'common',
+      is_magic: false,
+      requires_attunement: false
+    }
+
+    const item: Item = generatedItem
+
+    expect(item.id).toBe(1)
+    expect(item.name).toBe('Longsword')
+  })
+})
 
 describe('ItemCard', () => {
   const mockItem: Item = {
