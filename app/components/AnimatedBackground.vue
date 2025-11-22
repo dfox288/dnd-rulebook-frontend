@@ -15,8 +15,23 @@ const animate = shouldAnimate()
 function handleResize() {
   if (!canvasRef.value) return
 
+  const oldWidth = canvasRef.value.width
+  const oldHeight = canvasRef.value.height
+
   canvasRef.value.width = window.innerWidth
   canvasRef.value.height = window.innerHeight
+
+  console.log(`[AnimatedBackground] Resized: ${oldWidth}x${oldHeight} → ${canvasRef.value.width}x${canvasRef.value.height}`)
+
+  // Reinitialize animation with new canvas size
+  if (cleanup) {
+    cleanup()
+    const isDark = colorMode.value === 'dark'
+    const { initialize, start, cleanup: cleanupFn } = useAnimatedBackground(canvasRef.value, isDark)
+    initialize()
+    start()
+    cleanup = cleanupFn
+  }
 }
 
 onMounted(() => {
