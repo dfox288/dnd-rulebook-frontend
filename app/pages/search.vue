@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import type { EntityType } from '~/types/search'
+import type { EntityType, SearchResultData } from '~/types/search'
 
 const route = useRoute()
 const { search, results, loading, error } = useSearch()
@@ -38,14 +38,16 @@ const filterOptions = computed(() => [
 /**
  * Filter results based on selected types
  */
-const filteredResults = computed(() => {
+const filteredResults = computed<SearchResultData>(() => {
   if (!results.value?.data) return {}
   if (selectedTypes.value.length === 0) return results.value.data
 
-  const filtered: Record<string, unknown> = {}
+  const filtered: SearchResultData = {}
   selectedTypes.value.forEach((type) => {
-    if (results.value?.data[type]) {
-      filtered[type] = results.value.data[type]
+    const data = results.value?.data[type]
+    if (data) {
+      // Type assertion needed due to TypeScript's inability to narrow indexed access types
+      ;(filtered as any)[type] = data
     }
   })
   return filtered
