@@ -50,16 +50,15 @@ const imagePath = computed(() => {
         label="Back to Feats"
       />
 
-      <!-- Header with Image -->
-      <UiEntityHeaderWithImage
+      <!-- Header - UPDATED -->
+      <UiDetailPageHeader
         :title="entity.name"
         :badges="[
           { label: 'Feat', color: 'warning', variant: 'subtle', size: 'lg' }
         ]"
-        :image-path="imagePath"
-        :image-alt="`${entity.name} feat illustration`"
       />
 
+      <!-- Prerequisites - KEEP AS-IS (always visible) -->
       <UCard v-if="entity.prerequisites && entity.prerequisites.length > 0">
         <template #header>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -77,19 +76,13 @@ const imagePath = computed(() => {
         </div>
       </UCard>
 
-      <!-- Description (Always Visible) -->
-      <UCard v-if="entity.description">
-        <template #header>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Description
-          </h2>
-        </template>
-        <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-gray-700 dark:text-gray-300">
-            {{ entity.description }}
-          </p>
-        </div>
-      </UCard>
+      <!-- Description + Image - NEW -->
+      <UiDetailDescriptionWithImage
+        v-if="entity.description"
+        :description="entity.description"
+        :image-path="imagePath"
+        :image-alt="`${entity.name} feat illustration`"
+      />
 
       <!-- Additional Details (Accordion) -->
       <UAccordion
