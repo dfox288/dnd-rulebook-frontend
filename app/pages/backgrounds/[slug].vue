@@ -17,6 +17,14 @@ const { data: entity, loading, error } = useEntityDetail<Background>({
     fallbackTitle: 'Background - D&D 5e Compendium'
   }
 })
+
+/**
+ * Get entity image path (512px variant)
+ */
+const imagePath = computed(() => {
+  if (!entity.value) return null
+  return useEntityImage(entity.value.slug, 'backgrounds', '512')
+})
 </script>
 
 <template>
@@ -41,12 +49,14 @@ const { data: entity, loading, error } = useEntityDetail<Background>({
         label="Back to Backgrounds"
       />
 
-      <!-- Header -->
-      <UiDetailPageHeader
+      <!-- Header with Image -->
+      <UiEntityHeaderWithImage
         :title="entity.name"
         :badges="[
           { label: 'Background', color: 'success', variant: 'subtle', size: 'lg' }
         ]"
+        :image-path="imagePath"
+        :image-alt="`${entity.name} background illustration`"
       />
 
       <!-- Traits Section -->
