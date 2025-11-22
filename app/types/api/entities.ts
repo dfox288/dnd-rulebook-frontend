@@ -1,37 +1,25 @@
 import type { Source, Modifier } from './common'
+import type { components } from './generated'
 
 /**
  * Spell entity from D&D 5e API
  *
+ * Base type generated from OpenAPI spec, extended with application-specific utilities.
+ *
  * Used in: SpellCard, spell detail pages, tests
  * API endpoint: /api/v1/spells
  */
-export interface Spell {
-  id: number
-  name: string
-  slug: string
-  level: number
+type SpellFromAPI = components['schemas']['SpellResource']
+
+export interface Spell extends Omit<SpellFromAPI, 'sources' | 'school'> {
+  // Override with our custom types that have better structure
   school?: {
     id: number
     code: string
     name: string
   }
-  casting_time: string
-  range: string
-  description: string
-  is_ritual: boolean
-  needs_concentration: boolean
   sources?: Source[]
-  components?: string
-  material_components?: string
-  duration?: string
-  higher_levels?: string
-  effects?: unknown[] // Complex effect structure with damage, healing, etc.
-  classes?: unknown[] // Classes that can cast this spell
-  random_tables?: unknown[] // Random tables for spell effects
-  saving_throws?: unknown[] // Saving throw requirements
-  conditions?: unknown[] // Conditions applied by spell
-  tags?: unknown[] // Spell tags
+  // All other fields inherited from SpellFromAPI
 }
 
 /**
