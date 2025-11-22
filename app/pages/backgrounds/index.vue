@@ -39,6 +39,7 @@ const perPage = 24
       :total="totalResults"
       description="Browse D&D 5e character backgrounds"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <!-- Search -->
