@@ -5,7 +5,7 @@ interface Stat {
   icon: string
   label: string
   value: string
-  subtext?: string
+  subtext?: string | null
 }
 
 interface Props {

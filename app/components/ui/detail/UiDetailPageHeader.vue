@@ -1,5 +1,6 @@
 <script setup lang="ts">
-type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+import type { BadgeColor } from '~/utils/badgeColors'
+
 type BadgeVariant = 'solid' | 'outline' | 'soft' | 'subtle'
 type BadgeSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 

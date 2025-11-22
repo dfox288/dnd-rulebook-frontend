@@ -14,6 +14,11 @@
  */
 
 /**
+ * Valid NuxtUI v4 badge color names
+ */
+export type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+
+/**
  * Get badge color for spell level (0-9)
  *
  * @param level - Spell level (0 = cantrip, 1-9 = spell levels)
@@ -25,7 +30,7 @@
  * getSpellLevelColor(7) // 'warning' (high level)
  * getSpellLevelColor(9) // 'error' (max level)
  */
-export function getSpellLevelColor(level: number): string {
+export function getSpellLevelColor(level: number): BadgeColor {
   if (level === 0) return 'primary' // Cantrip
   if (level <= 3) return 'info' // Low-level (1-3)
   if (level <= 6) return 'warning' // Mid-level (4-6)
@@ -52,8 +57,8 @@ export function getSpellLevelColor(level: number): string {
  * getSpellSchoolColor('EV') // 'error' (Evocation - destructive)
  * getSpellSchoolColor('A')  // 'info' (Abjuration - protective)
  */
-export function getSpellSchoolColor(schoolCode: string): string {
-  const colorMap: Record<string, string> = {
+export function getSpellSchoolColor(schoolCode: string): BadgeColor {
+  const colorMap: Record<string, BadgeColor> = {
     A: 'info', // Abjuration
     C: 'primary', // Conjuration
     D: 'info', // Divination
@@ -85,8 +90,9 @@ export function getSpellSchoolColor(schoolCode: string): string {
  * getItemRarityColor('legendary') // 'warning'
  * getItemRarityColor('ARTIFACT')  // 'error' (case-insensitive)
  */
-export function getItemRarityColor(rarity: string): string {
-  const colors: Record<string, string> = {
+export function getItemRarityColor(rarity: string | null): BadgeColor {
+  if (!rarity) return 'neutral'
+  const colors: Record<string, BadgeColor> = {
     'common': 'neutral', // Gray - most basic
     'uncommon': 'success', // Green - slightly better
     'rare': 'info', // Blue - notable
@@ -116,7 +122,7 @@ export function getItemRarityColor(rarity: string): string {
  * getItemTypeColor('Plate Armor')    // 'info' (armor)
  * getItemTypeColor('Potion of Healing') // 'success' (potion)
  */
-export function getItemTypeColor(typeName: string): string {
+export function getItemTypeColor(typeName: string): BadgeColor {
   const type = typeName.toLowerCase()
 
   // Weapons (red/error)
@@ -170,8 +176,8 @@ export function getItemTypeColor(typeName: string): string {
  * getSizeColor('M') // 'info' (Medium - standard)
  * getSizeColor('G') // 'error' (Gargantuan)
  */
-export function getSizeColor(sizeCode: string): string {
-  const colors: Record<string, string> = {
+export function getSizeColor(sizeCode: string): BadgeColor {
+  const colors: Record<string, BadgeColor> = {
     T: 'neutral', // Tiny - gray
     S: 'success', // Small - green
     M: 'info', // Medium - blue (standard humanoid)

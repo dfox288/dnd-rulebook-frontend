@@ -91,7 +91,7 @@ describe('UiAccordionBulletList', () => {
 
     // Verify all items rendered (indirect check via text content)
     const text = wrapper.text()
-    mockItems.forEach(item => {
+    mockItems.forEach((item) => {
       expect(text).toContain(item.proficiency_name!)
     })
   })
@@ -131,7 +131,7 @@ describe('UiAccordionBulletList', () => {
     })
 
     const items = wrapper.findAll('.text-gray-700')
-    items.forEach(item => {
+    items.forEach((item) => {
       expect(item.classes()).toContain('dark:text-gray-300')
     })
   })

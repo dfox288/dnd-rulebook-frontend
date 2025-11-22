@@ -119,7 +119,12 @@
       "Bash(git reset:*)",
       "Bash(1)",
       "Bash(cut:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(git show:*)",
+      "Bash(NUXT_API_SPEC_URL=http://host.docker.internal:8080/docs/api.json docker compose exec:*)",
+      "Bash(tee:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

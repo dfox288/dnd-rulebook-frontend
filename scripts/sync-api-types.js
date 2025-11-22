@@ -109,17 +109,15 @@ async function generateTypes(spec) {
 /**
  * Compare with previous version and report changes
  */
-function reportChanges(newOutput) {
+function reportChanges(newOutput, oldOutput) {
   console.log('\n📊 Changes detected:')
 
-  if (!fs.existsSync(OUTPUT_FILE)) {
+  if (!oldOutput) {
     console.log('  - Initial generation (no previous file)')
     return
   }
 
   try {
-    const oldOutput = fs.readFileSync(OUTPUT_FILE, 'utf8')
-
     if (oldOutput === newOutput) {
       console.log('  - No changes detected')
       return
@@ -139,7 +137,7 @@ function reportChanges(newOutput) {
     }
 
     console.log('\n💡 Review changes with: git diff app/types/api/generated.ts')
-  } catch (error) {
+  } catch {
     console.log('  - Unable to compare (previous file not readable)')
   }
 }
@@ -161,7 +159,7 @@ async function main() {
   const newOutput = await generateTypes(spec)
 
   // Report changes
-  reportChanges(newOutput)
+  reportChanges(newOutput, oldOutput)
 
   console.log('\n✅ Types synced successfully!')
   console.log('\n💡 Next steps:')
@@ -171,7 +169,7 @@ async function main() {
 }
 
 // Run
-main().catch(error => {
+main().catch((error) => {
   console.error('❌ Unexpected error:', error)
   process.exit(1)
 })

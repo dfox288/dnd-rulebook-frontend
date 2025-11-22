@@ -84,10 +84,10 @@ const itemTypeColor = computed(() => {
       <UiDetailPageHeader
         :title="item.name"
         :badges="[
-          { label: item.item_type.name, color: itemTypeColor, variant: 'subtle', size: 'lg' },
-          { label: rarityText, color: rarityColor, variant: 'subtle', size: 'lg' },
-          ...(item.is_magic ? [{ label: '✨ Magic', color: 'primary', variant: 'soft', size: 'sm' }] : []),
-          ...(item.requires_attunement ? [{ label: '🔮 Attunement', color: 'info', variant: 'soft', size: 'sm' }] : [])
+          { label: item.item_type?.name || 'Unknown', color: itemTypeColor, variant: 'subtle' as const, size: 'lg' as const },
+          { label: rarityText, color: rarityColor, variant: 'subtle' as const, size: 'lg' as const },
+          ...(item.is_magic ? [{ label: '✨ Magic', color: 'primary' as const, variant: 'soft' as const, size: 'sm' as const }] : []),
+          ...(item.requires_attunement ? [{ label: '🔮 Attunement', color: 'info' as const, variant: 'soft' as const, size: 'sm' as const }] : [])
         ]"
       />
 

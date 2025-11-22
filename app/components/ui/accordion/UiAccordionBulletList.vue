@@ -1,12 +1,11 @@
 <script setup lang="ts">
-interface Item {
-  id: number
-  proficiency_name?: string
-  name?: string
-}
+import type { components } from '~/types/api/generated'
+
+// Use API ProficiencyResource type - has id: number and proficiency_name: string | null
+type ProficiencyResource = components['schemas']['ProficiencyResource']
 
 interface Props {
-  items: Item[]
+  items: ProficiencyResource[]
 }
 
 defineProps<Props>()
@@ -19,7 +18,7 @@ defineProps<Props>()
       :key="item.id"
       class="text-gray-700 dark:text-gray-300"
     >
-      • {{ item.proficiency_name || item.name }}
+      • {{ item.proficiency_name || '' }}
     </div>
   </div>
 </template>

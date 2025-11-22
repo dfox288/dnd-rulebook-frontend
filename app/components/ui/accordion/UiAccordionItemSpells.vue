@@ -1,42 +1,40 @@
 <script setup lang="ts">
-interface ItemSpell {
-  id: number
-  name: string
-  slug: string
-  level: number
-  charges_cost_min: number
-  charges_cost_max: number
-  charges_cost_formula: string | null
-  usage_limit: string | null
-  level_requirement: number | null
-}
+import type { components } from '~/types/api/generated'
+
+// ItemSpellResource has string types for id and level (from pivot table)
+type ItemSpellResource = components['schemas']['ItemSpellResource']
 
 interface Props {
-  spells: ItemSpell[]
+  spells: ItemSpellResource[]
 }
 
 defineProps<Props>()
 
 /**
  * Format spell level for display (1st, 2nd, 3rd, etc.)
+ * API returns level as string, so we convert to number
  */
-const formatSpellLevel = (level: number): string => {
+const formatSpellLevel = (level: string): string => {
+  const levelNum = Number.parseInt(level, 10)
   const suffixes = ['th', 'st', 'nd', 'rd']
-  const remainder = level % 10
-  const suffix = remainder <= 3 && ![11, 12, 13].includes(level % 100)
+  const remainder = levelNum % 10
+  const suffix = remainder <= 3 && ![11, 12, 13].includes(levelNum % 100)
     ? suffixes[remainder]
     : suffixes[0]
-  return `${level}${suffix} level`
+  return `${levelNum}${suffix} level`
 }
 
 /**
  * Format charges cost display
+ * API returns costs as strings, so we convert to numbers
  */
-const formatChargesCost = (min: number, max: number): string => {
-  if (min === max) {
-    return min === 1 ? '1 charge' : `${min} charges`
+const formatChargesCost = (min: string, max: string): string => {
+  const minNum = Number.parseInt(min, 10)
+  const maxNum = Number.parseInt(max, 10)
+  if (minNum === maxNum) {
+    return minNum === 1 ? '1 charge' : `${minNum} charges`
   }
-  return `${min}-${max} charges`
+  return `${minNum}-${maxNum} charges`
 }
 </script>
 

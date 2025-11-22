@@ -68,10 +68,10 @@ const spellEffects = computed(() => {
       <UiDetailPageHeader
         :title="spell.name"
         :badges="[
-          { label: spellLevelText, color: getSpellLevelColor(spell.level), variant: 'subtle', size: 'lg' },
-          { label: spell.school.name, color: getSpellSchoolColor(spell.school.code), variant: 'subtle', size: 'lg' },
-          ...(spell.is_ritual ? [{ label: '🔮 Ritual', color: 'info', variant: 'soft', size: 'sm' }] : []),
-          ...(spell.needs_concentration ? [{ label: '⭐ Concentration', color: 'warning', variant: 'soft', size: 'sm' }] : [])
+          { label: spellLevelText, color: getSpellLevelColor(spell.level), variant: 'subtle' as const, size: 'lg' as const },
+          { label: spell.school?.name || 'Unknown', color: getSpellSchoolColor(spell.school?.code || ''), variant: 'subtle' as const, size: 'lg' as const },
+          ...(spell.is_ritual ? [{ label: '🔮 Ritual', color: 'info' as const, variant: 'soft' as const, size: 'sm' as const }] : []),
+          ...(spell.needs_concentration ? [{ label: '⭐ Concentration', color: 'warning' as const, variant: 'soft' as const, size: 'sm' as const }] : [])
         ]"
       />
 

@@ -1,32 +1,15 @@
 <script setup lang="ts">
-interface RandomTableEntry {
-  id: number
-  roll_min: number
-  roll_max: number
-  result_text: string
-  sort_order: number
-}
+import type { components } from '~/types/api/generated'
 
-interface RandomTable {
-  id: number
-  table_name: string
-  dice_type: string
-  description?: string | null
-  entries: RandomTableEntry[]
-}
+// Use API types directly - TraitResource has id: string
+type TraitResource = components['schemas']['TraitResource']
+type ClassFeatureResource = components['schemas']['ClassFeatureResource']
 
-interface Trait {
-  id: number
-  name: string
-  description: string
-  level?: number
-  category?: string
-  feature_name?: string // For class features
-  random_tables?: RandomTable[]
-}
+// Union type to handle both background traits and class features
+type TraitOrFeature = TraitResource | (ClassFeatureResource & { name?: string, category?: string })
 
 interface Props {
-  traits: Trait[]
+  traits: TraitOrFeature[]
   showLevel?: boolean
   showCategory?: boolean
   borderColor?: string
@@ -53,7 +36,7 @@ withDefaults(defineProps<Props>(), {
       >
         <div class="flex items-center gap-2 mb-1">
           <UBadge
-            v-if="showLevel && trait.level"
+            v-if="showLevel && 'level' in trait && trait.level"
             color="info"
             variant="soft"
             size="xs"
@@ -61,7 +44,7 @@ withDefaults(defineProps<Props>(), {
             Level {{ trait.level }}
           </UBadge>
           <span class="font-semibold text-gray-900 dark:text-gray-100">
-            {{ trait.feature_name || trait.name }}
+            {{ ('feature_name' in trait ? trait.feature_name : null) || trait.name }}
           </span>
           <UBadge
             v-if="showCategory && trait.category"
@@ -82,7 +65,7 @@ withDefaults(defineProps<Props>(), {
 
       <!-- NEW: Random tables display -->
       <UiAccordionRandomTablesList
-        v-if="trait.random_tables && trait.random_tables.length > 0"
+        v-if="'random_tables' in trait && trait.random_tables && trait.random_tables.length > 0"
         :tables="trait.random_tables"
         :border-color="borderColor"
       />

@@ -18,7 +18,7 @@ const hitDieText = computed(() => {
  * Check if this is a base class or subclass
  */
 const isBaseClass = computed(() => {
-  return props.characterClass.is_base_class === true
+  return props.characterClass.is_base_class === '1' || props.characterClass.is_base_class === 'true'
 })
 
 /**
@@ -68,7 +68,7 @@ const truncatedDescription = computed(() => {
             variant="soft"
             size="sm"
           >
-            🎯 {{ characterClass.primary_ability.code }}
+            🎯 {{ characterClass.primary_ability }}
           </UBadge>
           <UBadge
             v-if="characterClass.spellcasting_ability"

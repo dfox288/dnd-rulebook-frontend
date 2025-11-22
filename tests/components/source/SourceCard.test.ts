@@ -72,5 +72,4 @@ describe('SourceCard', () => {
 
     expect(wrapper.text()).toContain('Eberron')
   })
-
 })

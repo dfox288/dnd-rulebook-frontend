@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CharacterClass } from '~/types/api/entities'
+import type { BadgeColor } from '~/utils/badgeColors'
 
-type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
 type BadgeVariant = 'solid' | 'outline' | 'soft' | 'subtle'
 type BadgeSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 

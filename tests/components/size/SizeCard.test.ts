@@ -67,5 +67,4 @@ describe('SizeCard', () => {
       expect(wrapper.text()).toContain(size.name)
     }
   })
-
 })

@@ -1,22 +1,11 @@
 <script setup lang="ts">
-interface RandomTableEntry {
-  id: number
-  roll_min: number | null
-  roll_max: number | null
-  result_text: string
-  sort_order: number
-}
+import type { components } from '~/types/api/generated'
 
-interface RandomTable {
-  id: number
-  table_name: string
-  dice_type: string | null
-  description?: string | null
-  entries: RandomTableEntry[]
-}
+// RandomTableResource has optional entries array
+type RandomTableResource = components['schemas']['RandomTableResource']
 
 interface Props {
-  tables: RandomTable[]
+  tables: RandomTableResource[]
   borderColor?: string
 }
 
@@ -34,8 +23,10 @@ const formatRollRange = (min: number | null, max: number | null): string => {
 
 /**
  * Check if a table has any dice rolls (non-null roll_min/roll_max)
+ * Handles optional entries array from API
  */
-const hasRolls = (table: RandomTable): boolean => {
+const hasRolls = (table: RandomTableResource): boolean => {
+  if (!table.entries || table.entries.length === 0) return false
   return table.entries.some(entry => entry.roll_min !== null || entry.roll_max !== null)
 }
 
@@ -43,15 +34,17 @@ const hasRolls = (table: RandomTable): boolean => {
  * Parse pipe-delimited result_text into columns
  * Example: "Cannith | Alchemist's supplies" => ["Cannith", "Alchemist's supplies"]
  */
-const parseColumns = (resultText: string): string[] => {
+const parseColumns = (resultText: string | null): string[] => {
+  if (!resultText) return ['']
   return resultText.split('|').map(col => col.trim())
 }
 
 /**
  * Get column count for a table (max number of pipe-separated columns)
+ * Handles optional entries array from API
  */
-const getColumnCount = (table: RandomTable): number => {
-  if (table.entries.length === 0) return 1
+const getColumnCount = (table: RandomTableResource): number => {
+  if (!table.entries || table.entries.length === 0) return 1
   const maxColumns = Math.max(...table.entries.map(entry => parseColumns(entry.result_text).length))
   return maxColumns
 }
@@ -108,7 +101,10 @@ const getColumnCount = (table: RandomTable): number => {
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900">
+        <tbody
+          v-if="table.entries && table.entries.length > 0"
+          class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900"
+        >
           <tr
             v-for="entry in table.entries"
             :key="entry.id"

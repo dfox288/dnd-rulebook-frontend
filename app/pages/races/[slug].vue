@@ -57,8 +57,8 @@ const sizeColor = computed(() => {
       <UiDetailPageHeader
         :title="race.name"
         :badges="[
-          ...(race.size ? [{ label: race.size.name, color: sizeColor, variant: 'subtle', size: 'lg' }] : []),
-          { label: race.parent_race ? 'Subrace' : 'Race', color: race.parent_race ? 'primary' : 'info', variant: 'subtle', size: 'lg' }
+          ...(race.size ? [{ label: race.size.name, color: sizeColor, variant: 'subtle' as const, size: 'lg' as const }] : []),
+          { label: race.parent_race ? 'Subrace' : 'Race', color: (race.parent_race ? 'primary' : 'info') as const, variant: 'subtle' as const, size: 'lg' as const }
         ]"
       />
 

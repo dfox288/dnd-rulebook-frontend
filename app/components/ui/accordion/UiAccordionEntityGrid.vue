@@ -1,14 +1,11 @@
 <script setup lang="ts">
-interface Entity {
-  id: number
-  slug: string
-  name: string
-  description?: string
-  speed?: number
-}
+import type { components } from '~/types/api/generated'
+
+// ClassResource has id: string (subclasses use string IDs)
+type ClassResource = components['schemas']['ClassResource']
 
 interface Props {
-  entities: Entity[]
+  entities: ClassResource[]
   basePath: string
 }
 
@@ -26,13 +23,7 @@ defineProps<Props>()
       >
         <div class="font-medium text-gray-900 dark:text-gray-100">{{ entity.name }}</div>
         <div
-          v-if="entity.speed"
-          class="text-sm text-gray-600 dark:text-gray-400"
-        >
-          Speed: {{ entity.speed }} ft
-        </div>
-        <div
-          v-else-if="entity.description"
+          v-if="entity.description"
           class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1"
         >
           {{ entity.description }}

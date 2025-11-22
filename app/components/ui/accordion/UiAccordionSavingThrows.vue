@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import type { AbilityScore } from '~/types'
+import type { components } from '~/types/api/generated'
 
-interface SavingThrow {
-  ability_score: AbilityScore
-  save_effect: 'negates' | 'ends_effect' | null
-  is_initial_save: boolean
-  save_modifier: 'advantage' | 'disadvantage' | 'none' | null
-  dc: number | null
-}
+// SavingThrowResource has ability_score.id as string, dc as string
+type SavingThrowResource = components['schemas']['SavingThrowResource']
 
 interface Props {
-  savingThrows: SavingThrow[]
+  savingThrows: SavingThrowResource[]
 }
 
 defineProps<Props>()
