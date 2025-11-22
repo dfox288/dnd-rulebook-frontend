@@ -89,16 +89,32 @@ export class ParchmentBackground {
 }
 
 /**
- * D&D themed color palette (HSL values from custom colors)
+ * D&D themed color palette with subtle variations
+ * Using lighter shades (200-400 range) for gentle atmosphere
  */
 const PARTICLE_COLORS = [
-  { h: 258, s: 89, l: 66, name: 'arcane' },     // Mystical purple (spells)
-  { h: 43, s: 96, l: 56, name: 'treasure' },    // Rich gold (items)
-  { h: 160, s: 84, l: 39, name: 'emerald' },    // Natural green (races)
-  { h: 0, s: 84, l: 60, name: 'red' },          // Heroic red (classes)
-  { h: 210, s: 95, l: 57, name: 'glory' },      // Bright blue (feats)
-  { h: 24, s: 95, l: 53, name: 'danger' },      // Vibrant orange (monsters)
-  { h: 48, s: 89, l: 50, name: 'lore' }         // Warm amber (backgrounds)
+  // Arcane (purple) - 3 variations
+  { h: 258, s: 89, l: 80, name: 'arcane-light', weight: 2 },  // arcane-200
+  { h: 258, s: 89, l: 66, name: 'arcane', weight: 3 },        // arcane-400
+  { h: 258, s: 89, l: 53, name: 'arcane-dark', weight: 1 },   // arcane-600
+
+  // Treasure (gold) - 3 variations
+  { h: 43, s: 96, l: 75, name: 'treasure-light', weight: 2 }, // treasure-200
+  { h: 43, s: 96, l: 56, name: 'treasure', weight: 3 },       // treasure-400
+  { h: 43, s: 96, l: 38, name: 'treasure-dark', weight: 1 },  // treasure-600
+
+  // Emerald (green) - 2 variations
+  { h: 160, s: 84, l: 51, name: 'emerald-light', weight: 3 }, // emerald-400
+  { h: 160, s: 84, l: 39, name: 'emerald', weight: 2 },       // emerald-600
+
+  // Glory (blue) - 3 variations
+  { h: 210, s: 95, l: 73, name: 'glory-light', weight: 2 },   // glory-200
+  { h: 210, s: 95, l: 57, name: 'glory', weight: 3 },         // glory-400
+  { h: 210, s: 95, l: 41, name: 'glory-dark', weight: 1 },    // glory-600
+
+  // Danger (orange) - 2 variations
+  { h: 24, s: 95, l: 66, name: 'danger-light', weight: 2 },   // danger-300
+  { h: 24, s: 95, l: 53, name: 'danger', weight: 2 }          // danger-500
 ]
 
 /**
@@ -111,7 +127,7 @@ export class MagicParticle {
   vy: number
   size: number
   opacity: number
-  color: { h: number; s: number; l: number; name: string }
+  color: { h: number; s: number; l: number; name: string; weight: number }
   trail: Array<{ x: number; y: number; opacity: number }>
   private width: number
   private height: number
@@ -139,14 +155,29 @@ export class MagicParticle {
     // Opacity (0.2-0.5)
     this.opacity = 0.2 + Math.random() * 0.3
 
-    // Select random D&D themed color
-    this.color = PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)]!
+    // Select random D&D themed color using weighted distribution
+    this.color = this.selectWeightedColor()
 
     // Trail positions
     this.trail = []
 
     // Path phase for curved movement
     this.pathPhase = Math.random() * Math.PI * 2
+  }
+
+  /**
+   * Select color using weighted random distribution
+   */
+  private selectWeightedColor() {
+    const totalWeight = PARTICLE_COLORS.reduce((sum, color) => sum + color.weight, 0)
+    let random = Math.random() * totalWeight
+
+    for (const color of PARTICLE_COLORS) {
+      random -= color.weight
+      if (random <= 0) return color
+    }
+
+    return PARTICLE_COLORS[0]! // Fallback
   }
 
   /**
