@@ -11,6 +11,11 @@
 export type { Source, AbilityScore, Modifier, Tag } from './api/common'
 export type { Spell, Item, Race, CharacterClass, Background, Feat } from './api/entities'
 
+// Generated API types (for taxonomy pages)
+export type { components } from './api/generated'
+export type Condition = components['schemas']['ConditionResource']
+export type DamageType = components['schemas']['DamageTypeResource']
+
 // Search types
 export type { SearchResult, SearchResultData, EntityType, SearchOptions, SearchEntity, Class } from './search'
 

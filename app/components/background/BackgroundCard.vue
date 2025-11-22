@@ -11,10 +11,12 @@ const props = defineProps<Props>()
  * Get skill proficiencies summary
  */
 const skillsSummary = computed(() => {
-  if (!props.background.skill_proficiencies || props.background.skill_proficiencies.length === 0) {
+  if (!props.background.proficiencies || props.background.proficiencies.length === 0) {
     return null
   }
-  const count = props.background.skill_proficiencies.length
+  const skillProficiencies = props.background.proficiencies.filter(p => p.proficiency_type === 'skill')
+  if (skillProficiencies.length === 0) return null
+  const count = skillProficiencies.length
   return `${count} ${count === 1 ? 'Skill' : 'Skills'}`
 })
 
@@ -91,7 +93,7 @@ const truncatedDescription = computed(() => {
 
         <!-- Tool Proficiencies -->
         <div
-          v-if="background.tool_proficiencies && background.tool_proficiencies.length > 0"
+          v-if="background.proficiencies && background.proficiencies.filter(p => p.proficiency_type === 'tool').length > 0"
           class="flex items-center gap-2"
         >
           <UBadge
@@ -99,7 +101,7 @@ const truncatedDescription = computed(() => {
             variant="soft"
             size="xs"
           >
-            🔧 {{ background.tool_proficiencies.length }} Tools
+            🔧 {{ background.proficiencies.filter(p => p.proficiency_type === 'tool').length }} Tools
           </UBadge>
         </div>
 
