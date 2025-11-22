@@ -67,7 +67,7 @@ describe('useEntityList with noPagination', () => {
 /**
  * Full integration tests for noPagination behavior will be in page component tests
  * where we have full Nuxt context and can test:
- * - per_page: 9999 is sent to API
+ * - per_page: 100 is sent to API
  * - page: 1 is fixed
  * - Search still works
  * - hasActiveFilters works

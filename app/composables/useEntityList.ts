@@ -116,7 +116,7 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   // Build complete query params (base + custom)
   const queryParams = computed(() => {
     const params: Record<string, unknown> = {
-      per_page: config.noPagination ? 9999 : (config.perPage ?? 24),
+      per_page: config.noPagination ? 100 : (config.perPage ?? 24),
       page: config.noPagination ? 1 : currentPage.value
     }
 
