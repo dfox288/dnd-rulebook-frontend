@@ -109,7 +109,6 @@ describe('RaceCard', () => {
       props: { race: listRace }
     })
 
-    const text = wrapper.text()
     // When parent_race is undefined, neither "Race" nor "Subrace" type badge should show
     // But we may still see "Subraces" from the count badge, so we need more specific checks
     const html = wrapper.html()

@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { eventHandler, getQuery } from 'h3'
 
 describe('GET /api/search', () => {
   beforeEach(() => {

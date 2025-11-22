@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { SearchResult, EntityType, SearchOptions } from '~/types/search'
+import type { SearchResult, SearchOptions } from '~/types/search'
 
 /**
  * Composable for searching D&D 5e entities
@@ -40,7 +40,7 @@ export const useSearch = () => {
 
     try {
       // Build query parameters
-      const params: Record<string, any> = { q: trimmedQuery }
+      const params: Record<string, unknown> = { q: trimmedQuery }
 
       if (options?.types) {
         params.types = options.types
@@ -56,8 +56,9 @@ export const useSearch = () => {
       })
 
       results.value = data
-    } catch (err: any) {
-      error.value = err.message || 'Search failed'
+    } catch (err) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Search failed'
       results.value = null
     } finally {
       loading.value = false

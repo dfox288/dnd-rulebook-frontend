@@ -15,7 +15,7 @@ export type { Spell, Item, Race, CharacterClass, Background, Feat } from './api/
 export type { SearchResult, SearchResultData, EntityType, SearchOptions, SearchEntity, Class } from './search'
 
 // API Response types
-export interface ApiListResponse<T = any> {
+export interface ApiListResponse<T = unknown> {
   data: T[]
   meta?: {
     total: number
@@ -27,6 +27,6 @@ export interface ApiListResponse<T = any> {
   }
 }
 
-export interface ApiSingleResponse<T = any> {
+export interface ApiSingleResponse<T = unknown> {
   data: T
 }

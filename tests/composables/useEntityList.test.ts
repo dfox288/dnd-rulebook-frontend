@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ref, computed } from 'vue'
+import { describe, it, expect } from 'vitest'
 import type { UseEntityListConfig } from '~/composables/useEntityList'
 
 /**

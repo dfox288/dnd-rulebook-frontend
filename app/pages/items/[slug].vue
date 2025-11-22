@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Item } from '~/types'
 import { getItemRarityColor, getItemTypeColor } from '~/utils/badgeColors'
 
 const { apiFetch } = useApi()
@@ -9,7 +10,7 @@ const slug = route.params.slug as string
 const { data: item, error, pending } = await useAsyncData(
   `item-${slug}`,
   async () => {
-    const response = await apiFetch<{ data: any }>(`/items/${slug}`)
+    const response = await apiFetch<{ data: Item }>(`/items/${slug}`)
     return response.data
   }
 )

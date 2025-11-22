@@ -36,9 +36,9 @@ const getSizeColor = (sizeCode: string): 'primary' | 'secondary' | 'success' | '
 const abilityModifiers = computed(() => {
   if (!props.race.modifiers || props.race.modifiers.length === 0) return null
   const mods = props.race.modifiers
-    .filter((m: any) => m.modifier_type === 'ability_score' && m.ability_score)
+    .filter(m => m.modifier_type === 'ability_score' && m.ability_score)
     .slice(0, 3)
-    .map((m: any) => `${m.ability_score.code} +${m.value}`)
+    .map(m => `${m.ability_score?.code} +${m.value}`)
   return mods.length > 0 ? mods.join(', ') : null
 })
 

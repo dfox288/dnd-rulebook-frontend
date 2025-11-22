@@ -51,12 +51,12 @@ const truncateDescription = (text: string | undefined | null, length: number = 2
 /**
  * Check if result is a spell
  */
-const isSpell = (result: any): result is Spell => props.type === 'spell'
+const isSpell = (result: Props['result']): result is Spell => props.type === 'spell'
 
 /**
  * Check if result is an item
  */
-const isItem = (result: any): result is Item => props.type === 'item'
+const isItem = (result: Props['result']): result is Item => props.type === 'item'
 </script>
 
 <template>

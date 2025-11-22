@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CharacterClass } from '~/types'
+
 const { apiFetch } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
@@ -6,7 +8,7 @@ const slug = route.params.slug as string
 const { data: entity, error, pending } = await useAsyncData(
   `class-${slug}`,
   async () => {
-    const response = await apiFetch<{ data: any }>(`/classes/${slug}`)
+    const response = await apiFetch<{ data: CharacterClass }>(`/classes/${slug}`)
     return response.data
   }
 )

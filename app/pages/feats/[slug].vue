@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Feat } from '~/types'
+
 const { apiFetch } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
@@ -6,7 +8,7 @@ const slug = route.params.slug as string
 const { data: entity, error, pending } = await useAsyncData(
   `feat-${slug}`,
   async () => {
-    const response = await apiFetch<{ data: any }>(`/feats/${slug}`)
+    const response = await apiFetch<{ data: Feat }>(`/feats/${slug}`)
     return response.data
   }
 )

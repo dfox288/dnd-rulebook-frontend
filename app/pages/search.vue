@@ -64,21 +64,6 @@ watch(
   { immediate: true }
 )
 
-/**
- * Get entity type label (singular form)
- */
-const getTypeLabel = (type: EntityType): string => {
-  const labels = {
-    spells: 'spell',
-    items: 'item',
-    races: 'race',
-    classes: 'class',
-    backgrounds: 'background',
-    feats: 'feat'
-  }
-  return labels[type]
-}
-
 useHead({
   title: computed(() => `Search: ${route.query.q} - D&D 5e Compendium`)
 })

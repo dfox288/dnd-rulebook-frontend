@@ -20,7 +20,7 @@ const UButton = {
   template: '<button class="u-button"><slot /></button>'
 }
 
-const createWrapper = (props: any) => {
+const createWrapper = (props: Record<string, unknown>) => {
   return mount(ErrorState, {
     props,
     global: {

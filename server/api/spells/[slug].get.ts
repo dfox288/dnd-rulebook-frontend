@@ -20,10 +20,11 @@ export default defineEventHandler(async (event) => {
   try {
     const data = await $fetch(`${config.apiBaseServer}/spells/${slug}`)
     return data
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { response?: { status?: number }, message?: string }
     throw createError({
-      statusCode: error.response?.status || 404,
-      statusMessage: error.message || 'Spell not found'
+      statusCode: err.response?.status || 404,
+      statusMessage: err.message || 'Spell not found'
     })
   }
 })

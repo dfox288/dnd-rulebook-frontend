@@ -153,13 +153,6 @@ const getTotalResults = (searchResults: SearchResult | null): number => {
 }
 
 /**
- * Format entity type for display (capitalize first letter)
- */
-const formatEntityType = (type: string): string => {
-  return type.charAt(0).toUpperCase() + type.slice(1)
-}
-
-/**
  * Check if a result is selected
  */
 const isSelected = (index: number): boolean => {
@@ -171,7 +164,9 @@ const isSelected = (index: number): boolean => {
  */
 let globalIndex = 0
 const getGlobalIndex = () => globalIndex++
-const resetGlobalIndex = () => { globalIndex = 0 }
+const resetGlobalIndex = () => {
+  globalIndex = 0
+}
 </script>
 
 <template>

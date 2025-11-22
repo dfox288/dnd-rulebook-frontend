@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Background } from '~/types'
+
 const { apiFetch } = useApi()
 const route = useRoute()
 const slug = route.params.slug as string
@@ -6,7 +8,7 @@ const slug = route.params.slug as string
 const { data: entity, error, pending } = await useAsyncData(
   `background-${slug}`,
   async () => {
-    const response = await apiFetch<{ data: any }>(`/backgrounds/${slug}`)
+    const response = await apiFetch<{ data: Background }>(`/backgrounds/${slug}`)
     return response.data
   }
 )

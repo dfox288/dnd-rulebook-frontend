@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { computed } from 'vue'
 import type { UseEntityDetailConfig } from '~/composables/useEntityDetail'
 
 /**

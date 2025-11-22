@@ -18,11 +18,12 @@ export default defineEventHandler(async (event) => {
     })
 
     return data
-  } catch (error: any) {
+  } catch (error) {
     // Transform backend errors into H3 errors
+    const err = error as { response?: { status?: number }, message?: string }
     throw createError({
-      statusCode: error.response?.status || 500,
-      statusMessage: error.message || 'Search failed'
+      statusCode: err.response?.status || 500,
+      statusMessage: err.message || 'Search failed'
     })
   }
 })

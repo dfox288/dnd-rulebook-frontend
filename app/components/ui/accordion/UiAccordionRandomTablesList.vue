@@ -20,7 +20,7 @@ interface Props {
   borderColor?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   borderColor: 'primary-500'
 })
 

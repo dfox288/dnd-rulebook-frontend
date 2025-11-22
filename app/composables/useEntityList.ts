@@ -23,7 +23,7 @@ export interface UseEntityListConfig {
   cacheKey: string
 
   /** Computed callback that builds custom query params */
-  queryBuilder: ComputedRef<Record<string, any>>
+  queryBuilder: ComputedRef<Record<string, unknown>>
 
   /** Items per page (default: 24) */
   perPage?: number
@@ -47,11 +47,11 @@ export interface UseEntityListReturn {
   currentPage: Ref<number>
 
   // Data
-  data: ComputedRef<Array<any>>
+  data: ComputedRef<Array<unknown>>
   meta: ComputedRef<PaginationMeta | null>
   totalResults: ComputedRef<number>
   loading: Ref<boolean>
-  error: Ref<any>
+  error: Ref<unknown>
 
   // Methods
   refresh: () => Promise<void>
@@ -112,7 +112,7 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
 
   // Build complete query params (base + custom)
   const queryParams = computed(() => {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       per_page: config.perPage ?? 24,
       page: currentPage.value
     }
@@ -130,10 +130,10 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   })
 
   // Fetch data with Nuxt's useAsyncData (SSR support + caching)
-  const { data: response, pending: loading, error, refresh } = useAsyncData<{ data: Array<any>, meta: PaginationMeta }>(
+  const { data: response, pending: loading, error, refresh } = useAsyncData<{ data: Array<unknown>, meta: PaginationMeta }>(
     config.cacheKey,
     async () => {
-      const result = await apiFetch<{ data: Array<any>, meta: PaginationMeta }>(config.endpoint, {
+      const result = await apiFetch<{ data: Array<unknown>, meta: PaginationMeta }>(config.endpoint, {
         query: queryParams.value
       })
       return result
@@ -162,7 +162,7 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
 
   // URL sync: State → Route (bidirectional)
   watch([currentPage, searchQuery, config.queryBuilder], () => {
-    const query: Record<string, any> = {}
+    const query: Record<string, unknown> = {}
 
     // Only include page if > 1
     if (currentPage.value > 1) {

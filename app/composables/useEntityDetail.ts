@@ -19,7 +19,7 @@ export interface UseEntityDetailConfig {
     titleTemplate: (name: string) => string
 
     /** Description extractor - receives full entity data */
-    descriptionExtractor: (entity: any) => string
+    descriptionExtractor: (entity: unknown) => string
 
     /** Fallback title when no data */
     fallbackTitle: string
@@ -29,7 +29,7 @@ export interface UseEntityDetailConfig {
 /**
  * Return type for useEntityDetail composable
  */
-export interface UseEntityDetailReturn<T = any> {
+export interface UseEntityDetailReturn<T = unknown> {
   /** Entity data from API */
   data: ComputedRef<T | null>
 
@@ -37,7 +37,7 @@ export interface UseEntityDetailReturn<T = any> {
   loading: Ref<boolean>
 
   /** Error state */
-  error: Ref<any>
+  error: Ref<unknown>
 
   /** Refresh data */
   refresh: () => Promise<void>
@@ -63,7 +63,7 @@ export interface UseEntityDetailReturn<T = any> {
  * })
  * ```
  */
-export function useEntityDetail<T = any>(config: UseEntityDetailConfig): UseEntityDetailReturn<T> {
+export function useEntityDetail<T = unknown>(config: UseEntityDetailConfig): UseEntityDetailReturn<T> {
   const { apiFetch } = useApi()
 
   // Fetch entity data using useAsyncData for SSR support
@@ -81,8 +81,8 @@ export function useEntityDetail<T = any>(config: UseEntityDetailConfig): UseEnti
   // SEO setup
   useSeoMeta({
     title: computed(() =>
-      data.value
-        ? config.seo.titleTemplate((data.value as any).name)
+      data.value && typeof data.value === 'object' && 'name' in data.value
+        ? config.seo.titleTemplate(data.value.name as string)
         : config.seo.fallbackTitle
     ),
     description: computed(() =>
@@ -92,8 +92,8 @@ export function useEntityDetail<T = any>(config: UseEntityDetailConfig): UseEnti
 
   useHead({
     title: computed(() =>
-      data.value
-        ? config.seo.titleTemplate((data.value as any).name)
+      data.value && typeof data.value === 'object' && 'name' in data.value
+        ? config.seo.titleTemplate(data.value.name as string)
         : config.seo.fallbackTitle
     )
   })

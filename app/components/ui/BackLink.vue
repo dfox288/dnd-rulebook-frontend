@@ -5,7 +5,7 @@ interface Props {
   icon?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   to: '/',
   label: 'Back to Home',
   icon: 'i-heroicons-arrow-left'
