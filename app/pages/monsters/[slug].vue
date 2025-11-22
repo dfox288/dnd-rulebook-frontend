@@ -65,6 +65,15 @@ const regularActions = computed(() => {
   if (!monster.value?.actions) return []
   return monster.value.actions.filter(a => a.action_type === 'action')
 })
+
+/**
+ * Get entity image path (512px variant)
+ */
+const { getImagePath } = useEntityImage()
+const imagePath = computed(() => {
+  if (!monster.value) return null
+  return getImagePath('monsters', monster.value.slug, 512)
+})
 </script>
 
 <template>
@@ -105,15 +114,13 @@ const regularActions = computed(() => {
       <!-- Quick Stats -->
       <UiDetailQuickStatsCard :stats="quickStats" />
 
-      <!-- Description -->
-      <div
+      <!-- Description + Image -->
+      <UiDetailDescriptionWithImage
         v-if="monster.description"
-        class="prose dark:prose-invert max-w-none"
-      >
-        <p class="whitespace-pre-line">
-          {{ monster.description }}
-        </p>
-      </div>
+        :description="monster.description"
+        :image-path="imagePath"
+        :image-alt="`${monster.name} monster illustration`"
+      />
 
       <!-- Traits -->
       <UiAccordionTraits
