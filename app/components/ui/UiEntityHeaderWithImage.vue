@@ -1,4 +1,15 @@
 <script setup lang="ts">
+/**
+ * @deprecated This component is deprecated as of 2025-11-23.
+ * Use UiDetailPageHeader for title/badges and UiDetailDescriptionWithImage for description/image instead.
+ *
+ * This component will be removed in a future version.
+ *
+ * Migration guide:
+ * - Replace header usage with <UiDetailPageHeader :title="..." :badges="..." />
+ * - Replace description with <UiDetailDescriptionWithImage :description="..." :image-path="..." />
+ */
+
 import type { BadgeColor, BadgeSize, BadgeVariant } from '~/utils/badgeColors'
 
 interface Badge {
