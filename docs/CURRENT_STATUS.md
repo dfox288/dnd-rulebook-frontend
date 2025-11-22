@@ -37,8 +37,8 @@ A full-featured D&D 5e reference application with:
 - ✅ Reusable UI components (`<UiSourceDisplay>`, `<UiModifiersDisplay>`, `<JsonDebugPanel>`)
 
 **Entity-Specific Features:**
-- **Spells:** Level/school filters, ritual/concentration badges, **character level scaling**, **all effect types** (damage + other), **tags**, **saving throws**
-- **Items:** Rarity colors, magic/attunement badges, weapon/armor stats, **proficiencies**, **charges** (max/recharge), **advantage/disadvantage modifiers**, **tags**
+- **Spells:** Level/school filters, ritual/concentration badges, **character level scaling**, **all effect types** (damage + other), **tags**, **saving throws**, **random tables**
+- **Items:** Rarity colors, magic/attunement badges, weapon/armor stats, **proficiencies**, **charges** (max/recharge), **advantage/disadvantage modifiers**, **item spells** (NEW!), **random tables**, **tags**
 - **Races:** Traits, ability modifiers, languages, size/speed, **tags**
 - **Classes:** Features, proficiencies, subclasses, hit die, spellcasting ability, **tags**
 - **Backgrounds:** Traits (Description, Feature, Characteristics), proficiencies, languages, **tags**
@@ -114,6 +114,7 @@ A full-featured D&D 5e reference application with:
 - `app/components/ui/accordion/UiAccordionDamageEffects.vue` - Spell effects **with character level scaling** (12 tests) **[Enhanced]**
 - `app/components/ui/accordion/UiAccordionSavingThrows.vue` - **Spell saving throws (10 tests)** **[NEW]**
 - `app/components/ui/accordion/UiAccordionRandomTablesList.vue` - Random tables with results
+- `app/components/ui/accordion/UiAccordionItemSpells.vue` - **Item spells with charge costs (13 tests)** **[NEW 2025-11-22]**
 
 *General UI Components:*
 - `app/components/ui/BackLink.vue` - Breadcrumb navigation
@@ -232,7 +233,7 @@ docker compose exec nuxt sh
 **Lines of Code:** ~4,500+ (added 1,300+ lines for reference pages batch 2)
 
 **Test Coverage:**
-- ✅ **529 tests total** (ALL PASSING ✅) - **+253 new tests since 2025-11-21**
+- ✅ **542 tests total** (ALL PASSING ✅) - **+266 new tests since 2025-11-21**
 - ✅ **87 tests** for list infrastructure components
 - ✅ **31 tests** for core detail page components
 - ✅ **40 tests** for accordion components
@@ -354,7 +355,7 @@ docker compose exec nuxt sh
 
 **Current Status:** `docs/CURRENT_STATUS.md` (this file)
 **Setup Guide:** `CLAUDE.md` (streamlined to 525 lines with TDD requirements, commit policy, llms.txt)
-**Latest Handover:** `docs/HANDOVER-2025-01-21-DETAIL-PAGE-REFACTORING.md`
+**Latest Handover:** `docs/HANDOVER-2025-11-22-ITEM-SPELLS-COMPLETE.md`
 **Archived Handovers:** `docs/archive/2025-01-21-development-session/` (UI consistency, refactoring phase 1 & 2)
 **Archived Handovers:** `docs/archive/` (historical sessions)
 
@@ -496,7 +497,7 @@ If you find issues:
 - `2289d2e` - feat: Add proficiencies display to item detail pages
 - `d901d19` - feat: Add charges display to item detail page
 
-**Test Coverage:** 529 tests (all passing) - +4 tests since yesterday
+**Test Coverage:** 542 tests (all passing) - +13 tests (item spells component)
 
 **Previous Session:** See `docs/HANDOVER-2025-11-21-EMPTY-STATS-CARD-FIX.md` for yesterday's empty stats fix
 

@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Item spells display with charge costs - NEW component `UiAccordionItemSpells` shows spells castable from magic items (2025-11-22)
+- Random tables display for items - Shows dice rolls and results for items like Bag of Tricks (2025-11-22)
+- Proficiencies display for items - Shows weapon/armor proficiencies required or granted (2025-11-22)
+- Charges display in item Quick Stats - Shows max charges and recharge formula/timing (2025-11-22)
+- Skill interface to type system for modifier display (2025-11-22)
+
+### Fixed
+- Modifier display for non-numeric values - Now correctly shows "disadvantage" and "advantage" instead of "NaN" (2025-11-22)
+- Skill-based modifiers now display skill name with ability score code (e.g., "Stealth (DEX): disadvantage") (2025-11-22)
+
 ### Changed
+- Item detail pages now show complete item information including spells, proficiencies, charges, and random tables (2025-11-22)
+- ModifiersDisplay component enhanced with 13 new tests for advantage/disadvantage support (2025-11-22)
 - **Centralized entity type definitions** - Extracted entity types to `app/types/api/entities.ts` (2025-11-21)
   - Extracted Spell, Item, Race, CharacterClass, Background, Feat interfaces
   - Updated 6 card components to import from centralized types
