@@ -1,8 +1,10 @@
 export default defineAppConfig({
   ui: {
     // Color scheme - Amber & Emerald Fantasy Theme
-    primary: 'amber',
-    gray: 'stone',
+    colors: {
+      primary: 'amber',
+      neutral: 'stone'
+    },
 
     // Global component overrides for proper styling
     selectMenu: {
