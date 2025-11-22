@@ -1,10 +1,28 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Background } from '~/types'
+import type { components } from '~/types/api/generated'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
 import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
+
+describe('BackgroundCard - Type Compatibility', () => {
+  it('should accept OpenAPI-generated Background type', () => {
+    // This test verifies that our Background interface is compatible with the generated type
+    const generatedBg: components['schemas']['BackgroundResource'] = {
+      id: 1,
+      name: 'Acolyte',
+      slug: 'acolyte'
+    }
+
+    // Should be assignable to our application Background type
+    const background: Background = generatedBg
+
+    expect(background.id).toBe(1)
+    expect(background.name).toBe('Acolyte')
+  })
+})
 
 describe('BackgroundCard', () => {
   const mockBackground: Background = {

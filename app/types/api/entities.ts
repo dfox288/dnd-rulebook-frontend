@@ -87,23 +87,17 @@ export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources'> {
 /**
  * Background entity from D&D 5e API
  *
+ * Base type generated from OpenAPI spec, extended with application-specific utilities.
+ *
  * Used in: BackgroundCard, background detail pages, tests
  * API endpoint: /api/v1/backgrounds
  */
-export interface Background {
-  id: number
-  name: string
-  slug: string
-  skill_proficiencies?: unknown[] // Complex proficiency structure
-  tool_proficiencies?: unknown[] // Complex proficiency structure
-  proficiencies?: unknown[] // Combined proficiency structure
-  languages?: unknown[] // Complex language structure
-  traits?: unknown[] // Background traits and features
-  starting_equipment?: unknown[] // Starting equipment
-  feature_name?: string
-  description?: string
+type BackgroundFromAPI = components['schemas']['BackgroundResource']
+
+export interface Background extends Omit<BackgroundFromAPI, 'sources'> {
+  // Override with our custom types that have better structure
   sources?: Source[]
-  tags?: unknown[] // Background tags
+  // All other fields inherited from BackgroundFromAPI
 }
 
 /**
