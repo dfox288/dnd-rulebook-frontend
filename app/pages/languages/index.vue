@@ -1,51 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { Language } from '~/types'
 
-// API configuration
-const { apiFetch } = useApi()
-
-// Reactive filters
-const searchQuery = ref('')
-
-// Computed query params for API
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/languages',
+  cacheKey: 'languages-list',
+  queryBuilder: computed(() => ({})), // No custom filters
+  noPagination: true, // Small dataset, no pagination needed
+  seo: {
+    title: 'Languages - D&D 5e Compendium',
+    description: 'Browse all D&D 5e languages including Common, Elvish, Dwarvish, and more.'
   }
-
-  return params
 })
 
-// Fetch languages with reactive filters (via Nitro proxy)
-const { data: languagesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Language[] }>(
-  'languages-list',
-  async () => {
-    const response = await apiFetch<{ data: Language[] }>('/languages', {
-      query: queryParams.value
-    })
-    return response
-  },
-  {
-    watch: [queryParams]
-  }
-)
-
-// Computed values
-const languages = computed(() => languagesResponse.value?.data || [])
-const totalResults = computed(() => languages.value.length)
-
-// SEO meta tags
-useSeoMeta({
-  title: 'Languages - D&D 5e Compendium',
-  description: 'Browse all D&D 5e languages including Common, Elvish, Dwarvish, and more.'
-})
-
-useHead({
-  title: 'Languages - D&D 5e Compendium'
-})
+const languages = computed(() => data.value as Language[])
 </script>
 
 <template>
@@ -56,6 +34,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e languages and scripts"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <!-- Search -->
@@ -93,8 +72,8 @@ useHead({
     <UiListEmptyState
       v-else-if="languages.length === 0"
       entity-name="languages"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <!-- Results -->

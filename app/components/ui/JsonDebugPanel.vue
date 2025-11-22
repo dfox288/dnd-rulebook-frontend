@@ -55,7 +55,7 @@ const copyJson = () => {
       </template>
       <pre
         data-testid="json-content"
-        class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm"
+        class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono"
       ><code>{{ JSON.stringify(data, null, 2) }}</code></pre>
     </UCard>
   </div>

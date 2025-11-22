@@ -1,46 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
+import type { ItemType } from '~/types'
 
-interface ItemType {
-  id: number
-  code: string
-  name: string
-  description: string
-}
-
-const { apiFetch } = useApi()
-const searchQuery = ref('')
-
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/item-types',
+  cacheKey: 'item-types-list',
+  queryBuilder: computed(() => ({})), // No custom filters
+  noPagination: true, // Small dataset, no pagination needed
+  seo: {
+    title: 'Item Types - D&D 5e Compendium',
+    description: 'Browse all D&D 5e item categories including weapons, armor, potions, tools, and more.'
   }
-  return params
 })
 
-const { data: itemTypesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: ItemType[] }>(
-  'item-types-list',
-  async () => {
-    const response = await apiFetch<{ data: ItemType[] }>('/item-types', {
-      query: queryParams.value
-    })
-    return response
-  },
-  { watch: [queryParams] }
-)
-
-const itemTypes = computed(() => (itemTypesResponse.value?.data || []) as ItemType[])
-const totalResults = computed(() => itemTypes.value.length)
-
-useSeoMeta({
-  title: 'Item Types - D&D 5e Compendium',
-  description: 'Browse all D&D 5e item categories including weapons, armor, potions, tools, and more.'
-})
-
-useHead({
-  title: 'Item Types - D&D 5e Compendium'
-})
+const itemTypes = computed(() => data.value as ItemType[])
 </script>
 
 <template>
@@ -50,6 +33,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e item categories"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <div class="mb-6">
@@ -83,8 +67,8 @@ useHead({
     <UiListEmptyState
       v-else-if="itemTypes.length === 0"
       entity-name="item types"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <div v-else>

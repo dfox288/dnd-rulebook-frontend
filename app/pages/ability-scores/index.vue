@@ -1,51 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { AbilityScore } from '~/types'
 
-// API configuration
-const { apiFetch } = useApi()
-
-// Reactive filters
-const searchQuery = ref('')
-
-// Computed query params for API
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/ability-scores',
+  cacheKey: 'ability-scores-list',
+  queryBuilder: computed(() => ({})), // No custom filters
+  noPagination: true, // Small dataset, no pagination needed
+  seo: {
+    title: 'Ability Scores - D&D 5e Compendium',
+    description: 'Browse all D&D 5e ability scores (STR, DEX, CON, INT, WIS, CHA).'
   }
-
-  return params
 })
 
-// Fetch ability scores with reactive filters (via Nitro proxy)
-const { data: abilityScoresResponse, pending: loading, error, refresh } = await useAsyncData<{ data: AbilityScore[] }>(
-  'ability-scores-list',
-  async () => {
-    const response = await apiFetch<{ data: AbilityScore[] }>('/ability-scores', {
-      query: queryParams.value
-    })
-    return response
-  },
-  {
-    watch: [queryParams]
-  }
-)
-
-// Computed values
-const abilityScores = computed(() => abilityScoresResponse.value?.data || [])
-const totalResults = computed(() => abilityScores.value.length)
-
-// SEO meta tags
-useSeoMeta({
-  title: 'Ability Scores - D&D 5e Compendium',
-  description: 'Browse all D&D 5e ability scores: Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma.'
-})
-
-useHead({
-  title: 'Ability Scores - D&D 5e Compendium'
-})
+const abilityScores = computed(() => data.value as AbilityScore[])
 </script>
 
 <template>
@@ -56,6 +34,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e ability scores"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <!-- Search -->
@@ -93,8 +72,8 @@ useHead({
     <UiListEmptyState
       v-else-if="abilityScores.length === 0"
       entity-name="ability scores"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <!-- Results -->

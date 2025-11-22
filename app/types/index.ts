@@ -15,6 +15,7 @@ export type { Source, AbilityScore, Modifier, Tag } from './api/common'
 export type { Spell, Item, Race, CharacterClass, Background, Feat, Monster } from './api/entities'
 export type Condition = components['schemas']['ConditionResource']
 export type DamageType = components['schemas']['DamageTypeResource']
+export type ItemType = components['schemas']['ItemTypeResource']
 export type Language = components['schemas']['LanguageResource']
 export type ProficiencyType = components['schemas']['ProficiencyTypeResource']
 export type Size = components['schemas']['SizeResource']

@@ -1,40 +1,28 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { Skill } from '~/types'
 
-const { apiFetch } = useApi()
-const searchQuery = ref('')
-
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/skills',
+  cacheKey: 'skills-list',
+  queryBuilder: computed(() => ({})),
+  noPagination: true,
+  seo: {
+    title: 'Skills - D&D 5e Compendium',
+    description: 'Browse all D&D 5e skills including Acrobatics, Athletics, Stealth, Perception, and more.'
   }
-  return params
 })
 
-const { data: skillsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Skill[] }>(
-  'skills-list',
-  async () => {
-    const response = await apiFetch<{ data: Skill[] }>('/skills', {
-      query: queryParams.value
-    })
-    return response
-  },
-  { watch: [queryParams] }
-)
-
-const skills = computed(() => skillsResponse.value?.data || [])
-const totalResults = computed(() => skills.value.length)
-
-useSeoMeta({
-  title: 'Skills - D&D 5e Compendium',
-  description: 'Browse all D&D 5e skills including Acrobatics, Athletics, Stealth, Perception, and more.'
-})
-
-useHead({
-  title: 'Skills - D&D 5e Compendium'
-})
+const skills = computed(() => data.value as Skill[])
 </script>
 
 <template>
@@ -44,6 +32,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e skills"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <div class="mb-6">
@@ -77,8 +66,8 @@ useHead({
     <UiListEmptyState
       v-else-if="skills.length === 0"
       entity-name="skills"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <div v-else>

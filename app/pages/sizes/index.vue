@@ -1,51 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { Size } from '~/types'
 
-// API configuration
-const { apiFetch } = useApi()
-
-// Reactive filters
-const searchQuery = ref('')
-
-// Computed query params for API
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/sizes',
+  cacheKey: 'sizes-list',
+  queryBuilder: computed(() => ({})), // No custom filters
+  noPagination: true, // Small dataset, no pagination needed
+  seo: {
+    title: 'Creature Sizes - D&D 5e Compendium',
+    description: 'Browse all D&D 5e creature size categories from Tiny to Gargantuan.'
   }
-
-  return params
 })
 
-// Fetch sizes with reactive filters (via Nitro proxy)
-const { data: sizesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Size[] }>(
-  'sizes-list',
-  async () => {
-    const response = await apiFetch<{ data: Size[] }>('/sizes', {
-      query: queryParams.value
-    })
-    return response
-  },
-  {
-    watch: [queryParams]
-  }
-)
-
-// Computed values
-const sizes = computed(() => sizesResponse.value?.data || [])
-const totalResults = computed(() => sizes.value.length)
-
-// SEO meta tags
-useSeoMeta({
-  title: 'Creature Sizes - D&D 5e Compendium',
-  description: 'Browse all D&D 5e creature size categories from Tiny to Gargantuan.'
-})
-
-useHead({
-  title: 'Creature Sizes - D&D 5e Compendium'
-})
+const sizes = computed(() => data.value as Size[])
 </script>
 
 <template>
@@ -56,6 +34,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e creature size categories"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <!-- Search -->
@@ -93,8 +72,8 @@ useHead({
     <UiListEmptyState
       v-else-if="sizes.length === 0"
       entity-name="sizes"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <!-- Results -->

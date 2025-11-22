@@ -1,40 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { ProficiencyType } from '~/types'
 
-const { apiFetch } = useApi()
-const searchQuery = ref('')
-
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/proficiency-types',
+  cacheKey: 'proficiency-types-list',
+  queryBuilder: computed(() => ({})), // No custom filters
+  noPagination: true, // Small dataset, no pagination needed
+  seo: {
+    title: 'Proficiency Types - D&D 5e Compendium',
+    description: 'Browse all D&D 5e proficiency categories including armor, weapons, tools, and skills.'
   }
-  return params
 })
 
-const { data: proficiencyTypesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: ProficiencyType[] }>(
-  'proficiency-types-list',
-  async () => {
-    const response = await apiFetch<{ data: ProficiencyType[] }>('/proficiency-types', {
-      query: queryParams.value
-    })
-    return response
-  },
-  { watch: [queryParams] }
-)
-
-const proficiencyTypes = computed(() => proficiencyTypesResponse.value?.data || [])
-const totalResults = computed(() => proficiencyTypes.value.length)
-
-useSeoMeta({
-  title: 'Proficiency Types - D&D 5e Compendium',
-  description: 'Browse all D&D 5e proficiency categories including armor, weapons, tools, and skills.'
-})
-
-useHead({
-  title: 'Proficiency Types - D&D 5e Compendium'
-})
+const proficiencyTypes = computed(() => data.value as ProficiencyType[])
 </script>
 
 <template>
@@ -44,6 +33,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e proficiency categories"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <div class="mb-6">
@@ -77,8 +67,8 @@ useHead({
     <UiListEmptyState
       v-else-if="proficiencyTypes.length === 0"
       entity-name="proficiency types"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <div v-else>

@@ -1,51 +1,29 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import type { Source } from '~/types'
 
-// API configuration
-const { apiFetch } = useApi()
-
-// Reactive filters
-const searchQuery = ref('')
-
-// Computed query params for API
-const queryParams = computed(() => {
-  const params: Record<string, string> = {}
-
-  if (searchQuery.value.trim()) {
-    params.q = searchQuery.value.trim()
+// Use entity list composable with noPagination
+const {
+  searchQuery,
+  data,
+  totalResults,
+  loading,
+  error,
+  refresh,
+  clearFilters,
+  hasActiveFilters
+} = useEntityList({
+  endpoint: '/sources',
+  cacheKey: 'sources-list',
+  queryBuilder: computed(() => ({})),
+  noPagination: true,
+  seo: {
+    title: 'Source Books - D&D 5e Compendium',
+    description: 'Browse all D&D 5e source books and official publications.'
   }
-
-  return params
 })
 
-// Fetch sources with reactive filters (via Nitro proxy)
-const { data: sourcesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Source[] }>(
-  'sources-list',
-  async () => {
-    const response = await apiFetch<{ data: Source[] }>('/sources', {
-      query: queryParams.value
-    })
-    return response
-  },
-  {
-    watch: [queryParams]
-  }
-)
-
-// Computed values
-const sources = computed(() => sourcesResponse.value?.data || [])
-const totalResults = computed(() => sources.value.length)
-
-// SEO meta tags
-useSeoMeta({
-  title: 'Source Books - D&D 5e Compendium',
-  description: 'Browse all D&D 5e source books and official publications.'
-})
-
-useHead({
-  title: 'Source Books - D&D 5e Compendium'
-})
+const sources = computed(() => data.value as Source[])
 </script>
 
 <template>
@@ -56,6 +34,7 @@ useHead({
       :total="totalResults"
       description="Browse D&D 5e official source books and publications"
       :loading="loading"
+      :has-active-filters="hasActiveFilters"
     />
 
     <!-- Search -->
@@ -93,8 +72,8 @@ useHead({
     <UiListEmptyState
       v-else-if="sources.length === 0"
       entity-name="source books"
-      :has-filters="!!searchQuery"
-      @clear-filters="searchQuery = ''"
+      :has-filters="hasActiveFilters"
+      @clear-filters="clearFilters"
     />
 
     <!-- Results -->

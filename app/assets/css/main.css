@@ -10,6 +10,12 @@
   font-family: var(--font-sans) !important;
 }
 
+/* Exception: Code/JSON displays must use monospace */
+pre,
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+}
+
 /* Increase base font size globally */
 html {
   font-size: 20px !important; /* Default is 16px, 25% increase */
