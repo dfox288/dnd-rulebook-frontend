@@ -530,6 +530,192 @@ const sampleSpell = {
           </div>
         </div>
 
+        <!-- Proposed Custom Scheme: Amber + Emerald -->
+        <div>
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            ⚜️ Proposed: Amber & Emerald Theme
+          </h3>
+          <p class="text-base text-gray-600 dark:text-gray-400 mb-6">
+            A treasure-hunting D&D aesthetic with warm gold and vibrant nature tones
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Primary: Amber -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-amber-700 dark:text-amber-400">
+                  Primary (Amber)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Main actions, links, emphasis
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-amber-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-amber-100 dark:bg-amber-900 text-amber-900 dark:text-amber-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-amber-600 dark:text-amber-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Success: Emerald -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-emerald-700 dark:text-emerald-400">
+                  Success (Emerald)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Positive actions, confirmations
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-emerald-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-emerald-100 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-emerald-600 dark:text-emerald-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Warning: Orange -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-orange-700 dark:text-orange-400">
+                  Warning (Orange)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Caution, important notices
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-orange-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-orange-100 dark:bg-orange-900 text-orange-900 dark:text-orange-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-orange-600 dark:text-orange-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Error/Danger: Red -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-red-700 dark:text-red-400">
+                  Error (Red)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Errors, destructive actions
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-red-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-red-600 dark:text-red-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Info: Blue -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-blue-700 dark:text-blue-400">
+                  Info (Blue)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Informational, secondary
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-blue-600 dark:text-blue-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+
+            <!-- Neutral: Gray -->
+            <UCard>
+              <div class="space-y-3">
+                <h4 class="text-base font-semibold text-gray-700 dark:text-gray-400">
+                  Neutral (Gray)
+                </h4>
+                <p class="text-xs text-gray-600 dark:text-gray-400">
+                  Default, secondary actions
+                </p>
+                <div class="space-y-2">
+                  <div class="px-3 py-2 bg-gray-600 text-white rounded-md text-sm font-semibold text-center">
+                    Button
+                  </div>
+                  <div class="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md text-xs text-center">
+                    Badge
+                  </div>
+                  <div class="text-xs text-gray-600 dark:text-gray-400 text-center">
+                    Link Text
+                  </div>
+                </div>
+              </div>
+            </UCard>
+          </div>
+
+          <!-- Full Semantic Color Palette Summary -->
+          <div class="mt-8 p-6 bg-gradient-to-br from-amber-50 to-emerald-50 dark:from-amber-950 dark:to-emerald-950 rounded-lg border-2 border-amber-400 dark:border-amber-600">
+            <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Complete Color System
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="font-semibold text-amber-700 dark:text-amber-400 mb-2">Primary Colors:</p>
+                <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+                  <li><span class="font-semibold">Primary:</span> Amber (treasure, legendary items)</li>
+                  <li><span class="font-semibold">Success:</span> Emerald (nature, healing, growth)</li>
+                  <li><span class="font-semibold">Warning:</span> Orange (caution, attention)</li>
+                  <li><span class="font-semibold">Error:</span> Red (danger, fire, destruction)</li>
+                  <li><span class="font-semibold">Info:</span> Blue (arcane, knowledge)</li>
+                  <li><span class="font-semibold">Neutral:</span> Gray (default, secondary)</li>
+                </ul>
+              </div>
+              <div>
+                <p class="font-semibold text-emerald-700 dark:text-emerald-400 mb-2">Usage Examples:</p>
+                <ul class="space-y-1 text-gray-700 dark:text-gray-300">
+                  <li>🎯 Spell cards: <span class="text-amber-600 dark:text-amber-400">Amber badges</span></li>
+                  <li>🌿 Healing potions: <span class="text-emerald-600 dark:text-emerald-400">Emerald badges</span></li>
+                  <li>⚠️ Cursed items: <span class="text-orange-600 dark:text-orange-400">Orange warnings</span></li>
+                  <li>🔥 Fire damage: <span class="text-red-600 dark:text-red-400">Red danger</span></li>
+                  <li>📘 Armor class: <span class="text-blue-600 dark:text-blue-400">Blue info</span></li>
+                  <li>📄 Source books: <span class="text-gray-600 dark:text-gray-400">Gray neutral</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="mt-4 p-3 bg-white/50 dark:bg-black/20 rounded">
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                <strong>Gray Recommendation:</strong> Use <strong>Stone</strong> gray for warm, parchment-like feel that complements amber/emerald theme.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- Gray Palette Options -->
         <div>
           <h3 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
