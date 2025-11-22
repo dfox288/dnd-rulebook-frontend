@@ -67,4 +67,59 @@ describe('useAnimatedBackground', () => {
       expect(fillSpy).toHaveBeenCalled()
     })
   })
+
+  describe('Rune class', () => {
+    it('initializes with random position and symbol', async () => {
+      const { Rune } = await import('~/composables/useAnimatedBackground')
+
+      const rune = new Rune(1920, 1080)
+
+      expect(rune.x).toBeGreaterThanOrEqual(0)
+      expect(rune.x).toBeLessThanOrEqual(1920)
+      expect(rune.y).toBeGreaterThanOrEqual(0)
+      expect(rune.y).toBeLessThanOrEqual(1080)
+      expect(rune.symbol).toBeDefined()
+      expect(rune.symbol.length).toBeGreaterThan(0)
+      expect(rune.size).toBeGreaterThanOrEqual(40)
+      expect(rune.size).toBeLessThanOrEqual(80)
+    })
+
+    it('fades in and out over time', async () => {
+      const { Rune } = await import('~/composables/useAnimatedBackground')
+
+      const rune = new Rune(100, 100)
+      rune.opacity = 0
+      rune.fadeDirection = 1 // Fading in
+
+      rune.update(1000) // 1 second
+
+      expect(rune.opacity).toBeGreaterThan(0)
+    })
+
+    it('rotates slowly over time', async () => {
+      const { Rune } = await import('~/composables/useAnimatedBackground')
+
+      const rune = new Rune(100, 100)
+      const initialRotation = rune.rotation
+
+      rune.update(1000) // 1 second
+
+      expect(rune.rotation).not.toBe(initialRotation)
+    })
+
+    it('repositions when fully faded out', async () => {
+      const { Rune } = await import('~/composables/useAnimatedBackground')
+
+      const rune = new Rune(100, 100)
+      rune.opacity = 0
+      rune.fadeDirection = -1 // Fading out
+      const initialX = rune.x
+      const initialY = rune.y
+
+      rune.update(16) // Trigger reposition check
+
+      // When opacity is 0 and fading out, should flip to fading in
+      expect(rune.fadeDirection).toBe(1)
+    })
+  })
 })

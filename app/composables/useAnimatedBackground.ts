@@ -1,3 +1,8 @@
+const RUNE_SYMBOLS = [
+  'ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ',  // Norse runes
+  '⚔', '✦', '◈', '⬡', '⬢', '⬣'     // Geometric symbols
+]
+
 export class Swirl {
   x: number
   y: number
@@ -72,5 +77,77 @@ export class Swirl {
     ctx.fill()
 
     ctx.restore()
+  }
+}
+
+export class Rune {
+  x: number
+  y: number
+  symbol: string
+  size: number
+  opacity: number
+  rotation: number
+  fadeDirection: number
+  private fadeSpeed: number
+  private rotationSpeed: number
+  private width: number
+  private height: number
+
+  constructor(width: number, height: number) {
+    this.width = width
+    this.height = height
+
+    // Random position
+    this.x = Math.random() * width
+    this.y = Math.random() * height
+
+    // Random symbol
+    this.symbol = RUNE_SYMBOLS[Math.floor(Math.random() * RUNE_SYMBOLS.length)]
+
+    // Random size (40-80px)
+    this.size = 40 + Math.random() * 40
+
+    // Start with random opacity (0-0.12)
+    this.opacity = Math.random() * 0.12
+
+    // Random initial rotation
+    this.rotation = Math.random() * Math.PI * 2
+
+    // Random fade direction (1 = in, -1 = out)
+    this.fadeDirection = Math.random() > 0.5 ? 1 : -1
+
+    // Fade speed (0.01-0.015 opacity change per second)
+    this.fadeSpeed = 0.01 + Math.random() * 0.005
+
+    // Rotation speed (0.1-0.3 degrees per second)
+    this.rotationSpeed = (0.1 + Math.random() * 0.2) * (Math.PI / 180)
+  }
+
+  update(deltaTime: number): void {
+    const dt = deltaTime / 1000
+
+    // Update rotation
+    this.rotation += this.rotationSpeed * dt
+
+    // Update opacity (fade in/out)
+    this.opacity += this.fadeDirection * this.fadeSpeed * dt
+
+    // Clamp opacity and reverse direction at limits
+    if (this.opacity >= 0.12) {
+      this.opacity = 0.12
+      this.fadeDirection = -1 // Start fading out
+    } else if (this.opacity <= 0) {
+      this.opacity = 0
+      this.fadeDirection = 1 // Start fading in
+
+      // Reposition when fully faded
+      this.x = Math.random() * this.width
+      this.y = Math.random() * this.height
+      this.symbol = RUNE_SYMBOLS[Math.floor(Math.random() * RUNE_SYMBOLS.length)]
+    }
+  }
+
+  draw(ctx: CanvasRenderingContext2D, color: string): void {
+    // Will implement in next task
   }
 }
