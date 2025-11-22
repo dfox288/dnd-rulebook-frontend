@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Test suite refactored for maintainability** - Extracted shared test helpers to reduce redundancy by 16 tests (573→557) (2025-11-22)
+  - Created 3 test helper modules (cardBehavior, descriptionBehavior, sourceBehavior)
+  - Refactored 6 entity card test files using shared helpers
+  - Eliminated duplicate tests for link behavior, hover effects, description truncation, and source footers
+  - All 557 tests passing with improved maintainability
+
 ### Added
 - **Test coverage for SearchResultCard component** - Added 12 comprehensive tests for global search results (573 total tests) (2025-11-22)
 - **Pipe-delimited column parsing in random tables** - Tables now split `result_text` by `|` into separate columns (2025-11-22)

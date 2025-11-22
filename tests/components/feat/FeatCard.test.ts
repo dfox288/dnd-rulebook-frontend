@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Feat } from '~/types'
 import FeatCard from '~/components/feat/FeatCard.vue'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('FeatCard', () => {
   const mockFeat: Feat = {
@@ -24,6 +27,36 @@ describe('FeatCard', () => {
     ]
   }
 
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(FeatCard, { props: { feat: mockFeat } }),
+    '/feats/war-caster'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(FeatCard, { props: { feat: mockFeat } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(FeatCard, { props: { feat: mockFeat } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(FeatCard, { props: { feat: { ...mockFeat, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(FeatCard, { props: { feat: { ...mockFeat, description: 'Short feat description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(FeatCard, { props: { feat: mockFeat } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(FeatCard, { props: { feat: { ...mockFeat, sources: undefined } } }),
+    'War Caster'
+  )
+
+  // Feat-specific tests (domain logic)
   it('renders feat name', async () => {
     const wrapper = await mountSuspended(FeatCard, {
       props: { feat: mockFeat }
@@ -157,83 +190,6 @@ describe('FeatCard', () => {
     expect(wrapper.text()).toContain('A feat that provides special abilities or bonuses')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longFeat = { ...mockFeat, description: longDescription }
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: longFeat }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short feat description'
-    const shortFeat = { ...mockFeat, description: shortDescription }
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: shortFeat }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('links to feat detail page with slug', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/feats/war-caster')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles feats without sources', async () => {
-    const featWithoutSources = { ...mockFeat, sources: undefined }
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: featWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('War Caster')
-  })
-
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(FeatCard, {
       props: { feat: mockFeat }
@@ -244,17 +200,6 @@ describe('FeatCard', () => {
     expect(text).toContain('Prerequisites')
     expect(text).toContain('INT 13+')
     expect(text).toContain('2 Bonuses')
-  })
-
-  it('handles long feat names with line clamp', async () => {
-    const longName = 'Very Long Feat Name That Should Be Truncated With Line Clamp'
-    const longNameFeat = { ...mockFeat, name: longName }
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: longNameFeat }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 
   it('handles feats with all optional fields', async () => {

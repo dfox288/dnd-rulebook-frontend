@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Background } from '~/types'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('BackgroundCard', () => {
   const mockBackground: Background = {
@@ -23,6 +26,37 @@ describe('BackgroundCard', () => {
       { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
     ]
   }
+
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(BackgroundCard, { props: { background: mockBackground } }),
+    '/backgrounds/acolyte'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(BackgroundCard, { props: { background: mockBackground } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(BackgroundCard, { props: { background: mockBackground } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(BackgroundCard, { props: { background: { ...mockBackground, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(BackgroundCard, { props: { background: { ...mockBackground, description: 'Short background description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(BackgroundCard, { props: { background: mockBackground } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(BackgroundCard, { props: { background: { ...mockBackground, sources: undefined } } }),
+    'Acolyte'
+  )
+
+  // Background-specific tests (domain logic)
 
   it('renders background name', async () => {
     const wrapper = await mountSuspended(BackgroundCard, {
@@ -149,83 +183,6 @@ describe('BackgroundCard', () => {
     expect(wrapper.text()).toContain('A character background for D&D 5e')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longBg = { ...mockBackground, description: longDescription }
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: longBg }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short background description'
-    const shortBg = { ...mockBackground, description: shortDescription }
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: shortBg }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('links to background detail page with slug', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/backgrounds/acolyte')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles backgrounds without sources', async () => {
-    const bgWithoutSources = { ...mockBackground, sources: undefined }
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: bgWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('Acolyte')
-  })
-
   it('displays all key information in organized layout', async () => {
     const fullBg = {
       ...mockBackground,
@@ -241,17 +198,6 @@ describe('BackgroundCard', () => {
     expect(text).toContain('2 Skills')
     expect(text).toContain('2 Languages')
     expect(text).toContain('1 Tools')
-  })
-
-  it('handles long background names with line clamp', async () => {
-    const longName = 'Very Long Background Name That Should Be Truncated'
-    const longNameBg = { ...mockBackground, name: longName }
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: longNameBg }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 
   it('handles backgrounds with all optional fields', async () => {

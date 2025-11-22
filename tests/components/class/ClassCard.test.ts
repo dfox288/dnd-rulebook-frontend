@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { CharacterClass } from '~/types'
 import ClassCard from '~/components/class/ClassCard.vue'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('ClassCard', () => {
   const mockClass: CharacterClass = {
@@ -35,6 +38,36 @@ describe('ClassCard', () => {
     ]
   }
 
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(ClassCard, { props: { characterClass: mockClass } }),
+    '/classes/wizard'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(ClassCard, { props: { characterClass: mockClass } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(ClassCard, { props: { characterClass: mockClass } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(ClassCard, { props: { characterClass: { ...mockClass, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(ClassCard, { props: { characterClass: { ...mockClass, description: 'Short class description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(ClassCard, { props: { characterClass: mockClass } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(ClassCard, { props: { characterClass: { ...mockClass, sources: undefined } } }),
+    'Wizard'
+  )
+
+  // Class-specific tests (domain logic)
   it('renders class name', async () => {
     const wrapper = await mountSuspended(ClassCard, {
       props: { characterClass: mockClass }
@@ -183,83 +216,6 @@ describe('ClassCard', () => {
     expect(wrapper.text()).toContain('A playable class for D&D 5e characters')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longClass = { ...mockClass, description: longDescription }
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: longClass }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short class description'
-    const shortClass = { ...mockClass, description: shortDescription }
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: shortClass }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('links to class detail page with slug', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/classes/wizard')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles classes without sources', async () => {
-    const classWithoutSources = { ...mockClass, sources: undefined }
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: classWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('Wizard')
-  })
-
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(ClassCard, {
       props: { characterClass: mockClass }
@@ -272,17 +228,6 @@ describe('ClassCard', () => {
     expect(text).toContain('Intelligence')
     expect(text).toContain('d6')
     expect(text).toContain('2 Subclasses')
-  })
-
-  it('handles long class names with line clamp', async () => {
-    const longName = 'Very Long Class Name That Should Be Truncated'
-    const longNameClass = { ...mockClass, name: longName }
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: longNameClass }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 
   it('handles classes with different primary abilities', async () => {

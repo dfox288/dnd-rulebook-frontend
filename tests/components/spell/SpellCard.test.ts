@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SpellCard from '~/components/spell/SpellCard.vue'
 import type { Spell } from '~/types'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('SpellCard', () => {
   const mockSpell: Spell = {
@@ -24,6 +27,36 @@ describe('SpellCard', () => {
     ]
   }
 
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(SpellCard, { props: { spell: mockSpell } }),
+    '/spells/fireball'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(SpellCard, { props: { spell: mockSpell } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(SpellCard, { props: { spell: mockSpell } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(SpellCard, { props: { spell: { ...mockSpell, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(SpellCard, { props: { spell: { ...mockSpell, description: 'Short spell description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(SpellCard, { props: { spell: mockSpell } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(SpellCard, { props: { spell: { ...mockSpell, sources: undefined } } }),
+    'Fireball'
+  )
+
+  // Spell-specific tests (domain logic)
   it('renders spell name', async () => {
     const wrapper = await mountSuspended(SpellCard, {
       props: { spell: mockSpell }
@@ -109,29 +142,6 @@ describe('SpellCard', () => {
     expect(wrapper.text()).toContain('A bright streak flashes')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longSpell = { ...mockSpell, description: longDescription }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: longSpell }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short spell description'
-    const shortSpell = { ...mockSpell, description: shortDescription }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: shortSpell }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
   it('shows concentration badge when needs_concentration is true', async () => {
     const concentrationSpell = { ...mockSpell, needs_concentration: true }
     const wrapper = await mountSuspended(SpellCard, {
@@ -166,43 +176,6 @@ describe('SpellCard', () => {
     expect(wrapper.text()).not.toContain('Ritual')
   })
 
-  it('links to spell detail page with slug', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/spells/fireball')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
   it('handles spells with all badges (concentration + ritual)', async () => {
     const fullSpell = {
       ...mockSpell,
@@ -218,23 +191,6 @@ describe('SpellCard', () => {
     expect(text).toContain('Ritual')
   })
 
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles spells without sources', async () => {
-    const spellWithoutSources = { ...mockSpell, sources: undefined }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: spellWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('Fireball')
-  })
-
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(SpellCard, {
       props: { spell: mockSpell }
@@ -247,55 +203,5 @@ describe('SpellCard', () => {
     expect(text).toContain('1 action')
     expect(text).toContain('150 feet')
     expect(text).toContain('Player\'s Handbook')
-  })
-
-  it('applies correct level color for cantrips', async () => {
-    const cantrip = { ...mockSpell, level: 0 }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: cantrip }
-    })
-
-    const html = wrapper.html()
-    expect(html).toBeTruthy()
-  })
-
-  it('applies correct level color for low level spells (1-3)', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const html = wrapper.html()
-    expect(html).toBeTruthy()
-  })
-
-  it('applies correct level color for mid level spells (4-6)', async () => {
-    const midLevel = { ...mockSpell, level: 5 }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: midLevel }
-    })
-
-    const html = wrapper.html()
-    expect(html).toBeTruthy()
-  })
-
-  it('applies correct level color for high level spells (7-9)', async () => {
-    const highLevel = { ...mockSpell, level: 9 }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: highLevel }
-    })
-
-    const html = wrapper.html()
-    expect(html).toBeTruthy()
-  })
-
-  it('handles long spell names with line clamp', async () => {
-    const longName = 'Mordenkainen\'s Magnificent Mansion of Magnificent Magnificence'
-    const longNameSpell = { ...mockSpell, name: longName }
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: longNameSpell }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 })

@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { Item } from '~/types'
 import ItemCard from '~/components/item/ItemCard.vue'
+import type { Item } from '~/types'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('ItemCard', () => {
   const mockItem: Item = {
@@ -22,6 +25,37 @@ describe('ItemCard', () => {
       { code: 'PHB', name: 'Player\'s Handbook', pages: '149' }
     ]
   }
+
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(ItemCard, { props: { item: mockItem } }),
+    '/items/longsword'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(ItemCard, { props: { item: mockItem } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(ItemCard, { props: { item: mockItem } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(ItemCard, { props: { item: { ...mockItem, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(ItemCard, { props: { item: { ...mockItem, description: 'Short item description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(ItemCard, { props: { item: mockItem } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(ItemCard, { props: { item: { ...mockItem, sources: undefined } } }),
+    'Longsword'
+  )
+
+  // Item-specific tests (domain logic)
 
   it('renders item name', async () => {
     const wrapper = await mountSuspended(ItemCard, {
@@ -195,83 +229,6 @@ describe('ItemCard', () => {
     expect(wrapper.text()).toContain('No description available')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longItem = { ...mockItem, description: longDescription }
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: longItem }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short item description'
-    const shortItem = { ...mockItem, description: shortDescription }
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: shortItem }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('links to item detail page with slug', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/items/longsword')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles items without sources', async () => {
-    const itemWithoutSources = { ...mockItem, sources: undefined }
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: itemWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('Longsword')
-  })
-
   it('displays all key information in organized layout', async () => {
     const fullItem = {
       ...mockItem,
@@ -290,17 +247,6 @@ describe('ItemCard', () => {
     expect(text).toContain('3 lb')
     expect(text).toContain('Magic')
     expect(text).toContain('Attunement')
-  })
-
-  it('handles long item names with line clamp', async () => {
-    const longName = 'Very Long Item Name That Should Be Truncated With Line Clamp'
-    const longNameItem = { ...mockItem, name: longName }
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: longNameItem }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 
   it('handles different rarity levels', async () => {

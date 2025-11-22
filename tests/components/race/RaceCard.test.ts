@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Race } from '~/types'
 import RaceCard from '~/components/race/RaceCard.vue'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
 
 describe('RaceCard', () => {
   const mockRace: Race = {
@@ -38,6 +41,36 @@ describe('RaceCard', () => {
     ]
   }
 
+  // Shared card behavior tests (using helpers)
+  testCardLinkBehavior(
+    () => mountSuspended(RaceCard, { props: { race: mockRace } }),
+    '/races/elf'
+  )
+
+  testCardHoverEffects(
+    () => mountSuspended(RaceCard, { props: { race: mockRace } })
+  )
+
+  testCardBorderStyling(
+    () => mountSuspended(RaceCard, { props: { race: mockRace } })
+  )
+
+  testDescriptionTruncation(
+    () => mountSuspended(RaceCard, { props: { race: { ...mockRace, description: 'A'.repeat(200) } } }),
+    () => mountSuspended(RaceCard, { props: { race: { ...mockRace, description: 'Short race description' } } })
+  )
+
+  testSourceFooter(
+    () => mountSuspended(RaceCard, { props: { race: mockRace } }),
+    'Player\'s Handbook'
+  )
+
+  testOptionalSourceFooter(
+    () => mountSuspended(RaceCard, { props: { race: { ...mockRace, sources: undefined } } }),
+    'Elf'
+  )
+
+  // Race-specific tests (domain logic)
   it('renders race name', async () => {
     const wrapper = await mountSuspended(RaceCard, {
       props: { race: mockRace }
@@ -270,83 +303,6 @@ describe('RaceCard', () => {
     expect(wrapper.text()).toContain('A playable race for D&D 5e characters')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDescription = 'A'.repeat(200)
-    const longRace = { ...mockRace, description: longDescription }
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: longRace }
-    })
-
-    const text = wrapper.text()
-    expect(text).toContain('...')
-    expect(text.length).toBeLessThan(longDescription.length + 100)
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDescription = 'Short race description'
-    const shortRace = { ...mockRace, description: shortDescription }
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: shortRace }
-    })
-
-    expect(wrapper.text()).toContain(shortDescription)
-    expect(wrapper.text()).not.toContain('...')
-  })
-
-  it('links to race detail page with slug', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const link = wrapper.find('a')
-    expect(link.exists()).toBe(true)
-    expect(link.attributes('href')).toBe('/races/elf')
-  })
-
-  it('applies hover effects for interactivity', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('hover')
-  })
-
-  it('uses card component with border', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('border')
-  })
-
-  it('renders with proper spacing structure', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('space-y-3')
-  })
-
-  it('renders sources footer', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    expect(wrapper.text()).toContain('Player\'s Handbook')
-  })
-
-  it('handles races without sources', async () => {
-    const raceWithoutSources = { ...mockRace, sources: undefined }
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: raceWithoutSources }
-    })
-
-    expect(wrapper.text()).toContain('Elf')
-  })
-
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(RaceCard, {
       props: { race: mockRace }
@@ -359,17 +315,6 @@ describe('RaceCard', () => {
     expect(text).toContain('DEX +2')
     expect(text).toContain('3 Traits')
     expect(text).toContain('2 Subraces')
-  })
-
-  it('handles long race names with line clamp', async () => {
-    const longName = 'Very Long Race Name That Should Be Truncated With Line Clamp'
-    const longNameRace = { ...mockRace, name: longName }
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: longNameRace }
-    })
-
-    const html = wrapper.html()
-    expect(html).toContain('line-clamp-2')
   })
 
   it('handles different size codes', async () => {
