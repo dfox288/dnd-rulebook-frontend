@@ -2,8 +2,12 @@ export default defineAppConfig({
   ui: {
     // Color scheme - Amber & Emerald Fantasy Theme
     colors: {
-      primary: 'amber',
-      neutral: 'stone'
+      primary: 'amber',     // Main actions, links - Treasure, legendary items
+      success: 'emerald',   // Positive actions - Nature, healing, growth
+      warning: 'orange',    // Caution, notices - Cursed items, important
+      error: 'red',         // Danger, destruction - Fire damage, danger
+      info: 'blue',         // Informational - Arcane knowledge, AC
+      neutral: 'stone'      // Default, secondary - Source books, gray text
     },
 
     // Global component overrides for proper styling
