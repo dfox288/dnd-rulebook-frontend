@@ -63,7 +63,7 @@ const backgroundImage = computed(() => {
     :to="`/feats/${feat.slug}`"
     class="block h-full group"
   >
-    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-feat-300 dark:border-feat-700 hover:border-feat-500">
       <!-- Background Image Layer -->
       <div
         v-if="backgroundImage"
@@ -80,7 +80,7 @@ const backgroundImage = computed(() => {
           <div class="flex items-center gap-2 flex-wrap">
             <UBadge
               v-if="hasPrerequisites"
-              color="error"
+              color="feat"
               variant="soft"
               size="md"
             >
@@ -123,7 +123,7 @@ const backgroundImage = computed(() => {
             class="flex items-center gap-2"
           >
             <UBadge
-              color="success"
+              color="feat"
               variant="soft"
               size="xs"
             >
