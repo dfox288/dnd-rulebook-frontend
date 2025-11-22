@@ -9,7 +9,7 @@
 
 // API types
 export type { Source, AbilityScore, Modifier, Tag } from './api/common'
-export type { Spell, Item, Race, CharacterClass, Background, Feat } from './api/entities'
+export type { Spell, Item, Race, CharacterClass, Background, Feat, Monster } from './api/entities'
 
 // Generated API types (for taxonomy pages)
 import type { components } from './api/generated'
