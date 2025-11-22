@@ -119,3 +119,19 @@ export interface Feat extends Omit<FeatFromAPI, 'sources' | 'modifiers'> {
   sources?: Source[]
   // All other fields inherited from FeatFromAPI
 }
+
+/**
+ * Monster entity from D&D 5e API
+ *
+ * Base type generated from OpenAPI spec, extended with application-specific utilities.
+ *
+ * Used in: MonsterCard, monster detail pages, tests
+ * API endpoint: /api/v1/monsters
+ */
+type MonsterFromAPI = components['schemas']['MonsterResource']
+
+export interface Monster extends Omit<MonsterFromAPI, 'sources'> {
+  // Override with our custom types that have better structure
+  sources?: Source[]
+  // All other fields inherited from MonsterFromAPI
+}
