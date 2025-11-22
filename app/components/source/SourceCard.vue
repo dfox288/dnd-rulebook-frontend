@@ -23,7 +23,7 @@ const backgroundImageUrl = computed(() =>
 </script>
 
 <template>
-  <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700 group">
+  <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-source-300 dark:border-source-700 hover:border-source-500 group">
     <!-- Background Image Layer -->
     <div
       v-if="backgroundImageUrl"
@@ -36,14 +36,14 @@ const backgroundImageUrl = computed(() =>
       <!-- Source Code Badge -->
       <div class="flex items-center gap-2 flex-wrap">
         <UBadge
-          color="neutral"
+          color="source"
           variant="solid"
           size="lg"
         >
           {{ source.code }}
         </UBadge>
         <UBadge
-          color="neutral"
+          color="source"
           variant="soft"
           size="xs"
         >
