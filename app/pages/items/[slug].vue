@@ -89,8 +89,8 @@ const imagePath = computed(() => {
         label="Back to Items"
       />
 
-      <!-- Header with Image -->
-      <UiEntityHeaderWithImage
+      <!-- Header -->
+      <UiDetailPageHeader
         :title="item.name"
         :badges="[
           { label: item.item_type?.name || 'Unknown', color: itemTypeColor, variant: 'subtle' as const, size: 'lg' as const },
@@ -98,8 +98,6 @@ const imagePath = computed(() => {
           ...(item.is_magic ? [{ label: '✨ Magic', color: 'primary' as const, variant: 'soft' as const, size: 'sm' as const }] : []),
           ...(item.requires_attunement ? [{ label: '🔮 Attunement', color: 'info' as const, variant: 'soft' as const, size: 'sm' as const }] : [])
         ]"
-        :image-path="imagePath"
-        :image-alt="`${item.name} item illustration`"
       />
 
       <!-- Quick Stats -->
@@ -115,19 +113,12 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Description (Always Visible) -->
-      <UCard>
-        <template #header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Description
-          </h2>
-        </template>
-        <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-base leading-relaxed text-gray-700 dark:text-gray-300">
-            {{ item.description }}
-          </p>
-        </div>
-      </UCard>
+      <!-- Description + Image (integrated) -->
+      <UiDetailDescriptionWithImage
+        :description="item.description"
+        :image-path="imagePath"
+        :image-alt="`${item.name} item illustration`"
+      />
 
       <!-- Additional Details (Accordion) -->
       <UAccordion
