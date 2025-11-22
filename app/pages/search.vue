@@ -54,6 +54,22 @@ const filteredResults = computed<SearchResultData>(() => {
 })
 
 /**
+ * Get entity color for filter buttons
+ * Maps plural entity names to their semantic entity colors
+ */
+const getFilterColor = (value: string) => {
+  const entityColors: Record<string, string> = {
+    spells: 'spell',
+    items: 'item',
+    races: 'race',
+    classes: 'class',
+    backgrounds: 'background',
+    feats: 'feat'
+  }
+  return entityColors[value] || 'neutral'
+}
+
+/**
  * Perform search when query parameter changes
  */
 watch(
@@ -167,7 +183,7 @@ useHead({
           v-for="option in filterOptions"
           :key="option.value"
           :variant="selectedTypes.length === 0 && option.value === 'all' ? 'solid' : selectedTypes.includes(option.value as EntityType) ? 'solid' : 'soft'"
-          :color="selectedTypes.length === 0 && option.value === 'all' ? 'primary' : selectedTypes.includes(option.value as EntityType) ? 'primary' : 'neutral'"
+          :color="selectedTypes.length === 0 && option.value === 'all' ? 'primary' : selectedTypes.includes(option.value as EntityType) ? getFilterColor(option.value) : 'neutral'"
           :disabled="option.disabled"
           @click="() => {
             if (option.value === 'all') {
