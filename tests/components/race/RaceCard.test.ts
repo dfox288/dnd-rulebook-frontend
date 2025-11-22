@@ -385,4 +385,33 @@ describe('RaceCard', () => {
     expect(wrapper.text()).toContain('Human')
     expect(wrapper.text()).toContain('30 ft')
   })
+
+  it('renders background image when available', async () => {
+    const wrapper = await mountSuspended(RaceCard, {
+      props: { race: mockRace }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.exists()).toBe(true)
+    expect(bgDiv.attributes('style')).toContain('background-image')
+  })
+
+  it('has correct opacity classes for background', async () => {
+    const wrapper = await mountSuspended(RaceCard, {
+      props: { race: mockRace }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.classes()).toContain('opacity-10')
+    expect(bgDiv.classes()).toContain('group-hover:opacity-20')
+  })
+
+  it('applies transition to background opacity', async () => {
+    const wrapper = await mountSuspended(RaceCard, {
+      props: { race: mockRace }
+    })
+
+    const bgDiv = wrapper.find('[data-test="card-background"]')
+    expect(bgDiv.classes()).toContain('transition-opacity')
+  })
 })
