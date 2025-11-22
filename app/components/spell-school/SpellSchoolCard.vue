@@ -21,7 +21,7 @@ const backgroundImageUrl = computed(() =>
 </script>
 
 <template>
-  <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700 group">
+  <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-school-300 dark:border-school-700 hover:border-school-500 group">
     <!-- Background Image Layer -->
     <div
       v-if="backgroundImageUrl"
@@ -34,7 +34,7 @@ const backgroundImageUrl = computed(() =>
       <!-- Code Badge -->
       <div class="flex items-center gap-2">
         <UBadge
-          color="neutral"
+          color="school"
           variant="solid"
           size="lg"
         >
@@ -58,7 +58,7 @@ const backgroundImageUrl = computed(() =>
       <!-- Category Badge -->
       <div class="flex items-center gap-2">
         <UBadge
-          color="neutral"
+          color="school"
           variant="soft"
           size="xs"
         >

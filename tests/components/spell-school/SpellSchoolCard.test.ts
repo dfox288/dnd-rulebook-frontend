@@ -83,6 +83,28 @@ describe('SpellSchoolCard', () => {
     expect(wrapper.text()).toContain('Spell School')
   })
 
+  it('uses school entity color for badges', async () => {
+    const wrapper = await mountSuspended(SpellSchoolCard, {
+      props: { spellSchool: mockSpellSchool }
+    })
+
+    const html = wrapper.html()
+    // Check for school color classes applied by NuxtUI
+    expect(html).toContain('bg-school')
+    expect(html).toContain('text-school')
+  })
+
+  it('uses school entity color for borders', async () => {
+    const wrapper = await mountSuspended(SpellSchoolCard, {
+      props: { spellSchool: mockSpellSchool }
+    })
+
+    const html = wrapper.html()
+    expect(html).toContain('border-school-300')
+    expect(html).toContain('border-school-700')
+    expect(html).toContain('border-school-500')
+  })
+
   describe('background images', () => {
     it('computes background image URL correctly using code field', async () => {
       const wrapper = await mountSuspended(SpellSchoolCard, {
