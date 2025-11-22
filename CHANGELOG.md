@@ -16,12 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Handles kebab-case to snake_case conversion transparently
   - Background images on all reference entity list cards (256px, 10% opacity, 20% hover)
   - Total test suite: 696 tests passing (51 new tests added)
-- Animated fantasy background with mystical swirls and D&D runes (2025-11-22)
-  - Canvas-based particle system with 40 swirls and 6 runic symbols
-  - 30 FPS performance-optimized animation
-  - Respects prefers-reduced-motion accessibility setting
-  - Pauses when tab not visible (battery friendly)
-  - Light/dark mode color palettes
+- **Animated Fantasy Background - Complete (2025-11-22)** - Atmospheric canvas animation system
+  - 40 purple/violet swirls drifting with organic movement (0.15-0.25 opacity)
+  - 6 D&D runic symbols (Norse runes + geometric) that move, fade, and rotate (0.2-0.35 opacity)
+  - Animated gradient background (purple/indigo/violet subtle color shifts, 20s cycle)
+  - Fixed viewport positioning - stays visible while scrolling
+  - 30 FPS performance-optimized animation with throttling
+  - Respects `prefers-reduced-motion` accessibility setting
+  - Battery-friendly: pauses when tab hidden
+  - Warmer dark mode colors (custom grays, less "default blue")
+  - 3-layer z-index architecture (gradient → canvas → content)
+  - Body background matches gradient to prevent white overflow
   - 19 new tests (composable + component)
 - **Entity Images Feature - Initial Implementation for 6 Main Entities (2025-11-22)** - AI-generated images on primary entity types
   - CV-style hero images on detail pages (512px variants, right-aligned 1/3 width)

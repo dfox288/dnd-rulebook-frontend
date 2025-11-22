@@ -83,11 +83,11 @@ const isReferenceExpanded = ref(false)
 .animated-gradient {
   background: linear-gradient(
     -45deg,
-    #e9d5ff,  /* purple-200 */
-    #f0abfc,  /* fuchsia-300 */
-    #fda4af,  /* rose-300 */
-    #a5b4fc,  /* indigo-300 */
-    #e9d5ff   /* purple-200 */
+    #faf5ff,  /* purple-50 */
+    #faf5ff,  /* purple-50 */
+    #eef2ff,  /* indigo-50 */
+    #ede9fe,  /* violet-50 */
+    #faf5ff   /* purple-50 */
   );
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
@@ -96,65 +96,35 @@ const isReferenceExpanded = ref(false)
 .dark .animated-gradient {
   background: linear-gradient(
     -45deg,
-    #581c87,  /* purple-900 */
-    #86198f,  /* fuchsia-900 */
-    #881337,  /* rose-900 */
-    #312e81,  /* indigo-900 */
-    #581c87   /* purple-900 */
+    #0a0a0c,  /* Very dark warm neutral */
+    #1a1a1f,  /* Dark warm gray */
+    #1c1928,  /* Dark with subtle purple */
+    #15141a,  /* Dark warm with hint of purple */
+    #0a0a0c   /* Very dark warm neutral */
   );
   background-size: 400% 400%;
   animation: gradientShift 20s ease infinite;
 }
 
 /* Make all content semi-transparent to show animation through */
-:deep(.bg-white) {
-  background-color: rgb(255 255 255 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
+/* Use global selectors without :deep() for better specificity */
 
-:deep(.dark .bg-white) {
-  background-color: rgb(255 255 255 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
-
-:deep(.bg-gray-50) {
-  background-color: rgb(249 250 251 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
-
-:deep(.dark .bg-gray-900) {
-  background-color: rgb(17 24 39 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
-
-:deep(.dark .bg-gray-950) {
-  background-color: rgb(3 7 18 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
-
-:deep(.bg-gray-100) {
-  background-color: rgb(243 244 246 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
-
-:deep(.dark .bg-gray-800) {
-  background-color: rgb(31 41 55 / 0.9) !important;
-  backdrop-filter: blur(4px);
-}
 </style>
 
 <template>
   <UApp>
-    <!-- Layer 0: Animated gradient background -->
-    <div class="fixed inset-0 animated-gradient" style="z-index: 0;" />
+    <!-- Layer 0: Animated gradient background (fixed, covers viewport only) -->
+    <div class="fixed inset-0 animated-gradient" style="z-index: 0; height: 100vh; overflow: hidden;" />
 
-    <!-- Layer 1: Animated canvas -->
+    <!-- Layer 1: Animated canvas (positioned absolutely to prevent scroll issues) -->
     <ClientOnly>
-      <AnimatedBackground />
+      <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none;">
+        <AnimatedBackground />
+      </div>
     </ClientOnly>
 
     <!-- Layer 10: Main content -->
-    <div class="min-h-screen text-gray-900 dark:text-gray-100 relative" style="z-index: 10;">
+    <div class="text-gray-900 dark:text-gray-100 relative" style="z-index: 10;">
       <!-- Main content (above animated background) -->
 
       <!-- Navigation Bar -->

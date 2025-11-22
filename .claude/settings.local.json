@@ -136,7 +136,8 @@
       "Bash(then echo \"$entity: HAS detail\")",
       "Bash(else echo \"$entity: NO detail\")",
       "Bash(fi)",
-      "Bash(do)"
+      "Bash(do)",
+      "Bash(git -C /Users/dfox/Development/dnd/frontend status)"
     ],
     "deny": [],
     "ask": []

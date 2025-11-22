@@ -32,7 +32,7 @@ export class Swirl {
     // Random phase for sine wave
     this.phase = Math.random() * Math.PI * 2
 
-    // Random opacity (0.15-0.25) - Subtle but visible
+    // Random opacity (0.15-0.25) - Subtle atmospheric effect
     this.opacity = 0.15 + Math.random() * 0.1
   }
 
@@ -83,6 +83,8 @@ export class Swirl {
 export class Rune {
   x: number
   y: number
+  vx: number
+  vy: number
   symbol: string
   size: number
   opacity: number
@@ -100,6 +102,10 @@ export class Rune {
     // Random position
     this.x = Math.random() * width
     this.y = Math.random() * height
+
+    // Random velocity (slower than swirls: -20 to 20 pixels/second)
+    this.vx = (Math.random() - 0.5) * 40
+    this.vy = (Math.random() - 0.5) * 40
 
     // Random symbol
     this.symbol = RUNE_SYMBOLS[Math.floor(Math.random() * RUNE_SYMBOLS.length)]!
@@ -125,6 +131,16 @@ export class Rune {
 
   update(deltaTime: number): void {
     const dt = deltaTime / 1000
+
+    // Update position based on velocity
+    this.x += this.vx * dt
+    this.y += this.vy * dt
+
+    // Wrap around edges
+    if (this.x > this.width) this.x = 0
+    if (this.x < 0) this.x = this.width
+    if (this.y > this.height) this.y = 0
+    if (this.y < 0) this.y = this.height
 
     // Update rotation
     this.rotation += this.rotationSpeed * dt
