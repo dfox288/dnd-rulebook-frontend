@@ -82,4 +82,40 @@ describe('SpellSchoolCard', () => {
 
     expect(wrapper.text()).toContain('Spell School')
   })
+
+  describe('background images', () => {
+    it('computes background image URL correctly', async () => {
+      const wrapper = await mountSuspended(SpellSchoolCard, {
+        props: {
+          spellSchool: {
+            id: 1,
+            slug: 'evocation',
+            code: 'EVO',
+            name: 'Evocation',
+            description: 'Evocation spells'
+          }
+        }
+      })
+
+      const url = wrapper.vm.backgroundImageUrl
+      expect(url).toBe('/images/generated/conversions/256/spell_schools/stability-ai/evocation.png')
+    })
+
+    it('applies background image styles when URL exists', async () => {
+      const wrapper = await mountSuspended(SpellSchoolCard, {
+        props: {
+          spellSchool: {
+            id: 1,
+            slug: 'evocation',
+            code: 'EVO',
+            name: 'Evocation'
+          }
+        }
+      })
+
+      const card = wrapper.find('.group')
+      const style = card.attributes('style')
+      expect(style).toContain('background-image')
+    })
+  })
 })

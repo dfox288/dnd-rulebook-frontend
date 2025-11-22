@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface SpellSchool {
   id: number
+  slug: string
   code: string
   name: string
   description?: string | null
@@ -10,12 +11,27 @@ interface Props {
   spellSchool: SpellSchool
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const { getImagePath } = useEntityImage()
+const backgroundImageUrl = computed(() =>
+  getImagePath('spell-schools', props.spellSchool.slug, 256)
+)
 </script>
 
 <template>
-  <UCard class="hover:shadow-lg transition-shadow h-full border border-gray-200 dark:border-gray-700">
-    <div class="space-y-3">
+  <div
+    :style="backgroundImageUrl ? {
+      backgroundImage: `url(${backgroundImageUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    } : {}"
+    class="group relative overflow-hidden rounded-lg border border-default
+           transition-all duration-200 hover:border-primary hover:scale-[1.02]
+           hover:shadow-lg dark:hover:shadow-primary/20
+           after:absolute after:inset-0 after:bg-background/90 hover:after:bg-background/80
+           after:transition-colors after:duration-200"
+  >
+    <div class="relative z-10 p-4 space-y-3">
       <!-- Code Badge -->
       <div class="flex items-center gap-2">
         <UBadge
@@ -51,5 +67,5 @@ defineProps<Props>()
         </UBadge>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
