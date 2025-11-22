@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { SpellSchool } from '~/types'
 
 const { apiFetch } = useApi()
 const searchQuery = ref('')
@@ -12,10 +13,10 @@ const queryParams = computed(() => {
   return params
 })
 
-const { data: spellSchoolsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
+const { data: spellSchoolsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: SpellSchool[] }>(
   'spell-schools-list',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/spell-schools', {
+    const response = await apiFetch<{ data: SpellSchool[] }>('/spell-schools', {
       query: queryParams.value
     })
     return response

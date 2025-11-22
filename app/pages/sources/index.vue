@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Source } from '~/types'
 
 // API configuration
 const { apiFetch } = useApi()
@@ -19,10 +20,10 @@ const queryParams = computed(() => {
 })
 
 // Fetch sources with reactive filters (via Nitro proxy)
-const { data: sourcesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
+const { data: sourcesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Source[] }>(
   'sources-list',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/sources', {
+    const response = await apiFetch<{ data: Source[] }>('/sources', {
       query: queryParams.value
     })
     return response

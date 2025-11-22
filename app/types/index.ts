@@ -12,9 +12,15 @@ export type { Source, AbilityScore, Modifier, Tag } from './api/common'
 export type { Spell, Item, Race, CharacterClass, Background, Feat } from './api/entities'
 
 // Generated API types (for taxonomy pages)
-export type { components } from './api/generated'
+import type { components } from './api/generated'
 export type Condition = components['schemas']['ConditionResource']
 export type DamageType = components['schemas']['DamageTypeResource']
+export type Language = components['schemas']['LanguageResource']
+export type ProficiencyType = components['schemas']['ProficiencyTypeResource']
+export type Size = components['schemas']['SizeResource']
+export type Skill = components['schemas']['SkillResource']
+export type SpellSchool = components['schemas']['SpellSchoolResource']
+export type { components }
 
 // Search types
 export type { SearchResult, SearchResultData, EntityType, SearchOptions, SearchEntity, Class } from './search'

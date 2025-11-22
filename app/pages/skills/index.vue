@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Skill } from '~/types'
 
 const { apiFetch } = useApi()
 const searchQuery = ref('')
@@ -12,10 +13,10 @@ const queryParams = computed(() => {
   return params
 })
 
-const { data: skillsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
+const { data: skillsResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Skill[] }>(
   'skills-list',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/skills', {
+    const response = await apiFetch<{ data: Skill[] }>('/skills', {
       query: queryParams.value
     })
     return response

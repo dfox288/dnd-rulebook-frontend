@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Language } from '~/types'
 
 // API configuration
 const { apiFetch } = useApi()
@@ -19,10 +20,10 @@ const queryParams = computed(() => {
 })
 
 // Fetch languages with reactive filters (via Nitro proxy)
-const { data: languagesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
+const { data: languagesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Language[] }>(
   'languages-list',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/languages', {
+    const response = await apiFetch<{ data: Language[] }>('/languages', {
       query: queryParams.value
     })
     return response

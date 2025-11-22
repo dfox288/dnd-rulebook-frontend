@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Size } from '~/types'
 
 const route = useRoute()
 const { apiFetch } = useApi()
@@ -8,10 +9,10 @@ const { apiFetch } = useApi()
 const selectedSize = ref((route.query.size as string) || '')
 
 // Fetch available sizes for filter options
-const { data: sizesResponse } = await useAsyncData<{ data: unknown[] }>(
+const { data: sizesResponse } = await useAsyncData<{ data: Size[] }>(
   'sizes',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/sizes')
+    const response = await apiFetch<{ data: Size[] }>('/sizes')
     return response
   }
 )

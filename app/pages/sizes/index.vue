@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { Size } from '~/types'
 
 // API configuration
 const { apiFetch } = useApi()
@@ -19,10 +20,10 @@ const queryParams = computed(() => {
 })
 
 // Fetch sizes with reactive filters (via Nitro proxy)
-const { data: sizesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: unknown[] }>(
+const { data: sizesResponse, pending: loading, error, refresh } = await useAsyncData<{ data: Size[] }>(
   'sizes-list',
   async () => {
-    const response = await apiFetch<{ data: unknown[] }>('/sizes', {
+    const response = await apiFetch<{ data: Size[] }>('/sizes', {
       query: queryParams.value
     })
     return response

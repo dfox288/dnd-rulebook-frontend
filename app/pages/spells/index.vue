@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import type { SpellSchool } from '~/types'
 
 const route = useRoute()
 const { apiFetch } = useApi()
@@ -9,8 +10,8 @@ const selectedLevel = ref(route.query.level ? Number(route.query.level) : null)
 const selectedSchool = ref(route.query.school ? Number(route.query.school) : null)
 
 // Fetch spell schools for filter options
-const { data: spellSchools } = await useAsyncData('spell-schools', async () => {
-  const response = await apiFetch<{ data: unknown[] }>('/spell-schools')
+const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
+  const response = await apiFetch<{ data: SpellSchool[] }>('/spell-schools')
   return response.data
 })
 
