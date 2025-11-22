@@ -126,7 +126,17 @@
       "Bash(npm run typecheck:*)",
       "Bash(git stash:*)",
       "Bash(git check-ignore:*)",
-      "Bash(do echo \"=== Commit: $commit ===\" git show $commit --format=\"%s\" --no-patch git show $commit)"
+      "Bash(do echo \"=== Commit: $commit ===\" git show $commit --format=\"%s\" --no-patch git show $commit)",
+      "Bash(git -C /Users/dfox/Development/dnd/frontend status --short)",
+      "Bash(ls:*)",
+      "WebFetch(domain:image.nuxt.com)",
+      "Skill(superpowers:executing-plans)",
+      "Bash(md5sum:*)",
+      "Bash(do if [ -f \"app/pages/$entity/[slug].vue\" ])",
+      "Bash(then echo \"$entity: HAS detail\")",
+      "Bash(else echo \"$entity: NO detail\")",
+      "Bash(fi)",
+      "Bash(do)"
     ],
     "deny": [],
     "ask": []

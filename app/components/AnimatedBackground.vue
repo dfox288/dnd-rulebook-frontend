@@ -20,10 +20,18 @@ function handleResize() {
 }
 
 onMounted(() => {
-  if (!animate || !canvasRef.value) return
+  console.log('[AnimatedBackground] onMounted called')
+  console.log('[AnimatedBackground] animate:', animate)
+  console.log('[AnimatedBackground] canvasRef.value:', canvasRef.value)
+
+  if (!animate || !canvasRef.value) {
+    console.log('[AnimatedBackground] Skipping initialization - animate:', animate, 'canvas:', canvasRef.value)
+    return
+  }
 
   // Set initial canvas size
   handleResize()
+  console.log('[AnimatedBackground] Canvas size:', canvasRef.value.width, 'x', canvasRef.value.height)
 
   // Listen for resize
   window.addEventListener('resize', handleResize)
@@ -32,9 +40,12 @@ onMounted(() => {
   const isDark = colorMode.value === 'dark'
   const { initialize, start, cleanup: cleanupFn } = useAnimatedBackground(canvasRef.value, isDark)
 
+  console.log('[AnimatedBackground] Initializing animation engine...')
   initialize()
+  console.log('[AnimatedBackground] Starting animation loop...')
   start()
   cleanup = cleanupFn
+  console.log('[AnimatedBackground] Animation started successfully!')
 
   // Watch for color mode changes
   watch(() => colorMode.value, (newMode) => {

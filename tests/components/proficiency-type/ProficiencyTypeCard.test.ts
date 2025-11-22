@@ -66,4 +66,37 @@ describe('ProficiencyTypeCard', () => {
 
     expect(wrapper.text()).toContain('Proficiency Type')
   })
+
+  describe('background images', () => {
+    it('computes background image URL correctly', async () => {
+      const wrapper = await mountSuspended(ProficiencyTypeCard, {
+        props: {
+          proficiencyType: {
+            id: 1,
+            name: 'Light Armor',
+            category: 'armor'
+          }
+        }
+      })
+
+      const url = wrapper.vm.backgroundImageUrl
+      expect(url).toBe('/images/generated/conversions/256/proficiency_types/stability-ai/light-armor.png')
+    })
+
+    it('applies background image styles when URL exists', async () => {
+      const wrapper = await mountSuspended(ProficiencyTypeCard, {
+        props: {
+          proficiencyType: {
+            id: 1,
+            name: 'Light Armor',
+            category: 'armor'
+          }
+        }
+      })
+
+      const card = wrapper.find('.group')
+      const style = card.attributes('style')
+      expect(style).toContain('background-image')
+    })
+  })
 })
