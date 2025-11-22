@@ -11,7 +11,8 @@ describe('UiAccordionSavingThrows', () => {
             ability_score: { id: 2, code: 'DEX', name: 'Dexterity' },
             save_effect: null,
             is_initial_save: true,
-            save_modifier: null
+            save_modifier: null,
+            dc: null
           }
         ]
       }
@@ -234,7 +235,8 @@ describe('UiAccordionSavingThrows', () => {
             ability_score: { id: 2, code: 'DEX', name: 'Dexterity' },
             save_effect: null,
             is_initial_save: true,
-            save_modifier: null
+            save_modifier: null,
+            dc: null
           }
         ]
       }
@@ -243,5 +245,60 @@ describe('UiAccordionSavingThrows', () => {
     expect(wrapper.text()).not.toContain('Advantage')
     expect(wrapper.text()).not.toContain('Disadvantage')
     expect(wrapper.text()).not.toContain('Standard Roll')
+  })
+
+  it('displays DC (Difficulty Class) when provided', async () => {
+    const wrapper = await mountSuspended(UiAccordionSavingThrows, {
+      props: {
+        savingThrows: [
+          {
+            ability_score: { id: 5, code: 'WIS', name: 'Wisdom' },
+            save_effect: 'negates',
+            is_initial_save: true,
+            save_modifier: null,
+            dc: 15
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('DC 15')
+  })
+
+  it('does not display DC when it is null', async () => {
+    const wrapper = await mountSuspended(UiAccordionSavingThrows, {
+      props: {
+        savingThrows: [
+          {
+            ability_score: { id: 2, code: 'DEX', name: 'Dexterity' },
+            save_effect: null,
+            is_initial_save: true,
+            save_modifier: null,
+            dc: null
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).not.toContain('DC')
+  })
+
+  it('displays DC badge with proper styling', async () => {
+    const wrapper = await mountSuspended(UiAccordionSavingThrows, {
+      props: {
+        savingThrows: [
+          {
+            ability_score: { id: 3, code: 'CON', name: 'Constitution' },
+            save_effect: null,
+            is_initial_save: true,
+            save_modifier: 'advantage',
+            dc: 12
+          }
+        ]
+      }
+    })
+
+    expect(wrapper.text()).toContain('DC 12')
+    expect(wrapper.text()).toContain('Advantage')
   })
 })

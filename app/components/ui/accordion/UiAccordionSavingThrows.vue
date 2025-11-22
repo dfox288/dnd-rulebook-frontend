@@ -6,6 +6,7 @@ interface SavingThrow {
   save_effect: 'negates' | 'ends_effect' | null
   is_initial_save: boolean
   save_modifier: 'advantage' | 'disadvantage' | 'none' | null
+  dc: number | null
 }
 
 interface Props {
@@ -50,6 +51,16 @@ const formatSaveEffect = (effect: string | null): string | null => {
         <span class="font-semibold text-gray-900 dark:text-gray-100">
           {{ save.ability_score.name }}
         </span>
+
+        <!-- DC (Difficulty Class) Badge -->
+        <UBadge
+          v-if="save.dc"
+          color="error"
+          variant="solid"
+          size="sm"
+        >
+          DC {{ save.dc }}
+        </UBadge>
 
         <!-- Initial vs Recurring Save Badge -->
         <UBadge
