@@ -1,7 +1,15 @@
-/* Tailwind CSS for Storybook */
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+/* Tailwind CSS v4 for Storybook */
+@import "tailwindcss";
+
+/* Basic reset and styling since Tailwind v4 doesn't auto-inject base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
 
 /* Dark mode support */
 .dark {
@@ -12,8 +20,11 @@
 
 /* Ensure body has proper background */
 body {
+  margin: 0;
+  padding: 0;
   background-color: #ffffff;
   color: #111827;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 .dark body {
