@@ -24,7 +24,6 @@ const rarityColor = computed<'primary' | 'secondary' | 'success' | 'info' | 'war
   return (rarity && colors[rarity]) || 'neutral'
 })
 
-
 /**
  * Format rarity for display
  */

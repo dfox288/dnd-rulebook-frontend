@@ -7,7 +7,7 @@ const canvasContainer = ref<HTMLDivElement | null>(null)
 let scene: THREE.Scene
 let camera: THREE.PerspectiveCamera
 let renderer: THREE.WebGLRenderer
-let dice: THREE.Mesh[] = []
+const dice: THREE.Mesh[] = []
 let animationId: number | null = null
 
 // Mouse interaction
@@ -19,12 +19,12 @@ let lastScrollY = 0
 
 // D&D themed colors (from NuxtUI palette - 500 shades)
 const DICE_COLORS = [
-  { name: 'Arcane', color: 0x8b5cf6 },     // arcane-500
-  { name: 'Treasure', color: 0xf59e0b },   // treasure-500
-  { name: 'Emerald', color: 0x10b981 },    // emerald-500
-  { name: 'Glory', color: 0x3b82f6 },      // glory-500
-  { name: 'Danger', color: 0xf97316 },     // danger-500
-  { name: 'Lore', color: 0xeab308 }        // lore-500
+  { name: 'Arcane', color: 0x8b5cf6 }, // arcane-500
+  { name: 'Treasure', color: 0xf59e0b }, // treasure-500
+  { name: 'Emerald', color: 0x10b981 }, // emerald-500
+  { name: 'Glory', color: 0x3b82f6 }, // glory-500
+  { name: 'Danger', color: 0xf97316 }, // danger-500
+  { name: 'Lore', color: 0xeab308 } // lore-500
 ]
 
 type DieType = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20'
@@ -140,15 +140,15 @@ function initThreeJS() {
   scene.add(directionalLight2)
 
   // Create dice - one of each type with varied placement, plus extra d20s
-  const diceConfig: Array<{ type: DieType; position: THREE.Vector3; colorIndex: number }> = [
-    { type: 'd4', position: new THREE.Vector3(-8, 3, -2), colorIndex: 0 },      // Arcane - top left
-    { type: 'd6', position: new THREE.Vector3(-3, -2, 1), colorIndex: 1 },      // Treasure - bottom left-center
-    { type: 'd8', position: new THREE.Vector3(2, 4, -1), colorIndex: 2 },       // Emerald - top right-center
-    { type: 'd10', position: new THREE.Vector3(7, -1, 0), colorIndex: 3 },      // Glory - middle right
-    { type: 'd12', position: new THREE.Vector3(-5, -4, 2), colorIndex: 4 },     // Danger - bottom left
-    { type: 'd20', position: new THREE.Vector3(4, 1, -2), colorIndex: 5 },      // Lore - center right
-    { type: 'd20', position: new THREE.Vector3(-2, 5, 1), colorIndex: 0 },      // Arcane - top center (extra)
-    { type: 'd20', position: new THREE.Vector3(8, -4, -1), colorIndex: 4 }      // Danger - bottom right (extra)
+  const diceConfig: Array<{ type: DieType, position: THREE.Vector3, colorIndex: number }> = [
+    { type: 'd4', position: new THREE.Vector3(-8, 3, -2), colorIndex: 0 }, // Arcane - top left
+    { type: 'd6', position: new THREE.Vector3(-3, -2, 1), colorIndex: 1 }, // Treasure - bottom left-center
+    { type: 'd8', position: new THREE.Vector3(2, 4, -1), colorIndex: 2 }, // Emerald - top right-center
+    { type: 'd10', position: new THREE.Vector3(7, -1, 0), colorIndex: 3 }, // Glory - middle right
+    { type: 'd12', position: new THREE.Vector3(-5, -4, 2), colorIndex: 4 }, // Danger - bottom left
+    { type: 'd20', position: new THREE.Vector3(4, 1, -2), colorIndex: 5 }, // Lore - center right
+    { type: 'd20', position: new THREE.Vector3(-2, 5, 1), colorIndex: 0 }, // Arcane - top center (extra)
+    { type: 'd20', position: new THREE.Vector3(8, -4, -1), colorIndex: 4 } // Danger - bottom right (extra)
   ]
 
   diceConfig.forEach(({ type, position, colorIndex }) => {
@@ -186,7 +186,7 @@ function handleScroll() {
   lastScrollY = currentScrollY
 
   // Very subtle scroll momentum to dice (individually)
-  dice.forEach(die => {
+  dice.forEach((die) => {
     const velocity = die.userData.velocity as THREE.Vector3
     // Each die gets slightly different momentum for independent movement
     const individualFactor = 0.8 + Math.random() * 0.4 // 0.8 to 1.2
@@ -208,7 +208,7 @@ function animate() {
   camera.rotation.x += (targetRotationX - camera.rotation.x) * 0.02
 
   // Update all dice independently
-  dice.forEach(die => {
+  dice.forEach((die) => {
     const speed = die.userData.rotationSpeed as THREE.Vector3
     const velocity = die.userData.velocity as THREE.Vector3
     const originalPos = die.userData.originalPosition as THREE.Vector3
@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', handleScroll)
 
   // Clean up Three.js resources
-  dice.forEach(die => {
+  dice.forEach((die) => {
     die.geometry.dispose()
     if (die.material instanceof THREE.Material) {
       die.material.dispose()
@@ -288,11 +288,18 @@ useSeoMeta({
 
 <template>
   <div class="dice-test-page">
-    <div ref="canvasContainer" class="canvas-container" />
+    <div
+      ref="canvasContainer"
+      class="canvas-container"
+    />
 
     <div class="info-overlay">
-      <h1 class="text-3xl font-bold mb-4">3D Dice Test</h1>
-      <p class="mb-2">Six polyhedral dice rendered with Three.js:</p>
+      <h1 class="text-3xl font-bold mb-4">
+        3D Dice Test
+      </h1>
+      <p class="mb-2">
+        Six polyhedral dice rendered with Three.js:
+      </p>
       <ul class="list-disc pl-6 space-y-1">
         <li>d4 (Tetrahedron) - Arcane Purple</li>
         <li>d6 (Cube) - Treasure Gold</li>

@@ -179,7 +179,10 @@ const imagePath = computed(() => {
 
           <!-- Spellcasting Stats -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div v-if="monster.spellcasting.spellcasting_ability" class="text-center">
+            <div
+              v-if="monster.spellcasting.spellcasting_ability"
+              class="text-center"
+            >
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 Ability
               </div>
@@ -187,7 +190,10 @@ const imagePath = computed(() => {
                 {{ monster.spellcasting.spellcasting_ability }}
               </div>
             </div>
-            <div v-if="monster.spellcasting.spell_save_dc" class="text-center">
+            <div
+              v-if="monster.spellcasting.spell_save_dc"
+              class="text-center"
+            >
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 Spell Save DC
               </div>
@@ -195,7 +201,10 @@ const imagePath = computed(() => {
                 {{ monster.spellcasting.spell_save_dc }}
               </div>
             </div>
-            <div v-if="monster.spellcasting.spell_attack_bonus" class="text-center">
+            <div
+              v-if="monster.spellcasting.spell_attack_bonus"
+              class="text-center"
+            >
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 Spell Attack
               </div>
@@ -203,7 +212,10 @@ const imagePath = computed(() => {
                 +{{ monster.spellcasting.spell_attack_bonus }}
               </div>
             </div>
-            <div v-if="monster.spellcasting.spell_slots" class="text-center">
+            <div
+              v-if="monster.spellcasting.spell_slots"
+              class="text-center"
+            >
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 Spell Slots
               </div>

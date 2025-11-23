@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useColorMode } from '#imports'
 import { shouldAnimate, useAnimatedBackground } from '~/composables/useAnimatedBackground'
 

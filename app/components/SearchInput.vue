@@ -231,7 +231,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('spells', spell.slug, 256) || ''"
               :alt="spell.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ spell.name }}
@@ -268,7 +268,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('items', item.slug, 256) || ''"
               :alt="item.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ item.name }}
@@ -305,7 +305,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('races', race.slug, 256) || ''"
               :alt="race.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ race.name }}
@@ -339,7 +339,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('classes', charClass.slug, 256) || ''"
               :alt="charClass.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ charClass.name }}
@@ -373,7 +373,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('backgrounds', background.slug, 256) || ''"
               :alt="background.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ background.name }}
@@ -407,7 +407,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('feats', feat.slug, 256) || ''"
               :alt="feat.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ feat.name }}
@@ -441,7 +441,7 @@ const resetGlobalIndex = () => {
               :src="getImagePath('monsters', monster.slug, 256) || ''"
               :alt="monster.name"
               class="w-12 h-12 rounded object-cover flex-shrink-0"
-            />
+            >
             <div class="flex-1 min-w-0">
               <div class="font-medium text-gray-900 dark:text-gray-100 truncate">
                 {{ monster.name }}

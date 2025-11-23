@@ -35,13 +35,13 @@ const toggleColorMode = () => {
 
 // Main navigation items (top-level entities)
 const navItems = [
-  { label: 'Spells', to: '/spells' },
-  { label: 'Items', to: '/items' },
-  { label: 'Monsters', to: '/monsters' },
-  { label: 'Races', to: '/races' },
-  { label: 'Classes', to: '/classes' },
-  { label: 'Backgrounds', to: '/backgrounds' },
-  { label: 'Feats', to: '/feats' }
+  { label: 'Spells', to: '/spells', color: 'arcane' }, // spell → arcane (purple)
+  { label: 'Items', to: '/items', color: 'treasure' }, // item → treasure (gold)
+  { label: 'Monsters', to: '/monsters', color: 'danger' }, // monster → danger (orange)
+  { label: 'Races', to: '/races', color: 'emerald' }, // race → emerald (green)
+  { label: 'Classes', to: '/classes', color: 'red' }, // class → red
+  { label: 'Backgrounds', to: '/backgrounds', color: 'lore' }, // background → lore (brown)
+  { label: 'Feats', to: '/feats', color: 'glory' } // feat → glory (blue)
 ]
 
 // Reference dropdown items (metadata/reference endpoints)
@@ -67,54 +67,13 @@ const isReferenceActive = computed(() => {
 const isReferenceExpanded = ref(false)
 </script>
 
-<style>
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animated-gradient {
-  background: linear-gradient(
-    -45deg,
-    #faf5ff,  /* purple-50 */
-    #faf5ff,  /* purple-50 */
-    #eef2ff,  /* indigo-50 */
-    #ede9fe,  /* violet-50 */
-    #faf5ff   /* purple-50 */
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-}
-
-.dark .animated-gradient {
-  background: linear-gradient(
-    -45deg,
-    #0a0a0c,  /* Very dark warm neutral */
-    #1a1a1f,  /* Dark warm gray */
-    #1c1928,  /* Dark with subtle purple */
-    #15141a,  /* Dark warm with hint of purple */
-    #0a0a0c   /* Very dark warm neutral */
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-}
-
-/* Make all content semi-transparent to show animation through */
-/* Use global selectors without :deep() for better specificity */
-
-</style>
-
 <template>
   <UApp>
     <!-- Layer 0: Animated gradient background (fixed, covers viewport only) -->
-    <div class="fixed inset-0 animated-gradient" style="z-index: 0; height: 100vh; overflow: hidden;" />
+    <div
+      class="fixed inset-0 animated-gradient"
+      style="z-index: 0; height: 100vh; overflow: hidden;"
+    />
 
     <!-- Layer 1: Animated canvas (positioned absolutely to prevent scroll issues) -->
     <ClientOnly>
@@ -124,11 +83,14 @@ const isReferenceExpanded = ref(false)
     </ClientOnly>
 
     <!-- Layer 10: Main content -->
-    <div class="text-gray-900 dark:text-gray-100 relative" style="z-index: 10;">
+    <div
+      class="text-gray-900 dark:text-gray-100 relative"
+      style="z-index: 10;"
+    >
       <!-- Main content (above animated background) -->
 
       <!-- Navigation Bar -->
-      <nav class="border-b border-gray-200/90 dark:border-gray-800/90 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
+      <nav class="border-b border-rose-300/50 dark:border-rose-700/50 bg-gradient-to-r from-rose-50 via-rose-100 to-rose-50 dark:from-rose-950 dark:via-rose-900 dark:to-rose-950 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">
             <!-- Site Logo (Left) -->
@@ -159,7 +121,6 @@ const isReferenceExpanded = ref(false)
               >
                 {{ item.label }}
               </NuxtLink>
-
               <!-- Reference dropdown -->
               <UDropdownMenu :items="referenceItems">
                 <UButton
@@ -254,3 +215,46 @@ const isReferenceExpanded = ref(false)
     </div>
   </UApp>
 </template>
+
+<style>
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #faf5ff,  /* purple-50 */
+    #faf5ff,  /* purple-50 */
+    #eef2ff,  /* indigo-50 */
+    #ede9fe,  /* violet-50 */
+    #faf5ff   /* purple-50 */
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+.dark .animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #0a0a0c,  /* Very dark warm neutral */
+    #1a1a1f,  /* Dark warm gray */
+    #1c1928,  /* Dark with subtle purple */
+    #15141a,  /* Dark warm with hint of purple */
+    #0a0a0c   /* Very dark warm neutral */
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+/* Make all content semi-transparent to show animation through */
+/* Use global selectors without :deep() for better specificity */
+</style>

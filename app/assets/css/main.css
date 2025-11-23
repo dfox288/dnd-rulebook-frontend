@@ -30,6 +30,14 @@ body {
   background-color: #0c0a09 !important; /* Dark mode: matches gradient */
 }
 
+/* Override NuxtUI dark mode backgrounds to match warm color scheme */
+.dark {
+  --ui-bg: rgba(26, 26, 31, 0.90);           /* Base background - lighter warm with transparency */
+  --ui-bg-muted: rgba(28, 25, 40, 0.85);     /* Muted warm gray */
+  --ui-bg-elevated: rgba(28, 25, 40, 0.90);  /* Elevated with subtle purple (cards, modals) */
+  --ui-bg-accented: rgba(32, 30, 45, 0.88);  /* Accented warm with hint of purple (hover states) */
+}
+
 @theme static {
     /* D&D Entity Color System - Custom Palettes */
 

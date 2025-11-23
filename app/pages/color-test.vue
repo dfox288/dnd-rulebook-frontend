@@ -11,11 +11,11 @@ const colorMode = useColorMode()
 // Define color palette type
 type ColorIntensity = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
 type ColorPalette = Record<ColorIntensity, string> & { [key: number]: string }
-type ColorName = 'arcane' | 'treasure' | 'danger' | 'lore' | 'glory' | 'emerald' | 'red' |
-  'indigo' | 'rose' | 'slate' | 'teal' | 'cyan' | 'lime' | 'zinc' | 'yellow' | 'fuchsia' | 'neutral'
+type ColorName = 'arcane' | 'treasure' | 'danger' | 'lore' | 'glory' | 'emerald' | 'red'
+  | 'indigo' | 'rose' | 'slate' | 'teal' | 'cyan' | 'lime' | 'zinc' | 'yellow' | 'fuchsia' | 'neutral'
 
 // Proposed entity color mappings
-const mainEntities: Array<{ name: string; alias: string; color: ColorName; colorName: string; description: string }> = [
+const mainEntities: Array<{ name: string, alias: string, color: ColorName, colorName: string, description: string }> = [
   { name: 'Spells', alias: 'spell', color: 'arcane', colorName: 'Arcane Purple', description: 'Mystical energy, magic' },
   { name: 'Items', alias: 'item', color: 'treasure', colorName: 'Treasure Gold', description: 'Valuable treasures' },
   { name: 'Races', alias: 'race', color: 'emerald', colorName: 'Emerald (Tailwind)', description: 'Natural diversity' },
@@ -25,7 +25,7 @@ const mainEntities: Array<{ name: string; alias: string; color: ColorName; color
   { name: 'Monsters', alias: 'monster', color: 'danger', colorName: 'Danger Orange', description: 'Combat, threat' }
 ]
 
-const referenceEntities: Array<{ name: string; alias: string; color: ColorName; colorName: string; description: string }> = [
+const referenceEntities: Array<{ name: string, alias: string, color: ColorName, colorName: string, description: string }> = [
   { name: 'Ability Scores', alias: 'ability', color: 'indigo', colorName: 'Indigo (Tailwind)', description: 'Core stats' },
   { name: 'Conditions', alias: 'condition', color: 'rose', colorName: 'Rose (Tailwind)', description: 'Status effects' },
   { name: 'Damage Types', alias: 'damage', color: 'slate', colorName: 'Slate (Tailwind)', description: 'Mechanical data' },
@@ -127,7 +127,10 @@ const customPalettes = [
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div>
-        <UiBackLink to="/" label="Back to Home" />
+        <UiBackLink
+          to="/"
+          label="Back to Home"
+        />
       </div>
       <UButton
         :icon="colorMode.value === 'dark' ? 'i-heroicons-sun' : 'i-heroicons-moon'"
@@ -139,7 +142,9 @@ const customPalettes = [
       </UButton>
     </div>
 
-    <h1 class="text-4xl font-bold mb-4">🎨 D&D Entity Color System Preview</h1>
+    <h1 class="text-4xl font-bold mb-4">
+      🎨 D&D Entity Color System Preview
+    </h1>
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-12">
       Proposed color scheme for all 17 entity types - visual preview for design approval
     </p>
@@ -151,7 +156,9 @@ const customPalettes = [
       </h2>
       <div class="grid md:grid-cols-2 gap-6 text-sm">
         <div>
-          <h3 class="font-semibold mb-2">Approach 1: Thematic D&D Color Mapping</h3>
+          <h3 class="font-semibold mb-2">
+            Approach 1: Thematic D&D Color Mapping
+          </h3>
           <ul class="space-y-1 text-gray-600 dark:text-gray-400">
             <li>• 5 custom palettes for D&D theming</li>
             <li>• 12 Tailwind defaults where they fit</li>
@@ -160,9 +167,16 @@ const customPalettes = [
           </ul>
         </div>
         <div>
-          <h3 class="font-semibold mb-2">Custom Palettes Needed:</h3>
+          <h3 class="font-semibold mb-2">
+            Custom Palettes Needed:
+          </h3>
           <div class="flex flex-wrap gap-2">
-            <UBadge v-for="palette in customPalettes" :key="palette.name" size="xs" variant="subtle">
+            <UBadge
+              v-for="palette in customPalettes"
+              :key="palette.name"
+              size="xs"
+              variant="subtle"
+            >
               {{ palette.name }}
             </UBadge>
           </div>
@@ -183,7 +197,11 @@ const customPalettes = [
       </p>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div v-for="entity in mainEntities" :key="entity.alias" class="border border-gray-200 dark:border-gray-800 rounded-lg p-6">
+        <div
+          v-for="entity in mainEntities"
+          :key="entity.alias"
+          class="border border-gray-200 dark:border-gray-800 rounded-lg p-6"
+        >
           <div class="mb-4">
             <h3 class="text-lg font-bold mb-1">
               {{ entity.name }}
@@ -194,13 +212,18 @@ const customPalettes = [
             <div class="flex items-center gap-2 text-xs">
               <span class="font-mono text-gray-600 dark:text-gray-400">{{ entity.alias }}</span>
               <span class="text-gray-400">→</span>
-              <span class="font-semibold" :class="`text-${entity.color}-600`">{{ entity.colorName }}</span>
+              <span
+                class="font-semibold"
+                :class="`text-${entity.color}-600`"
+              >{{ entity.colorName }}</span>
             </div>
           </div>
 
           <!-- Color gradient preview -->
           <div class="mb-4">
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Intensity Range:</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Intensity Range:
+            </p>
             <div class="grid grid-cols-11 gap-0.5">
               <div
                 v-for="intensity in [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]"
@@ -261,7 +284,11 @@ const customPalettes = [
       </p>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <div v-for="entity in referenceEntities" :key="entity.alias" class="border border-gray-200 dark:border-gray-800 rounded-lg p-4">
+        <div
+          v-for="entity in referenceEntities"
+          :key="entity.alias"
+          class="border border-gray-200 dark:border-gray-800 rounded-lg p-4"
+        >
           <div class="mb-3">
             <h4 class="text-sm font-bold mb-1">
               {{ entity.name }}
@@ -308,7 +335,9 @@ const customPalettes = [
 
       <div class="space-y-4 text-sm">
         <div>
-          <h3 class="font-semibold mb-2">To Implement This Design:</h3>
+          <h3 class="font-semibold mb-2">
+            To Implement This Design:
+          </h3>
           <ol class="list-decimal list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Define 5 custom color palettes in <code class="px-1 bg-gray-100 dark:bg-gray-800 rounded">main.css</code> @theme block</li>
             <li>Register all 17 entity aliases in <code class="px-1 bg-gray-100 dark:bg-gray-800 rounded">nuxt.config.ts</code></li>
@@ -318,7 +347,9 @@ const customPalettes = [
         </div>
 
         <div>
-          <h3 class="font-semibold mb-2">Custom Palettes Needed:</h3>
+          <h3 class="font-semibold mb-2">
+            Custom Palettes Needed:
+          </h3>
           <ul class="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li><strong>arcane:</strong> Deep mystical purple (#8b5cf6 base)</li>
             <li><strong>treasure:</strong> Rich golden bronze (#d97706 base)</li>
@@ -329,7 +360,9 @@ const customPalettes = [
         </div>
 
         <div class="p-4 bg-white dark:bg-gray-900 rounded border border-emerald-200 dark:border-emerald-800">
-          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Usage Example:</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            Usage Example:
+          </p>
           <pre class="text-xs overflow-x-auto"><code>&lt;UBadge color="spell"&gt;Fireball&lt;/UBadge&gt;
 &lt;div class="bg-item-500 text-white"&gt;+1 Longsword&lt;/div&gt;</code></pre>
         </div>

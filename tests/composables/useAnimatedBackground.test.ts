@@ -143,7 +143,7 @@ describe('useAnimatedBackground', () => {
       const { shouldAnimate } = await import('~/composables/useAnimatedBackground')
 
       // Mock matchMedia to simulate prefers-reduced-motion
-      const matchMediaMock = vi.fn((query) => ({
+      const matchMediaMock = vi.fn(query => ({
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
@@ -168,7 +168,7 @@ describe('useAnimatedBackground', () => {
       const { shouldAnimate } = await import('~/composables/useAnimatedBackground')
 
       // Mock matchMedia to simulate normal motion preferences
-      const matchMediaMock = vi.fn((query) => ({
+      const matchMediaMock = vi.fn(query => ({
         matches: false,
         media: query,
         onchange: null,

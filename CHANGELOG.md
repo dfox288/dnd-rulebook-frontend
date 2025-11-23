@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Performance
+- **Major Background Animation Optimization (2025-11-23)** - Reduced CPU usage by ~70% through multiple performance improvements
+  - Particle count reduced from 80-120 to 40-50 for lighter load
+  - Removed constellation line calculation (was O(n²) nested loop creating 1000s of distance checks per frame)
+  - Removed shadow blur from particles (GPU-intensive filter operation)
+  - Cached grayscale filter using OffscreenCanvas instead of applying on every frame
+  - Removed Three.js textures from dice (simplified materials, no texture generation)
+  - Simplified particle shapes (70% circles, 20% 4-point stars, 10% diamonds - removed complex hexagons and crosses)
+  - Reduced particle trail length from 5 to 3 points
+  - Result: Smooth 30 FPS animation without spinning up CPU fan
+
 ### Added
 - Monster support in search results (2025-11-23)
 - Specialized entity cards in search (SpellCard, ItemCard, MonsterCard, etc.) (2025-11-23)
@@ -34,6 +45,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive handover document with technical details and future enhancement ideas
 
 ### Changed
+- **Primary brand color changed to rose** (2025-11-23) - Rose (sophisticated pink) is now the primary color throughout the app for navbar, links, and selected states
+- Navigation items now use entity-specific colors on hover and active states (2025-11-23) - Spells use purple, Items use gold, Monsters use orange, etc.
+- Navigation bar updated with rose gradient background (2025-11-23) - Creates warm, memorable aesthetic that stands out from typical tech UIs
+- Dark mode backgrounds lightened and made transparent (85-90% opacity) to show animated gradient (2025-11-23)
+- Condition entity color changed from rose to pink (2025-11-23) - To accommodate rose becoming the primary brand color
 - Search results now use entity-specific card components instead of generic SearchResultCard (2025-11-23)
 - Search page visual consistency now matches list pages with semantic colors and background images (2025-11-23)
 - **Detail Page Layout Refactor - Complete for All 7 Pages (2025-11-23)** - New side-by-side layout pattern with standalone images

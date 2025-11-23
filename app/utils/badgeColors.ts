@@ -17,35 +17,35 @@
  * Valid NuxtUI v4 badge color names
  * Includes both semantic colors and entity-specific colors
  */
-export type BadgeColor =
+export type BadgeColor
   // Semantic colors
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'info'
-  | 'warning'
-  | 'error'
+  = | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'info'
+    | 'warning'
+    | 'error'
   // Entity colors (main types)
-  | 'spell'
-  | 'item'
-  | 'race'
-  | 'class'
-  | 'background'
-  | 'feat'
-  | 'monster'
+    | 'spell'
+    | 'item'
+    | 'race'
+    | 'class'
+    | 'background'
+    | 'feat'
+    | 'monster'
   // Entity colors (reference types)
-  | 'ability'
-  | 'condition'
-  | 'damage'
-  | 'itemtype'
-  | 'language'
-  | 'proficiency'
-  | 'size'
-  | 'skill'
-  | 'school'
-  | 'source'
+    | 'ability'
+    | 'condition'
+    | 'damage'
+    | 'itemtype'
+    | 'language'
+    | 'proficiency'
+    | 'size'
+    | 'skill'
+    | 'school'
+    | 'source'
   // Neutral
-  | 'neutral'
+    | 'neutral'
 
 /**
  * Valid NuxtUI badge size values

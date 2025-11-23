@@ -87,7 +87,10 @@ const imagePath = computed(() => {
             </div>
           </UCard>
           <!-- Empty placeholder when no prerequisites -->
-          <div v-else class="h-full" />
+          <div
+            v-else
+            class="h-full"
+          />
         </div>
 
         <!-- Standalone Image - 1/3 width on large screens -->
