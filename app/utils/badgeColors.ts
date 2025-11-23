@@ -286,3 +286,37 @@ export function getChallengeRatingColor(cr: string): BadgeColor {
   if (numericCR <= 16) return 'warning' // Hard
   return 'error' // Deadly
 }
+
+/**
+ * Get color for class counter reset timing
+ */
+export function getResetTimingColor(timing: string): BadgeColor {
+  switch (timing) {
+    case 'Short Rest':
+      return 'info'
+    case 'Long Rest':
+      return 'primary'
+    case 'Does Not Reset':
+      return 'neutral'
+    default:
+      return 'neutral'
+  }
+}
+
+/**
+ * Get color for condition effect type
+ */
+export function getConditionEffectColor(effectType: string): BadgeColor {
+  switch (effectType) {
+    case 'immunity':
+      return 'success'
+    case 'resistance':
+      return 'info'
+    case 'vulnerability':
+      return 'error'
+    case 'inflicts':
+      return 'warning'
+    default:
+      return 'neutral'
+  }
+}
