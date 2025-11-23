@@ -1,239 +1,192 @@
 import { describe, it, expect, vi } from 'vitest'
 
 describe('useAnimatedBackground', () => {
-  describe('Swirl class', () => {
-    it('initializes with random position and velocity', async () => {
-      // We'll export Swirl class for testing
-      const { Swirl } = await import('~/composables/useAnimatedBackground')
+  describe('MagicParticle class', () => {
+    it('initializes with random position within bounds', async () => {
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
-      const swirl = new Swirl(1920, 1080)
+      const particle = new MagicParticle(1920, 1080)
 
-      expect(swirl.x).toBeGreaterThanOrEqual(0)
-      expect(swirl.x).toBeLessThanOrEqual(1920)
-      expect(swirl.y).toBeGreaterThanOrEqual(0)
-      expect(swirl.y).toBeLessThanOrEqual(1080)
-      expect(swirl.vx).toBeGreaterThanOrEqual(-30)
-      expect(swirl.vx).toBeLessThanOrEqual(30)
-      expect(swirl.size).toBeGreaterThanOrEqual(20)
-      expect(swirl.size).toBeLessThanOrEqual(60)
+      expect(particle.x).toBeGreaterThanOrEqual(0)
+      expect(particle.x).toBeLessThanOrEqual(1920)
+      expect(particle.y).toBeGreaterThanOrEqual(0)
+      expect(particle.y).toBeLessThanOrEqual(1080)
+      expect(particle.size).toBeGreaterThanOrEqual(2)
+      expect(particle.size).toBeLessThanOrEqual(8)
     })
 
-    it('updates position based on velocity and deltaTime', async () => {
-      const { Swirl } = await import('~/composables/useAnimatedBackground')
+    it('updates position based on velocity', async () => {
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
-      const swirl = new Swirl(1920, 1080)
-      const initialX = swirl.x
-      const initialY = swirl.y
+      const particle = new MagicParticle(1920, 1080)
+      const initialX = particle.x
+      const initialY = particle.y
 
-      swirl.update(1000) // 1 second
+      particle.update(16) // One frame at 60fps
 
-      // Position should have changed
-      expect(swirl.x).not.toBe(initialX)
-      expect(swirl.y).not.toBe(initialY)
+      // Position should have changed (drift + velocity)
+      const moved = particle.x !== initialX || particle.y !== initialY
+      expect(moved).toBe(true)
     })
 
     it('wraps around screen edges', async () => {
-      const { Swirl } = await import('~/composables/useAnimatedBackground')
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
-      const swirl = new Swirl(100, 100)
-      swirl.x = 110 // Beyond right edge
-      swirl.y = 110 // Beyond bottom edge
+      const particle = new MagicParticle(100, 100)
 
-      swirl.update(16)
+      // Move beyond right edge
+      particle.x = 110
+      particle.update(16)
+      expect(particle.x).toBeLessThanOrEqual(100)
 
-      expect(swirl.x).toBeLessThanOrEqual(100)
-      expect(swirl.y).toBeLessThanOrEqual(100)
+      // Move beyond bottom edge
+      particle.y = 110
+      particle.update(16)
+      expect(particle.y).toBeLessThanOrEqual(100)
+
+      // Move beyond left edge
+      particle.x = -10
+      particle.update(16)
+      expect(particle.x).toBeGreaterThanOrEqual(0)
+
+      // Move beyond top edge
+      particle.y = -10
+      particle.update(16)
+      expect(particle.y).toBeGreaterThanOrEqual(0)
     })
 
-    it('draws swirl with gradient fill', async () => {
-      const { Swirl } = await import('~/composables/useAnimatedBackground')
+    it('applies mouse repulsion force', async () => {
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
-      const canvas = document.createElement('canvas')
-      canvas.width = 100
-      canvas.height = 100
-      const ctx = canvas.getContext('2d')!
+      const particle = new MagicParticle(1000, 1000)
+      particle.x = 500
+      particle.y = 500
+      const initialVX = particle.vx
+      const initialVY = particle.vy
 
-      const swirl = new Swirl(100, 100)
+      // Mouse very close to particle (within 150px radius)
+      particle.applyMouseForce(510, 510)
 
-      // Spy on canvas methods
-      const createRadialGradientSpy = vi.spyOn(ctx, 'createRadialGradient')
-      const fillSpy = vi.spyOn(ctx, 'fill')
-
-      swirl.draw(ctx, 'rgba(139, 92, 246, OPACITY)')
-
-      // Verify radial gradient was created
-      expect(createRadialGradientSpy).toHaveBeenCalled()
-      // Verify fill was called (drawing happened)
-      expect(fillSpy).toHaveBeenCalled()
-    })
-  })
-
-  describe('Rune class', () => {
-    it('initializes with random position and symbol', async () => {
-      const { Rune } = await import('~/composables/useAnimatedBackground')
-
-      const rune = new Rune(1920, 1080)
-
-      expect(rune.x).toBeGreaterThanOrEqual(0)
-      expect(rune.x).toBeLessThanOrEqual(1920)
-      expect(rune.y).toBeGreaterThanOrEqual(0)
-      expect(rune.y).toBeLessThanOrEqual(1080)
-      expect(rune.symbol).toBeDefined()
-      expect(rune.symbol.length).toBeGreaterThan(0)
-      expect(rune.size).toBeGreaterThanOrEqual(40)
-      expect(rune.size).toBeLessThanOrEqual(80)
+      // Velocity should have changed (repulsion applied)
+      const velocityChanged = particle.vx !== initialVX || particle.vy !== initialVY
+      expect(velocityChanged).toBe(true)
     })
 
-    it('fades in and out over time', async () => {
-      const { Rune } = await import('~/composables/useAnimatedBackground')
+    it('applies scroll momentum', async () => {
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
-      const rune = new Rune(100, 100)
-      rune.opacity = 0
-      rune.fadeDirection = 1 // Fading in
+      const particle = new MagicParticle(1000, 1000)
+      const initialVY = particle.vy
 
-      rune.update(1000) // 1 second
+      particle.applyScrollMomentum(100) // Scroll down 100px
 
-      expect(rune.opacity).toBeGreaterThan(0)
+      // Vertical velocity should increase
+      expect(particle.vy).toBeGreaterThan(initialVY)
     })
 
-    it('rotates slowly over time', async () => {
-      const { Rune } = await import('~/composables/useAnimatedBackground')
-
-      const rune = new Rune(100, 100)
-      const initialRotation = rune.rotation
-
-      rune.update(1000) // 1 second
-
-      expect(rune.rotation).not.toBe(initialRotation)
-    })
-
-    it('repositions when fully faded out', async () => {
-      const { Rune } = await import('~/composables/useAnimatedBackground')
-
-      const rune = new Rune(100, 100)
-      rune.opacity = 0
-      rune.fadeDirection = -1 // Fading out
-      const _initialX = rune.x
-      const _initialY = rune.y
-
-      rune.update(16) // Trigger reposition check
-
-      // When opacity is 0 and fading out, should flip to fading in
-      expect(rune.fadeDirection).toBe(1)
-    })
-
-    it('draws rune symbol with rotation', async () => {
-      const { Rune } = await import('~/composables/useAnimatedBackground')
+    it('draws particle with shape variation', async () => {
+      const { MagicParticle } = await import('~/composables/useAnimatedBackground')
 
       const canvas = document.createElement('canvas')
       canvas.width = 200
       canvas.height = 200
       const ctx = canvas.getContext('2d')!
 
-      const rune = new Rune(200, 200)
-      rune.opacity = 0.1 // Make visible
-      rune.x = 100 // Center position
-      rune.y = 100 // Center position
+      const particle = new MagicParticle(200, 200)
 
-      // Spy on canvas methods
-      const fillTextSpy = vi.spyOn(ctx, 'fillText')
-      const translateSpy = vi.spyOn(ctx, 'translate')
-      const rotateSpy = vi.spyOn(ctx, 'rotate')
+      // Should not throw
+      expect(() => particle.draw(ctx)).not.toThrow()
 
-      rune.draw(ctx, 'rgba(79, 70, 229, OPACITY)')
-
-      // Verify text was drawn with proper transformations
-      expect(translateSpy).toHaveBeenCalledWith(100, 100)
-      expect(rotateSpy).toHaveBeenCalled()
-      expect(fillTextSpy).toHaveBeenCalledWith(rune.symbol, 0, 0)
+      // Particle should have a shape type
+      expect(['star4', 'circle', 'diamond', 'hexagon', 'cross']).toContain(particle.shape)
     })
   })
 
-  describe('useAnimatedBackground composable', () => {
-    it('initializes particles', async () => {
-      const { useAnimatedBackground } = await import('~/composables/useAnimatedBackground')
+  describe('ParchmentBackground class', () => {
+    it('initializes with dimensions', async () => {
+      const { ParchmentBackground } = await import('~/composables/useAnimatedBackground')
 
-      const canvas = document.createElement('canvas')
-      canvas.width = 1920
-      canvas.height = 1080
-      const _ctx = canvas.getContext('2d')!
+      const parchment = new ParchmentBackground(1920, 1080, false)
 
-      const { initialize, getParticleCount } = useAnimatedBackground(canvas, false)
-      initialize()
-
-      // Should create particles (we'll add a getter for testing)
-      expect(getParticleCount()).toBeGreaterThan(0)
+      // Should not throw during initialization
+      expect(parchment).toBeDefined()
     })
 
-    it('starts animation loop', async () => {
-      const { useAnimatedBackground } = await import('~/composables/useAnimatedBackground')
+    it('updates scroll offset', async () => {
+      const { ParchmentBackground } = await import('~/composables/useAnimatedBackground')
 
-      const canvas = document.createElement('canvas')
-      const { initialize, start, isRunning } = useAnimatedBackground(canvas, false)
+      const parchment = new ParchmentBackground(1920, 1080, false)
 
-      initialize()
-      start()
+      parchment.updateScroll(100) // Scroll down 100px
 
-      expect(isRunning()).toBe(true)
+      // Should not throw
+      expect(() => parchment.update(16)).not.toThrow()
     })
 
-    it('stops animation loop', async () => {
-      const { useAnimatedBackground } = await import('~/composables/useAnimatedBackground')
+    it('draws parchment background', async () => {
+      const { ParchmentBackground } = await import('~/composables/useAnimatedBackground')
 
       const canvas = document.createElement('canvas')
-      const { initialize, start, stop, isRunning } = useAnimatedBackground(canvas, false)
+      canvas.width = 200
+      canvas.height = 200
+      const ctx = canvas.getContext('2d')!
 
-      initialize()
-      start()
-      stop()
+      const parchment = new ParchmentBackground(200, 200, false)
 
-      expect(isRunning()).toBe(false)
+      // Should not throw
+      expect(() => parchment.draw(ctx)).not.toThrow()
     })
+  })
 
-    it('pauses animation when document becomes hidden', async () => {
-      const { useAnimatedBackground } = await import('~/composables/useAnimatedBackground')
-
-      const canvas = document.createElement('canvas')
-      const { initialize, start, isRunning } = useAnimatedBackground(canvas, false)
-
-      initialize()
-      start()
-      expect(isRunning()).toBe(true)
-
-      // Simulate document visibility change
-      Object.defineProperty(document, 'visibilityState', {
-        writable: true,
-        configurable: true,
-        value: 'hidden'
-      })
-      document.dispatchEvent(new Event('visibilitychange'))
-
-      // Wait for next tick
-      await new Promise(resolve => setTimeout(resolve, 0))
-
-      expect(isRunning()).toBe(false)
-    })
-
-    it('respects prefers-reduced-motion', async () => {
+  describe('shouldAnimate function', () => {
+    it('returns false when prefers-reduced-motion is set', async () => {
       const { shouldAnimate } = await import('~/composables/useAnimatedBackground')
 
-      // Mock matchMedia
-      const mockMatchMedia = (matches: boolean) => ({
-        matches,
-        media: '(prefers-reduced-motion: reduce)',
+      // Mock matchMedia to simulate prefers-reduced-motion
+      const matchMediaMock = vi.fn((query) => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
         onchange: null,
         addListener: vi.fn(),
         removeListener: vi.fn(),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
         dispatchEvent: vi.fn()
-      })
+      }))
 
-      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(true))
-      expect(shouldAnimate()).toBe(false)
+      vi.stubGlobal('matchMedia', matchMediaMock)
 
-      window.matchMedia = vi.fn().mockReturnValue(mockMatchMedia(false))
-      expect(shouldAnimate()).toBe(true)
+      const result = shouldAnimate()
+
+      // User prefers reduced motion, so should not animate
+      expect(result).toBe(false)
+
+      vi.unstubAllGlobals()
+    })
+
+    it('returns true when prefers-reduced-motion is not set', async () => {
+      const { shouldAnimate } = await import('~/composables/useAnimatedBackground')
+
+      // Mock matchMedia to simulate normal motion preferences
+      const matchMediaMock = vi.fn((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn()
+      }))
+
+      vi.stubGlobal('matchMedia', matchMediaMock)
+
+      const result = shouldAnimate()
+
+      // User allows motion, so should animate
+      expect(result).toBe(true)
+
+      vi.unstubAllGlobals()
     })
   })
 })

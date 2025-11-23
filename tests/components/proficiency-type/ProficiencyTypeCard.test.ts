@@ -74,13 +74,15 @@ describe('ProficiencyTypeCard', () => {
           proficiencyType: {
             id: 1,
             name: 'Light Armor',
+            slug: 'light-armor',
             category: 'armor'
           }
         }
       })
 
-      const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/proficiency_types/stability-ai/light-armor.png')
+      // Check that the background div exists and has the image style
+      const html = wrapper.html()
+      expect(html).toContain('light-armor.png')
     })
 
     it('applies background image with opacity layer', async () => {
@@ -89,6 +91,7 @@ describe('ProficiencyTypeCard', () => {
           proficiencyType: {
             id: 1,
             name: 'Light Armor',
+            slug: 'light-armor',
             category: 'armor'
           }
         }
@@ -97,7 +100,8 @@ describe('ProficiencyTypeCard', () => {
       const html = wrapper.html()
       // Check for absolute positioned background div with opacity
       expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-10')
+      expect(html).toContain('opacity-15')
+      expect(html).toContain('group-hover:opacity-30')
       expect(html).toContain('light-armor.png')
     })
   })

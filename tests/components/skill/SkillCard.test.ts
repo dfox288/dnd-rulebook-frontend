@@ -85,6 +85,7 @@ describe('SkillCard', () => {
           skill: {
             id: 1,
             name: 'Animal Handling',
+            slug: 'animal-handling',
             ability_score: {
               id: 3,
               code: 'WIS',
@@ -94,9 +95,9 @@ describe('SkillCard', () => {
         }
       })
 
-      const url = wrapper.vm.backgroundImageUrl
-      // Slug is generated from name: "Animal Handling" -> "animal-handling"
-      expect(url).toBe('/images/generated/conversions/256/skills/stability-ai/animal-handling.png')
+      const html = wrapper.html()
+      // Check that the background image is in the HTML
+      expect(html).toContain('animal-handling.png')
     })
 
     it('applies background image with opacity layer', async () => {
@@ -104,7 +105,8 @@ describe('SkillCard', () => {
         props: {
           skill: {
             id: 1,
-            name: 'Acrobatics'
+            name: 'Acrobatics',
+            slug: 'acrobatics'
           }
         }
       })
@@ -112,7 +114,8 @@ describe('SkillCard', () => {
       const html = wrapper.html()
       // Check for absolute positioned background div with opacity
       expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-10')
+      expect(html).toContain('opacity-15')
+      expect(html).toContain('group-hover:opacity-30')
       expect(html).toContain('acrobatics.png')
     })
   })

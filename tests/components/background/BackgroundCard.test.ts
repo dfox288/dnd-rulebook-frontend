@@ -288,16 +288,19 @@ describe('BackgroundCard', () => {
     })
 
     const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-10')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-20')
+    expect(bgDiv.classes()).toContain('opacity-15')
+    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
   })
 
-  it('applies transition to background opacity', async () => {
+  it('applies transition to background with scale and rotate on hover', async () => {
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: mockBackground }
     })
 
     const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-opacity')
+    expect(bgDiv.classes()).toContain('transition-all')
+    expect(bgDiv.classes()).toContain('duration-300')
+    expect(bgDiv.classes()).toContain('group-hover:scale-110')
+    expect(bgDiv.classes()).toContain('group-hover:rotate-3')
   })
 })

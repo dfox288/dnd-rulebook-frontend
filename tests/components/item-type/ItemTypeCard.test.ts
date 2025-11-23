@@ -98,7 +98,7 @@ describe('ItemTypeCard', () => {
       const html = wrapper.html()
       // Check for absolute positioned background div with opacity
       expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-10')
+      expect(html).toContain('opacity-15')
       expect(html).toContain('la.png')
     })
   })

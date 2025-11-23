@@ -249,8 +249,8 @@ describe('SpellCard', () => {
     })
 
     const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-10')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-20')
+    expect(bgDiv.classes()).toContain('opacity-15')
+    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
   })
 
   it('applies transition to background opacity', async () => {
@@ -259,6 +259,6 @@ describe('SpellCard', () => {
     })
 
     const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-opacity')
+    expect(bgDiv.classes()).toContain('transition-all')
   })
 })
