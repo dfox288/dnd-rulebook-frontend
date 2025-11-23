@@ -3,6 +3,15 @@ import { ref, watch, computed } from 'vue'
 import type { EntityType, SearchResultData } from '~/types/search'
 import type { BadgeColor } from '~/utils/badgeColors'
 
+// Import all specialized entity cards
+import SpellCard from '~/components/spell/SpellCard.vue'
+import ItemCard from '~/components/item/ItemCard.vue'
+import RaceCard from '~/components/race/RaceCard.vue'
+import ClassCard from '~/components/class/ClassCard.vue'
+import BackgroundCard from '~/components/background/BackgroundCard.vue'
+import FeatCard from '~/components/feat/FeatCard.vue'
+import MonsterCard from '~/components/monster/MonsterCard.vue'
+
 const route = useRoute()
 const { search, results, loading, error } = useSearch()
 
@@ -216,11 +225,10 @@ useHead({
             Spells ({{ filteredResults.spells.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <SpellCard
               v-for="spell in filteredResults.spells"
               :key="spell.id"
-              :result="spell"
-              type="spell"
+              :spell="spell"
             />
           </div>
         </div>
@@ -231,11 +239,10 @@ useHead({
             Items ({{ filteredResults.items.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <ItemCard
               v-for="item in filteredResults.items"
               :key="item.id"
-              :result="item"
-              type="item"
+              :item="item"
             />
           </div>
         </div>
@@ -246,11 +253,10 @@ useHead({
             Races ({{ filteredResults.races.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <RaceCard
               v-for="race in filteredResults.races"
               :key="race.id"
-              :result="race"
-              type="race"
+              :race="race"
             />
           </div>
         </div>
@@ -261,11 +267,10 @@ useHead({
             Classes ({{ filteredResults.classes.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <ClassCard
               v-for="charClass in filteredResults.classes"
               :key="charClass.id"
-              :result="charClass"
-              type="class"
+              :character-class="charClass"
             />
           </div>
         </div>
@@ -276,11 +281,10 @@ useHead({
             Backgrounds ({{ filteredResults.backgrounds.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <BackgroundCard
               v-for="background in filteredResults.backgrounds"
               :key="background.id"
-              :result="background"
-              type="background"
+              :background="background"
             />
           </div>
         </div>
@@ -291,11 +295,10 @@ useHead({
             Feats ({{ filteredResults.feats.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <FeatCard
               v-for="feat in filteredResults.feats"
               :key="feat.id"
-              :result="feat"
-              type="feat"
+              :feat="feat"
             />
           </div>
         </div>
@@ -306,11 +309,10 @@ useHead({
             Monsters ({{ filteredResults.monsters.length }})
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <SearchResultCard
+            <MonsterCard
               v-for="monster in filteredResults.monsters"
               :key="monster.id"
-              :result="monster"
-              type="monster"
+              :monster="monster"
             />
           </div>
         </div>
