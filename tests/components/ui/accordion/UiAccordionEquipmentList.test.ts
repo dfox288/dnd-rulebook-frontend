@@ -15,12 +15,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'a backpack',
-      },
+        description: 'a backpack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     expect(wrapper.text()).toContain('a backpack')
@@ -35,7 +35,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a rapier',
+        description: 'a rapier'
       },
       {
         id: 2,
@@ -44,7 +44,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
+        description: 'a shortsword'
       },
       {
         id: 3,
@@ -53,19 +53,19 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Pack choice',
         proficiency_subcategory: null,
-        description: "a dungeoneer's pack",
-      },
+        description: 'a dungeoneer\'s pack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
     // Should show both choice groups
     expect(text).toContain('a rapier')
     expect(text).toContain('a shortsword')
-    expect(text).toContain("a dungeoneer's pack")
+    expect(text).toContain('a dungeoneer\'s pack')
   })
 
   it('displays choices with letters (a, b, c)', async () => {
@@ -77,7 +77,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a rapier',
+        description: 'a rapier'
       },
       {
         id: 2,
@@ -86,7 +86,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
+        description: 'a shortsword'
       },
       {
         id: 3,
@@ -95,12 +95,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: true,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a longbow',
-      },
+        description: 'a longbow'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -119,7 +119,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'level Rogue, you begin play with 8 + your Constitution modifier hit points.',
+        description: 'level Rogue, you begin play with 8 + your Constitution modifier hit points.'
       },
       {
         id: 2,
@@ -128,12 +128,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'a backpack',
-      },
+        description: 'a backpack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -152,7 +152,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'level Rogue, you begin play with 8 + your Constitution modifier hit points.',
+        description: 'level Rogue, you begin play with 8 + your Constitution modifier hit points.'
       },
       {
         id: 2,
@@ -161,7 +161,7 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: '-- Armor: light armor\n\t--- Weapons: simple weapons, hand crossbows',
+        description: '-- Armor: light armor\n\t--- Weapons: simple weapons, hand crossbows'
       },
       {
         id: 3,
@@ -170,12 +170,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'a backpack',
-      },
+        description: 'a backpack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -202,8 +202,8 @@ describe('UiAccordionEquipmentList', () => {
           slug: 'arrow',
           description: 'Ammunition for a bow',
           item_type: { id: 1, name: 'Ammunition' },
-          sources: [],
-        } as any,
+          sources: []
+        } as unknown as EntityItemResource
       },
       {
         id: 2,
@@ -212,12 +212,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'torches',
-      },
+        description: 'torches'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -235,12 +235,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: '-- Armor: light armor\n\t--- Weapons: simple weapons\n\t--- Tools: thieves\' tools',
-      },
+        description: '-- Armor: light armor\n\t--- Weapons: simple weapons\n\t--- Tools: thieves\' tools'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     // Find the element that contains the description
@@ -269,8 +269,8 @@ describe('UiAccordionEquipmentList', () => {
           slug: 'fine-clothes',
           description: 'Expensive clothing',
           item_type: { id: 2, name: 'Adventuring Gear' },
-          sources: [],
-        } as any,
+          sources: []
+        } as unknown as EntityItemResource
       },
       {
         id: 2,
@@ -279,12 +279,12 @@ describe('UiAccordionEquipmentList', () => {
         is_choice: false,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'identification papers',
-      },
+        description: 'identification papers'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment, type: 'background' },
+      props: { equipment, type: 'background' }
     })
 
     const text = wrapper.text()
@@ -300,7 +300,7 @@ describe('UiAccordionEquipmentList', () => {
     const equipment: Equipment[] = []
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -319,7 +319,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 1,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a rapier',
+        description: 'a rapier'
       },
       {
         id: 12,
@@ -330,7 +330,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 2,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
+        description: 'a shortsword'
       },
       {
         id: 13,
@@ -341,7 +341,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 1,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortbow and quiver of arrows (20)',
+        description: 'a shortbow and quiver of arrows (20)'
       },
       {
         id: 14,
@@ -352,12 +352,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 2,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
-      },
+        description: 'a shortsword'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -382,7 +382,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 3,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: "an explorer's pack",
+        description: 'an explorer\'s pack'
       },
       {
         id: 15,
@@ -393,7 +393,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 1,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: "a burglar's pack",
+        description: 'a burglar\'s pack'
       },
       {
         id: 16,
@@ -404,12 +404,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 2,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: "a dungeoneer's pack",
-      },
+        description: 'a dungeoneer\'s pack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -431,7 +431,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 2,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
+        description: 'a shortsword'
       },
       // Option 1 comes second in array
       {
@@ -443,12 +443,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 1,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a rapier',
-      },
+        description: 'a rapier'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -469,7 +469,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: null,
         choice_description: 'Weapon choice',
         proficiency_subcategory: null,
-        description: 'a longsword',
+        description: 'a longsword'
       },
       {
         id: 2,
@@ -480,12 +480,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: null,
         choice_description: 'Weapon choice',
         proficiency_subcategory: null,
-        description: 'a greatsword',
-      },
+        description: 'a greatsword'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()
@@ -513,13 +513,13 @@ describe('UiAccordionEquipmentList', () => {
           slug: 'rapier',
           description: 'A finesse weapon',
           item_type: { id: 1, name: 'Weapon' },
-          sources: [],
-        } as any,
-      },
+          sources: []
+        } as unknown as EntityItemResource
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const link = wrapper.find('a[href="/items/rapier"]')
@@ -538,12 +538,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: null,
         choice_description: null,
         proficiency_subcategory: null,
-        description: 'a backpack',
-      },
+        description: 'a backpack'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const links = wrapper.findAll('a')
@@ -569,8 +569,8 @@ describe('UiAccordionEquipmentList', () => {
           slug: 'rapier',
           description: 'A finesse weapon',
           item_type: { id: 1, name: 'Weapon' },
-          sources: [],
-        } as any,
+          sources: []
+        } as unknown as EntityItemResource
       },
       {
         id: 12,
@@ -588,13 +588,13 @@ describe('UiAccordionEquipmentList', () => {
           slug: 'shortsword',
           description: 'A versatile weapon',
           item_type: { id: 1, name: 'Weapon' },
-          sources: [],
-        } as any,
-      },
+          sources: []
+        } as unknown as EntityItemResource
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const rapierLink = wrapper.find('a[href="/items/rapier"]')
@@ -617,7 +617,7 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 1,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a rapier',
+        description: 'a rapier'
       },
       {
         id: 12,
@@ -628,12 +628,12 @@ describe('UiAccordionEquipmentList', () => {
         choice_option: 2,
         choice_description: 'Starting equipment choice',
         proficiency_subcategory: null,
-        description: 'a shortsword',
-      },
+        description: 'a shortsword'
+      }
     ]
 
     const wrapper = await mountSuspended(UiAccordionEquipmentList, {
-      props: { equipment },
+      props: { equipment }
     })
 
     const text = wrapper.text()

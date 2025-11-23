@@ -7,7 +7,7 @@ interface Props {
   entityType?: 'race' | 'feat' | 'monster'
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 /**
  * Format effect type for display

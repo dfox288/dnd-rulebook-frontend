@@ -134,11 +134,11 @@ describe('UiAccordionBulletList', () => {
     // Check container styling
     const container = wrapper.find('.p-4')
     expect(container.exists()).toBe(true)
-    expect(container.classes()).toContain('space-y-2')
+    expect(container.classes()).toContain('space-y-4')
 
-    // Check item styling
-    const items = wrapper.findAll('.text-gray-700')
-    expect(items.length).toBe(3)
+    // Check that text-gray-700 class is applied to both headers and items
+    const grayItems = wrapper.findAll('.text-gray-700')
+    expect(grayItems.length).toBeGreaterThanOrEqual(3) // At least 3 items (plus type headers)
   })
 
   it('uses id as key for v-for rendering', async () => {

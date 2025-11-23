@@ -80,7 +80,7 @@ const preview: Preview = {
   },
   // Global decorator to add padding around stories
   decorators: [
-    (story) => ({
+    story => ({
       components: { story },
       template: '<div class="p-8 min-h-screen"><story /></div>'
     })

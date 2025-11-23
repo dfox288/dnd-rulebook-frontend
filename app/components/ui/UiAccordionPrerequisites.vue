@@ -5,7 +5,7 @@ interface Props {
   prerequisites: EntityPrerequisiteResource[]
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 /**
  * Format prerequisite for display

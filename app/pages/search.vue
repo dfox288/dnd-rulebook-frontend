@@ -57,8 +57,8 @@ const filteredResults = computed<SearchResultData>(() => {
   selectedTypes.value.forEach((type) => {
     const data = results.value?.data[type]
     if (data) {
-      // Type assertion needed due to TypeScript's inability to narrow indexed access types
-      filtered[type] = data as any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(filtered as any)[type] = data
     }
   })
   return filtered as SearchResultData

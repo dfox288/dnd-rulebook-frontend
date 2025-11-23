@@ -21,7 +21,7 @@ const meta: Meta<typeof UiListSkeletonCards> = {
       description: 'Number of skeleton cards to display'
     }
   },
-  render: (args) => ({
+  render: args => ({
     components: { UiListSkeletonCards, UCard: UCardStub },
     setup() {
       return { args }

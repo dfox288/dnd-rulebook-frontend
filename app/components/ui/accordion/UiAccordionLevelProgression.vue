@@ -32,7 +32,7 @@ const hasSpellsKnown = computed(() =>
 // Check which spell level columns should be shown (hide if all 0)
 const showSpellLevel = (level: number) => {
   const key = `spell_slots_${level === 1 ? '1st' : level === 2 ? '2nd' : level === 3 ? '3rd' : `${level}th`}` as keyof LevelProgression
-  return props.levelProgression.some(prog => {
+  return props.levelProgression.some((prog) => {
     const value = prog[key]
     return value !== null && value !== 0
   })
@@ -70,17 +70,31 @@ const getSpellSlot = (progression: LevelProgression, level: number): number | nu
 </script>
 
 <template>
-  <div v-if="levelProgression && levelProgression.length > 0" class="overflow-x-auto">
+  <div
+    v-if="levelProgression && levelProgression.length > 0"
+    class="overflow-x-auto"
+  >
     <table class="min-w-full divide-y divide-gray-700 text-sm">
       <thead class="bg-gray-800/50">
         <tr>
-          <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+          <th
+            scope="col"
+            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+          >
             Level
           </th>
-          <th v-if="hasCantrips" scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+          <th
+            v-if="hasCantrips"
+            scope="col"
+            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+          >
             Cantrips
           </th>
-          <th v-if="hasSpellsKnown" scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+          <th
+            v-if="hasSpellsKnown"
+            scope="col"
+            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+          >
             Spells Known
           </th>
           <th
@@ -102,10 +116,16 @@ const getSpellSlot = (progression: LevelProgression, level: number): number | nu
           <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-200">
             {{ progression.level }}
           </td>
-          <td v-if="hasCantrips" class="px-3 py-2 whitespace-nowrap text-sm text-gray-300">
+          <td
+            v-if="hasCantrips"
+            class="px-3 py-2 whitespace-nowrap text-sm text-gray-300"
+          >
             {{ displayValue(progression.cantrips_known) }}
           </td>
-          <td v-if="hasSpellsKnown" class="px-3 py-2 whitespace-nowrap text-sm text-gray-300">
+          <td
+            v-if="hasSpellsKnown"
+            class="px-3 py-2 whitespace-nowrap text-sm text-gray-300"
+          >
             {{ displayValue(progression.spells_known) }}
           </td>
           <td

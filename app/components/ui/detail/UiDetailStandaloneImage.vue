@@ -18,7 +18,7 @@ interface Props {
   imageAlt: string
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 </script>
 
 <template>

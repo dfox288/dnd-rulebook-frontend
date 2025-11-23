@@ -140,24 +140,42 @@ const cardStyle = computed(() => {
             <!-- AC and HP -->
             <div class="flex items-center gap-3">
               <span class="flex items-center gap-1">
-                <UIcon name="i-heroicons-shield-check" class="w-4 h-4" />
+                <UIcon
+                  name="i-heroicons-shield-check"
+                  class="w-4 h-4"
+                />
                 AC {{ monster.armor_class }}
               </span>
               <span class="flex items-center gap-1">
-                <UIcon name="i-heroicons-heart" class="w-4 h-4" />
+                <UIcon
+                  name="i-heroicons-heart"
+                  class="w-4 h-4"
+                />
                 {{ monster.hit_points_average }} HP
               </span>
             </div>
 
             <!-- Speed -->
-            <div v-if="speedDisplay" class="flex items-center gap-1">
-              <UIcon name="i-heroicons-bolt" class="w-4 h-4" />
+            <div
+              v-if="speedDisplay"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-bolt"
+                class="w-4 h-4"
+              />
               {{ speedDisplay }}
             </div>
 
             <!-- Saving Throws -->
-            <div v-if="savingThrows.length > 0" class="flex items-center gap-1">
-              <UIcon name="i-heroicons-shield-exclamation" class="w-4 h-4" />
+            <div
+              v-if="savingThrows.length > 0"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-shield-exclamation"
+                class="w-4 h-4"
+              />
               <span>Saves: {{ savingThrows.map(s => `${s.code} ${s.value}`).join(', ') }}</span>
             </div>
 

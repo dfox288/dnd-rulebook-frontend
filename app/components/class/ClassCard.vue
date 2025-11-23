@@ -44,13 +44,7 @@ const truncatedDescription = computed(() => {
  * Get primary ability code for display
  */
 const primaryAbilityCode = computed(() => {
-  if (!props.characterClass.primary_ability) return null
-  // If it's an object with a code property, use that
-  if (typeof props.characterClass.primary_ability === 'object' && 'code' in props.characterClass.primary_ability) {
-    return props.characterClass.primary_ability.code
-  }
-  // Otherwise, return the string value
-  return props.characterClass.primary_ability
+  return props.characterClass.primary_ability || null
 })
 
 /**

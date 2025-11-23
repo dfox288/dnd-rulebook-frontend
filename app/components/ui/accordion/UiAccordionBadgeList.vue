@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type { components } from '~/types/api/generated'
 import type { BadgeColor } from '~/utils/badgeColors'
-
-// EntityLanguageResource has optional language object and is_choice flag
-type EntityLanguageResource = components['schemas']['EntityLanguageResource']
 
 // Generic item with name property (classes, languages, etc.)
 interface NamedItem {

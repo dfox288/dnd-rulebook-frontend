@@ -59,8 +59,7 @@ const proficienciesByType = computed(() => {
     if (!item.choice_group) {
       // Regular proficiency
       typeGroup.regular.push(item)
-    }
-    else {
+    } else {
       // Choice-based proficiency
       if (!typeGroup.choiceGroups.has(item.choice_group)) {
         typeGroup.choiceGroups.set(item.choice_group, [])
@@ -85,7 +84,7 @@ const proficienciesByType = computed(() => {
           return {
             choiceGroup: key,
             quantity: sortedItems[0]?.quantity || null,
-            items: sortedItems,
+            items: sortedItems
           }
         })
 
@@ -93,7 +92,7 @@ const proficienciesByType = computed(() => {
         type,
         typeName: formatProficiencyType(type),
         regular,
-        choiceGroups: formattedChoiceGroups,
+        choiceGroups: formattedChoiceGroups
       }
     })
 
@@ -129,19 +128,32 @@ const getChoiceDescription = (group: { quantity: number | null, items: Proficien
 </script>
 
 <template>
-  <div v-if="items.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
+  <div
+    v-if="items.length === 0"
+    class="p-4 text-center text-gray-500 dark:text-gray-400"
+  >
     No proficiencies
   </div>
-  <div v-else class="p-4 space-y-4">
+  <div
+    v-else
+    class="p-4 space-y-4"
+  >
     <!-- Group by proficiency type -->
-    <div v-for="typeGroup in proficienciesByType" :key="typeGroup.type" class="space-y-2">
+    <div
+      v-for="typeGroup in proficienciesByType"
+      :key="typeGroup.type"
+      class="space-y-2"
+    >
       <!-- Type headline -->
       <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
         {{ typeGroup.typeName }}
       </h4>
 
       <!-- Regular proficiencies within this type -->
-      <div v-if="typeGroup.regular.length > 0" class="space-y-1">
+      <div
+        v-if="typeGroup.regular.length > 0"
+        class="space-y-1"
+      >
         <div
           v-for="item in typeGroup.regular"
           :key="item.id"
@@ -152,7 +164,11 @@ const getChoiceDescription = (group: { quantity: number | null, items: Proficien
       </div>
 
       <!-- Choice-based proficiencies within this type -->
-      <div v-for="(group, groupIndex) in typeGroup.choiceGroups" :key="groupIndex" class="space-y-1">
+      <div
+        v-for="(group, groupIndex) in typeGroup.choiceGroups"
+        :key="groupIndex"
+        class="space-y-1"
+      >
         <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
           {{ getChoiceDescription(group) }}
         </div>

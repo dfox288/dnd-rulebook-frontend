@@ -152,7 +152,10 @@ const imagePath = computed(() => {
           v-if="entity.equipment && entity.equipment.length > 0"
           #equipment
         >
-          <UiAccordionEquipmentList :equipment="entity.equipment" type="background" />
+          <UiAccordionEquipmentList
+            :equipment="entity.equipment"
+            type="background"
+          />
         </template>
 
         <!-- Source Slot -->

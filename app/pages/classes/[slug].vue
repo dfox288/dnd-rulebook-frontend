@@ -189,7 +189,10 @@ const remainingTraits = computed(() => {
           v-if="entity.equipment && entity.equipment.length > 0"
           #equipment
         >
-          <UiAccordionEquipmentList :equipment="entity.equipment" type="class" />
+          <UiAccordionEquipmentList
+            :equipment="entity.equipment"
+            type="class"
+          />
         </template>
 
         <!-- Proficiencies Slot -->

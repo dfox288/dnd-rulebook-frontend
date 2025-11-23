@@ -15,7 +15,7 @@ const customColors = [
   { name: 'glory', label: 'Glory (Feats - Blue)' }
 ]
 
-const shades = [
+const _shades = [
   { value: 50, label: '50' },
   { value: 100, label: '100' },
   { value: 200, label: '200' },

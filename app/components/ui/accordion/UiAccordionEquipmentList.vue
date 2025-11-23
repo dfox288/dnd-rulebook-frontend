@@ -9,7 +9,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  type: 'class',
+  type: 'class'
 })
 
 // Helper to check if an equipment entry is hit points
@@ -66,7 +66,7 @@ const equipmentGroups = computed(() => {
       return {
         // Use choice_description from first item for the headline (more descriptive than choice_group)
         choiceDescription: sortedItems[0]?.choice_description || key,
-        items: sortedItems,
+        items: sortedItems
       }
     })
     .filter(group => group.items.length > 0)
@@ -104,12 +104,21 @@ const getItemLink = (item: Equipment): string | null => {
 </script>
 
 <template>
-  <div v-if="equipment.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
+  <div
+    v-if="equipment.length === 0"
+    class="p-4 text-center text-gray-500 dark:text-gray-400"
+  >
     No equipment
   </div>
-  <div v-else class="p-4 space-y-4">
+  <div
+    v-else
+    class="p-4 space-y-4"
+  >
     <!-- Hit Points Section (Class only) -->
-    <div v-if="hitPointsItem" class="space-y-2">
+    <div
+      v-if="hitPointsItem"
+      class="space-y-2"
+    >
       <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
         Hit Points
       </h4>
@@ -119,7 +128,10 @@ const getItemLink = (item: Equipment): string | null => {
     </div>
 
     <!-- Proficiencies Section (Class only) -->
-    <div v-if="proficienciesItem" class="space-y-2">
+    <div
+      v-if="proficienciesItem"
+      class="space-y-2"
+    >
       <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
         Proficiencies
       </h4>
@@ -129,8 +141,15 @@ const getItemLink = (item: Equipment): string | null => {
     </div>
 
     <!-- Equipment Section -->
-    <div v-if="regularEquipment.length > 0" class="space-y-3">
-      <div v-for="(group, groupIndex) in equipmentGroups" :key="groupIndex" class="space-y-1">
+    <div
+      v-if="regularEquipment.length > 0"
+      class="space-y-3"
+    >
+      <div
+        v-for="(group, groupIndex) in equipmentGroups"
+        :key="groupIndex"
+        class="space-y-1"
+      >
         <!-- Choice group with letters -->
         <div v-if="group.choiceDescription && group.items.length > 1">
           <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
