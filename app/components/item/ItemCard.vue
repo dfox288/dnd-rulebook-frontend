@@ -131,7 +131,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="item.is_magic"
               color="item"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               ✨ Magic
@@ -139,7 +139,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="item.requires_attunement"
               color="item"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               🔮 Attunement

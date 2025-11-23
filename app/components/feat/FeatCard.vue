@@ -142,7 +142,7 @@ const backgroundImage = computed(() => {
           >
             <UBadge
               color="feat"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               ✅ No Prerequisites

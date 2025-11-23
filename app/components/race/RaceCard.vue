@@ -155,7 +155,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="race.traits && race.traits.length > 0"
               color="race"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               👥 {{ race.traits.length }} {{ race.traits.length === 1 ? 'Trait' : 'Traits' }}
@@ -163,7 +163,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="race.subraces && race.subraces.length > 0"
               color="race"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               🌟 {{ race.subraces.length }} {{ race.subraces.length === 1 ? 'Subrace' : 'Subraces' }}

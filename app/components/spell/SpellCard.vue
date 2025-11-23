@@ -113,7 +113,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="spell.needs_concentration"
               color="spell"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               ⭐ Concentration
@@ -121,7 +121,7 @@ const backgroundImage = computed(() => {
             <UBadge
               v-if="spell.is_ritual"
               color="spell"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               🔮 Ritual

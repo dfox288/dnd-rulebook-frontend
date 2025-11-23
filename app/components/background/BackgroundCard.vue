@@ -131,7 +131,7 @@ const backgroundImage = computed(() => {
           >
             <UBadge
               color="background"
-              variant="soft"
+              variant="subtle"
               size="md"
             >
               🔧 {{ background.proficiencies.filter(p => p.proficiency_type === 'tool').length }} Tools

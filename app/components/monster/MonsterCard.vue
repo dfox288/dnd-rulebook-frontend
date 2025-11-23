@@ -165,7 +165,7 @@ const cardStyle = computed(() => {
             <div v-if="isLegendary">
               <UBadge
                 color="monster"
-                variant="soft"
+                variant="subtle"
                 size="md"
               >
                 ⭐ Legendary

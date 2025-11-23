@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Badge Variant Standardization (2025-11-23)** - Standardized all badge variants to `subtle` for consistent, prominent borders across all entity cards
+  - Changed ALL inline badges from `variant="soft"` to `variant="subtle"` in all 7 entity cards
+  - SpellCard: Concentration and Ritual badges (2 badges)
+  - ItemCard: Magic and Attunement badges (2 badges)
+  - MonsterCard: Legendary badge (1 badge)
+  - RaceCard: Traits and Subraces count badges (2 badges)
+  - ClassCard: Primary ability and Spellcasting ability badges (2 badges)
+  - BackgroundCard: Tools badge (1 badge)
+  - FeatCard: No Prerequisites badge (1 badge)
+  - Total: 11 badges standardized across 7 cards
+  - All badges now use `size="md"` + `variant="subtle"` for maximum simplicity and consistency
+  - All 227 entity card tests passing
 - **MonsterCard Inline Badge Size Upgrade (2025-11-23)** - Upgraded Legendary badge from size="sm" to size="md" for improved readability
   - Changed Legendary badge from `size="sm"` to `size="md"`
   - Top-row badges (CR, Type) remain at `size="md"` as designed
