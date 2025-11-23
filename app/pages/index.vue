@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'home'
+})
+
 useHead({
   title: 'D&D 5e Compendium',
   meta: [
@@ -83,24 +87,25 @@ const referenceItems = [
 </script>
 
 <template>
-  <div class="px-4 py-12">
-    <!-- Hero Section -->
-    <div class="text-center mb-12">
+  <div class="min-h-screen">
+    <!-- Hero Section - Full Width -->
+    <div class="text-center mb-12 px-4 py-12">
       <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
         Ledger of Heroes
       </h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
+      <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-4xl mx-auto">
         Streamlined toolkit for managing your characters, inventories, spells, and campaigns — all preserved in a single ledger
       </p>
 
-      <!-- Featured Search - Extra Wide -->
-      <div class="w-full max-w-4xl mx-auto">
+      <!-- Featured Search - Extra Wide, No Container Constraint -->
+      <div class="w-full max-w-6xl mx-auto px-4">
         <SearchInput />
       </div>
     </div>
 
     <!-- Entity Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">
+    <div class="container mx-auto px-4 max-w-7xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">
       <NuxtLink
         v-for="entity in entityCards"
         :key="entity.to"
@@ -128,13 +133,13 @@ const referenceItems = [
       </NuxtLink>
     </div>
 
-    <!-- Reference Data Section -->
-    <div class="mt-16">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
-        Reference Data
-      </h2>
+      <!-- Reference Data Section -->
+      <div class="mt-16">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6 text-center">
+          Reference Data
+        </h2>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <NuxtLink
           v-for="item in referenceItems"
           :key="item.to"
@@ -156,11 +161,12 @@ const referenceItems = [
       </div>
     </div>
 
-    <!-- Stats Section -->
-    <div class="mt-16 text-center">
-      <p class="text-gray-600 dark:text-gray-400">
-        Powered by D&D 5e API • Over 3,000 entities indexed
-      </p>
+      <!-- Stats Section -->
+      <div class="mt-16 text-center">
+        <p class="text-gray-600 dark:text-gray-400">
+          Powered by D&D 5e API • Over 3,000 entities indexed
+        </p>
+      </div>
     </div>
   </div>
 </template>
