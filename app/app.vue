@@ -131,13 +131,17 @@ const isReferenceExpanded = ref(false)
       <nav class="border-b border-gray-200/90 dark:border-gray-800/90 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">
-            <!-- Site Title (Left) -->
+            <!-- Site Logo (Left) -->
             <div class="flex-shrink-0">
               <NuxtLink
                 to="/"
-                class="text-xl font-bold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                class="flex items-center hover:opacity-80 transition-opacity"
               >
-                D&D 5e Compendium
+                <NuxtImg
+                  src="/logo.svg"
+                  alt="D&D 5e Compendium"
+                  class="h-10 w-auto dark:invert"
+                />
               </NuxtLink>
             </div>
 
