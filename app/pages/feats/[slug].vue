@@ -119,6 +119,16 @@ const imagePath = computed(() => {
       <!-- Additional Details (Accordion) -->
       <UAccordion
         :items="[
+          ...(entity.proficiencies && entity.proficiencies.length > 0 ? [{
+            label: 'Proficiencies',
+            slot: 'proficiencies',
+            defaultOpen: false
+          }] : []),
+          ...(entity.conditions && entity.conditions.length > 0 ? [{
+            label: 'Conditions',
+            slot: 'conditions',
+            defaultOpen: false
+          }] : []),
           ...(entity.modifiers && entity.modifiers.length > 0 ? [{
             label: 'Modifiers',
             slot: 'modifiers',
@@ -137,6 +147,25 @@ const imagePath = computed(() => {
         ]"
         type="multiple"
       >
+        <!-- Proficiencies Slot -->
+        <template
+          v-if="entity.proficiencies && entity.proficiencies.length > 0"
+          #proficiencies
+        >
+          <UiAccordionBulletList :items="entity.proficiencies" />
+        </template>
+
+        <!-- Conditions Slot -->
+        <template
+          v-if="entity.conditions && entity.conditions.length > 0"
+          #conditions
+        >
+          <UiAccordionConditions
+            :conditions="entity.conditions"
+            entity-type="feat"
+          />
+        </template>
+
         <!-- Modifiers Slot -->
         <template
           v-if="entity.modifiers && entity.modifiers.length > 0"
