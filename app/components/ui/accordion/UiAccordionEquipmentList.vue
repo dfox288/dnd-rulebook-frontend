@@ -52,10 +52,12 @@ const equipmentGroups = computed(() => {
     groups.get(key)!.push(item)
   }
 
-  return Array.from(groups.entries()).map(([key, items]) => ({
-    choiceDescription: key,
-    items,
-  }))
+  return Array.from(groups.entries())
+    .map(([key, items]) => ({
+      choiceDescription: key,
+      items,
+    }))
+    .filter(group => group.items.length > 0)
 })
 
 // Helper to get item display text
@@ -122,7 +124,7 @@ const getChoiceLetter = (index: number): string => {
         </div>
 
         <!-- Single choice item (no letters needed) -->
-        <div v-else-if="group.choiceDescription && group.items.length === 1">
+        <div v-else-if="group.choiceDescription && group.items.length === 1 && group.items[0]">
           <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
             {{ group.choiceDescription }}
           </div>
