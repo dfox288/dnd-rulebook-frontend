@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **SpellCard Inline Badge Size Enhancement (2025-11-23)** - Upgraded Concentration and Ritual badges to medium size
+  - Changed inline badges (Concentration, Ritual) from `size="sm"` to `size="md"` for better readability
+  - Top-row badges (Level, School) remain `size="md"` as established
+  - All 27 SpellCard tests passing
 - **RaceCard Inline Badge Size Upgrade (2025-11-23)** - Increased inline badge sizes for better readability
   - Changed Traits count badge from size="sm" to size="md" for improved visibility
   - Changed Subraces count badge from size="sm" to size="md" for improved visibility
