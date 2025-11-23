@@ -153,12 +153,12 @@ const activeFilterCount = computed(() => {
 
       <!-- Collapsible Filter Content -->
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-200 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
+        enter-active-class="overflow-hidden transition-all duration-300 ease-out"
+        enter-from-class="max-h-0 opacity-0"
+        enter-to-class="max-h-96 opacity-100"
+        leave-active-class="overflow-hidden transition-all duration-200 ease-in"
+        leave-from-class="max-h-96 opacity-100"
+        leave-to-class="max-h-0 opacity-0"
       >
         <div v-if="filtersOpen" class="space-y-4">
         <!-- Basic Filters -->
