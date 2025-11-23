@@ -119,32 +119,34 @@ const activeFilterCount = computed(() => {
 
     <!-- Search and Filters -->
     <div class="mb-6 space-y-4">
-      <!-- Search input (always visible) -->
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search spells..."
-      >
-        <template
-          v-if="searchQuery"
-          #trailing
+      <!-- Search input with filter toggle -->
+      <div class="flex gap-2">
+        <UInput
+          v-model="searchQuery"
+          placeholder="Search spells..."
+          class="flex-1"
         >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
-        </template>
-      </UInput>
+          <template
+            v-if="searchQuery"
+            #trailing
+          >
+            <UButton
+              color="neutral"
+              variant="link"
+              :padded="false"
+              @click="searchQuery = ''"
+            />
+          </template>
+        </UInput>
 
-      <!-- Collapsible Filters -->
-      <UiFilterCollapse
-        label="Filters"
-        :badge-count="activeFilterCount"
-      >
-        <!-- Basic Filters -->
-        <div class="flex flex-wrap gap-2 mb-4">
-          <!-- Level filter -->
+        <!-- Filter Toggle Button -->
+        <UiFilterCollapse
+          label="Filters"
+          :badge-count="activeFilterCount"
+        >
+          <!-- Basic Filters -->
+          <div class="flex flex-wrap gap-2 mb-4">
+            <!-- Level filter -->
           <USelectMenu
             v-model="selectedLevel"
             :items="levelOptions"
@@ -200,8 +202,9 @@ const activeFilterCount = computed(() => {
               { value: '0', label: 'No' }
             ]"
           />
-        </div>
-      </UiFilterCollapse>
+          </div>
+        </UiFilterCollapse>
+      </div>
 
       <!-- Active Filter Chips -->
       <div
