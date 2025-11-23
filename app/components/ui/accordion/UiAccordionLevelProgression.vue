@@ -18,13 +18,10 @@ if (!props.levelProgression || props.levelProgression.length === 0) {
 }
 
 // Determine which columns to show based on data
-// Show cantrips if any level has a non-zero value
 const hasCantrips = computed(() =>
   props.levelProgression.some(level => level.cantrips_known !== null && level.cantrips_known !== 0)
 )
 
-// Show spells_known column if the field exists (even if all values are null)
-// This is because null is semantically meaningful (prepared casters vs known casters)
 const hasSpellsKnown = computed(() =>
   props.levelProgression.some(level => 'spells_known' in level)
 )
@@ -67,6 +64,49 @@ const getSpellSlot = (progression: LevelProgression, level: number): number | nu
   const key = `spell_slots_${ordinalSuffix(level)}` as keyof LevelProgression
   return progression[key] as number | null
 }
+
+// Build dynamic columns array
+const columns = computed(() => {
+  const cols = [
+    { key: 'level', label: 'Level', width: 'w-20' }
+  ]
+
+  if (hasCantrips.value) {
+    cols.push({ key: 'cantrips_known', label: 'Cantrips' })
+  }
+
+  if (hasSpellsKnown.value) {
+    cols.push({ key: 'spells_known', label: 'Spells Known' })
+  }
+
+  for (const spellLevel of visibleSpellLevels.value) {
+    cols.push({
+      key: `spell_level_${spellLevel}`,
+      label: ordinalSuffix(spellLevel),
+      align: 'center' as const
+    })
+  }
+
+  return cols
+})
+
+// Transform progression data to match dynamic columns
+const tableRows = computed(() => {
+  return props.levelProgression.map(prog => {
+    const row: Record<string, any> = {
+      level: prog.level,
+      cantrips_known: displayValue(prog.cantrips_known),
+      spells_known: displayValue(prog.spells_known)
+    }
+
+    // Add spell slot columns
+    for (const spellLevel of visibleSpellLevels.value) {
+      row[`spell_level_${spellLevel}`] = getSpellSlot(prog, spellLevel)
+    }
+
+    return row
+  })
+})
 </script>
 
 <template>
@@ -74,69 +114,9 @@ const getSpellSlot = (progression: LevelProgression, level: number): number | nu
     v-if="levelProgression && levelProgression.length > 0"
     class="overflow-x-auto"
   >
-    <table class="min-w-full divide-y divide-gray-700 text-sm">
-      <thead class="bg-gray-800/50">
-        <tr>
-          <th
-            scope="col"
-            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-          >
-            Level
-          </th>
-          <th
-            v-if="hasCantrips"
-            scope="col"
-            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-          >
-            Cantrips
-          </th>
-          <th
-            v-if="hasSpellsKnown"
-            scope="col"
-            class="px-3 py-2 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-          >
-            Spells Known
-          </th>
-          <th
-            v-for="spellLevel in visibleSpellLevels"
-            :key="spellLevel"
-            scope="col"
-            class="px-3 py-2 text-center text-xs font-medium text-gray-300 uppercase tracking-wider"
-          >
-            {{ ordinalSuffix(spellLevel) }}
-          </th>
-        </tr>
-      </thead>
-      <tbody class="bg-gray-900 divide-y divide-gray-800">
-        <tr
-          v-for="(progression, index) in levelProgression"
-          :key="progression.id"
-          :class="index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800/30'"
-        >
-          <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-200">
-            {{ progression.level }}
-          </td>
-          <td
-            v-if="hasCantrips"
-            class="px-3 py-2 whitespace-nowrap text-sm text-gray-300"
-          >
-            {{ displayValue(progression.cantrips_known) }}
-          </td>
-          <td
-            v-if="hasSpellsKnown"
-            class="px-3 py-2 whitespace-nowrap text-sm text-gray-300"
-          >
-            {{ displayValue(progression.spells_known) }}
-          </td>
-          <td
-            v-for="spellLevel in visibleSpellLevels"
-            :key="spellLevel"
-            class="px-3 py-2 whitespace-nowrap text-sm text-gray-300 text-center"
-          >
-            {{ getSpellSlot(progression, spellLevel) }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <UiAccordionDataTable
+      :columns="columns"
+      :rows="tableRows"
+    />
   </div>
 </template>
