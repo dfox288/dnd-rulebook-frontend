@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **FeatCard Prerequisites Display Enhancement (2025-11-23)** - Improved clarity for feats with multiple prerequisites
+  - Changed from generic "2 prerequisites" to specific "STR 13+ +1 more" format
+  - Shows first prerequisite detail (ability score or description) plus count of remaining
+  - Single prerequisites unchanged (still shows "STR 13+" or full description)
+  - Added 3 comprehensive tests covering edge cases (2 prereqs, 3+ prereqs, description-based)
 - **ClassCard Description Length Standardization (2025-11-23)** - Updated description truncation to match other entity cards
   - Increased description max length from 120 to 150 characters to align with SpellCard, ItemCard, RaceCard, BackgroundCard, FeatCard, and MonsterCard
   - Standardized primary ability display to show ability code (e.g., "INT") instead of full object for consistency

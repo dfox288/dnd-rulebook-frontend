@@ -16,11 +16,15 @@ const hasPrerequisites = computed(() => {
 
 /**
  * Get prerequisites summary
+ * For single prerequisite: Show full text (e.g., "STR 13+")
+ * For multiple: Show first + count (e.g., "STR 13+ +1 more")
  */
 const prerequisitesSummary = computed(() => {
   if (!hasPrerequisites.value) return null
 
   const prereqs = props.feat.prerequisites!
+
+  // Single prerequisite: show full text
   if (prereqs.length === 1) {
     const p = prereqs[0]
     if (p?.ability_score) {
@@ -28,7 +32,21 @@ const prerequisitesSummary = computed(() => {
     }
     return p?.description || 'Prerequisites required'
   }
-  return `${prereqs.length} prerequisites`
+
+  // Multiple prerequisites: show first + count
+  const first = prereqs[0]
+  const remaining = prereqs.length - 1
+  let firstText = ''
+
+  if (first?.ability_score) {
+    firstText = `${first.ability_score.code} ${first.minimum_value}+`
+  } else if (first?.description) {
+    firstText = first.description
+  } else {
+    firstText = 'Prerequisites required'
+  }
+
+  return `${firstText} +${remaining} more`
 })
 
 /**

@@ -121,7 +121,7 @@ describe('FeatCard', () => {
     expect(wrapper.text()).toContain('INT 13+')
   })
 
-  it('displays multiple prerequisites count', async () => {
+  it('displays first prerequisite plus count for multiple ability prerequisites', async () => {
     const multiPrerequFeat = {
       ...mockFeat,
       prerequisites: [
@@ -133,7 +133,44 @@ describe('FeatCard', () => {
       props: { feat: multiPrerequFeat }
     })
 
-    expect(wrapper.text()).toContain('2 prerequisites')
+    // Should show "STR 13+ +1 more" instead of "2 prerequisites"
+    expect(wrapper.text()).toContain('STR 13+')
+    expect(wrapper.text()).toContain('+1 more')
+  })
+
+  it('displays first prerequisite plus count for 3+ prerequisites', async () => {
+    const multiPrerequFeat = {
+      ...mockFeat,
+      prerequisites: [
+        { ability_score: { id: 1, code: 'STR', name: 'Strength' }, minimum_value: 15 },
+        { ability_score: { id: 2, code: 'DEX', name: 'Dexterity' }, minimum_value: 13 },
+        { description: 'Proficiency with martial weapons' }
+      ]
+    }
+    const wrapper = await mountSuspended(FeatCard, {
+      props: { feat: multiPrerequFeat }
+    })
+
+    // Should show "STR 15+ +2 more"
+    expect(wrapper.text()).toContain('STR 15+')
+    expect(wrapper.text()).toContain('+2 more')
+  })
+
+  it('displays first description prerequisite plus count when first has no ability score', async () => {
+    const multiPrerequFeat = {
+      ...mockFeat,
+      prerequisites: [
+        { description: 'Proficiency with heavy armor' },
+        { ability_score: { id: 1, code: 'STR', name: 'Strength' }, minimum_value: 13 }
+      ]
+    }
+    const wrapper = await mountSuspended(FeatCard, {
+      props: { feat: multiPrerequFeat }
+    })
+
+    // Should show first description + count
+    expect(wrapper.text()).toContain('Proficiency with heavy armor')
+    expect(wrapper.text()).toContain('+1 more')
   })
 
   it('displays description prerequisite when no ability score', async () => {
