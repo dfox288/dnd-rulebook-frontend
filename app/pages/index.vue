@@ -90,9 +90,14 @@ const referenceItems = [
   <div class="min-h-screen">
     <!-- Hero Section - Full Width -->
     <div class="text-center mb-12 px-4 py-12">
-      <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-        Ledger of Heroes
-      </h1>
+      <!-- Logo -->
+      <div class="mb-6">
+        <img
+          src="/logo-with-name.svg"
+          alt="Ledger of Heroes"
+          class="h-32 mx-auto dark:invert"
+        />
+      </div>
       <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-4xl mx-auto">
         Streamlined toolkit for managing your characters, inventories, spells, and campaigns — all preserved in a single ledger
       </p>
