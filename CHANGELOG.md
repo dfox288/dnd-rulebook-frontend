@@ -10,9 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **UiFilterToggle component** - Reusable tri-state toggle filter component (All/Yes/No) (2025-11-23)
-- **Concentration filter on Spells page** - Filter spells by concentration requirement (2025-11-23)
-- **Ritual filter on Spells page** - Filter spells by ritual casting capability (2025-11-23)
+- **UiFilterToggle component** - Reusable tri-state toggle filter component (All/Yes/No) with improved styling (2025-11-23)
+- **Concentration filter on Spells page** - Filter spells by concentration requirement (218 concentration spells) (2025-11-23)
+- **Ritual filter on Spells page** - Filter spells by ritual casting capability (33 ritual spells) (2025-11-23)
+
+### Fixed
+- UiFilterToggle now uses correct API values ('1'/'0' instead of 'true'/'false') for boolean filters (2025-11-23)
+- Improved UiFilterToggle styling to match existing NuxtUI design system (2025-11-23)
 - Class counters display (resource tracking like Rage, Ki Points) with level progression table (2025-11-23)
 - Feat proficiencies display for proficiency-granting feats (2025-11-23)
 - Conditions display for Feats and Monsters (immunities, resistances, vulnerabilities) (2025-11-23)

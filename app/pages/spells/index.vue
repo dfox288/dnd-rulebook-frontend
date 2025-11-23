@@ -167,6 +167,11 @@ const perPage = 24
           v-model="concentrationFilter"
           label="Concentration"
           color="primary"
+          :options="[
+            { value: null, label: 'All' },
+            { value: '1', label: 'Yes' },
+            { value: '0', label: 'No' }
+          ]"
         />
 
         <!-- Ritual filter -->
@@ -174,6 +179,11 @@ const perPage = 24
           v-model="ritualFilter"
           label="Ritual"
           color="primary"
+          :options="[
+            { value: null, label: 'All' },
+            { value: '1', label: 'Yes' },
+            { value: '0', label: 'No' }
+          ]"
         />
       </div>
 
@@ -217,7 +227,7 @@ const perPage = 24
           variant="soft"
           @click="concentrationFilter = null"
         >
-          Concentration: {{ concentrationFilter === 'true' ? 'Yes' : 'No' }} ✕
+          Concentration: {{ concentrationFilter === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
         <UButton
           v-if="ritualFilter !== null"
@@ -226,7 +236,7 @@ const perPage = 24
           variant="soft"
           @click="ritualFilter = null"
         >
-          Ritual: {{ ritualFilter === 'true' ? 'Yes' : 'No' }} ✕
+          Ritual: {{ ritualFilter === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
       </div>
     </div>

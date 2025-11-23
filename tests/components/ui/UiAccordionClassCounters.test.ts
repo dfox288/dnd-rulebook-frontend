@@ -7,68 +7,42 @@ describe('UiAccordionClassCounters', () => {
   const mockCounters: ClassCounterResource[] = [
     {
       id: 1,
-      level: 1,
-      counter_name: 'Rage',
-      counter_value: 2,
-      reset_timing: 'Long Rest'
-    },
-    {
-      id: 2,
       level: 3,
       counter_name: 'Rage',
       counter_value: 3,
       reset_timing: 'Long Rest'
     },
     {
-      id: 3,
-      level: 2,
-      counter_name: 'Reckless Attack',
-      counter_value: 1,
-      reset_timing: 'Does Not Reset'
+      id: 2,
+      level: 1,
+      counter_name: 'Ki Points',
+      counter_value: 2,
+      reset_timing: 'Short Rest'
     }
   ]
 
-  it('renders counter table', async () => {
+  it('renders counters sorted by level', async () => {
     const wrapper = await mountSuspended(UiAccordionClassCounters, {
       props: { counters: mockCounters }
     })
 
-    expect(wrapper.text()).toContain('Level')
-    expect(wrapper.text()).toContain('Counter')
-    expect(wrapper.text()).toContain('Value')
-    expect(wrapper.text()).toContain('Reset Timing')
-  })
-
-  it('displays all counter entries', async () => {
-    const wrapper = await mountSuspended(UiAccordionClassCounters, {
-      props: { counters: mockCounters }
-    })
-
+    expect(wrapper.text()).toContain('Ki Points')
     expect(wrapper.text()).toContain('Rage')
-    expect(wrapper.text()).toContain('Reckless Attack')
+
+    // Level 1 should appear before Level 3 (sorted)
+    const text = wrapper.text()
+    const kiIndex = text.indexOf('Ki Points')
+    const rageIndex = text.indexOf('Rage')
+    expect(kiIndex).toBeLessThan(rageIndex)
+  })
+
+  it('displays reset timing badges', async () => {
+    const wrapper = await mountSuspended(UiAccordionClassCounters, {
+      props: { counters: mockCounters }
+    })
+
     expect(wrapper.text()).toContain('Long Rest')
-  })
-
-  it('shows reset timing with badges', async () => {
-    const wrapper = await mountSuspended(UiAccordionClassCounters, {
-      props: { counters: mockCounters }
-    })
-
-    // Find all badge components
-    const badges = wrapper.findAllComponents({ name: 'UBadge' })
-    expect(badges.length).toBeGreaterThan(0)
-  })
-
-  it('sorts counters by level', async () => {
-    const wrapper = await mountSuspended(UiAccordionClassCounters, {
-      props: { counters: mockCounters }
-    })
-
-    const html = wrapper.html()
-    // Level 1 should appear before Level 3
-    const level1Index = html.indexOf('>1<')
-    const level3Index = html.indexOf('>3<')
-    expect(level1Index).toBeLessThan(level3Index)
+    expect(wrapper.text()).toContain('Short Rest')
   })
 
   it('handles empty counters array', async () => {

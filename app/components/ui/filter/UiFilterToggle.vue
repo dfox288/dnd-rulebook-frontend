@@ -103,14 +103,14 @@ const getButtonClasses = (optionValue: string | number | boolean | null) => {
     <!-- Label -->
     <label
       v-if="label"
-      class="text-sm font-semibold text-gray-700 dark:text-gray-300"
+      class="text-sm font-medium text-gray-700 dark:text-gray-300"
     >
       {{ label }}
     </label>
 
     <!-- Button Group -->
     <div
-      class="inline-flex rounded-lg shadow-sm"
+      class="inline-flex rounded-md"
       role="group"
       :aria-label="`${label} filter`"
     >
@@ -119,12 +119,25 @@ const getButtonClasses = (optionValue: string | number | boolean | null) => {
         :key="index"
         type="button"
         :class="[
-          getButtonClasses(option.value),
+          'relative px-3 py-1.5 text-sm font-medium transition-colors',
+          'focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-0',
           {
-            'rounded-l-lg rounded-r-none': index === 0,
-            'rounded-none': index > 0 && index < options.length - 1,
-            'rounded-r-lg rounded-l-none': index === options.length - 1,
-            'border-l border-gray-300 dark:border-gray-600': index > 0 && !isSelected(option.value)
+            // Border radius
+            'rounded-l-md': index === 0,
+            'rounded-r-md': index === options.length - 1,
+            '-ml-px': index > 0,
+
+            // Selected state
+            'bg-primary-500 text-white border border-primary-500': isSelected(option.value) && !disabled,
+            'hover:bg-primary-600': isSelected(option.value) && !disabled,
+
+            // Unselected state
+            'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300': !isSelected(option.value) && !disabled,
+            'border border-gray-300 dark:border-gray-600': !isSelected(option.value) && !disabled,
+            'hover:bg-gray-50 dark:hover:bg-gray-700': !isSelected(option.value) && !disabled,
+
+            // Disabled state
+            'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800 text-gray-400': disabled
           }
         ]"
         :aria-pressed="isSelected(option.value)"
