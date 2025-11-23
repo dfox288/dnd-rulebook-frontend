@@ -135,3 +135,10 @@ export interface Monster extends Omit<MonsterFromAPI, 'sources'> {
   sources?: EntitySource[]
   // All other fields inherited from MonsterFromAPI
 }
+
+/**
+ * Re-export nested resource types used across multiple entities
+ */
+export type ClassCounterResource = components['schemas']['ClassCounterResource']
+export type EntityConditionResource = components['schemas']['EntityConditionResource']
+export type EntityPrerequisiteResource = components['schemas']['EntityPrerequisiteResource']
