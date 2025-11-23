@@ -146,8 +146,8 @@ const imagePath = computed(() => {
           v-if="entity.subclasses && entity.subclasses.length > 0"
           #subclasses
         >
-          <UiAccordionEntityGrid
-            :entities="entity.subclasses"
+          <UiAccordionSubclassesList
+            :subclasses="entity.subclasses"
             base-path="/classes"
           />
         </template>

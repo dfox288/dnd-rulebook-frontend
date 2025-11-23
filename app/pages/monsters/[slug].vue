@@ -164,6 +164,57 @@ const imagePath = computed(() => {
         :show-cost="true"
       />
 
+      <!-- Spellcasting -->
+      <UCard v-if="monster.spellcasting">
+        <template #header>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Spellcasting
+          </h2>
+        </template>
+        <div class="space-y-4">
+          <!-- Description -->
+          <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+            {{ monster.spellcasting.description }}
+          </p>
+
+          <!-- Spellcasting Stats -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div v-if="monster.spellcasting.spellcasting_ability" class="text-center">
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                Ability
+              </div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {{ monster.spellcasting.spellcasting_ability }}
+              </div>
+            </div>
+            <div v-if="monster.spellcasting.spell_save_dc" class="text-center">
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                Spell Save DC
+              </div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {{ monster.spellcasting.spell_save_dc }}
+              </div>
+            </div>
+            <div v-if="monster.spellcasting.spell_attack_bonus" class="text-center">
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                Spell Attack
+              </div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                +{{ monster.spellcasting.spell_attack_bonus }}
+              </div>
+            </div>
+            <div v-if="monster.spellcasting.spell_slots" class="text-center">
+              <div class="text-sm text-gray-600 dark:text-gray-400">
+                Spell Slots
+              </div>
+              <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                {{ monster.spellcasting.spell_slots }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </UCard>
+
       <!-- Modifiers -->
       <UiModifiersDisplay
         v-if="monster.modifiers && monster.modifiers.length > 0"

@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Subclass Features Display (2025-11-23)** - Classes detail page now shows rich nested features for each subclass
+  - Created `UiAccordionSubclassesList` component to display subclass features grouped by level
+  - Features show level badges, optional status, and full descriptions
+  - Maintains clickable links to individual subclass detail pages
+- **Monster Spellcasting Display (2025-11-23)** - Monsters with spellcasting now show detailed casting information
+  - Displays spellcasting description, ability, spell save DC, spell attack bonus, and spell slots
+  - Conditional rendering - only appears for monsters with spellcasting data
+  - Stats displayed in responsive grid layout
 - Decorative face numbers on 3D dice (2025-11-23)
   - Canvas-based texture generation for all die types (d4-d20)
   - Subtle white numbers (35% opacity) with Georgia serif font
