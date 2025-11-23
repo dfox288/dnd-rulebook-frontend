@@ -1,13 +1,28 @@
 # Handover: Migration to @nuxtjs/storybook Module
 
 **Date:** 2025-11-23
-**Status:** 📋 Planned - Migration Not Yet Started
-**Current:** Standalone Storybook 8.6.14
-**Target:** @nuxtjs/storybook (Nuxt-integrated)
+**Status:** ❌ **BLOCKED** - See `HANDOVER-2025-11-23-STORYBOOK-MIGRATION-BLOCKER.md`
+**Current:** Standalone Storybook 8.6.14 (with --legacy-peer-deps)
+**Target:** @nuxtjs/storybook (Nuxt-integrated) - NOT COMPATIBLE WITH NUXT 4 + VITE 7
 
 ---
 
-## 🎯 Why Migrate?
+---
+
+## ⚠️ MIGRATION BLOCKED - READ THIS FIRST
+
+**This migration cannot proceed due to fundamental compatibility issues between Storybook and Nuxt 4 + Vite 7.**
+
+For complete details, see: **`HANDOVER-2025-11-23-STORYBOOK-MIGRATION-BLOCKER.md`**
+
+**TL;DR:**
+- Neither Storybook 8.6.14 NOR @nuxtjs/storybook@9.0.1 are compatible with Vite 7
+- Current setup only works with `--legacy-peer-deps` workaround
+- Migration postponed until Storybook releases Vite 7 support
+
+---
+
+## 🎯 Why Migrate? (Original Rationale - For Future Reference)
 
 ### Current Limitations (Standalone Storybook)
 - ❌ **No real NuxtUI components** - Using stubs with Tailwind approximations
