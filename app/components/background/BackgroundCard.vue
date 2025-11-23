@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Background } from '~/types'
+import { ITEM_ID_GOLD_PIECE } from '~/constants/items'
 
 interface Props {
   background: Background
@@ -60,6 +61,31 @@ const truncatedDescription = computed(() => {
 const { getImagePath } = useEntityImage()
 const backgroundImage = computed(() => {
   return getImagePath('backgrounds', props.background.slug, 256)
+})
+
+/**
+ * Equipment count - total number of items
+ */
+const equipmentCount = computed(() => {
+  if (!props.background.equipment || props.background.equipment.length === 0) {
+    return null
+  }
+  return props.background.equipment.length
+})
+
+/**
+ * Starting gold - check for gold piece item_id
+ * Uses ITEM_ID_GOLD_PIECE constant from ~/constants/items
+ */
+const startingGold = computed(() => {
+  if (!props.background.equipment || props.background.equipment.length === 0) {
+    return null
+  }
+
+  const goldItem = props.background.equipment.find(eq => eq.item_id === ITEM_ID_GOLD_PIECE)
+  if (!goldItem) return null
+
+  return goldItem.quantity
 })
 </script>
 
@@ -135,6 +161,29 @@ const backgroundImage = computed(() => {
               size="md"
             >
               🔧 {{ background.proficiencies.filter(p => p.proficiency_type === 'tool').length }} Tools
+            </UBadge>
+          </div>
+
+          <!-- Equipment and Gold -->
+          <div
+            v-if="equipmentCount || startingGold"
+            class="flex items-center gap-2 flex-wrap"
+          >
+            <UBadge
+              v-if="equipmentCount"
+              color="background"
+              variant="subtle"
+              size="md"
+            >
+              🎒 {{ equipmentCount }} Items
+            </UBadge>
+            <UBadge
+              v-if="startingGold"
+              color="background"
+              variant="subtle"
+              size="md"
+            >
+              💰 {{ startingGold }} gp
             </UBadge>
           </div>
 

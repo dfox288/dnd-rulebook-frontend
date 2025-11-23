@@ -337,4 +337,99 @@ describe('BackgroundCard', () => {
     expect(bgDiv.classes()).toContain('group-hover:scale-110')
     expect(bgDiv.classes()).toContain('group-hover:rotate-3')
   })
+
+  // Equipment Tests
+  it('shows equipment count badge when equipment exists', async () => {
+    const bgWithEquipment = {
+      ...mockBackground,
+      equipment: [
+        { id: 1, item_id: 1848, quantity: 1, description: null },
+        { id: 2, item_id: 1961, quantity: 1, description: null },
+        { id: 3, item_id: null, quantity: 20, description: 'gold pieces' }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgWithEquipment }
+    })
+
+    expect(wrapper.text()).toContain('3 Items')
+  })
+
+  it('hides equipment badge when no equipment', async () => {
+    const bgNoEquipment = { ...mockBackground, equipment: [] }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgNoEquipment }
+    })
+
+    expect(wrapper.text()).not.toContain('Items')
+  })
+
+  it('hides equipment badge when equipment is undefined', async () => {
+    const bgNoEquipment = { ...mockBackground, equipment: undefined }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgNoEquipment }
+    })
+
+    expect(wrapper.text()).not.toContain('Items')
+  })
+
+  it('shows starting gold when present in equipment', async () => {
+    const bgWithGold = {
+      ...mockBackground,
+      equipment: [
+        { id: 1, item_id: 1848, quantity: 1, description: null },
+        { id: 2, item_id: 1860, quantity: 20, description: null }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgWithGold }
+    })
+
+    expect(wrapper.text()).toContain('20 gp')
+  })
+
+  it('handles different gold amounts', async () => {
+    const bgWithDifferentGold = {
+      ...mockBackground,
+      equipment: [
+        { id: 1, item_id: 1860, quantity: 15, description: null }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgWithDifferentGold }
+    })
+
+    expect(wrapper.text()).toContain('15 gp')
+  })
+
+  it('does not show gold badge when no gold in equipment', async () => {
+    const bgWithoutGold = {
+      ...mockBackground,
+      equipment: [
+        { id: 1, item_id: 1848, quantity: 1, description: null }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgWithoutGold }
+    })
+
+    expect(wrapper.text()).not.toContain('gp')
+  })
+
+  it('shows both equipment count and gold', async () => {
+    const bgWithBoth = {
+      ...mockBackground,
+      equipment: [
+        { id: 1, item_id: 1848, quantity: 1, description: null },
+        { id: 2, item_id: 1961, quantity: 1, description: null },
+        { id: 3, item_id: 1860, quantity: 20, description: null }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: bgWithBoth }
+    })
+
+    expect(wrapper.text()).toContain('3 Items')
+    expect(wrapper.text()).toContain('20 gp')
+  })
 })
