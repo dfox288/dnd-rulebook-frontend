@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **ClassCard Badge Size Standardization (2025-11-23)** - Updated Base Class/Subclass badge to match 2-tier hierarchy
+  - Changed type badge (Base Class/Subclass) from size="sm" to size="md" for prominence
+  - Aligns with SpellCard, ItemCard, MonsterCard, and RaceCard badge hierarchy pattern
+  - Top-row badges now consistently use "md" for primary entity information across all card components
+  - All 33 ClassCard tests passing
 - **BackgroundCard Skill Display Enhancement (2025-11-23)** - Replaced skill count with actual skill names
   - Shows first 2 skill names (e.g., "Insight, Religion" instead of "2 Skills")
   - Adds "+N more" overflow indicator for 3+ skills (e.g., "Insight, Religion +1 more")

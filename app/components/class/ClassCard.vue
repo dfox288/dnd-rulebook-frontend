@@ -85,7 +85,7 @@ const backgroundImage = computed(() => {
             <UBadge
               color="class"
               variant="subtle"
-              size="sm"
+              size="md"
             >
               {{ typeBadgeText }}
             </UBadge>
