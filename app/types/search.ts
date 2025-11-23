@@ -10,7 +10,8 @@ import type {
   Race as RaceEntity,
   CharacterClass as CharacterClassEntity,
   Background as BackgroundEntity,
-  Feat as FeatEntity
+  Feat as FeatEntity,
+  Monster as MonsterEntity
 } from './api/entities'
 
 // Re-export entity types
@@ -20,11 +21,12 @@ export type Race = RaceEntity
 export type CharacterClass = CharacterClassEntity
 export type Background = BackgroundEntity
 export type Feat = FeatEntity
+export type Monster = MonsterEntity
 
 /**
  * Entity type identifiers for search filtering
  */
-export type EntityType = 'spells' | 'items' | 'races' | 'classes' | 'backgrounds' | 'feats'
+export type EntityType = 'spells' | 'items' | 'races' | 'classes' | 'backgrounds' | 'feats' | 'monsters'
 
 /**
  * Search options for filtering and limiting results
@@ -58,6 +60,7 @@ export interface SearchResultData {
   classes?: CharacterClass[]
   backgrounds?: Background[]
   feats?: Feat[]
+  monsters?: Monster[]
 }
 
 /**
