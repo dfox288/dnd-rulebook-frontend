@@ -63,7 +63,7 @@ const imagePath = computed(() => {
         label="Back to Races"
       />
 
-      <!-- Header - UPDATED -->
+      <!-- Header -->
       <UiDetailPageHeader
         :title="race.name"
         :badges="[
@@ -72,20 +72,33 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Quick Stats -->
-      <UiDetailQuickStatsCard
-        :stats="[
-          ...(race.size ? [{ icon: 'i-heroicons-user', label: 'Size', value: race.size.name }] : []),
-          ...(race.speed ? [{ icon: 'i-heroicons-bolt', label: 'Speed', value: `${race.speed} ft.` }] : [])
-        ]"
-      />
+      <!-- Quick Stats (2/3) + Image (1/3) Side-by-Side -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Quick Stats - 2/3 width on large screens -->
+        <div class="lg:col-span-2">
+          <UiDetailQuickStatsCard
+            :columns="2"
+            :stats="[
+              ...(race.size ? [{ icon: 'i-heroicons-user', label: 'Size', value: race.size.name }] : []),
+              ...(race.speed ? [{ icon: 'i-heroicons-bolt', label: 'Speed', value: `${race.speed} ft.` }] : [])
+            ]"
+          />
+        </div>
 
-      <!-- Description + Image - NEW -->
-      <UiDetailDescriptionWithImage
+        <!-- Standalone Image - 1/3 width on large screens -->
+        <div class="lg:col-span-1">
+          <UiDetailStandaloneImage
+            v-if="imagePath"
+            :image-path="imagePath"
+            :image-alt="`${race.name} character portrait`"
+          />
+        </div>
+      </div>
+
+      <!-- Description -->
+      <UiDetailDescriptionCard
         v-if="race.description"
         :description="race.description"
-        :image-path="imagePath"
-        :image-alt="`${race.name} character portrait`"
       />
 
       <!-- Ability Score Increases (Always Visible) -->
