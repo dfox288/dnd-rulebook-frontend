@@ -31,7 +31,7 @@ const entityCards: Array<{ to: string, name: string, description: string, slug: 
     to: '/items',
     name: 'Items',
     description: 'Discover weapons, armor, and magical items for your adventures.',
-    slug: 'bag-of-holding',
+    slug: 'map-or-scroll-case',
     type: 'items'
   },
   {
