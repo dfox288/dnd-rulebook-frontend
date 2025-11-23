@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **RaceCard Inline Badge Size Upgrade (2025-11-23)** - Increased inline badge sizes for better readability
+  - Changed Traits count badge from size="sm" to size="md" for improved visibility
+  - Changed Subraces count badge from size="sm" to size="md" for improved visibility
+  - Top-row badges (Size, Race/Subrace) remain unchanged at size="md"
+  - All 42 RaceCard tests passing
+- **ClassCard, BackgroundCard, and FeatCard Inline Badge Size Upgrade (2025-11-23)** - Enhanced readability of secondary information badges
+  - ClassCard: Primary ability and Spellcasting ability badges upgraded from `size="sm"` to `size="md"`
+  - BackgroundCard: Tools badge upgraded from `size="sm"` to `size="md"`
+  - FeatCard: "No Prerequisites" badge upgraded from `size="sm"` to `size="md"`
+  - Top-row badges remain at `size="md"` for consistency across all cards
+  - All 94 tests passing (ClassCard: 33, BackgroundCard: 30, FeatCard: 31)
 - **ItemCard Inline Badge Size Upgrade (2025-11-23)** - Enhanced readability of secondary information badges
   - Changed Magic and Attunement badges from `size="sm"` to `size="md"` for improved visibility
   - Top-row badges (Type, Rarity) remain at `size="md"` for consistency

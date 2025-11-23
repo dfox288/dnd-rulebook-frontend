@@ -93,7 +93,7 @@ const backgroundImage = computed(() => {
               v-if="primaryAbilityCode"
               color="class"
               variant="soft"
-              size="sm"
+              size="md"
             >
               🎯 {{ primaryAbilityCode }}
             </UBadge>
@@ -101,7 +101,7 @@ const backgroundImage = computed(() => {
               v-if="characterClass.spellcasting_ability"
               color="class"
               variant="soft"
-              size="sm"
+              size="md"
             >
               ✨ {{ characterClass.spellcasting_ability.name }}
             </UBadge>
