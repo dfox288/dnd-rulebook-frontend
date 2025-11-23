@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **BackgroundCard Badge Standardization (2025-11-23)** - Aligned badge sizes and variants with project 2-tier badge system
+  - Feature name badge (top-row): Changed from `size="sm" variant="soft"` to `size="md" variant="subtle"` for prominence
+  - Tools badge (inline): Changed from `size="xs"` to `size="sm"` to maintain visual hierarchy
+  - Removed all "xs" badge sizes per project standards
+  - All 30 BackgroundCard tests passing
 - **FeatCard Badge Standardization (2025-11-23)** - Standardized badge sizes and variants to match 2-tier badge system
   - Changed Prerequisites badge (top-row) from `variant="soft"` to `variant="subtle"` for prominence
   - Changed "No Prerequisites" badge (inline) from `size="xs"` to `size="sm"` for better readability

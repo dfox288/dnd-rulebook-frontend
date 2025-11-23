@@ -88,8 +88,8 @@ const backgroundImage = computed(() => {
           >
             <UBadge
               color="background"
-              variant="soft"
-              size="sm"
+              variant="subtle"
+              size="md"
             >
               {{ background.feature_name }}
             </UBadge>
@@ -132,7 +132,7 @@ const backgroundImage = computed(() => {
             <UBadge
               color="background"
               variant="soft"
-              size="xs"
+              size="sm"
             >
               🔧 {{ background.proficiencies.filter(p => p.proficiency_type === 'tool').length }} Tools
             </UBadge>
