@@ -148,6 +148,279 @@ const DICE_COLORS = [
 ]
 
 /**
+ * Texture cache - one texture per die type
+ */
+const diceTextures: Map<DieType, THREE.Texture> = new Map()
+
+/**
+ * Texture rendering settings for decorative appearance
+ */
+const TEXTURE_SETTINGS = {
+  fontSize: 80,
+  fontFamily: 'Georgia, serif',
+  fontWeight: 'bold',
+  color: '#ffffff',
+  opacity: 0.35
+} as const
+
+/**
+ * Create texture for d6 (cube)
+ * 6 faces arranged in 3×2 grid
+ */
+function createD6Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 512
+  const ctx = canvas.getContext('2d')!
+
+  // Setup text rendering
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  // Grid layout: 3 columns × 2 rows
+  const cols = 3
+  const rows = 2
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  // Draw numbers 1-6
+  for (let i = 0; i < 6; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    ctx.fillText((i + 1).toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Create texture for d4 (tetrahedron)
+ * 4 faces arranged in 2×2 grid
+ */
+function createD4Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 256
+  const ctx = canvas.getContext('2d')!
+
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  const cols = 2
+  const rows = 2
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  for (let i = 0; i < 4; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    ctx.fillText((i + 1).toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Create texture for d8 (octahedron)
+ * 8 faces arranged in 4×2 grid
+ */
+function createD8Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 512
+  const ctx = canvas.getContext('2d')!
+
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  const cols = 4
+  const rows = 2
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  for (let i = 0; i < 8; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    ctx.fillText((i + 1).toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Create texture for d10 (pentagonal trapezohedron)
+ * 10 faces arranged in 5×2 grid
+ * Note: d10 shows 1-9, then 0 (not 10)
+ */
+function createD10Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 512
+  const ctx = canvas.getContext('2d')!
+
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  const cols = 5
+  const rows = 2
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  for (let i = 0; i < 10; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    // d10 shows 1-9, then 0 (index 9 = 0)
+    const number = i === 9 ? 0 : i + 1
+    ctx.fillText(number.toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Create texture for d12 (dodecahedron)
+ * 12 faces arranged in 4×3 grid
+ */
+function createD12Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 512
+  canvas.height = 512
+  const ctx = canvas.getContext('2d')!
+
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  const cols = 4
+  const rows = 3
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  for (let i = 0; i < 12; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    ctx.fillText((i + 1).toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Create texture for d20 (icosahedron)
+ * 20 faces arranged in 5×4 grid
+ * Uses larger texture for better quality with more faces
+ */
+function createD20Texture(): THREE.Texture {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1024
+  canvas.height = 1024
+  const ctx = canvas.getContext('2d')!
+
+  const alpha = Math.round(TEXTURE_SETTINGS.opacity * 255).toString(16).padStart(2, '0')
+  ctx.fillStyle = `${TEXTURE_SETTINGS.color}${alpha}`
+  ctx.font = `${TEXTURE_SETTINGS.fontWeight} ${TEXTURE_SETTINGS.fontSize}px ${TEXTURE_SETTINGS.fontFamily}`
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  const cols = 5
+  const rows = 4
+  const cellWidth = canvas.width / cols
+  const cellHeight = canvas.height / rows
+
+  for (let i = 0; i < 20; i++) {
+    const col = i % cols
+    const row = Math.floor(i / cols)
+    const x = col * cellWidth + cellWidth / 2
+    const y = row * cellHeight + cellHeight / 2
+
+    ctx.fillText((i + 1).toString(), x, y)
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.needsUpdate = true
+  return texture
+}
+
+/**
+ * Get or create texture for a die type
+ * Textures are cached after first creation
+ */
+function createDiceTexture(type: DieType): THREE.Texture {
+  // Return cached texture if exists
+  if (diceTextures.has(type)) {
+    return diceTextures.get(type)!
+  }
+
+  // Generate new texture based on type
+  let texture: THREE.Texture
+  switch (type) {
+    case 'd4':
+      texture = createD4Texture()
+      break
+    case 'd6':
+      texture = createD6Texture()
+      break
+    case 'd8':
+      texture = createD8Texture()
+      break
+    case 'd10':
+      texture = createD10Texture()
+      break
+    case 'd12':
+      texture = createD12Texture()
+      break
+    case 'd20':
+      texture = createD20Texture()
+      break
+    default:
+      texture = createD20Texture()
+  }
+
+  // Cache and return
+  diceTextures.set(type, texture)
+  return texture
+}
+
+/**
  * Create geometry for each die type
  */
 function createDieGeometry(type: DieType): THREE.BufferGeometry {
