@@ -233,6 +233,19 @@ const imagePath = computed(() => {
         :modifiers="monster.modifiers"
       />
 
+      <!-- Conditions -->
+      <UCard v-if="monster.conditions && monster.conditions.length > 0">
+        <template #header>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Conditions
+          </h2>
+        </template>
+        <UiAccordionConditions
+          :conditions="monster.conditions"
+          entity-type="monster"
+        />
+      </UCard>
+
       <!-- Sources -->
       <UiSourceDisplay
         v-if="monster.sources && monster.sources.length > 0"
