@@ -165,7 +165,8 @@
       "Bash(npm run types:sync:*)",
       "Bash(timeout 60 docker compose exec:*)",
       "WebFetch(domain:storybook.js.org)",
-      "Bash(timeout 5 curl:*)"
+      "Bash(timeout 5 curl:*)",
+      "WebFetch(domain:storybook.nuxtjs.org)"
     ],
     "deny": [],
     "ask": []
