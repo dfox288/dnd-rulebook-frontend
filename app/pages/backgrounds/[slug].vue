@@ -81,13 +81,9 @@ const imagePath = computed(() => {
             v-if="imagePath"
             class="lg:w-1/3 flex-shrink-0"
           >
-            <NuxtImg
-              :src="imagePath"
-              :alt="`${entity.name} background illustration`"
-              class="w-full h-auto rounded-lg shadow-lg object-cover"
-              loading="lazy"
-              width="512"
-              height="512"
+            <UiDetailEntityImage
+              :image-path="imagePath"
+              :image-alt="`${entity.name} background illustration`"
             />
           </div>
         </div>
