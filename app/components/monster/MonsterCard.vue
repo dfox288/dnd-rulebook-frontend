@@ -23,6 +23,24 @@ const truncatedDescription = computed(() => {
 const isLegendary = computed(() => {
   return props.monster.legendary_actions && props.monster.legendary_actions.length > 0
 })
+
+/**
+ * Get background image for card
+ */
+const { getImagePath } = useEntityImage()
+const backgroundImage = computed(() => {
+  return getImagePath('monsters', props.monster.slug, 256)
+})
+
+const cardStyle = computed(() => {
+  if (!backgroundImage.value) return {}
+  return {
+    backgroundImage: `url(${backgroundImage.value})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat'
+  }
+})
 </script>
 
 <template>
@@ -30,8 +48,18 @@ const isLegendary = computed(() => {
     :to="`/monsters/${monster.slug}`"
     class="block h-full"
   >
-    <UCard class="hover:shadow-lg transition-shadow h-full border-2 border-monster-300 dark:border-monster-700 hover:border-monster-500">
-      <div class="flex flex-col h-full">
+    <UCard
+      class="hover:shadow-lg transition-shadow h-full border-2 border-monster-300 dark:border-monster-700 hover:border-monster-500 relative overflow-hidden"
+    >
+      <!-- Background image layer -->
+      <div
+        v-if="backgroundImage"
+        class="absolute inset-0 opacity-10 hover:opacity-20 transition-opacity duration-300"
+        :style="cardStyle"
+      />
+
+      <!-- Content layer -->
+      <div class="flex flex-col h-full relative z-10">
         <!-- Top content -->
         <div class="space-y-3 flex-1">
           <!-- CR and Type Badges -->
