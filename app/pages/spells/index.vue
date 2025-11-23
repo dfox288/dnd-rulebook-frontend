@@ -152,7 +152,15 @@ const activeFilterCount = computed(() => {
       </div>
 
       <!-- Collapsible Filter Content -->
-      <div v-if="filtersOpen" class="space-y-4">
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-if="filtersOpen" class="space-y-4">
         <!-- Basic Filters -->
         <div class="flex flex-wrap gap-2 mb-4">
             <!-- Level filter -->
@@ -212,7 +220,8 @@ const activeFilterCount = computed(() => {
               ]"
             />
         </div>
-      </div>
+        </div>
+      </Transition>
 
       <!-- Active Filter Chips -->
       <div
