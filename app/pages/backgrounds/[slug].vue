@@ -58,27 +58,54 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Traits Section - KEEP AS-IS (always visible) -->
+      <!-- Traits Section + Image - Side-by-side layout (2/3 + 1/3) -->
       <UCard v-if="entity.traits && entity.traits.length > 0">
         <template #header>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
             Background Traits
           </h2>
         </template>
-        <UiAccordionTraitsList
-          :traits="entity.traits"
-          :show-category="true"
-          border-color="purple-500"
-        />
+
+        <div class="flex flex-col lg:flex-row gap-6">
+          <!-- Traits Content: 2/3 width when image present, full width otherwise -->
+          <div :class="imagePath ? 'lg:w-2/3' : 'w-full'">
+            <UiAccordionTraitsList
+              :traits="entity.traits"
+              :show-category="true"
+              border-color="purple-500"
+            />
+          </div>
+
+          <!-- Image: 1/3 width on large screens, stacks below on mobile -->
+          <div
+            v-if="imagePath"
+            class="lg:w-1/3 flex-shrink-0"
+          >
+            <NuxtImg
+              :src="imagePath"
+              :alt="`${entity.name} background illustration`"
+              class="w-full h-auto rounded-lg shadow-lg object-cover"
+              loading="lazy"
+              width="512"
+              height="512"
+            />
+          </div>
+        </div>
       </UCard>
 
-      <!-- Description + Image - NEW COMPONENT -->
-      <UiDetailDescriptionWithImage
-        v-if="entity.description"
-        :description="entity.description"
-        :image-path="imagePath"
-        :image-alt="`${entity.name} background illustration`"
-      />
+      <!-- Description (full width, below traits) -->
+      <UCard v-if="entity.description">
+        <template #header>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Description
+          </h2>
+        </template>
+        <div class="prose dark:prose-invert max-w-none">
+          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+            {{ entity.description }}
+          </p>
+        </div>
+      </UCard>
 
       <!-- Proficiencies - KEEP AS-IS (always visible) -->
       <UCard v-if="entity.proficiencies && entity.proficiencies.length > 0">
