@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **Detail Page Layout Refactor - Complete for All 7 Pages (2025-11-23)** - New side-by-side layout pattern with standalone images
+  - Created 3 new reusable components: `UiDetailEntityImage`, `UiDetailStandaloneImage`, `UiDetailDescriptionCard` (20 tests)
+  - Refactored all 7 detail pages to use side-by-side layout (first container 2/3 + image 1/3)
+  - Description moved to separate full-width card below side-by-side section
+  - Better visual hierarchy: Quick info + context at top, detailed reading below
+  - Responsive design: Stacks vertically on mobile, side-by-side on desktop
+  - Deprecated `UiDetailDescriptionWithImage` component with migration guide
+  - All 7 pages verified (HTTP 200), 699/732 tests passing (95.5%)
 - **List Page Standardization - Complete for All 17 Pages (2025-11-22)** - Unified UI patterns across entire application
   - Enhanced `useEntityList` composable with `noPagination` flag for reference pages
   - Migrated 10 reference pages to use composable (ability-scores, conditions, damage-types, item-types, languages, proficiency-types, sizes, skills, spell-schools, sources)
@@ -21,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 702 tests passing (100%), all 17 pages verified (HTTP 200)
 
 ### Fixed
+- **Monster Images Not Displaying (2025-11-23)** - Fixed missing monster image support
+  - Added `'monsters'` to `useEntityImage` composable (EntityType + ENTITY_FOLDER_MAP)
+  - Added background images to MonsterCard component (10% opacity, 20% on hover)
+  - Monsters now display images on both list and detail pages
 - **ItemType export added to types/index.ts (2025-11-22)** - Resolves TypeScript import error for item-types page
 
 ### Added
