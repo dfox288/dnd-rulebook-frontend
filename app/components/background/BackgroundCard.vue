@@ -8,7 +8,7 @@ interface Props {
 const props = defineProps<Props>()
 
 /**
- * Get skill proficiencies summary
+ * Get skill proficiencies summary - shows actual skill names
  */
 const skillsSummary = computed(() => {
   if (!props.background.proficiencies || props.background.proficiencies.length === 0) {
@@ -16,8 +16,22 @@ const skillsSummary = computed(() => {
   }
   const skillProficiencies = props.background.proficiencies.filter(p => p.proficiency_type === 'skill')
   if (skillProficiencies.length === 0) return null
-  const count = skillProficiencies.length
-  return `${count} ${count === 1 ? 'Skill' : 'Skills'}`
+
+  // Extract skill names
+  const skillNames = skillProficiencies
+    .map(p => p.skill?.name)
+    .filter(Boolean) as string[]
+
+  if (skillNames.length === 0) return null
+
+  // Show first 2 skill names
+  if (skillNames.length <= 2) {
+    return skillNames.join(', ')
+  }
+
+  // Show first 2 + overflow count
+  const remaining = skillNames.length - 2
+  return `${skillNames.slice(0, 2).join(', ')} +${remaining} more`
 })
 
 /**

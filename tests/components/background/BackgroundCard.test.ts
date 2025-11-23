@@ -102,15 +102,15 @@ describe('BackgroundCard', () => {
     expect(html).not.toContain('Shelter')
   })
 
-  it('shows skills summary with plural form', async () => {
+  it('shows first two skill names when exactly 2 skills', async () => {
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: mockBackground }
     })
 
-    expect(wrapper.text()).toContain('2 Skills')
+    expect(wrapper.text()).toContain('Insight, Religion')
   })
 
-  it('uses singular form for single skill', async () => {
+  it('shows single skill name without comma', async () => {
     const oneSkillBg = {
       ...mockBackground,
       proficiencies: [
@@ -121,7 +121,41 @@ describe('BackgroundCard', () => {
       props: { background: oneSkillBg }
     })
 
-    expect(wrapper.text()).toContain('1 Skill')
+    expect(wrapper.text()).toContain('Insight')
+    expect(wrapper.text()).not.toContain('Insight,')
+  })
+
+  it('shows first two skill names plus overflow indicator for 3+ skills', async () => {
+    const threeSkillsBg = {
+      ...mockBackground,
+      proficiencies: [
+        { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 },
+        { id: 2, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 2, name: 'Religion', code: 'RELIGION', description: null, ability_score: null }, proficiency_name: 'Religion', grants: true, is_choice: false, quantity: 1 },
+        { id: 3, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 3, name: 'Persuasion', code: 'PERSUASION', description: null, ability_score: null }, proficiency_name: 'Persuasion', grants: true, is_choice: false, quantity: 1 }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: threeSkillsBg }
+    })
+
+    expect(wrapper.text()).toContain('Insight, Religion +1 more')
+  })
+
+  it('shows correct overflow count for 4 skills', async () => {
+    const fourSkillsBg = {
+      ...mockBackground,
+      proficiencies: [
+        { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 },
+        { id: 2, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 2, name: 'Religion', code: 'RELIGION', description: null, ability_score: null }, proficiency_name: 'Religion', grants: true, is_choice: false, quantity: 1 },
+        { id: 3, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 3, name: 'Persuasion', code: 'PERSUASION', description: null, ability_score: null }, proficiency_name: 'Persuasion', grants: true, is_choice: false, quantity: 1 },
+        { id: 4, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 4, name: 'Deception', code: 'DECEPTION', description: null, ability_score: null }, proficiency_name: 'Deception', grants: true, is_choice: false, quantity: 1 }
+      ]
+    }
+    const wrapper = await mountSuspended(BackgroundCard, {
+      props: { background: fourSkillsBg }
+    })
+
+    expect(wrapper.text()).toContain('Insight, Religion +2 more')
   })
 
   it('hides skills summary when none provided', async () => {
@@ -218,7 +252,7 @@ describe('BackgroundCard', () => {
     const text = wrapper.text()
     expect(text).toContain('Acolyte')
     expect(text).toContain('Shelter of the Faithful')
-    expect(text).toContain('2 Skills')
+    expect(text).toContain('Insight, Religion')
     expect(text).toContain('2 Languages')
     expect(text).toContain('1 Tools')
   })

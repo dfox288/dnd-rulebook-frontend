@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **BackgroundCard Skill Display Enhancement (2025-11-23)** - Replaced skill count with actual skill names
+  - Shows first 2 skill names (e.g., "Insight, Religion" instead of "2 Skills")
+  - Adds "+N more" overflow indicator for 3+ skills (e.g., "Insight, Religion +1 more")
+  - Single skills display name without comma
+  - Added 4 comprehensive tests covering 1, 2, 3, and 4 skill scenarios
+  - All 30 BackgroundCard tests passing
 - **MonsterCard Combat Information Enhancement (2025-11-23)** - Replaced emojis with icons and added combat stats
   - Replaced emoji icons with UIcon components (shield-check for AC, heart for HP, bolt for speed, shield-exclamation for saves)
   - Removed emoji from size display (now plain text)
