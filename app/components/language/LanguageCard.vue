@@ -3,9 +3,9 @@ interface Language {
   id: number
   name: string
   slug: string
-  script: string
-  typical_speakers: string
-  description?: string
+  script: string | null
+  typical_speakers: string | null
+  description: string | null
 }
 
 interface Props {

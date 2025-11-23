@@ -3,7 +3,7 @@ interface ItemType {
   id: number
   code: string
   name: string
-  description: string
+  description: string | null
 }
 
 interface Props {

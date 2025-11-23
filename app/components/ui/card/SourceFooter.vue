@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Source } from '~/types'
+import type { EntitySource } from '~/types'
 
 interface Props {
-  sources?: Source[]
+  sources?: EntitySource[]
 }
 
 defineProps<Props>()

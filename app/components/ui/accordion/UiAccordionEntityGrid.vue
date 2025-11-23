@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { components } from '~/types/api/generated'
-
-// ClassResource has id: string (subclasses use string IDs)
-type ClassResource = components['schemas']['ClassResource']
+// Generic entity with common properties
+interface EntityItem {
+  id: number | string
+  slug: string
+  name: string
+  description?: string
+}
 
 interface Props {
-  entities: ClassResource[]
+  entities: EntityItem[]
   basePath: string
 }
 

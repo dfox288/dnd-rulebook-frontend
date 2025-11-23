@@ -10,7 +10,7 @@ const colorMode = useColorMode()
 
 // Define color palette type
 type ColorIntensity = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950
-type ColorPalette = Record<ColorIntensity, string>
+type ColorPalette = Record<ColorIntensity, string> & { [key: number]: string }
 type ColorName = 'arcane' | 'treasure' | 'danger' | 'lore' | 'glory' | 'emerald' | 'red' |
   'indigo' | 'rose' | 'slate' | 'teal' | 'cyan' | 'lime' | 'zinc' | 'yellow' | 'fuchsia' | 'neutral'
 

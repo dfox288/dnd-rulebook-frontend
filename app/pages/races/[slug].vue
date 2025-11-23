@@ -36,6 +36,14 @@ const imagePath = computed(() => {
   if (!race.value) return null
   return getImagePath('races', race.value.slug, 512)
 })
+
+/**
+ * Get ability score increases from modifiers
+ */
+const abilityScoreIncreases = computed(() => {
+  if (!race.value?.modifiers) return []
+  return race.value.modifiers.filter(m => m.modifier_category === 'ability_score' && m.ability_score)
+})
 </script>
 
 <template>
@@ -102,7 +110,7 @@ const imagePath = computed(() => {
       />
 
       <!-- Ability Score Increases (Always Visible) -->
-      <UCard v-if="race.ability_score_increases && race.ability_score_increases.length > 0">
+      <UCard v-if="abilityScoreIncreases.length > 0">
         <template #header>
           <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Ability Score Increases
@@ -110,12 +118,12 @@ const imagePath = computed(() => {
         </template>
         <div class="flex flex-wrap gap-3">
           <div
-            v-for="increase in race.ability_score_increases"
+            v-for="increase in abilityScoreIncreases"
             :key="increase.id"
             class="px-4 py-2 rounded-lg bg-primary-50 dark:bg-primary-900/20"
           >
             <span class="font-semibold text-gray-900 dark:text-gray-100">
-              {{ increase.ability_score.code }}
+              {{ increase.ability_score?.code }}
             </span>
             <span class="text-primary-600 dark:text-primary-400 ml-1">
               +{{ increase.value }}
@@ -225,7 +233,7 @@ const imagePath = computed(() => {
           #languages
         >
           <UiAccordionBadgeList
-            :items="race.languages.map(l => l.language)"
+            :items="race.languages.map(l => l.language).filter(l => l !== undefined)"
             color="neutral"
           />
         </template>
@@ -252,7 +260,7 @@ const imagePath = computed(() => {
           #spells
         >
           <UiAccordionBadgeList
-            :items="race.spells"
+            :items="race.spells.map(s => s.spell).filter(s => s !== undefined)"
             color="primary"
           />
         </template>

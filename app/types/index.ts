@@ -11,7 +11,7 @@
 // Generated API types (for taxonomy pages)
 import type { components } from './api/generated'
 
-export type { Source, AbilityScore, Modifier, Tag } from './api/common'
+export type { Source, EntitySource, AbilityScore, Modifier, Tag } from './api/common'
 export type { Spell, Item, Race, CharacterClass, Background, Feat, Monster } from './api/entities'
 export type Condition = components['schemas']['ConditionResource']
 export type DamageType = components['schemas']['DamageTypeResource']

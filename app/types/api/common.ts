@@ -7,14 +7,23 @@ import type { components } from './generated'
  */
 
 /**
- * Source book reference
+ * Full source book entity
+ *
+ * Used for: Source list and detail pages
+ *
+ * @see {components['schemas']['SourceResource']} for generated type
+ */
+export type Source = components['schemas']['SourceResource']
+
+/**
+ * Source book reference (compact version for entity relationships)
  *
  * Appears in: Spells, Items, Races, Classes, Backgrounds, Feats
  * Used for: Citation and attribution of game content
  *
  * @see {components['schemas']['EntitySourceResource']} for generated type
  */
-export type Source = components['schemas']['EntitySourceResource']
+export type EntitySource = components['schemas']['EntitySourceResource']
 
 /**
  * Ability score (STR, DEX, CON, INT, WIS, CHA)

@@ -1,4 +1,4 @@
-import type { Source, Modifier } from './common'
+import type { EntitySource, Modifier } from './common'
 import type { components } from './generated'
 
 /**
@@ -18,7 +18,7 @@ export interface Spell extends Omit<SpellFromAPI, 'sources' | 'school'> {
     code: string
     name: string
   }
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from SpellFromAPI
 }
 
@@ -40,7 +40,7 @@ export interface Item extends Omit<ItemFromAPI, 'sources' | 'item_type' | 'damag
   }
   damage_type?: { id: number, name: string }
   modifiers?: Modifier[]
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from ItemFromAPI
 }
 
@@ -63,7 +63,7 @@ export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'
     code: string
   }
   modifiers?: Modifier[]
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from RaceFromAPI
 }
 
@@ -81,7 +81,7 @@ type CharacterClassFromAPI = components['schemas']['ClassResource']
 
 export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources'> {
   // Override with our custom types that have better structure
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from CharacterClassFromAPI
 }
 
@@ -99,7 +99,7 @@ export interface Background extends Omit<BackgroundFromAPI, 'sources'> {
   // Override with our custom types that have better structure
   description?: string
   feature_name?: string
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from BackgroundFromAPI
 }
 
@@ -116,7 +116,7 @@ type FeatFromAPI = components['schemas']['FeatResource']
 export interface Feat extends Omit<FeatFromAPI, 'sources' | 'modifiers'> {
   // Override with our custom types that have better structure
   modifiers?: Modifier[]
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from FeatFromAPI
 }
 
@@ -132,6 +132,6 @@ type MonsterFromAPI = components['schemas']['MonsterResource']
 
 export interface Monster extends Omit<MonsterFromAPI, 'sources'> {
   // Override with our custom types that have better structure
-  sources?: Source[]
+  sources?: EntitySource[]
   // All other fields inherited from MonsterFromAPI
 }

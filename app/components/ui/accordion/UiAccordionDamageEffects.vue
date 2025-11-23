@@ -1,9 +1,9 @@
 <script setup lang="ts">
 interface Effect {
   id: number
-  description: string
-  dice_formula: string
-  min_spell_slot: number
+  description: string | null
+  dice_formula: string | null
+  min_spell_slot: number | null
   min_character_level?: number | null
 }
 
@@ -26,7 +26,7 @@ defineProps<Props>()
           {{ effect.description }}
         </div>
         <div class="text-sm text-gray-600 dark:text-gray-400 space-y-0.5">
-          <div v-if="effect.min_spell_slot > 0">
+          <div v-if="effect.min_spell_slot && effect.min_spell_slot > 0">
             Spell Slot Level {{ effect.min_spell_slot }}
           </div>
           <div v-if="effect.min_character_level">

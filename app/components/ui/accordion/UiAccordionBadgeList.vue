@@ -5,10 +5,17 @@ import type { BadgeColor } from '~/utils/badgeColors'
 // EntityLanguageResource has optional language object and is_choice flag
 type EntityLanguageResource = components['schemas']['EntityLanguageResource']
 
+// Generic item with name property (classes, languages, etc.)
+interface NamedItem {
+  name?: string
+  language?: { name: string }
+  is_choice?: boolean
+}
+
 type BadgeVariant = 'solid' | 'outline' | 'soft' | 'subtle'
 
 interface Props {
-  items: EntityLanguageResource[]
+  items: NamedItem[]
   color?: BadgeColor
   variant?: BadgeVariant
 }
@@ -28,7 +35,7 @@ withDefaults(defineProps<Props>(), {
         :color="color"
         :variant="variant"
       >
-        {{ item.language?.name || (item.is_choice ? 'Choose any language' : 'Unknown') }}
+        {{ item.name || item.language?.name || (item.is_choice ? 'Choose any language' : 'Unknown') }}
       </UBadge>
     </div>
   </div>
