@@ -6,13 +6,10 @@ import * as THREE from 'three'
  * Uses OffscreenCanvas for better performance
  */
 export class ParchmentBackground {
-  private offsetX = 0
-  private offsetY = 0
   private scrollOffsetY = 0
   private scrollVelocity = 0
   private image: HTMLImageElement | null = null
   private imageLoaded = false
-  private cachedPattern: CanvasPattern | null = null
   private offscreenCanvas: OffscreenCanvas | null = null
   private offscreenCtx: OffscreenCanvasRenderingContext2D | null = null
 
@@ -24,9 +21,9 @@ export class ParchmentBackground {
     // Load parchment image
     this.loadImage()
 
-    // Create offscreen canvas if supported
+    // Create offscreen canvas if supported (sized to viewport)
     if (typeof OffscreenCanvas !== 'undefined') {
-      this.offscreenCanvas = new OffscreenCanvas(256, 256)
+      this.offscreenCanvas = new OffscreenCanvas(width, height)
       this.offscreenCtx = this.offscreenCanvas.getContext('2d')
     }
   }
@@ -47,14 +44,19 @@ export class ParchmentBackground {
   }
 
   /**
-   * Pre-process image with grayscale filter and cache the pattern
+   * Pre-process image with grayscale filter and cache it
+   * Resized to cover the viewport
    */
   private createCachedPattern(): void {
     if (!this.image || !this.offscreenCanvas || !this.offscreenCtx) return
 
-    // Draw grayscale-filtered image to offscreen canvas once
+    // Resize offscreen canvas to match viewport
+    this.offscreenCanvas.width = this.width
+    this.offscreenCanvas.height = this.height
+
+    // Draw grayscale-filtered image to cover entire canvas
     this.offscreenCtx.filter = 'grayscale(100%) contrast(1.3) brightness(1.05)'
-    this.offscreenCtx.drawImage(this.image, 0, 0, 256, 256)
+    this.offscreenCtx.drawImage(this.image, 0, 0, this.width, this.height)
 
     // Reset filter to prevent it affecting other operations
     this.offscreenCtx.filter = 'none'
@@ -71,38 +73,28 @@ export class ParchmentBackground {
   update(deltaTime: number): void {
     const dt = deltaTime / 1000
 
-    // Very slow diagonal drift (completes full cycle in ~2 minutes)
-    this.offsetX += dt * 2
-    this.offsetY += dt * 1.5
-
     // Apply scroll inertia
     this.scrollOffsetY += this.scrollVelocity * dt
     this.scrollVelocity *= 0.95 // Dampen velocity
-
-    // Wrap offsets
-    if (this.offsetX > 100) this.offsetX = 0
-    if (this.offsetY > 100) this.offsetY = 0
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.save()
 
-    // If image loaded, draw it as tiled background
+    // If image loaded, draw it as full-screen background
     if (this.imageLoaded && this.offscreenCanvas) {
-      // Use pre-processed offscreen canvas (no filter needed!)
-      const pattern = ctx.createPattern(this.offscreenCanvas, 'repeat')
-      if (pattern) {
-        ctx.translate(this.offsetX, this.offsetY + this.scrollOffsetY * 0.2)
-        ctx.fillStyle = pattern
-        // Reduced opacity for even more subtlety
-        ctx.globalAlpha = this.isDark ? 0.05 : 0.03
-        ctx.fillRect(-100, -100, this.width + 200, this.height + 200)
-      }
+      // Use pre-processed offscreen canvas (grayscale filter already applied!)
+      // Subtle parallax effect with scroll
+      const parallaxY = this.scrollOffsetY * 0.05
+
+      // Subtle opacity - noticeable but not overwhelming
+      ctx.globalAlpha = this.isDark ? 0.08 : 0.06
+      ctx.drawImage(this.offscreenCanvas, 0, parallaxY)
     } else {
       // Fallback: solid color background
       const baseColor = this.isDark
-        ? 'rgba(35, 32, 28, 0.05)' // Dark vellum
-        : 'rgba(245, 237, 220, 0.03)' // Aged parchment
+        ? 'rgba(35, 32, 28, 0.08)' // Dark vellum
+        : 'rgba(245, 237, 220, 0.06)' // Aged parchment
 
       ctx.fillStyle = baseColor
       ctx.fillRect(0, 0, this.width, this.height)

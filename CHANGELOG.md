@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Reduced particle trail length from 5 to 3 points
   - Result: Smooth 30 FPS animation without spinning up CPU fan
 
+### Changed
+- Parchment background now covers full viewport instead of tiling (2025-11-23) - Creates cleaner, more cohesive look with subtle parallax scroll effect
+- Parchment background opacity adjusted to 6-8% for subtle visibility (2025-11-23)
+
 ### Added
 - Monster support in search results (2025-11-23)
 - Specialized entity cards in search (SpellCard, ItemCard, MonsterCard, etc.) (2025-11-23)
