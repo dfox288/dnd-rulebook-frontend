@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Capped scroll velocity on background animation to prevent excessive inertia (2025-11-23) - Dice and particles now respond to scroll without zooming off-screen during rapid mouse wheel events
+- Equipment list now properly handles structured choice data with `choice_group` and `choice_option` fields (2025-11-23) - Rogue class equipment choices display correctly in separate groups with proper sorting
 
 ### Changed
 - Parchment background now covers full viewport instead of tiling (2025-11-23) - Creates cleaner, more cohesive look with subtle parallax scroll effect

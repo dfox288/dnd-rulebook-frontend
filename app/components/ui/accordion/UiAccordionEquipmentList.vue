@@ -40,12 +40,13 @@ const regularEquipment = computed(() => {
   )
 })
 
-// Group equipment by choice_description
+// Group equipment by choice_group (preferred) or choice_description (fallback)
 const equipmentGroups = computed(() => {
   const groups = new Map<string | null, Equipment[]>()
 
   for (const item of regularEquipment.value) {
-    const key = item.choice_description
+    // Use choice_group if present, otherwise fall back to choice_description
+    const key = item.choice_group || item.choice_description
     if (!groups.has(key)) {
       groups.set(key, [])
     }
@@ -53,10 +54,20 @@ const equipmentGroups = computed(() => {
   }
 
   return Array.from(groups.entries())
-    .map(([key, items]) => ({
-      choiceDescription: key,
-      items,
-    }))
+    .map(([key, items]) => {
+      // Sort items by choice_option if present, otherwise maintain insertion order
+      const sortedItems = [...items].sort((a, b) => {
+        if (a.choice_option != null && b.choice_option != null) {
+          return a.choice_option - b.choice_option
+        }
+        return 0
+      })
+
+      return {
+        choiceDescription: key,
+        items: sortedItems,
+      }
+    })
     .filter(group => group.items.length > 0)
 })
 
@@ -76,8 +87,10 @@ const getItemDisplay = (item: Equipment): string => {
 }
 
 // Helper to format choice letters (a, b, c, etc.)
-const getChoiceLetter = (index: number): string => {
-  return String.fromCharCode(97 + index) // 97 is 'a' in ASCII
+// Use choice_option if present, otherwise fall back to array index
+const getChoiceLetter = (item: Equipment, index: number): string => {
+  const optionNum = item.choice_option != null ? item.choice_option - 1 : index
+  return String.fromCharCode(97 + optionNum) // 97 is 'a' in ASCII
 }
 </script>
 
@@ -119,7 +132,7 @@ const getChoiceLetter = (index: number): string => {
             :key="item.id"
             class="text-gray-700 dark:text-gray-300 ml-2"
           >
-            ({{ getChoiceLetter(itemIndex) }}) {{ getItemDisplay(item) }}
+            ({{ getChoiceLetter(item, itemIndex) }}) {{ getItemDisplay(item) }}
           </div>
         </div>
 

@@ -307,4 +307,191 @@ describe('UiAccordionEquipmentList', () => {
     // Should show empty state message
     expect(text).toContain('No equipment')
   })
+
+  it('groups by choice_group when present (Rogue structure)', async () => {
+    const equipment: Equipment[] = [
+      {
+        id: 11,
+        item_id: 729,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_1',
+        choice_option: 1,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a rapier',
+      },
+      {
+        id: 12,
+        item_id: 732,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_1',
+        choice_option: 2,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a shortsword',
+      },
+      {
+        id: 13,
+        item_id: 731,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_2',
+        choice_option: 1,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a shortbow and quiver of arrows (20)',
+      },
+      {
+        id: 14,
+        item_id: 732,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_2',
+        choice_option: 2,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a shortsword',
+      },
+    ]
+
+    const wrapper = await mountSuspended(UiAccordionEquipmentList, {
+      props: { equipment },
+    })
+
+    const text = wrapper.text()
+    // Should create separate groups despite same choice_description
+    // Group 1: rapier or shortsword
+    expect(text).toMatch(/\(a\).*rapier/)
+    expect(text).toMatch(/\(b\).*shortsword/)
+    // Group 2: shortbow or shortsword
+    expect(text).toMatch(/\(a\).*shortbow/)
+    expect(text).toMatch(/\(b\).*shortsword/)
+  })
+
+  it('sorts items by choice_option within groups', async () => {
+    const equipment: Equipment[] = [
+      // Intentionally out of order to test sorting
+      {
+        id: 17,
+        item_id: 1846,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_3',
+        choice_option: 3,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: "an explorer's pack",
+      },
+      {
+        id: 15,
+        item_id: 1797,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_3',
+        choice_option: 1,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: "a burglar's pack",
+      },
+      {
+        id: 16,
+        item_id: 1840,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_3',
+        choice_option: 2,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: "a dungeoneer's pack",
+      },
+    ]
+
+    const wrapper = await mountSuspended(UiAccordionEquipmentList, {
+      props: { equipment },
+    })
+
+    const text = wrapper.text()
+    // Should appear in option order: 1→a, 2→b, 3→c
+    expect(text).toMatch(/\(a\).*burglar/)
+    expect(text).toMatch(/\(b\).*dungeoneer/)
+    expect(text).toMatch(/\(c\).*explorer/)
+  })
+
+  it('uses choice_option for letters instead of array index', async () => {
+    const equipment: Equipment[] = [
+      // Option 2 comes first in array
+      {
+        id: 12,
+        item_id: 732,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_1',
+        choice_option: 2,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a shortsword',
+      },
+      // Option 1 comes second in array
+      {
+        id: 11,
+        item_id: 729,
+        quantity: 1,
+        is_choice: true,
+        choice_group: 'choice_1',
+        choice_option: 1,
+        choice_description: 'Starting equipment choice',
+        proficiency_subcategory: null,
+        description: 'a rapier',
+      },
+    ]
+
+    const wrapper = await mountSuspended(UiAccordionEquipmentList, {
+      props: { equipment },
+    })
+
+    const text = wrapper.text()
+    // Should use choice_option (not array index) for letters
+    // After sorting, rapier (option 1) should be (a), shortsword (option 2) should be (b)
+    expect(text).toMatch(/\(a\).*rapier/)
+    expect(text).toMatch(/\(b\).*shortsword/)
+  })
+
+  it('falls back to choice_description when choice_group is null', async () => {
+    const equipment: Equipment[] = [
+      {
+        id: 1,
+        item_id: null,
+        quantity: 1,
+        is_choice: true,
+        choice_group: null,
+        choice_option: null,
+        choice_description: 'Weapon choice',
+        proficiency_subcategory: null,
+        description: 'a longsword',
+      },
+      {
+        id: 2,
+        item_id: null,
+        quantity: 1,
+        is_choice: true,
+        choice_group: null,
+        choice_option: null,
+        choice_description: 'Weapon choice',
+        proficiency_subcategory: null,
+        description: 'a greatsword',
+      },
+    ]
+
+    const wrapper = await mountSuspended(UiAccordionEquipmentList, {
+      props: { equipment },
+    })
+
+    const text = wrapper.text()
+    // Should still group by choice_description when choice_group is null
+    expect(text).toContain('Weapon choice')
+    expect(text).toMatch(/\(a\).*longsword/)
+    expect(text).toMatch(/\(b\).*greatsword/)
+  })
 })
