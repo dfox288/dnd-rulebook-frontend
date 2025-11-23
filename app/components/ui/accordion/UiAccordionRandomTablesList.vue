@@ -49,7 +49,7 @@ const getColumnCount = (table: RandomTableResource): number => {
  * Build columns for a specific table
  */
 const buildColumns = (table: RandomTableResource) => {
-  const cols = []
+  const cols: Array<{ key: string, label: string, width?: string }> = []
 
   if (hasRolls(table)) {
     cols.push({ key: 'roll', label: 'Roll', width: 'w-24' })
@@ -72,8 +72,8 @@ const buildColumns = (table: RandomTableResource) => {
 const buildRows = (table: RandomTableResource) => {
   if (!table.entries) return []
 
-  return table.entries.map(entry => {
-    const row: Record<string, any> = {}
+  return table.entries.map((entry) => {
+    const row: Record<string, unknown> = {}
 
     if (hasRolls(table)) {
       row.roll = formatRollRange(entry.roll_min, entry.roll_max)

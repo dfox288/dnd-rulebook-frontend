@@ -67,7 +67,7 @@ const getSpellSlot = (progression: LevelProgression, level: number): number | nu
 
 // Build dynamic columns array
 const columns = computed(() => {
-  const cols = [
+  const cols: Array<{ key: string, label: string, width?: string, align?: 'left' | 'center' | 'right' }> = [
     { key: 'level', label: 'Level', width: 'w-20' }
   ]
 
@@ -92,8 +92,8 @@ const columns = computed(() => {
 
 // Transform progression data to match dynamic columns
 const tableRows = computed(() => {
-  return props.levelProgression.map(prog => {
-    const row: Record<string, any> = {
+  return props.levelProgression.map((prog) => {
+    const row: Record<string, unknown> = {
       level: prog.level,
       cantrips_known: displayValue(prog.cantrips_known),
       spells_known: displayValue(prog.spells_known)

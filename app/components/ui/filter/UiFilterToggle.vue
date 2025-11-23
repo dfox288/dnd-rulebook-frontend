@@ -50,7 +50,7 @@ const selectOption = (value: string | number | boolean | null) => {
 }
 
 // Dynamic button classes based on state
-const getButtonClasses = (optionValue: string | number | boolean | null) => {
+const _getButtonClasses = (optionValue: string | number | boolean | null) => {
   const selected = isSelected(optionValue)
   const baseClasses = [
     'px-4',

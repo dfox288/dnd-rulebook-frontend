@@ -38,7 +38,7 @@ const columns = [
     >
       <template #cell-reset_timing="{ value }">
         <UBadge
-          :color="getResetTimingColor(value)"
+          :color="getResetTimingColor(value as string)"
           variant="soft"
           size="sm"
         >

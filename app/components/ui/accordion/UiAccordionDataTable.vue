@@ -9,12 +9,12 @@ interface Column {
 
 interface Props {
   columns: Column[]
-  rows: Record<string, any>[]
+  rows: Record<string, unknown>[]
   mobileLayout?: 'stacked' | 'cards'
   striped?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   mobileLayout: 'cards',
   striped: true
 })
