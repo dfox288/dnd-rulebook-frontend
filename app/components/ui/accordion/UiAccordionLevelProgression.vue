@@ -112,7 +112,7 @@ const tableRows = computed(() => {
 <template>
   <div
     v-if="levelProgression && levelProgression.length > 0"
-    class="overflow-x-auto"
+    class="p-4"
   >
     <UiAccordionDataTable
       :columns="columns"

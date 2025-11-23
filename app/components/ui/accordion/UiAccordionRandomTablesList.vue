@@ -92,7 +92,7 @@ const buildRows = (table: RandomTableResource) => {
 <template>
   <div
     v-if="tables.length > 0"
-    class="space-y-6"
+    class="p-4 space-y-6"
   >
     <div
       v-for="table in tables"
