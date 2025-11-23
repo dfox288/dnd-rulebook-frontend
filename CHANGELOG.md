@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Starting Equipment accordion on backgrounds detail page (2025-11-23)
 - Spell Slot Progression accordion on classes detail page showing level-by-level spell slots for spellcasting classes (2025-11-23)
 - Starting Equipment & Proficiencies accordion on classes detail page showing hit points, proficiencies, and starting gear (2025-11-23)
 - UiAccordionEquipmentList component for displaying class/background starting equipment (2025-11-23)

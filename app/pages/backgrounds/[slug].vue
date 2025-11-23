@@ -133,6 +133,11 @@ const imagePath = computed(() => {
       <!-- Additional Details (Accordion) -->
       <UAccordion
         :items="[
+          ...(entity.equipment && entity.equipment.length > 0 ? [{
+            label: 'Starting Equipment',
+            slot: 'equipment',
+            defaultOpen: false
+          }] : []),
           ...(entity.sources && entity.sources.length > 0 ? [{
             label: 'Source',
             slot: 'source',
@@ -146,6 +151,14 @@ const imagePath = computed(() => {
         ]"
         type="multiple"
       >
+        <!-- Equipment Slot -->
+        <template
+          v-if="entity.equipment && entity.equipment.length > 0"
+          #equipment
+        >
+          <UiAccordionEquipmentList :equipment="entity.equipment" type="background" />
+        </template>
+
         <!-- Source Slot -->
         <template
           v-if="entity.sources && entity.sources.length > 0"
