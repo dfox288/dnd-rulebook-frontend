@@ -87,10 +87,10 @@ const referenceItems = [
     <!-- Hero Section -->
     <div class="text-center mb-12">
       <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-        D&D 5e Compendium
+        Ledger of Heroes
       </h1>
       <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
-        Search and browse thousands of spells, items, monsters, and more from D&D 5th Edition
+        Streamlined toolkit for managing your characters, inventories, spells, and campaigns — all preserved in a single ledger
       </p>
 
       <!-- Featured Search - Wider -->
