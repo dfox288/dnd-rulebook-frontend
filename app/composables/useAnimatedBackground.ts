@@ -1077,6 +1077,10 @@ export function useAnimatedBackground(canvas: HTMLCanvasElement, isDark: boolean
     if (renderer) {
       renderer.dispose()
     }
+
+    // Dispose textures
+    diceTextures.forEach(texture => texture.dispose())
+    diceTextures.clear()
   }
 
   function isRunning() {
