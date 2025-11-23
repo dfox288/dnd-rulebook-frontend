@@ -166,10 +166,10 @@ const referenceItems = [
       </div>
     </div>
 
-      <!-- Stats Section -->
-      <div class="mt-16 text-center">
+      <!-- Footer -->
+      <div class="mt-16 mb-12 text-center">
         <p class="text-gray-600 dark:text-gray-400">
-          Powered by D&D 5e API • Over 3,000 entities indexed
+          Ledger of Heroes
         </p>
       </div>
     </div>
