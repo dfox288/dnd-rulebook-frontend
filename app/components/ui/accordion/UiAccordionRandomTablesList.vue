@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { components } from '~/types/api/generated'
 
-// RandomTableResource has optional entries array
 type RandomTableResource = components['schemas']['RandomTableResource']
 
 interface Props {
@@ -23,7 +22,6 @@ const formatRollRange = (min: number | null, max: number | null): string => {
 
 /**
  * Check if a table has any dice rolls (non-null roll_min/roll_max)
- * Handles optional entries array from API
  */
 const hasRolls = (table: RandomTableResource): boolean => {
   if (!table.entries || table.entries.length === 0) return false
@@ -32,7 +30,6 @@ const hasRolls = (table: RandomTableResource): boolean => {
 
 /**
  * Parse pipe-delimited result_text into columns
- * Example: "Cannith | Alchemist's supplies" => ["Cannith", "Alchemist's supplies"]
  */
 const parseColumns = (resultText: string | null): string[] => {
   if (!resultText) return ['']
@@ -41,19 +38,61 @@ const parseColumns = (resultText: string | null): string[] => {
 
 /**
  * Get column count for a table (max number of pipe-separated columns)
- * Handles optional entries array from API
  */
 const getColumnCount = (table: RandomTableResource): number => {
   if (!table.entries || table.entries.length === 0) return 1
   const maxColumns = Math.max(...table.entries.map(entry => parseColumns(entry.result_text).length))
   return maxColumns
 }
+
+/**
+ * Build columns for a specific table
+ */
+const buildColumns = (table: RandomTableResource) => {
+  const cols = []
+
+  if (hasRolls(table)) {
+    cols.push({ key: 'roll', label: 'Roll', width: 'w-24' })
+  }
+
+  const columnCount = getColumnCount(table)
+  for (let i = 0; i < columnCount; i++) {
+    cols.push({
+      key: `col_${i}`,
+      label: i === 0 && columnCount === 1 ? 'Result' : ''
+    })
+  }
+
+  return cols
+}
+
+/**
+ * Transform table entries to row format
+ */
+const buildRows = (table: RandomTableResource) => {
+  if (!table.entries) return []
+
+  return table.entries.map(entry => {
+    const row: Record<string, any> = {}
+
+    if (hasRolls(table)) {
+      row.roll = formatRollRange(entry.roll_min, entry.roll_max)
+    }
+
+    const columns = parseColumns(entry.result_text)
+    columns.forEach((col, index) => {
+      row[`col_${index}`] = col
+    })
+
+    return row
+  })
+}
 </script>
 
 <template>
   <div
     v-if="tables.length > 0"
-    class="space-y-6 pl-4"
+    class="space-y-6"
   >
     <div
       v-for="table in tables"
@@ -80,54 +119,12 @@ const getColumnCount = (table: RandomTableResource): number => {
         {{ table.description }}
       </p>
 
-      <!-- HTML Table -->
-      <table class="min-w-full border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-        <thead class="bg-gray-50 dark:bg-gray-800">
-          <tr>
-            <!-- Roll column (only if table has rolls) -->
-            <th
-              v-if="hasRolls(table)"
-              class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300 w-24"
-            >
-              Roll
-            </th>
-            <!-- Dynamic columns based on pipe-delimited content -->
-            <th
-              v-for="colIndex in getColumnCount(table)"
-              :key="colIndex"
-              class="px-4 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300"
-            >
-              {{ colIndex === 1 && getColumnCount(table) === 1 ? 'Result' : '' }}
-            </th>
-          </tr>
-        </thead>
-        <tbody
-          v-if="table.entries && table.entries.length > 0"
-          class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-900"
-        >
-          <tr
-            v-for="entry in table.entries"
-            :key="entry.id"
-            class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-          >
-            <!-- Roll cell (only if table has rolls) -->
-            <td
-              v-if="hasRolls(table)"
-              class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100"
-            >
-              {{ formatRollRange(entry.roll_min, entry.roll_max) }}
-            </td>
-            <!-- Dynamic columns parsed from pipe-delimited result_text -->
-            <td
-              v-for="(column, colIndex) in parseColumns(entry.result_text)"
-              :key="colIndex"
-              class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300"
-            >
-              {{ column }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Table Data -->
+      <UiAccordionDataTable
+        :columns="buildColumns(table)"
+        :rows="buildRows(table)"
+        :striped="false"
+      />
     </div>
   </div>
 </template>
