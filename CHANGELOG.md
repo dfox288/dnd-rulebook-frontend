@@ -9,7 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Class counters display (resource tracking like Rage, Ki Points) with level progression table (2025-11-23)
+- Feat proficiencies display for proficiency-granting feats (2025-11-23)
+- Conditions display for Feats and Monsters (immunities, resistances, vulnerabilities) (2025-11-23)
+- Item detail field display for flavor text and usage notes (2025-11-23)
+- Item prerequisites display for usage requirements (2025-11-23)
+- UiAccordionConditions reusable component (2025-11-23)
+- UiAccordionClassCounters reusable component (2025-11-23)
+- UiAccordionItemDetail reusable component (2025-11-23)
+- UiAccordionPrerequisites reusable component (2025-11-23)
+- Color utilities for reset timing and condition effect badges (2025-11-23)
+
 ### Changed
+- Standardized Backgrounds page to use UiDetailEntityImage component (2025-11-23)
+- Improved consistency of conditions display across Races, Feats, and Monsters (2025-11-23)
 - **Badge Variant Standardization (2025-11-23)** - Standardized all badge variants to `subtle` for consistent, prominent borders across all entity cards
   - Changed ALL inline badges from `variant="soft"` to `variant="subtle"` in all 7 entity cards
   - SpellCard: Concentration and Ritual badges (2 badges)
@@ -131,6 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Result: Smooth 30 FPS animation without spinning up CPU fan
 
 ### Fixed
+- Missing API fields now displayed across all 7 detail pages (2025-11-23)
 - Capped scroll velocity on background animation to prevent excessive inertia (2025-11-23) - Dice and particles now respond to scroll without zooming off-screen during rapid mouse wheel events
 - Equipment list now properly handles structured choice data with `choice_group` and `choice_option` fields (2025-11-23) - Rogue class equipment choices display correctly in separate groups with proper sorting
 
