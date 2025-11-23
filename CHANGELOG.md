@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Collapsible filters on Spells page** - Search-first design with filters hidden by default, expandable with badge showing active count (2025-11-23)
 
 ### Changed
+- Normalized accordion table components with consistent styling (2025-11-23)
+  - Created reusable UiAccordionDataTable base component
+  - Refactored UiAccordionClassCounters, UiAccordionLevelProgression, UiAccordionRandomTablesList
+  - Standardized padding (px-4 py-3) and colors (bg-gray-50 dark:bg-gray-800)
+  - All table components now have mobile-responsive card layouts
+  - Reduced table markup code by 47% (377→200 lines)
+  - Moved 4 legacy components to /ui/accordion/ for consistency
 - UiFilterToggle buttons now use smaller sizing (px-2 py-1 text-xs) for more compact filter UI (2025-11-23)
 - Spells page filters now collapse by default, improving mobile experience and reducing visual clutter (2025-11-23)
 
