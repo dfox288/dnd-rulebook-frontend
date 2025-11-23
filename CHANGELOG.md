@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **UiFilterToggle component** - Reusable tri-state toggle filter component (All/Yes/No) (2025-11-23)
+- **Concentration filter on Spells page** - Filter spells by concentration requirement (2025-11-23)
+- **Ritual filter on Spells page** - Filter spells by ritual casting capability (2025-11-23)
 - Class counters display (resource tracking like Rage, Ki Points) with level progression table (2025-11-23)
 - Feat proficiencies display for proficiency-granting feats (2025-11-23)
 - Conditions display for Feats and Monsters (immunities, resistances, vulnerabilities) (2025-11-23)

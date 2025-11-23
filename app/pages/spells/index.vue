@@ -8,6 +8,8 @@ const { apiFetch } = useApi()
 // Custom filter state (entity-specific)
 const selectedLevel = ref(route.query.level ? Number(route.query.level) : null)
 const selectedSchool = ref(route.query.school ? Number(route.query.school) : null)
+const concentrationFilter = ref<string | null>((route.query.concentration as string) || null)
+const ritualFilter = ref<string | null>((route.query.ritual as string) || null)
 
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
@@ -47,6 +49,8 @@ const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
   if (selectedLevel.value !== null) params.level = selectedLevel.value
   if (selectedSchool.value !== null) params.school = selectedSchool.value
+  if (concentrationFilter.value !== null) params.concentration = concentrationFilter.value
+  if (ritualFilter.value !== null) params.ritual = ritualFilter.value
   return params
 })
 
@@ -79,6 +83,8 @@ const clearFilters = () => {
   clearBaseFilters()
   selectedLevel.value = null
   selectedSchool.value = null
+  concentrationFilter.value = null
+  ritualFilter.value = null
 }
 
 // Get school name by ID for filter chips
@@ -121,7 +127,7 @@ const perPage = 24
         </template>
       </UInput>
 
-      <!-- Filter chips -->
+      <!-- Basic Filters -->
       <div class="flex flex-wrap gap-2">
         <!-- Level filter -->
         <USelectMenu
@@ -145,13 +151,30 @@ const perPage = 24
 
         <!-- Clear filters button -->
         <UButton
-          v-if="searchQuery || selectedLevel !== null || selectedSchool !== null"
+          v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || concentrationFilter !== null || ritualFilter !== null"
           color="neutral"
           variant="soft"
           @click="clearFilters"
         >
           Clear Filters
         </UButton>
+      </div>
+
+      <!-- Quick Toggles -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Concentration filter -->
+        <UiFilterToggle
+          v-model="concentrationFilter"
+          label="Concentration"
+          color="primary"
+        />
+
+        <!-- Ritual filter -->
+        <UiFilterToggle
+          v-model="ritualFilter"
+          label="Ritual"
+          color="primary"
+        />
       </div>
 
       <!-- Active Filter Chips -->
@@ -186,6 +209,24 @@ const perPage = 24
           @click="searchQuery = ''"
         >
           "{{ searchQuery }}" ✕
+        </UButton>
+        <UButton
+          v-if="concentrationFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="concentrationFilter = null"
+        >
+          Concentration: {{ concentrationFilter === 'true' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="ritualFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="ritualFilter = null"
+        >
+          Ritual: {{ ritualFilter === 'true' ? 'Yes' : 'No' }} ✕
         </UButton>
       </div>
     </div>
