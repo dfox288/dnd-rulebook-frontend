@@ -49,7 +49,7 @@ const showBadge = computed(() => {
     </svg>
 
     <!-- Button Text -->
-    <span>{{ buttonText }}</span>
+    <span class="min-w-[70px] text-center">{{ buttonText }}</span>
 
     <!-- Badge -->
     <span
