@@ -58,31 +58,60 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Prerequisites - KEEP AS-IS (always visible) -->
-      <UCard v-if="entity.prerequisites && entity.prerequisites.length > 0">
+      <!-- Prerequisites (2/3) + Image (1/3) Side-by-Side -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Prerequisites - 2/3 width on large screens -->
+        <div class="lg:col-span-2">
+          <UCard v-if="entity.prerequisites && entity.prerequisites.length > 0">
+            <template #header>
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                Prerequisites
+              </h2>
+            </template>
+            <div class="space-y-2">
+              <div
+                v-for="prereq in entity.prerequisites"
+                :key="prereq.id"
+                class="text-gray-700 dark:text-gray-300"
+              >
+                <template v-if="prereq.description">
+                  • {{ prereq.description }}
+                </template>
+                <template v-else-if="prereq.ability_score">
+                  • {{ prereq.ability_score.name }} {{ prereq.minimum_value }} or higher
+                </template>
+                <template v-else>
+                  • {{ prereq.prerequisite_type }}
+                </template>
+              </div>
+            </div>
+          </UCard>
+          <!-- Empty placeholder when no prerequisites -->
+          <div v-else class="h-full" />
+        </div>
+
+        <!-- Standalone Image - 1/3 width on large screens -->
+        <div class="lg:col-span-1">
+          <UiDetailEntityImage
+            :image-path="imagePath"
+            :image-alt="`${entity.name} feat illustration`"
+          />
+        </div>
+      </div>
+
+      <!-- Description Card -->
+      <UCard v-if="entity.description">
         <template #header>
           <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Prerequisites
+            Description
           </h2>
         </template>
-        <div class="space-y-2">
-          <div
-            v-for="prereq in entity.prerequisites"
-            :key="prereq.id"
-            class="text-gray-700 dark:text-gray-300"
-          >
-            • {{ prereq.description || prereq.prerequisite_type }}
-          </div>
+        <div class="prose prose-gray dark:prose-invert max-w-none">
+          <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+            {{ entity.description }}
+          </p>
         </div>
       </UCard>
-
-      <!-- Description + Image - NEW -->
-      <UiDetailDescriptionWithImage
-        v-if="entity.description"
-        :description="entity.description"
-        :image-path="imagePath"
-        :image-alt="`${entity.name} feat illustration`"
-      />
 
       <!-- Additional Details (Accordion) -->
       <UAccordion
