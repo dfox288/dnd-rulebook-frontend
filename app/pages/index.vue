@@ -121,7 +121,7 @@ const referenceItems = [
           <!-- Background Image (only for entities with images) -->
           <div
             v-if="getImagePath(entity.type, entity.slug, 256)"
-            class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300 group-hover:opacity-25 group-hover:scale-110"
+            class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300 group-hover:opacity-30 group-hover:scale-110 group-hover:rotate-3"
             :style="{ backgroundImage: `url(${getImagePath(entity.type, entity.slug, 256)})` }"
           />
 
