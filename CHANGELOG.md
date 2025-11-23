@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **ClassCard Description Length Standardization (2025-11-23)** - Updated description truncation to match other entity cards
+  - Increased description max length from 120 to 150 characters to align with SpellCard, ItemCard, RaceCard, BackgroundCard, FeatCard, and MonsterCard
+  - Standardized primary ability display to show ability code (e.g., "INT") instead of full object for consistency
+  - Added test coverage for 150-character truncation behavior
+
 ### Added
 - **Proficiencies Component with Type Grouping (2025-11-23)** - Enhanced proficiency display with structured organization
   - Proficiencies grouped by type with category headlines (ARMOR, WEAPON, TOOL, SAVING THROW, SKILL)

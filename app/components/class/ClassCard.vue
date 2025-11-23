@@ -35,9 +35,22 @@ const typeBadgeText = computed(() => {
  */
 const truncatedDescription = computed(() => {
   if (!props.characterClass.description) return 'A playable class for D&D 5e characters'
-  const maxLength = 120
+  const maxLength = 150
   if (props.characterClass.description.length <= maxLength) return props.characterClass.description
   return props.characterClass.description.substring(0, maxLength).trim() + '...'
+})
+
+/**
+ * Get primary ability code for display
+ */
+const primaryAbilityCode = computed(() => {
+  if (!props.characterClass.primary_ability) return null
+  // If it's an object with a code property, use that
+  if (typeof props.characterClass.primary_ability === 'object' && 'code' in props.characterClass.primary_ability) {
+    return props.characterClass.primary_ability.code
+  }
+  // Otherwise, return the string value
+  return props.characterClass.primary_ability
 })
 
 /**
@@ -77,12 +90,12 @@ const backgroundImage = computed(() => {
               {{ typeBadgeText }}
             </UBadge>
             <UBadge
-              v-if="characterClass.primary_ability"
+              v-if="primaryAbilityCode"
               color="class"
               variant="soft"
               size="sm"
             >
-              🎯 {{ characterClass.primary_ability }}
+              🎯 {{ primaryAbilityCode }}
             </UBadge>
             <UBadge
               v-if="characterClass.spellcasting_ability"

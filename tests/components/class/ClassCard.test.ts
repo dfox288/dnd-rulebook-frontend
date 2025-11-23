@@ -79,6 +79,20 @@ describe('ClassCard', () => {
     () => mountSuspended(ClassCard, { props: { characterClass: { ...mockClass, description: 'Short class description' } } })
   )
 
+  it('truncates descriptions to 150 characters', async () => {
+    const longDescription = 'A'.repeat(200)
+    const wrapper = await mountSuspended(ClassCard, {
+      props: { characterClass: { ...mockClass, description: longDescription } }
+    })
+
+    const text = wrapper.text()
+    // Should truncate at 150 chars + '...'
+    expect(text).toContain('A'.repeat(150))
+    expect(text).toContain('...')
+    // Should not contain characters beyond 150
+    expect(text).not.toContain('A'.repeat(151))
+  })
+
   testSourceFooter(
     () => mountSuspended(ClassCard, { props: { characterClass: mockClass } }),
     'Player\'s Handbook'
