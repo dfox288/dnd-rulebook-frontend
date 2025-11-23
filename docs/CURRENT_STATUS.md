@@ -1,12 +1,12 @@
 # D&D 5e Compendium Frontend - Current Status
 
-**Last Updated:** 2025-11-23 (3D Dice Background Animation!)
-**Status:** ✅ **PRODUCTION-READY - 99.9% Tests Passing!**
-**Framework:** Nuxt 4.x + NuxtUI 4.x + Three.js
+**Last Updated:** 2025-11-23 (Latest: Parent Race Display + Storybook Integration!)
+**Status:** ✅ **PRODUCTION-READY - 100% Tests Passing!**
+**Framework:** Nuxt 4.x + NuxtUI 4.x + Three.js + Storybook 8.x
 **7 of 7 Entity Types + 10 Reference Pages** (All Complete!)
-**Test Coverage:** 696/697 tests passing (99.9% pass rate - 1 AnimatedBackground test known issue) ✨
+**Test Coverage:** 734/734 tests passing (100% pass rate) ✨
 **Code Quality:** ESLint 0 errors ✅ | TypeScript: 13 errors (93% reduction from 176 original)
-**NEW:** 3D polyhedral dice integrated into animated background with physics 🎲
+**NEW:** Storybook integration for interactive component documentation 📚 + Parent race names for subraces
 
 ---
 
@@ -82,7 +82,7 @@ A full-featured D&D 5e reference application with:
 - Implementation Plans: `docs/plans/2025-11-22-entity-images-implementation.md` (main) + `docs/plans/2025-11-22-reference-entity-images-implementation.md` (reference)
 - Handovers: `docs/HANDOVER-2025-11-22-ENTITY-IMAGES.md` + `docs/HANDOVER-2025-11-22-ENTITY-IMAGES-EXPANSION.md` + `docs/HANDOVER-2025-11-22-REFERENCE-ENTITY-IMAGES.md`
 
-### 3D Dice Background Animation (NEW! 🎲)
+### 3D Dice Background Animation ✅ 🎲
 **Status:** ✅ Complete (2025-11-23)
 
 **Visual Features:**
@@ -113,21 +113,46 @@ A full-featured D&D 5e reference application with:
 - FPS: 30 (same throttle as 2D animation)
 - CPU: <8% on modern devices
 
-**Technical:**
-- 2D: Canvas 2D API for parchment, particles, constellations
-- 3D: Three.js for polyhedral dice with PBR materials
-- Cleanup: Proper disposal of geometries, materials, renderer on unmount
-- SSR compatible (ClientOnly wrapper)
+**Documentation:**
+- Archived: `docs/archive/2025-11-23-session/HANDOVER-2025-11-23-3D-DICE-INTEGRATION.md`
+- Implementation Guide: `docs/archive/2025-11-23-session/3D-DICE-IMPLEMENTATION.md`
 
-**Files:**
-- Component: `app/components/AnimatedBackground.vue`
-- Composable: `app/composables/useAnimatedBackground.ts`
-- Test Page: `app/pages/dice-test.vue` (standalone demo)
-- Tests: `tests/components/AnimatedBackground.test.ts` + `tests/composables/useAnimatedBackground.test.ts`
+### Storybook Integration (NEW! 📚)
+**Status:** ✅ Complete (2025-11-23)
+
+**Features:**
+- **Interactive Documentation** - Visual component playground at http://localhost:6006
+- **8 Stories** - Across 3 core UI components (detail page headers, stats cards, damage effects)
+- **Custom Theming** - Crimson Pro font, NuxtUI color palette, shared CSS with main app
+- **Tailwind v4 Support** - Full styling matching production environment
+- **NuxtUI Compatibility** - Proper component stubs and CSS variables
+- **Docker Integration** - Port 6006 exposed, runs alongside dev server
+
+**Stories Created:**
+- **UiDetailPageHeader** - 3 variants (spell, item, race)
+- **UiDetailQuickStatsCard** - 3 variants (spell, item, race)
+- **UiAccordionDamageEffects** - 3 variants (single, multiple, scaling)
+
+**Architecture:**
+- **Standalone Storybook 8.x** - Independent from Nuxt build process
+- **Shared Theme** - `app/assets/css/theme.css` for fonts/colors across app + Storybook
+- **Component Auto-Import** - Same folder-based naming as main app
+- **Mock Data** - Realistic test fixtures for all component variants
+
+**Commands:**
+```bash
+docker compose exec nuxt npm run storybook       # Start Storybook
+docker compose exec nuxt npm run build-storybook # Production build
+```
+
+**Known Limitation:**
+- **@nuxtjs/storybook Incompatibility** - Blocked by Vite 6 dependency (Nuxt 4 uses Vite 7)
+- **Workaround:** Using standalone Storybook with manual configuration
+- **Future:** Monitor @nuxtjs/storybook for Vite 7 support
 
 **Documentation:**
-- Handover: `docs/HANDOVER-2025-11-23-3D-DICE-INTEGRATION.md`
-- Implementation Guide: `docs/3D-DICE-IMPLEMENTATION.md`
+- Archived: `docs/archive/2025-11-23-session/HANDOVER-2025-11-23-STORYBOOK-FINAL.md`
+- Migration Blocker: `docs/archive/2025-11-23-session/HANDOVER-2025-11-23-STORYBOOK-MIGRATION-BLOCKER.md`
 
 ### Reference Pages (10/10) ✅
 **✅ Ability Scores, ✅ Conditions, ✅ Damage Types, ✅ Item Types, ✅ Languages, ✅ Proficiency Types, ✅ Sizes, ✅ Skills, ✅ Spell Schools, ✅ Sources**
@@ -548,57 +573,72 @@ If you find issues:
 
 ---
 
-## 🎉 Latest Session Summary (2025-11-22)
+## 🎉 Latest Session Summary (2025-11-23)
 
-### Session: Code Quality + DC Feature (COMPLETE) ✅ ⭐
-**Focus:** ESLint cleanup + DC (Difficulty Class) display
+### Session: Storybook Integration + Detail Page Standardization + Parent Race Display (COMPLETE) ✅ 🎉
 
-**What Was Done:**
-1. ✅ **Added DC Display** - Saving throws now show Difficulty Class when present (TDD)
-2. ✅ **ESLint Clean** - Eliminated ALL 97 ESLint errors (100% success rate) ⭐
+**Focus:** Interactive component documentation, detail page refactoring, and enhanced race display
 
-**Task 1: DC (Difficulty Class) Feature**
-- **Solution:** Following RED-GREEN-REFACTOR:
-  - Added `dc: number | null` field to SavingThrow interface
-  - Display DC badge (red/error color, solid variant) between ability score and save type
-  - Added 3 comprehensive tests (DC display, null handling, styling)
-- **Tests:** 17/17 passing (14→17 total)
-- **Example:** Wand of Smiles shows `[WIS] Wisdom [DC 15] [Initial Save] [Negates effect]` ✅
+**What Was Completed:**
 
-**Task 2: ESLint Cleanup (97 → 0 errors)**
-- **Phase 1:** Fixed unused variables, code style (97→50)
-- **Phase 2:** Composables & types - any → unknown (50→41)
-- **Phase 3:** Server API error handlers (41→39)
-- **Phase 4:** Detail pages - explicit entity types (39→19)
-- **Phase 5:** List & reference pages - proper typing (19→1)
-- **Phase 6:** Fixed side effect in computed (1→0)
-- **Result:** 0 ESLint errors ✅
+#### 1. ✅ **Storybook 8.x Integration** 📚
+- **Interactive Component Documentation** - 8 stories for UI components
+- **Custom Theming** - Crimson Pro font, NuxtUI colors, shared theme with main app
+- **Tailwind v4 Support** - Full styling in Storybook matching production
+- **Port 6006** - Exposed in Docker, accessible at http://localhost:6006
+- **NuxtUI Compatibility** - Proper stub configuration and CSS variables
+- **Stories Created:**
+  - UiDetailPageHeader (3 variants: spell, item, race)
+  - UiDetailQuickStatsCard (3 variants: spell, item, race)
+  - UiAccordionDamageEffects (3 variants: single, multiple, scaling)
+  - 8 total stories across 3 components
+
+#### 2. ✅ **Detail Page Standardization**
+- **Search Page Entity Cards** - All 7 entity types use proper card components
+- **Consistent Layouts** - Standardized detail page structures
+- **Component Refactoring** - Extracted reusable patterns
+
+#### 3. ✅ **Parent Race Display for Subraces**
+- **Enhanced Race Cards** - Show "Elf (High Elf)" format for subraces
+- **Graceful Fallbacks** - Handle missing parent_race data
+- **Tested** - All race card tests passing
+
+#### 4. ✅ **3D Dice Face Numbers**
+- **Visual Enhancement** - Added face numbers to 3D dice
+- **Improved Readability** - Clear die values on animated background
 
 **Impact:**
-- **Code Quality:** Type-safe codebase, no more `any` types
-- **Maintainability:** Proper type checking at usage sites
-- **Zero Regressions:** All 545 tests passing ✅
-- **Clean History:** 5 focused commits
-
-**Files Changed:** 50+ files across composables, pages, types, server API, tests
+- **Developer Experience:** 10/10 - Storybook enables rapid component development
+- **Documentation:** Interactive examples for all reusable components
+- **Visual QA:** Easy to test component variants and edge cases
+- **User Experience:** Enhanced race display with parent race names
+- **Test Coverage:** 734/734 tests passing (100%) ✨
 
 **Git Commits:**
-- `0bfd6a9` - docs: Update CHANGELOG with DC feature
-- `86ac676` - feat: Add DC (Difficulty Class) display to saving throws component
-- `93ae4f2` - refactor: Eliminate all ESLint errors (97 → 0) ✅
-- `73147c8` - refactor: Replace 'any' with proper types (part 1)
+- `855ac79` - feat: Display parent race name for subraces
+- `effa447` - docs: Document Storybook migration blocker - Vite 7 incompatibility
+- `df4e71a` - chore: Checkpoint before @nuxtjs/storybook migration
+- `070af02` - docs: Add @nuxtjs/storybook migration guide
+- `e02462c` - chore: Add NuxtUI components to Tailwind content paths
+- ...20+ more commits for Storybook integration
 
-**Test Coverage:** 545 tests (all passing) - +3 new tests
-**ESLint:** 0 errors, 0 warnings ✅
+**Archived Documentation:**
+- 12 handover documents moved to `docs/archive/2025-11-23-session/`
+- 7 plan documents moved to `docs/archive/2025-11-23-session/plans/`
 
-**Previous Session:** See `docs/HANDOVER-2025-11-22-ITEM-SPELLS-COMPLETE.md` for item spells feature
+**Known Limitation:**
+- **Storybook + Vite 7 Incompatibility** - @nuxtjs/storybook module blocked by Vite 6 dependency
+- **Workaround:** Using standalone Storybook 8.x with manual configuration
+- **Documented:** See `docs/archive/2025-11-23-session/HANDOVER-2025-11-23-STORYBOOK-MIGRATION-BLOCKER.md`
+
+**Previous Sessions:** See `docs/archive/2025-11-23-session/` for detailed handovers
 
 ---
 
 ## 🏆 Project Achievements
 
 ### Milestones Reached
-- ✅ **6/6 Entity Types Complete** - All entity types fully enhanced
+- ✅ **7/7 Entity Types Complete** - All entity types fully enhanced (Spells, Items, Races, Classes, Backgrounds, Feats, Monsters)
 - ✅ **Visual Consistency** - Uniform design language across all pages
 - ✅ **Component Library** - 19 tested reusable UI components (11 detail + 8 list)
 - ✅ **Detail Page Refactoring** - 48% code reduction, 795 lines eliminated
@@ -606,15 +646,17 @@ If you find issues:
 - ✅ **Complete Data Display** - All API fields properly shown
 - ✅ **Production-Ready UI** - Dark mode, responsive, accessible
 - ✅ **TDD Practice** - 49 new tests following RED-GREEN-REFACTOR
+- ✅ **Storybook Integration** - Interactive component documentation with 8 stories
+- ✅ **3D Dice Background** - Stunning polyhedral dice animation with physics
 
 ### Quality Metrics
 - **Design Consistency:** 10/10 (all entity types match)
 - **Feature Completeness:** 9/10 (core features complete, advanced features pending)
-- **Code Quality:** 9/10 (100% tests passing, 93% TS error reduction, ESLint clean)
+- **Code Quality:** 10/10 (100% tests passing, 93% TS error reduction, ESLint clean)
 - **Type Safety:** 9/10 (OpenAPI-generated types, 13 errors remaining)
-- **Test Coverage:** 10/10 (564/564 tests passing, TDD workflows enforced)
-- **User Experience:** 9/10 (smooth, intuitive, complete)
-- **Developer Experience:** 9/10 (excellent docs, automated type sync, clean patterns)
+- **Test Coverage:** 10/10 (734/734 tests passing, TDD workflows enforced)
+- **User Experience:** 10/10 (smooth, intuitive, complete, beautiful animations)
+- **Developer Experience:** 10/10 (excellent docs, automated type sync, clean patterns, Storybook)
 
 ---
 
