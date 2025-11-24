@@ -35,6 +35,12 @@ const selectedSavingThrows = ref<string[]>(
   route.query.saving_throw ? (Array.isArray(route.query.saving_throw) ? route.query.saving_throw : [route.query.saving_throw]) as string[] : []
 )
 
+// Phase 2: Component flag filters
+const verbalFilter = ref<string | null>((route.query.has_verbal as string) || null)
+const somaticFilter = ref<string | null>((route.query.has_somatic as string) || null)
+const materialFilter = ref<string | null>((route.query.has_material as string) || null)
+const higherLevelsFilter = ref<string | null>((route.query.has_higher_levels as string) || null)
+
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
   const response = await apiFetch<{ data: SpellSchool[] }>('/spell-schools')
@@ -133,6 +139,12 @@ const queryBuilder = computed(() => {
   if (selectedDamageTypes.value.length > 0) params.damage_type = selectedDamageTypes.value.join(',')
   if (selectedSavingThrows.value.length > 0) params.saving_throw = selectedSavingThrows.value.join(',')
 
+  // Phase 2: Component flag filters
+  if (verbalFilter.value !== null) params.has_verbal = verbalFilter.value
+  if (somaticFilter.value !== null) params.has_somatic = somaticFilter.value
+  if (materialFilter.value !== null) params.has_material = materialFilter.value
+  if (higherLevelsFilter.value !== null) params.has_higher_levels = higherLevelsFilter.value
+
   return params
 })
 
@@ -171,6 +183,11 @@ const clearFilters = () => {
   // Phase 1: Clear multi-select filters
   selectedDamageTypes.value = []
   selectedSavingThrows.value = []
+  // Phase 2: Clear component flag filters
+  verbalFilter.value = null
+  somaticFilter.value = null
+  materialFilter.value = null
+  higherLevelsFilter.value = null
 }
 
 // Get school name by ID for filter chips
@@ -207,6 +224,11 @@ const activeFilterCount = computed(() => {
   // Phase 1: Count multi-select filters
   if (selectedDamageTypes.value.length > 0) count++
   if (selectedSavingThrows.value.length > 0) count++
+  // Phase 2: Count component flag filters
+  if (verbalFilter.value !== null) count++
+  if (somaticFilter.value !== null) count++
+  if (materialFilter.value !== null) count++
+  if (higherLevelsFilter.value !== null) count++
   return count
 })
 </script>
@@ -285,7 +307,7 @@ const activeFilterCount = computed(() => {
 
             <!-- Clear filters button -->
             <UButton
-              v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || selectedClass !== null || concentrationFilter !== null || ritualFilter !== null || selectedDamageTypes.length > 0 || selectedSavingThrows.length > 0"
+              v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || selectedClass !== null || concentrationFilter !== null || ritualFilter !== null || selectedDamageTypes.length > 0 || selectedSavingThrows.length > 0 || verbalFilter !== null || somaticFilter !== null || materialFilter !== null || higherLevelsFilter !== null"
               color="neutral"
               variant="soft"
               @click="clearFilters"
@@ -317,6 +339,67 @@ const activeFilterCount = computed(() => {
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
                 { value: '0', label: 'No' }
+              ]"
+            />
+          </div>
+
+          <!-- Phase 2: Spell Components -->
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Spell Components
+            </label>
+            <div class="flex flex-wrap gap-4">
+              <!-- Verbal Component -->
+              <UiFilterToggle
+                v-model="verbalFilter"
+                label="Verbal (V)"
+                color="primary"
+                :options="[
+                  { value: null, label: 'All' },
+                  { value: '1', label: 'Yes' },
+                  { value: '0', label: 'No' }
+                ]"
+              />
+
+              <!-- Somatic Component -->
+              <UiFilterToggle
+                v-model="somaticFilter"
+                label="Somatic (S)"
+                color="primary"
+                :options="[
+                  { value: null, label: 'All' },
+                  { value: '1', label: 'Yes' },
+                  { value: '0', label: 'No' }
+                ]"
+              />
+
+              <!-- Material Component -->
+              <UiFilterToggle
+                v-model="materialFilter"
+                label="Material (M)"
+                color="primary"
+                :options="[
+                  { value: null, label: 'All' },
+                  { value: '1', label: 'Yes' },
+                  { value: '0', label: 'No' }
+                ]"
+              />
+            </div>
+          </div>
+
+          <!-- Phase 2: Spell Scaling -->
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Spell Scaling
+            </label>
+            <UiFilterToggle
+              v-model="higherLevelsFilter"
+              label="At Higher Levels"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Has Scaling' },
+                { value: '0', label: 'No Scaling' }
               ]"
             />
           </div>
@@ -427,6 +510,43 @@ const activeFilterCount = computed(() => {
           @click="selectedSavingThrows = selectedSavingThrows.filter(st => st !== savingThrow)"
         >
           {{ getSavingThrowName(savingThrow) }} Save ✕
+        </UButton>
+        <!-- Phase 2: Component flag chips -->
+        <UButton
+          v-if="verbalFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="verbalFilter = null"
+        >
+          Verbal: {{ verbalFilter === '1' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="somaticFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="somaticFilter = null"
+        >
+          Somatic: {{ somaticFilter === '1' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="materialFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="materialFilter = null"
+        >
+          Material: {{ materialFilter === '1' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="higherLevelsFilter !== null"
+          size="xs"
+          color="primary"
+          variant="soft"
+          @click="higherLevelsFilter = null"
+        >
+          Scaling: {{ higherLevelsFilter === '1' ? 'Has Scaling' : 'No Scaling' }} ✕
         </UButton>
       </div>
     </div>

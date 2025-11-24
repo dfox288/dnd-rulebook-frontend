@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Spells Filter Enhancement Phase 2 (2025-11-24)
+
+**Phase 2 Implementation:**
+- **Verbal Component filter on Spells page** - Tri-state toggle (All/Has Verbal/No Verbal) to filter spells requiring verbal components - Useful when silenced or using Subtle Spell metamagic (2025-11-24)
+- **Somatic Component filter on Spells page** - Tri-state toggle (All/Has Somatic/No Somatic) to filter spells requiring somatic components - Critical when restrained, grappled, or hands are full (2025-11-24)
+- **Material Component filter on Spells page** - Tri-state toggle (All/Has Material/No Material) to filter spells requiring material components - Essential for spell component planning (2025-11-24)
+- **At Higher Levels filter on Spells page** - Tri-state toggle (All/Has Scaling/No Scaling) to find spells that scale when cast at higher spell slot levels - Important for resource optimization (2025-11-24)
+- **Spell Components section on Spells page** - Grouped component filters (V, S, M) in dedicated section for better organization and discoverability (2025-11-24)
+- **API utilization increase on Spells page** - From 24% (7 filters) to 38% (11 filters) - +14 percentage points improvement, moving toward 50%+ goal (2025-11-24)
+- **Filter chips for component flags** - Active component filters displayed as removable chips showing Yes/No/Has Scaling states (2025-11-24)
+
 ### Added - Spells Filter Enhancement Phase 1 (2025-11-24)
 
 **Phase 1 Implementation:**
