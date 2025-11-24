@@ -27,6 +27,8 @@ export interface UseSpellListGeneratorReturn {
   selectedSpells: Ref<Set<number>>
   spellSlots: ComputedRef<SpellSlots>
   maxSpells: ComputedRef<number>
+  toggleSpell: (spellId: number) => void
+  selectionCount: ComputedRef<number>
   setClassData: (classData: CharacterClass) => void
 }
 
@@ -86,12 +88,26 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
     return level + DEFAULT_ABILITY_MODIFIER
   })
 
+  const toggleSpell = (spellId: number) => {
+    if (selectedSpells.value.has(spellId)) {
+      selectedSpells.value.delete(spellId)
+    } else {
+      selectedSpells.value.add(spellId)
+    }
+    // Trigger reactivity
+    selectedSpells.value = new Set(selectedSpells.value)
+  }
+
+  const selectionCount = computed(() => selectedSpells.value.size)
+
   return {
     selectedClass,
     characterLevel,
     selectedSpells,
     spellSlots,
     maxSpells,
+    toggleSpell,
+    selectionCount,
     setClassData
   }
 }

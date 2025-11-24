@@ -92,4 +92,27 @@ describe('useSpellListGenerator', () => {
     // Bard level 5: 8 spells known (from table)
     expect(maxSpells.value).toBe(8)
   })
+
+  it('toggles spell selection', () => {
+    const { selectedSpells, toggleSpell } = useSpellListGenerator()
+
+    toggleSpell(1)
+    expect(selectedSpells.value.has(1)).toBe(true)
+
+    toggleSpell(1)
+    expect(selectedSpells.value.has(1)).toBe(false)
+  })
+
+  it('tracks selection count', () => {
+    const { selectedSpells, toggleSpell, selectionCount } = useSpellListGenerator()
+
+    expect(selectionCount.value).toBe(0)
+
+    toggleSpell(1)
+    toggleSpell(2)
+    expect(selectionCount.value).toBe(2)
+
+    toggleSpell(1)
+    expect(selectionCount.value).toBe(1)
+  })
 })
