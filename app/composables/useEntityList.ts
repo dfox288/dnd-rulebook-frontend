@@ -139,7 +139,8 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
       const result = await apiFetch<{ data: Array<unknown>, meta: PaginationMeta }>(config.endpoint, {
         query: queryParams.value
       })
-      return result
+      // Ensure we always return a valid object to prevent SSR warnings
+      return result || { data: [], meta: { total: 0, per_page: 15, current_page: 1, last_page: 1, from: 0, to: 0 } }
     },
     {
       watch: [queryParams] // Refetch when params change
