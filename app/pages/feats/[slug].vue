@@ -26,6 +26,26 @@ const imagePath = computed(() => {
   if (!entity.value) return null
   return getImagePath('feats', entity.value.slug, 512)
 })
+
+/**
+ * Quick stats for display
+ */
+const quickStatsForDisplay = computed(() => {
+  if (!entity.value) return []
+
+  return [
+    {
+      icon: 'i-heroicons-bolt',
+      label: 'Type',
+      value: 'Feat'
+    },
+    {
+      icon: 'i-heroicons-check-badge',
+      label: 'Prerequisites',
+      value: (entity.value.prerequisites?.length ?? 0) > 0 ? 'Yes' : 'None'
+    }
+  ]
+})
 </script>
 
 <template>
@@ -101,6 +121,12 @@ const imagePath = computed(() => {
           />
         </div>
       </div>
+
+      <!-- Quick Stats Card -->
+      <UiDetailQuickStatsCard
+        :columns="2"
+        :stats="quickStatsForDisplay"
+      />
 
       <!-- Description Card -->
       <UCard v-if="entity.description">
