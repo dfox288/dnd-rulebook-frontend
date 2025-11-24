@@ -40,10 +40,11 @@ const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools'
   return response?.data || []
 })
 
-// Fetch classes for filter options
+// Fetch classes for filter options (base classes only)
 const { data: classes } = await useAsyncData<CharacterClass[]>('classes-filter', async () => {
-  const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=200')
-  return response?.data || []
+  const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100')
+  // Filter to base classes only (API returns boolean, not string)
+  return response?.data?.filter(c => c.is_base_class === true) || []
 })
 
 // Phase 1: Fetch damage types for filter options
@@ -85,15 +86,13 @@ const schoolOptions = computed(() => {
   return options
 })
 
-// Class filter options (base classes only, sorted alphabetically)
+// Class filter options (already filtered to base classes, just sort)
 const classOptions = computed(() => {
   const options: Array<{ label: string, value: string | null }> = [{ label: 'All Classes', value: null }]
   if (classes.value) {
-    const baseClasses = classes.value
-      .filter(c => c.is_base_class === '1')
-      .sort((a, b) => a.name.localeCompare(b.name))
+    const sortedClasses = classes.value.sort((a, b) => a.name.localeCompare(b.name))
 
-    options.push(...baseClasses.map(cls => ({
+    options.push(...sortedClasses.map(cls => ({
       label: cls.name,
       value: cls.slug
     })))
