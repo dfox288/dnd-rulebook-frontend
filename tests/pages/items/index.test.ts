@@ -17,10 +17,9 @@ import { join } from 'path'
  */
 describe('Items Page - has_charges and has_prerequisites Filters', () => {
   const itemsPagePath = join(process.cwd(), 'app/pages/items/index.vue')
-  let itemsPageContent: string
 
   // Read file once for all tests
-  itemsPageContent = readFileSync(itemsPagePath, 'utf-8')
+  const itemsPageContent = readFileSync(itemsPagePath, 'utf-8')
 
   describe('Filter State Management - has_charges', () => {
     it('should initialize hasCharges from route query', () => {

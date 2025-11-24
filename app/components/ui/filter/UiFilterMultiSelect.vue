@@ -52,8 +52,8 @@ const normalizedValue = computed<string[]>(() => {
   return Array.isArray(props.modelValue) ? props.modelValue : []
 })
 
-// Button text showing selection count or placeholder
-const buttonText = computed(() => {
+// Button text showing selection count or placeholder (calculated for potential future use)
+const _buttonText = computed(() => {
   const count = normalizedValue.value.length
   if (count === 0) return props.placeholder
   return `${count} selected`
@@ -63,7 +63,7 @@ const buttonText = computed(() => {
 const showClearButton = computed(() => normalizedValue.value.length > 0)
 
 // Handle selection change from USelectMenu
-const handleChange = (newSelection: any) => {
+const handleChange = (newSelection: string[] | Option[] | string | null | undefined) => {
   if (!newSelection) {
     emit('update:modelValue', [])
     return

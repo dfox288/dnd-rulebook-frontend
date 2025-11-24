@@ -16,10 +16,9 @@ import { join } from 'path'
  */
 describe('Monsters Page - is_legendary Filter', () => {
   const monstersPagePath = join(process.cwd(), 'app/pages/monsters/index.vue')
-  let monstersPageContent: string
 
   // Read file once for all tests
-  monstersPageContent = readFileSync(monstersPagePath, 'utf-8')
+  const monstersPageContent = readFileSync(monstersPagePath, 'utf-8')
 
   describe('Filter State Management', () => {
     it('should initialize isLegendary from route query', () => {

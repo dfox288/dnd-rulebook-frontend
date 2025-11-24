@@ -27,8 +27,8 @@ describe('useBackgroundStats', () => {
       slug: 'charlatan',
       name: 'Charlatan',
       proficiencies: [
-        { proficiency_type: 'tool', tool: { id: 1, name: 'Disguise Kit' } },
-        { proficiency_type: 'tool', tool: { id: 2, name: 'Forgery Kit' } }
+        { proficiency_type: 'tool', item: { id: 1, name: 'Disguise Kit' } },
+        { proficiency_type: 'tool', item: { id: 2, name: 'Forgery Kit' } }
       ]
     } as Background)
 
@@ -43,8 +43,8 @@ describe('useBackgroundStats', () => {
       slug: 'acolyte',
       name: 'Acolyte',
       languages: [
-        { id: 1, name: 'Common', slug: 'common' },
-        { id: 2, name: 'Celestial', slug: 'celestial' }
+        { language: { id: 1, name: 'Common', slug: 'common' }, is_choice: false },
+        { language: { id: 2, name: 'Celestial', slug: 'celestial' }, is_choice: false }
       ]
     } as Background)
 
@@ -145,7 +145,7 @@ describe('useBackgroundStats', () => {
       name: 'Test',
       proficiencies: [
         { proficiency_type: 'skill', skill: { id: 1, name: 'Deception', slug: 'deception' } },
-        { proficiency_type: 'skill', skill: null } as any
+        { proficiency_type: 'skill', skill: null } as unknown as { proficiency_type: string, skill: null }
       ]
     } as Background)
 

@@ -61,7 +61,7 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
     // Map spell_slots_1st, spell_slots_2nd, etc. to '1st', '2nd', etc.
     for (let i = 1; i <= 9; i++) {
       const key = `spell_slots_${i === 1 ? '1st' : i === 2 ? '2nd' : i === 3 ? '3rd' : `${i}th`}`
-      const value = (progression as any)[key] || 0
+      const value = (progression[key as keyof typeof progression] as number) || 0
       if (value > 0 || i <= 3) { // Always include 1st-3rd
         const slotKey = i === 1 ? '1st' : i === 2 ? '2nd' : i === 3 ? '3rd' : `${i}th`
         slots[slotKey] = value

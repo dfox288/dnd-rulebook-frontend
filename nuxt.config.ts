@@ -47,12 +47,12 @@ export default defineNuxtConfig({
     }
   },
 
-  compatibilityDate: '2025-01-15',
-
   experimental: {
     // Disable app manifest in test environment to prevent fetch errors
     appManifest: process.env.NODE_ENV === 'test' ? false : true
   },
+
+  compatibilityDate: '2025-01-15',
 
   eslint: {
     config: {

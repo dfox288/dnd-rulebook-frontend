@@ -17,10 +17,9 @@ import { join } from 'path'
  */
 describe('Spells Page - Class Filter Feature', () => {
   const spellsPagePath = join(process.cwd(), 'app/pages/spells/index.vue')
-  let spellsPageContent: string
 
   // Read file once for all tests
-  spellsPageContent = readFileSync(spellsPagePath, 'utf-8')
+  const spellsPageContent = readFileSync(spellsPagePath, 'utf-8')
 
   describe('Data Fetching', () => {
     it('should fetch classes data from API endpoint', () => {

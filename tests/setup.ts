@@ -1,22 +1,87 @@
 import { vi } from 'vitest'
 import 'vitest-canvas-mock'
 
+// Mock Nuxt's manifest composables to prevent appManifest errors
+// These errors occur when Nuxt tries to check prerendered routes and route rules during page mounting
+vi.mock('#app/composables/manifest', () => ({
+  getAppManifest: vi.fn(() => Promise.resolve({
+    id: 'test',
+    timestamp: Date.now(),
+    prerendered: [], // Array of prerendered routes
+    routes: new Map() // Route rules map - must be a Map with .entries() method
+  })),
+  getRouteRules: vi.fn(() => Promise.resolve({}))
+}))
+
 // Mock Nuxt's useRuntimeConfig globally
-global.useRuntimeConfig = vi.fn(() => ({
+vi.stubGlobal('useRuntimeConfig', vi.fn(() => ({
   public: {
     apiBase: 'http://localhost:8080/api/v1',
     apiDocsUrl: 'http://localhost:8080/docs/api'
   }
-}))
+})))
 
-// Mock $fetch globally - must return a Promise to prevent "Cannot read properties of undefined (reading 'then')" errors
-// Also needs .create() method for useApi composable
-global.$fetch = Object.assign(
-  vi.fn(() => Promise.resolve({})),
-  {
-    create: vi.fn(() => vi.fn(() => Promise.resolve({})))
+// Helper function to generate mock API responses
+const createMockApiResponse = (url) => {
+  if (typeof url === 'string') {
+    // Background detail
+    if (url.includes('/backgrounds/')) {
+      const slug = url.split('/').pop()
+      return Promise.resolve({
+        data: {
+          id: 1,
+          name: slug.charAt(0).toUpperCase() + slug.slice(1),
+          slug,
+          description: `Description of ${slug} background`,
+          traits: [
+            {
+              name: 'Background Trait',
+              category: 'Feature',
+              description: 'A trait for this background'
+            }
+          ],
+          proficiencies: ['Deception', 'Sleight of Hand'],
+          languages: ['Common', 'Thieves\' Cant'],
+          equipment: ['Item 1', 'Item 2'],
+          sources: [{ name: 'Player\'s Handbook', page: '123' }],
+          tags: ['tag1', 'tag2']
+        }
+      })
+    }
+
+    // Race detail
+    if (url.includes('/races/')) {
+      const slug = url.split('/').pop()
+      return Promise.resolve({
+        data: {
+          id: 1,
+          name: slug.charAt(0).toUpperCase() + slug.slice(1),
+          slug,
+          description: `Description of ${slug} race`,
+          conditions: [
+            {
+              name: 'Darkvision',
+              effect_type: 'Sense',
+              description: 'You can see in dim light'
+            }
+          ]
+        }
+      })
+    }
   }
-)
+
+  // Default empty response
+  return Promise.resolve({})
+}
+
+// Mock $fetch globally with smart URL-based responses
+// This provides realistic mock data for API calls based on the endpoint
+const mockFetchFn = vi.fn(createMockApiResponse)
+
+global.$fetch = Object.assign(mockFetchFn, {
+  // The create() method must return a function with the same behavior
+  create: vi.fn(() => vi.fn(createMockApiResponse))
+})
 
 // Mock Nuxt's app manifest fetching to prevent "Cannot read properties of undefined (reading 'then')" errors
 global.fetch = vi.fn((url) => {

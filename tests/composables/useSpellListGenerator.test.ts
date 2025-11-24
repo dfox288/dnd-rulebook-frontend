@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { useSpellListGenerator } from '~/composables/useSpellListGenerator'
 
 // Mock localStorage
@@ -7,7 +7,7 @@ const localStorageMock = (() => {
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => { store[key] = value },
-    removeItem: (key: string) => { delete store[key] },
+    removeItem: (key: string) => { if (key in store) store[key] = undefined },
     clear: () => { store = {} }
   }
 })()
@@ -45,7 +45,7 @@ describe('useSpellListGenerator', () => {
           spell_slots_3rd: 0
         }
       ]
-    } as any
+    } as Record<string, unknown>
 
     setClassData(mockClass)
     characterLevel.value = 3
@@ -72,7 +72,7 @@ describe('useSpellListGenerator', () => {
         { level: 4 },
         { level: 5 }
       ]
-    } as any
+    } as Record<string, unknown>
 
     setClassData(wizardClass)
     characterLevel.value = 5
@@ -96,7 +96,7 @@ describe('useSpellListGenerator', () => {
         { level: 4 },
         { level: 5 }
       ]
-    } as any
+    } as Record<string, unknown>
 
     setClassData(bardClass)
     characterLevel.value = 5
@@ -116,7 +116,7 @@ describe('useSpellListGenerator', () => {
   })
 
   it('tracks selection count', () => {
-    const { selectedSpells, toggleSpell, selectionCount } = useSpellListGenerator()
+    const { toggleSpell, selectionCount } = useSpellListGenerator()
 
     expect(selectionCount.value).toBe(0)
 
@@ -142,7 +142,7 @@ describe('useSpellListGenerator - LocalStorage', () => {
       slug: 'wizard',
       name: 'Wizard',
       level_progression: []
-    } as any
+    } as Record<string, unknown>
 
     setClassData(mockClass)
     characterLevel.value = 5
@@ -174,7 +174,7 @@ describe('useSpellListGenerator - LocalStorage', () => {
       slug: 'wizard',
       name: 'Wizard',
       level_progression: []
-    } as any
+    } as Record<string, unknown>
 
     setClassData(mockClass)
     loadFromStorage()

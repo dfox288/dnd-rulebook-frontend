@@ -12,7 +12,8 @@ export default defineVitestConfig({
           indexHtml: false
         },
         overrides: {
-          appManifest: false // Disable app manifest to prevent fetch errors
+          appManifest: false, // Disable app manifest to prevent fetch errors
+          routeRules: {} // Provide empty routeRules object to prevent undefined errors
         }
       }
     }
