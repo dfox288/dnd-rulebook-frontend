@@ -139,21 +139,10 @@ const statsForDisplay = computed(() => {
       </div>
 
       <!-- Description (always visible, outside accordion) -->
-      <UCard
+      <UiDetailDescriptionCard
         v-if="entity.description"
-        data-testid="description-card"
-      >
-        <template #header>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Description
-          </h2>
-        </template>
-        <div class="prose dark:prose-invert max-w-none">
-          <p class="whitespace-pre-line text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-            {{ entity.description }}
-          </p>
-        </div>
-      </UCard>
+        :description="entity.description"
+      />
 
       <!-- Single Unified Accordion - ALL expandable sections -->
       <UAccordion
@@ -248,6 +237,12 @@ const statsForDisplay = computed(() => {
           <UiTagsDisplay :tags="entity.tags" />
         </template>
       </UAccordion>
+
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/backgrounds"
+        label="Back to Backgrounds"
+      />
 
       <!-- JSON Debug Panel -->
       <JsonDebugPanel

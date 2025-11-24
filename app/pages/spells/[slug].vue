@@ -218,6 +218,12 @@ const imagePath = computed(() => {
         </template>
       </UAccordion>
 
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/spells"
+        label="Back to Spells"
+      />
+
       <!-- JSON Debug Panel -->
       <JsonDebugPanel
         :data="spell"

@@ -284,6 +284,12 @@ const imagePath = computed(() => {
         </template>
       </UAccordion>
 
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/items"
+        label="Back to Items"
+      />
+
       <!-- JSON Debug Panel -->
       <JsonDebugPanel
         :data="item"

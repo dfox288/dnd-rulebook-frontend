@@ -209,6 +209,12 @@ const quickStatsForDisplay = computed(() => {
         </template>
       </UAccordion>
 
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/feats"
+        label="Back to Feats"
+      />
+
       <!-- JSON Debug Panel -->
       <JsonDebugPanel
         :data="entity"

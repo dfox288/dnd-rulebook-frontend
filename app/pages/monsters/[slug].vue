@@ -340,16 +340,11 @@ const imagePath = computed(() => {
         </template>
       </UAccordion>
 
-      <!-- Back to Monsters -->
-      <div class="text-center">
-        <UButton
-          to="/monsters"
-          variant="soft"
-          color="neutral"
-        >
-          ← Back to Monsters
-        </UButton>
-      </div>
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/monsters"
+        label="Back to Monsters"
+      />
 
       <!-- Debug Panel -->
       <JsonDebugPanel :data="monster" />

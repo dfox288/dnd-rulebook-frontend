@@ -242,6 +242,12 @@ const remainingTraits = computed(() => {
         </template>
       </UAccordion>
 
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/classes"
+        label="Back to Classes"
+      />
+
       <!-- JSON Debug Panel -->
       <JsonDebugPanel
         :data="entity"

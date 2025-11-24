@@ -175,7 +175,8 @@
       "Bash(CHANGELOG.md)",
       "Bash(docker --version:*)",
       "Bash(docker ps:*)",
-      "Bash(do echo -n \"Testing $entity: \")"
+      "Bash(do echo -n \"Testing $entity: \")",
+      "Bash(git -C /Users/dfox/Development/dnd/frontend log -5 --oneline)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Race } from '~/types/api/entities'
-import type { BadgeColor, BadgeSize, BadgeVariant } from '~/utils/badgeColors'
 import { getSizeColor } from '~/utils/badgeColors'
 
 const route = useRoute()
@@ -18,14 +17,6 @@ const { data: race, loading, error } = useEntityDetail<Race>({
     },
     fallbackTitle: 'Race - D&D 5e Compendium'
   }
-})
-
-/**
- * Get size color for badge
- */
-const sizeColor = computed(() => {
-  if (!race.value?.size) return 'info'
-  return getSizeColor(race.value.size.code)
 })
 
 /**
@@ -75,8 +66,8 @@ const abilityScoreIncreases = computed(() => {
       <UiDetailPageHeader
         :title="race.name"
         :badges="[
-          ...(race.size ? [{ label: race.size.name, color: sizeColor as unknown as BadgeColor, variant: 'subtle' as BadgeVariant, size: 'lg' as BadgeSize }] : []),
-          { label: race.parent_race ? 'Subrace' : 'Race', color: (race.parent_race ? 'primary' : 'info') as BadgeColor, variant: 'subtle' as BadgeVariant, size: 'lg' as BadgeSize }
+          ...(race.size ? [{ label: race.size.name, color: getSizeColor(race.size.code), variant: 'subtle' as const, size: 'lg' as const }] : []),
+          { label: race.parent_race ? 'Subrace' : 'Race', color: race.parent_race ? 'primary' : 'info', variant: 'subtle' as const, size: 'lg' as const }
         ]"
       />
 
@@ -305,6 +296,12 @@ const abilityScoreIncreases = computed(() => {
           <UiTagsDisplay :tags="race.tags" />
         </template>
       </UAccordion>
+
+      <!-- Bottom Navigation -->
+      <UiDetailPageBottomNav
+        to="/races"
+        label="Back to Races"
+      />
 
       <!-- JSON Debug Panel -->
       <JsonDebugPanel
