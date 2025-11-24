@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Refactored - Detail Pages Standardization (2025-11-24)
+
+**Phase 1 & 2 Complete - All 7 Entity Detail Pages:**
+- **Image component standardization** - All 6 entity detail pages (Spells, Items, Races, Classes, Backgrounds, Feats, Monsters) now use single `UiDetailEntityImage` component instead of mix of `UiDetailStandaloneImage` and `UiDetailEntityImage` (2025-11-24)
+- **Grid layout standardization** - All 6 detail pages now use consistent `grid grid-cols-1 lg:grid-cols-3 gap-6` pattern for responsive stats+image layout, replacing mixed `flex` and width-based approaches (2025-11-24)
+- **Description card standardization** - Spells, Feats, and Monsters detail pages now use `UiDetailDescriptionCard` component, eliminating 33 lines of duplicated prose/styling templates (2025-11-24)
+- **Accordion slot naming consistency** - Fixed Items page accordion slots to use kebab-case (`random-tables`, `saving-throws`) matching all other entity pages (2025-11-24)
+- **Feats quick stats addition** - Added quick stats card to Feats detail page showing "Type: Feat" and prerequisite status for visual consistency with other entity types (2025-11-24)
+- **Monsters accordion refactor** - Converted Monsters detail page from standalone cards to accordion pattern (progressive disclosure) matching all other entity pages - 7 sections: Traits, Actions, Legendary Actions, Spellcasting, Modifiers, Conditions, Source (2025-11-24)
+- **Conditions component consolidation** - Races detail page now uses shared `UiAccordionConditions` component (replaced 35-line manual template with 5-line component) matching Feats and Monsters (2025-11-24)
+
+**Impact:**
+- ✅ Single source of truth for entity images (easier maintenance)
+- ✅ Consistent responsive behavior across all detail pages
+- ✅ Reduced code duplication by 68 lines across 3 pages
+- ✅ Improved UX with progressive disclosure on Monsters (reduces visual clutter)
+- ✅ Better component reuse (3 pages now share conditions component)
+
 ### Added - Spells Filter Enhancement Phase 3 (2025-11-24)
 
 **Phase 3 Implementation:**
