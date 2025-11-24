@@ -9,16 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **UiFilterMultiSelect component** - Reusable multi-select dropdown filter with checkboxes, search, and clear functionality for selecting multiple values (damage types, alignments, etc.) (2025-11-24)
-- **UiFilterRangeSlider component** - Dual-handle range slider for min/max numeric filtering (Challenge Rating 0-30, spell levels, etc.) with custom formatting support (2025-11-24)
-- **Legendary filter on Monsters page** - Filter monsters by legendary status (All/Yes/No tri-state toggle) to find legendary creatures (2025-11-24)
-- **Base Class Only filter on Classes page** - Filter classes by base class vs subclass (All/Yes/No tri-state toggle) to show only core 13 classes (2025-11-24)
-- **Spellcaster filter on Classes page** - Filter classes by spellcasting capability (All/Yes/No tri-state toggle) to find full/half/third casters (2025-11-24)
-- **Has Darkvision filter on Races page** - Filter races by darkvision trait (All/Yes/No tri-state toggle) for Underdark campaigns (2025-11-24)
-- **Filter UI structure on Backgrounds page** - Added filter section framework ready for future background-specific filters (2025-11-24)
-- **Has Prerequisites filter on Feats page** - Filter feats by prerequisite requirements (All/Yes/No tri-state toggle) to find feats available at level 1 or advanced feats (2025-11-24)
-- **Class filter on Spells page** - Filter spells by character class (Wizard, Cleric, etc.) with base classes sorted alphabetically (2025-11-24)
+### Added - Phase 1C & 2 Complete (2025-11-24)
+
+#### Filter Components
+- **UiFilterMultiSelect component** - Reusable multi-select dropdown filter with searchable options, checkboxes, and clear functionality for selecting multiple values (damage types, alignments, sizes, languages, ability scores, etc.) - Ready for 5+ page integrations (2025-11-24)
+- **UiFilterRangeSlider component** - Dual-handle range slider for min/max numeric filtering (Challenge Rating 0-30 with 0.25 step, spell levels 0-9, speed ranges, etc.) with custom label formatting and full accessibility support - Ready for 4+ page integrations (2025-11-24)
+
+#### Phase 1C Toggle Filters
+- **Legendary filter on Monsters page** - New tri-state toggle (All/Yes/No) to filter monsters by legendary status, enabling epic encounter building (2025-11-24)
+- **Base Class Only filter on Classes page** - New tri-state toggle to show only core 13 classes, excluding subclasses and variants - Critical improvement closing 0% utilization gap (2025-11-24)
+- **Spellcaster filter on Classes page** - New tri-state toggle to find full casters (Wizard, Cleric, Druid), half casters (Paladin, Ranger), and martial classes (Barbarian, Rogue) (2025-11-24)
+- **Has Darkvision filter on Races page** - New tri-state toggle to find races with darkvision trait for Underdark-focused campaigns (2025-11-24)
+- **Filter UI structure on Backgrounds page** - Added collapsible filter section with badge count framework ready for future background-specific filters (2025-11-24)
+
+#### Backgrounds Detail Page Enhancement
 - **Quick stats panel on backgrounds detail page** - Shows actual proficiency/language/equipment data at a glance (2/3 layout) (2025-11-24)
 - **useBackgroundStats composable** - Extracts skill/tool proficiency names, language names, equipment count, and starting gold from Background entities (2025-11-24)
 - **UiFilterCollapse component** - Collapsible filter section with badge count for active filters (2025-11-23)
