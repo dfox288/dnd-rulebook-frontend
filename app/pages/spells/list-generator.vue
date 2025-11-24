@@ -64,10 +64,14 @@ watch(selectedClassOption, (option) => {
   <div class="container mx-auto px-4 py-8 max-w-7xl">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">Spell List Generator</h1>
-      <p class="text-gray-600 dark:text-gray-400">
-        Choose spells for your character based on class and level.
-      </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold mb-2">🪄 Spell List Generator</h1>
+          <p class="text-gray-600 dark:text-gray-400">
+            Choose spells for your character based on class and level.
+          </p>
+        </div>
+      </div>
     </div>
 
     <!-- Character Setup -->
