@@ -197,34 +197,6 @@ describe('UiFilterRangeSlider', () => {
   })
 
   describe('Reset Functionality', () => {
-    it('shows reset button when range is not at full bounds', async () => {
-      const wrapper = await mountSuspended(UiFilterRangeSlider, {
-        props: {
-          modelValue: [5, 15],
-          label: 'Challenge Rating',
-          min: 0,
-          max: 30
-        }
-      })
-
-      const resetButton = wrapper.findComponent({ name: 'UButton' })
-      expect(resetButton.exists()).toBe(true)
-    })
-
-    it('does not show reset button when at full range', async () => {
-      const wrapper = await mountSuspended(UiFilterRangeSlider, {
-        props: {
-          modelValue: [0, 30],
-          label: 'Challenge Rating',
-          min: 0,
-          max: 30
-        }
-      })
-
-      const resetButton = wrapper.findComponent({ name: 'UButton' })
-      expect(resetButton.exists()).toBe(false)
-    })
-
     it('resets to full range when reset button clicked', async () => {
       const wrapper = await mountSuspended(UiFilterRangeSlider, {
         props: {

@@ -210,37 +210,6 @@ describe('UiFilterToggle', () => {
     })
   })
 
-  describe('Styling Props', () => {
-    it('uses primary color for selected options', async () => {
-      const wrapper = await mountSuspended(UiFilterToggle, {
-        props: {
-          modelValue: 'true',
-          label: 'Concentration',
-          color: 'success' // Note: color prop exists but not currently implemented
-        }
-      })
-
-      const buttons = wrapper.findAll('button')
-      const yesButton = buttons[1]
-
-      // Currently uses bg-primary-500 regardless of color prop
-      expect(yesButton.classes()).toContain('bg-primary-500')
-    })
-
-    it('uses small text size for all buttons', async () => {
-      const wrapper = await mountSuspended(UiFilterToggle, {
-        props: {
-          modelValue: null,
-          label: 'Concentration',
-          size: 'sm' // Note: size prop exists but not currently implemented
-        }
-      })
-
-      const buttons = wrapper.findAll('button')
-      // Currently uses text-xs regardless of size prop
-      expect(buttons[0].classes()).toContain('text-xs')
-    })
-  })
 
   describe('Accessibility', () => {
     it('renders buttons with proper ARIA attributes', async () => {

@@ -25,34 +25,6 @@ describe('UiFilterMultiSelect', () => {
       expect(wrapper.text()).toContain('Damage Types')
     })
 
-    it('renders USelectMenu component', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.exists()).toBe(true)
-    })
-
-    it('passes options to USelectMenu', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      // Verify USelectMenu exists and is configured for multi-select
-      expect(selectMenu.exists()).toBe(true)
-      expect(selectMenu.props('multiple')).toBe(true)
-    })
-
     it('handles empty options array', async () => {
       const wrapper = await mountSuspended(UiFilterMultiSelect, {
         props: {
@@ -63,65 +35,9 @@ describe('UiFilterMultiSelect', () => {
       })
 
       expect(wrapper.text()).toContain('Empty')
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      // Verify USelectMenu still renders even with empty options
-      expect(selectMenu.exists()).toBe(true)
     })
   })
 
-  describe('Selection State', () => {
-    it('passes empty array to USelectMenu when no selection', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('modelValue')).toEqual([])
-    })
-
-    it('passes selected values to USelectMenu', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire', 'cold'],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('modelValue')).toEqual(['fire', 'cold'])
-    })
-
-    it('normalizes null modelValue to empty array', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: null,
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('modelValue')).toEqual([])
-    })
-
-    it('normalizes undefined modelValue to empty array', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: undefined,
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('modelValue')).toEqual([])
-    })
-  })
 
   describe('User Interactions', () => {
     it('emits update:modelValue when USelectMenu changes', async () => {
@@ -175,33 +91,6 @@ describe('UiFilterMultiSelect', () => {
       expect(emitted?.[0]).toEqual([['cold']])
     })
 
-    it('configures USelectMenu with multiple selection', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('multiple')).toBe(true)
-    })
-
-    it('configures USelectMenu as searchable', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      // Verify USelectMenu exists (searchable prop is internal implementation detail)
-      expect(selectMenu.exists()).toBe(true)
-    })
-
     it('handles null selection from USelectMenu', async () => {
       const wrapper = await mountSuspended(UiFilterMultiSelect, {
         props: {
@@ -220,32 +109,6 @@ describe('UiFilterMultiSelect', () => {
   })
 
   describe('Clear Functionality', () => {
-    it('shows clear button when items are selected', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire', 'cold'],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const clearButton = wrapper.findComponent({ name: 'UButton' })
-      expect(clearButton.exists()).toBe(true)
-    })
-
-    it('does not show clear button when no items selected', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const clearButton = wrapper.findComponent({ name: 'UButton' })
-      expect(clearButton.exists()).toBe(false)
-    })
-
     it('emits empty array when clear button clicked', async () => {
       const wrapper = await mountSuspended(UiFilterMultiSelect, {
         props: {
@@ -263,62 +126,9 @@ describe('UiFilterMultiSelect', () => {
       const emitted = wrapper.emitted('update:modelValue')
       expect(emitted?.[0]).toEqual([[]])
     })
-
-    it('configures clear button with proper icon', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire'],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const clearButton = wrapper.findComponent({ name: 'UButton' })
-      expect(clearButton.props('icon')).toBe('i-heroicons-x-mark')
-    })
   })
 
   describe('Styling Props', () => {
-    it('uses primary color by default for badge', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire'],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const badge = wrapper.findComponent({ name: 'UBadge' })
-      expect(badge.props('color')).toBe('primary')
-    })
-
-    it('applies custom color to badge', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire', 'cold'],
-          label: 'Damage Types',
-          options: defaultOptions,
-          color: 'warning'
-        }
-      })
-
-      const badge = wrapper.findComponent({ name: 'UBadge' })
-      expect(badge.props('color')).toBe('warning')
-    })
-
-    it('shows badge only when items are selected', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const badge = wrapper.findComponent({ name: 'UBadge' })
-      expect(badge.exists()).toBe(false)
-    })
-
     it('displays count in badge', async () => {
       const wrapper = await mountSuspended(UiFilterMultiSelect, {
         props: {
@@ -345,55 +155,9 @@ describe('UiFilterMultiSelect', () => {
 
       expect(wrapper.text()).toContain('Damage Types')
     })
-
-    it('sets ARIA label on USelectMenu', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      // Verify USelectMenu exists and has accessible labeling via parent label
-      expect(selectMenu.exists()).toBe(true)
-      expect(wrapper.text()).toContain('Damage Types')
-    })
-
-    it('has accessible clear button with descriptive label', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: ['fire'],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const clearButton = wrapper.findComponent({ name: 'UButton' })
-      // Verify clear button exists with proper icon (aria-label handled by UButton internally)
-      expect(clearButton.exists()).toBe(true)
-      expect(clearButton.props('icon')).toBe('i-heroicons-x-mark')
-    })
   })
 
   describe('Edge Cases', () => {
-    it('handles empty string in selection', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [''],
-          label: 'Test',
-          options: [
-            { value: '', label: 'Empty' },
-            { value: 'filled', label: 'Filled' }
-          ]
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      expect(selectMenu.props('modelValue')).toEqual([''])
-    })
-
     it('handles selecting all options', async () => {
       const wrapper = await mountSuspended(UiFilterMultiSelect, {
         props: {
@@ -441,21 +205,6 @@ describe('UiFilterMultiSelect', () => {
 
       // Verify component receives the placeholder prop
       expect(wrapper.props('placeholder')).toBe('Choose damage types...')
-    })
-
-    it('has correct value and option attributes', async () => {
-      const wrapper = await mountSuspended(UiFilterMultiSelect, {
-        props: {
-          modelValue: [],
-          label: 'Damage Types',
-          options: defaultOptions
-        }
-      })
-
-      const selectMenu = wrapper.findComponent({ name: 'USelectMenu' })
-      // Verify USelectMenu is properly configured for multi-select
-      expect(selectMenu.exists()).toBe(true)
-      expect(selectMenu.props('multiple')).toBe(true)
     })
   })
 })

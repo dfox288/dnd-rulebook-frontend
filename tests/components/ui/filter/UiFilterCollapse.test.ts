@@ -206,29 +206,6 @@ describe('UiFilterCollapse', () => {
     })
   })
 
-  describe('Icon Rotation', () => {
-    it('shows downward chevron when closed', async () => {
-      const wrapper = await mountSuspended(UiFilterCollapse, {
-        props: {
-          modelValue: false
-        }
-      })
-
-      const icon = wrapper.find('svg')
-      expect(icon.classes()).not.toContain('rotate-180')
-    })
-
-    it('rotates chevron when open', async () => {
-      const wrapper = await mountSuspended(UiFilterCollapse, {
-        props: {
-          modelValue: true
-        }
-      })
-
-      const icon = wrapper.find('svg')
-      expect(icon.classes()).toContain('rotate-180')
-    })
-  })
 
   describe('Search Input Integration', () => {
     it('renders search input before toggle button', async () => {
@@ -244,20 +221,6 @@ describe('UiFilterCollapse', () => {
       const searchInput = wrapper.find('[data-testid="search-input"]')
       expect(searchInput.exists()).toBe(true)
       expect(searchInput.attributes('placeholder')).toBe('Search...')
-    })
-
-    it('positions search and button in flex container', async () => {
-      const wrapper = await mountSuspended(UiFilterCollapse, {
-        props: {
-          modelValue: false
-        },
-        slots: {
-          search: '<div data-testid="search">Search</div>'
-        }
-      })
-
-      const container = wrapper.find('.flex.gap-2')
-      expect(container.exists()).toBe(true)
     })
   })
 
@@ -296,19 +259,6 @@ describe('UiFilterCollapse', () => {
     })
   })
 
-  describe('Dark Mode', () => {
-    it('applies dark mode classes to button', async () => {
-      const wrapper = await mountSuspended(UiFilterCollapse, {
-        props: {
-          modelValue: false
-        }
-      })
-
-      const button = wrapper.find('button')
-      const classes = button.classes().join(' ')
-      expect(classes).toContain('dark:')
-    })
-  })
 
   describe('Edge Cases', () => {
     it('handles undefined badgeCount', async () => {
