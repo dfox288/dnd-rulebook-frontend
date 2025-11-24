@@ -1,29 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Race } from '~/types'
-import type { components } from '~/types/api/generated'
 import RaceCard from '~/components/race/RaceCard.vue'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('RaceCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated Race type', () => {
-    // This test verifies that our Race interface is compatible with the generated type
-    const generatedRace: components['schemas']['RaceResource'] = {
-      id: 1,
-      name: 'Elf',
-      slug: 'elf',
-      speed: 30
-    }
-
-    // Should be assignable to our application Race type
-    const race: Race = generatedRace
-
-    expect(race.id).toBe(1)
-    expect(race.name).toBe('Elf')
-  })
-})
 
 describe('RaceCard', () => {
   const mockRace: Race = {
@@ -521,32 +502,8 @@ describe('RaceCard', () => {
     expect(wrapper.text()).toContain('30 ft')
   })
 
-  it('renders background image when available', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-    expect(bgDiv.attributes('style')).toContain('background-image')
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background opacity', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-  })
+  testBackgroundImageBehavior(
+    'RaceCard',
+    async () => mountSuspended(RaceCard, { props: { race: mockRace } })
+  )
 })

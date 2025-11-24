@@ -71,24 +71,5 @@ describe('AbilityScoreCard', () => {
       const url = wrapper.vm.backgroundImageUrl
       expect(url).toBe('/images/generated/conversions/256/ability_scores/stability-ai/str.png')
     })
-
-    it('applies background image with opacity layer', async () => {
-      const wrapper = await mountSuspended(AbilityScoreCard, {
-        props: {
-          abilityScore: {
-            id: 1,
-            code: 'STR',
-            name: 'Strength'
-          }
-        }
-      })
-
-      const html = wrapper.html()
-      // Check for absolute positioned background div with opacity
-      expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-15')
-      expect(html).toContain('group-hover:opacity-30')
-      expect(html).toContain('str.png')
-    })
   })
 })

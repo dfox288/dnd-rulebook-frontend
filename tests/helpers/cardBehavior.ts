@@ -1,4 +1,4 @@
-import { it, expect } from 'vitest'
+import { it, expect, describe } from 'vitest'
 import type { VueWrapper } from '@vue/test-utils'
 
 /**
@@ -50,5 +50,36 @@ export function testCardBorderStyling(
     const wrapper = await mountComponent()
     const html = wrapper.html()
     expect(html).toContain('border')
+  })
+}
+
+/**
+ * Test helper for card background image behavior
+ * Tests that background images are rendered and styled correctly
+ */
+export function testBackgroundImageBehavior(
+  componentName: string,
+  mountComponent: () => Promise<VueWrapper>,
+  options: {
+    hasBackgroundImage?: boolean
+  } = {}
+) {
+  const { hasBackgroundImage = true } = options
+
+  describe(`${componentName} - Background Image`, () => {
+    if (hasBackgroundImage) {
+      it('renders background image when available', async () => {
+        const wrapper = await mountComponent()
+        const bgDiv = wrapper.find('[data-test="card-background"]')
+        expect(bgDiv.exists()).toBe(true)
+        expect(bgDiv.attributes('style')).toContain('background-image')
+      })
+    } else {
+      it('does not render background when image unavailable', async () => {
+        const wrapper = await mountComponent()
+        const bgDiv = wrapper.find('[data-test="card-background"]')
+        expect(bgDiv.exists()).toBe(false)
+      })
+    }
   })
 }

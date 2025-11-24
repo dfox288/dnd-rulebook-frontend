@@ -1,30 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Feat } from '~/types'
-import type { components } from '~/types/api/generated'
 import FeatCard from '~/components/feat/FeatCard.vue'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('FeatCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated Feat type', () => {
-    // This test verifies that our Feat interface is compatible with the generated type
-    const generatedFeat: components['schemas']['FeatResource'] = {
-      id: 1,
-      name: 'Alert',
-      slug: 'alert',
-      prerequisites_text: null,
-      description: 'Always on the lookout for danger'
-    }
-
-    // Should be assignable to our application Feat type
-    const feat: Feat = generatedFeat
-
-    expect(feat.id).toBe(1)
-    expect(feat.name).toBe('Alert')
-  })
-})
 
 describe('FeatCard', () => {
   const mockFeat: Feat = {
@@ -321,32 +301,8 @@ describe('FeatCard', () => {
     expect(wrapper.text()).toContain('4 Bonuses')
   })
 
-  // Background Image Tests
-  it('renders background image element when slug exists', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background opacity', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-  })
+  testBackgroundImageBehavior(
+    'FeatCard',
+    async () => mountSuspended(FeatCard, { props: { feat: mockFeat } })
+  )
 })

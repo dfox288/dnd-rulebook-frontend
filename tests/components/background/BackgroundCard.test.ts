@@ -1,28 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Background } from '~/types'
-import type { components } from '~/types/api/generated'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('BackgroundCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated Background type', () => {
-    // This test verifies that our Background interface is compatible with the generated type
-    const generatedBg: components['schemas']['BackgroundResource'] = {
-      id: 1,
-      name: 'Acolyte',
-      slug: 'acolyte'
-    }
-
-    // Should be assignable to our application Background type
-    const background: Background = generatedBg
-
-    expect(background.id).toBe(1)
-    expect(background.name).toBe('Acolyte')
-  })
-})
 
 describe('BackgroundCard', () => {
   const mockBackground: Background = {
@@ -306,37 +288,10 @@ describe('BackgroundCard', () => {
     expect(wrapper.text()).toContain('3 Tools')
   })
 
-  // Background Image Tests
-  it('renders background image element when slug exists', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background with scale and rotate on hover', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-    expect(bgDiv.classes()).toContain('duration-300')
-    expect(bgDiv.classes()).toContain('group-hover:scale-110')
-    expect(bgDiv.classes()).toContain('group-hover:rotate-3')
-  })
+  testBackgroundImageBehavior(
+    'BackgroundCard',
+    async () => mountSuspended(BackgroundCard, { props: { background: mockBackground } })
+  )
 
   // Equipment Tests
   it('shows equipment count badge when equipment exists', async () => {

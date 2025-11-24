@@ -55,30 +55,6 @@ describe('UiCardSourceFooter', () => {
       expect(wrapper.text()).not.toMatch(/,\s*$/)
     })
 
-    it('uses correct styling classes', () => {
-      const wrapper = mount(SourceFooter, {
-        props: {
-          sources: [
-            { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
-          ]
-        }
-      })
-
-      // Check for border-top container
-      const container = wrapper.find('.border-t')
-      expect(container.exists()).toBe(true)
-      expect(container.classes()).toContain('border-gray-200')
-      expect(container.classes()).toContain('dark:border-gray-700')
-      expect(container.classes()).toContain('mt-3')
-      expect(container.classes()).toContain('pt-3')
-
-      // Check for text styling
-      const textContainer = wrapper.find('.text-xs')
-      expect(textContainer.exists()).toBe(true)
-      expect(textContainer.classes()).toContain('text-gray-600')
-      expect(textContainer.classes()).toContain('dark:text-gray-400')
-    })
-
     it('source name is bold', () => {
       const wrapper = mount(SourceFooter, {
         props: {

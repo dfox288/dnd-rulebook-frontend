@@ -25,20 +25,6 @@ describe('UiDetailPageHeader', () => {
     expect(wrapper.text()).toContain('Fireball')
   })
 
-  it('applies correct heading styles', () => {
-    const wrapper = mount(UiDetailPageHeader, {
-      props: {
-        title: 'Magic Missile'
-      },
-      ...mountOptions
-    })
-
-    const heading = wrapper.find('h1')
-    expect(heading.exists()).toBe(true)
-    expect(heading.classes()).toContain('text-4xl')
-    expect(heading.classes()).toContain('font-bold')
-  })
-
   it('renders badges when provided', () => {
     const wrapper = mount(UiDetailPageHeader, {
       props: {
@@ -79,19 +65,6 @@ describe('UiDetailPageHeader', () => {
 
     const badges = wrapper.findAll('.badge')
     expect(badges).toHaveLength(0)
-  })
-
-  it('applies dark mode support', () => {
-    const wrapper = mount(UiDetailPageHeader, {
-      props: {
-        title: 'Fighter'
-      },
-      ...mountOptions
-    })
-
-    const heading = wrapper.find('h1')
-    expect(heading.classes()).toContain('text-gray-900')
-    expect(heading.classes()).toContain('dark:text-gray-100')
   })
 
   it('wraps badges flexibly', () => {

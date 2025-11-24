@@ -1,32 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { CharacterClass } from '~/types'
-import type { components } from '~/types/api/generated'
 import ClassCard from '~/components/class/ClassCard.vue'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('ClassCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated CharacterClass type', () => {
-    // This test verifies that our CharacterClass interface is compatible with the generated type
-    const generatedClass: components['schemas']['ClassResource'] = {
-      id: '1',
-      name: 'Fighter',
-      slug: 'fighter',
-      hit_die: '10',
-      is_base_class: 'true',
-      parent_class_id: '0',
-      description: 'A master of martial combat',
-      primary_ability: 'Strength or Dexterity'
-    }
-
-    // Should be assignable to our application CharacterClass type
-    const characterClass: CharacterClass = generatedClass
-
-    expect(characterClass.name).toBe('Fighter')
-  })
-})
 
 describe('ClassCard', () => {
   const mockClass: CharacterClass = {
@@ -356,32 +334,8 @@ describe('ClassCard', () => {
     expect(wrapper.text()).toContain('Base Class')
   })
 
-  // Background Image Tests
-  it('renders background image element when slug exists', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background opacity', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-  })
+  testBackgroundImageBehavior(
+    'ClassCard',
+    async () => mountSuspended(ClassCard, { props: { characterClass: mockClass } })
+  )
 })

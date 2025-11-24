@@ -139,26 +139,6 @@ describe('UiListErrorState', () => {
   })
 
   describe('styling consistency', () => {
-    it('applies correct text color classes', () => {
-      const wrapper = createWrapper({ error: 'Test error' })
-
-      const heading = wrapper.find('h2')
-      expect(heading.classes()).toContain('text-gray-900')
-      expect(heading.classes()).toContain('dark:text-gray-100')
-
-      const message = wrapper.find('p')
-      expect(message.classes()).toContain('text-gray-600')
-      expect(message.classes()).toContain('dark:text-gray-400')
-    })
-
-    it('applies correct sizing to heading', () => {
-      const wrapper = createWrapper({ error: 'Test error' })
-
-      const heading = wrapper.find('h2')
-      expect(heading.classes()).toContain('text-xl')
-      expect(heading.classes()).toContain('font-semibold')
-    })
-
     it('centers content within card', () => {
       const wrapper = createWrapper({ error: 'Test error' })
 

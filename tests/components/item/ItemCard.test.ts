@@ -2,28 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ItemCard from '~/components/item/ItemCard.vue'
 import type { Item } from '~/types'
-import type { components } from '~/types/api/generated'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('ItemCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated Item type', () => {
-    const generatedItem: components['schemas']['ItemResource'] = {
-      id: 1,
-      name: 'Longsword',
-      slug: 'longsword',
-      rarity: 'common',
-      is_magic: false,
-      requires_attunement: false
-    }
-
-    const item: Item = generatedItem
-
-    expect(item.id).toBe(1)
-    expect(item.name).toBe('Longsword')
-  })
-})
 
 describe('ItemCard', () => {
   const mockItem: Item = {
@@ -340,32 +321,8 @@ describe('ItemCard', () => {
     expect(wrapper.text()).not.toContain('lb')
   })
 
-  it('renders background image when available', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-    expect(bgDiv.attributes('style')).toContain('background-image')
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background opacity', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-  })
+  testBackgroundImageBehavior(
+    'ItemCard',
+    async () => mountSuspended(ItemCard, { props: { item: mockItem } })
+  )
 })

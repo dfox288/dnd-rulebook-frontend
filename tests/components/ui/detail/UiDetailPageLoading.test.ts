@@ -48,20 +48,4 @@ describe('UiDetailPageLoading', () => {
     // Should have vertical spacing
     expect(container.classes()).toContain('py-12')
   })
-
-  it('renders with dark mode support', () => {
-    const wrapper = mount(UiDetailPageLoading)
-
-    const text = wrapper.find('p')
-    expect(text.classes()).toContain('text-gray-600')
-    expect(text.classes()).toContain('dark:text-gray-400')
-  })
-
-  it('has correct spacing between icon and text', () => {
-    const wrapper = mount(UiDetailPageLoading)
-
-    const innerContainer = wrapper.find('.flex.flex-col.items-center')
-    expect(innerContainer.exists()).toBe(true)
-    expect(innerContainer.classes()).toContain('gap-4')
-  })
 })

@@ -92,24 +92,5 @@ describe('ConditionCard', () => {
       const url = wrapper.vm.backgroundImageUrl
       expect(url).toBe('/images/generated/conversions/256/conditions/stability-ai/blinded.png')
     })
-
-    it('applies background image with opacity layer', async () => {
-      const wrapper = await mountSuspended(ConditionCard, {
-        props: {
-          condition: {
-            id: 1,
-            slug: 'blinded',
-            name: 'Blinded',
-            description: 'Test description'
-          }
-        }
-      })
-
-      const html = wrapper.html()
-      // Check for absolute positioned background div with opacity
-      expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-15')
-      expect(html).toContain('blinded.png')
-    })
   })
 })

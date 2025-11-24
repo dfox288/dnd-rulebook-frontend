@@ -84,25 +84,5 @@ describe('ProficiencyTypeCard', () => {
       const html = wrapper.html()
       expect(html).toContain('light-armor.png')
     })
-
-    it('applies background image with opacity layer', async () => {
-      const wrapper = await mountSuspended(ProficiencyTypeCard, {
-        props: {
-          proficiencyType: {
-            id: 1,
-            name: 'Light Armor',
-            slug: 'light-armor',
-            category: 'armor'
-          }
-        }
-      })
-
-      const html = wrapper.html()
-      // Check for absolute positioned background div with opacity
-      expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-15')
-      expect(html).toContain('group-hover:opacity-30')
-      expect(html).toContain('light-armor.png')
-    })
   })
 })

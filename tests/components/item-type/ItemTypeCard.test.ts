@@ -82,24 +82,5 @@ describe('ItemTypeCard', () => {
       const url = wrapper.vm.backgroundImageUrl
       expect(url).toBe('/images/generated/conversions/256/item_types/stability-ai/la.png')
     })
-
-    it('applies background image with opacity layer', async () => {
-      const wrapper = await mountSuspended(ItemTypeCard, {
-        props: {
-          itemType: {
-            id: 1,
-            code: 'LA',
-            name: 'Light Armor',
-            description: 'Test description'
-          }
-        }
-      })
-
-      const html = wrapper.html()
-      // Check for absolute positioned background div with opacity
-      expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-15')
-      expect(html).toContain('la.png')
-    })
   })
 })

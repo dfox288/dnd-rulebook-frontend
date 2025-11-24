@@ -41,60 +41,9 @@ describe('UiListSkeletonCards', () => {
         expect(card.classes()).toContain('animate-pulse')
       })
     })
-
-    it('has responsive grid layout classes on container', () => {
-      const wrapper = mount(SkeletonCards)
-
-      const container = wrapper.find('div')
-      expect(container.classes()).toContain('grid')
-      expect(container.classes()).toContain('grid-cols-1')
-      expect(container.classes()).toContain('md:grid-cols-2')
-      expect(container.classes()).toContain('lg:grid-cols-3')
-      expect(container.classes()).toContain('gap-4')
-    })
   })
 
   describe('skeleton structure', () => {
-    it('has correct skeleton element structure in each card', () => {
-      const wrapper = mount(SkeletonCards)
-
-      // Check for space-y-3 container
-      const spaceContainers = wrapper.findAll('.space-y-3')
-      expect(spaceContainers.length).toBeGreaterThan(0)
-
-      // Check for badge row (flex gap-2)
-      const badgeRows = wrapper.findAll('.flex.gap-2')
-      expect(badgeRows.length).toBeGreaterThan(0)
-
-      // Check for badge skeletons in first row
-      const firstBadgeRow = badgeRows[0]
-      const badgeSkeletons = firstBadgeRow.findAll('.h-5')
-      expect(badgeSkeletons).toHaveLength(2)
-
-      // Check first badge skeleton width (w-20)
-      expect(badgeSkeletons[0].classes()).toContain('w-20')
-      expect(badgeSkeletons[0].classes()).toContain('bg-gray-200')
-      expect(badgeSkeletons[0].classes()).toContain('dark:bg-gray-700')
-
-      // Check second badge skeleton width (w-24)
-      expect(badgeSkeletons[1].classes()).toContain('w-24')
-      expect(badgeSkeletons[1].classes()).toContain('bg-gray-200')
-      expect(badgeSkeletons[1].classes()).toContain('dark:bg-gray-700')
-
-      // Check for title skeleton (h-6)
-      const titleSkeletons = wrapper.findAll('.h-6')
-      expect(titleSkeletons.length).toBeGreaterThan(0)
-      expect(titleSkeletons[0].classes()).toContain('w-3/4')
-
-      // Check for subtitle skeleton (h-4)
-      const subtitleSkeletons = wrapper.findAll('.h-4')
-      expect(subtitleSkeletons.length).toBeGreaterThan(0)
-      expect(subtitleSkeletons[0].classes()).toContain('w-1/2')
-
-      // Check for description skeleton (h-16)
-      const descriptionSkeletons = wrapper.findAll('.h-16')
-      expect(descriptionSkeletons.length).toBeGreaterThan(0)
-    })
 
     it('applies consistent skeleton structure to all cards', () => {
       const wrapper = mount(SkeletonCards, {

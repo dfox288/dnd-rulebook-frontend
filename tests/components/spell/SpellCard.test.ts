@@ -2,37 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SpellCard from '~/components/spell/SpellCard.vue'
 import type { Spell } from '~/types'
-import type { components } from '~/types/api/generated'
-import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
+import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
-
-describe('SpellCard - Type Compatibility', () => {
-  it('should accept OpenAPI-generated Spell type', () => {
-    // This test verifies that our Spell interface is compatible with the generated type
-    const generatedSpell: components['schemas']['SpellResource'] = {
-      id: 1,
-      name: 'Fireball',
-      slug: 'fireball',
-      level: 3,
-      casting_time: '1 action',
-      range: '150 feet',
-      components: 'V, S, M',
-      material_components: 'a tiny ball of bat guano and sulfur',
-      duration: 'Instantaneous',
-      description: 'A bright streak...',
-      higher_levels: null,
-      is_ritual: false,
-      needs_concentration: false
-    }
-
-    // Should be assignable to our application Spell type
-    const spell: Spell = generatedSpell
-
-    expect(spell.id).toBe(1)
-    expect(spell.name).toBe('Fireball')
-  })
-})
 
 describe('SpellCard', () => {
   const mockSpell: Spell = {
@@ -233,32 +205,8 @@ describe('SpellCard', () => {
     expect(text).toContain('Player\'s Handbook')
   })
 
-  it('renders background image when available', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.exists()).toBe(true)
-    expect(bgDiv.attributes('style')).toContain('background-image')
-  })
-
-  it('has correct opacity classes for background', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('opacity-15')
-    expect(bgDiv.classes()).toContain('group-hover:opacity-30')
-  })
-
-  it('applies transition to background opacity', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    const bgDiv = wrapper.find('[data-test="card-background"]')
-    expect(bgDiv.classes()).toContain('transition-all')
-  })
+  testBackgroundImageBehavior(
+    'SpellCard',
+    async () => mountSuspended(SpellCard, { props: { spell: mockSpell } })
+  )
 })

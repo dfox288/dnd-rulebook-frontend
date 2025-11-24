@@ -150,25 +150,5 @@ describe('LanguageCard', () => {
       const url = wrapper.vm.backgroundImageUrl
       expect(url).toBe('/images/generated/conversions/256/languages/stability-ai/common.png')
     })
-
-    it('applies background image with opacity layer', async () => {
-      const wrapper = await mountSuspended(LanguageCard, {
-        props: {
-          language: {
-            id: 1,
-            slug: 'common',
-            name: 'Common',
-            script: 'Common',
-            typical_speakers: 'Humans'
-          }
-        }
-      })
-
-      const html = wrapper.html()
-      // Check for absolute positioned background div with opacity
-      expect(html).toContain('absolute inset-0')
-      expect(html).toContain('opacity-15')
-      expect(html).toContain('common.png')
-    })
   })
 })

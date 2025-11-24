@@ -1,48 +1,20 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import UiAccordionItemSpells from '~/components/ui/accordion/UiAccordionItemSpells.vue'
+import {
+  mockSpellFixedCost,
+  mockSpellVariableCost,
+  mockSpellHighLevel,
+  mockSpellWithUsageLimit,
+  mockSpellWithLevelReq,
+  mockItemSpellsArray
+} from '../../../fixtures/spells'
 
 describe('UiAccordionItemSpells', () => {
-  const mockSpells = [
-    {
-      id: 85,
-      name: 'Cure Wounds',
-      slug: 'cure-wounds',
-      level: 1,
-      charges_cost_min: 1,
-      charges_cost_max: 4,
-      charges_cost_formula: '1 per spell level',
-      usage_limit: null,
-      level_requirement: null
-    },
-    {
-      id: 201,
-      name: 'Lesser Restoration',
-      slug: 'lesser-restoration',
-      level: 2,
-      charges_cost_min: 2,
-      charges_cost_max: 2,
-      charges_cost_formula: null,
-      usage_limit: null,
-      level_requirement: null
-    },
-    {
-      id: 218,
-      name: 'Mass Cure Wounds',
-      slug: 'mass-cure-wounds',
-      level: 5,
-      charges_cost_min: 5,
-      charges_cost_max: 5,
-      charges_cost_formula: null,
-      usage_limit: null,
-      level_requirement: null
-    }
-  ]
-
   describe('spell list rendering', () => {
     it('renders spell count correctly', () => {
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: mockSpells }
+        props: { spells: mockItemSpellsArray }
       })
 
       // Verify all spells are rendered (check by counting spell level displays)
@@ -53,7 +25,7 @@ describe('UiAccordionItemSpells', () => {
 
     it('displays spell levels correctly', () => {
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: mockSpells }
+        props: { spells: mockItemSpellsArray }
       })
 
       expect(wrapper.text()).toContain('1st level')
@@ -72,60 +44,24 @@ describe('UiAccordionItemSpells', () => {
 
   describe('charges cost display', () => {
     it('displays single charge cost', () => {
-      const spell = [{
-        id: 201,
-        name: 'Lesser Restoration',
-        slug: 'lesser-restoration',
-        level: 2,
-        charges_cost_min: 2,
-        charges_cost_max: 2,
-        charges_cost_formula: null,
-        usage_limit: null,
-        level_requirement: null
-      }]
-
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: spell }
+        props: { spells: [mockSpellFixedCost] }
       })
 
       expect(wrapper.text()).toContain('2 charges')
     })
 
     it('displays charge range when min and max differ', () => {
-      const spell = [{
-        id: 85,
-        name: 'Cure Wounds',
-        slug: 'cure-wounds',
-        level: 1,
-        charges_cost_min: 1,
-        charges_cost_max: 4,
-        charges_cost_formula: '1 per spell level',
-        usage_limit: null,
-        level_requirement: null
-      }]
-
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: spell }
+        props: { spells: [mockSpellVariableCost] }
       })
 
       expect(wrapper.text()).toContain('1-4 charges')
     })
 
     it('displays charge formula when provided', () => {
-      const spell = [{
-        id: 85,
-        name: 'Cure Wounds',
-        slug: 'cure-wounds',
-        level: 1,
-        charges_cost_min: 1,
-        charges_cost_max: 4,
-        charges_cost_formula: '1 per spell level',
-        usage_limit: null,
-        level_requirement: null
-      }]
-
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: spell }
+        props: { spells: [mockSpellVariableCost] }
       })
 
       expect(wrapper.text()).toContain('1 per spell level')
@@ -155,40 +91,16 @@ describe('UiAccordionItemSpells', () => {
 
   describe('optional fields', () => {
     it('displays usage limit when provided', () => {
-      const spell = [{
-        id: 100,
-        name: 'Test Spell',
-        slug: 'test-spell',
-        level: 1,
-        charges_cost_min: 1,
-        charges_cost_max: 1,
-        charges_cost_formula: null,
-        usage_limit: '3/day',
-        level_requirement: null
-      }]
-
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: spell }
+        props: { spells: [mockSpellWithUsageLimit] }
       })
 
       expect(wrapper.text()).toContain('3/day')
     })
 
     it('displays level requirement when provided', () => {
-      const spell = [{
-        id: 100,
-        name: 'Test Spell',
-        slug: 'test-spell',
-        level: 9,
-        charges_cost_min: 7,
-        charges_cost_max: 7,
-        charges_cost_formula: null,
-        usage_limit: null,
-        level_requirement: 17
-      }]
-
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: spell }
+        props: { spells: [mockSpellWithLevelReq] }
       })
 
       expect(wrapper.text()).toContain('Requires character level 17')
@@ -219,7 +131,7 @@ describe('UiAccordionItemSpells', () => {
   describe('spell links', () => {
     it('renders spell names as links to spell detail pages', () => {
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: mockSpells }
+        props: { spells: mockItemSpellsArray }
       })
 
       // NuxtLink components exist in HTML even if not rendered as <a> in test environment
@@ -233,7 +145,7 @@ describe('UiAccordionItemSpells', () => {
   describe('visual styling', () => {
     it('applies consistent padding', () => {
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: mockSpells }
+        props: { spells: mockItemSpellsArray }
       })
 
       const container = wrapper.find('div')
@@ -242,7 +154,7 @@ describe('UiAccordionItemSpells', () => {
 
     it('applies spacing between spells', () => {
       const wrapper = mount(UiAccordionItemSpells, {
-        props: { spells: mockSpells }
+        props: { spells: mockItemSpellsArray }
       })
 
       const container = wrapper.find('div')
