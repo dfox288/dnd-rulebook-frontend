@@ -237,7 +237,6 @@ const abilityScoreIncreases = computed(() => {
         >
           <UiAccordionTraitsList
             :traits="race.traits"
-            border-color="primary-500"
           />
         </template>
 

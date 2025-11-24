@@ -211,7 +211,6 @@ const remainingTraits = computed(() => {
           <UiAccordionTraitsList
             :traits="entity.features"
             :show-level="true"
-            border-color="primary-500"
           />
         </template>
 

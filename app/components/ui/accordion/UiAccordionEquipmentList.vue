@@ -35,6 +35,12 @@ const proficienciesItem = computed(() => {
 })
 
 const regularEquipment = computed(() => {
+  // For backgrounds, show all equipment (no class-specific filtering)
+  if (props.type === 'background') {
+    return props.equipment
+  }
+
+  // For classes, filter out hit points and proficiencies
   return props.equipment.filter(item =>
     !isHitPoints(item) && !isProficiencies(item)
   )
@@ -82,6 +88,11 @@ const getItemDisplay = (item: Equipment): string => {
   // Otherwise use description
   if (item.description) {
     return item.quantity > 1 ? `${item.quantity} ${item.description}` : item.description
+  }
+
+  // Fallback: if we have an item_id but no name, show generic text
+  if (item.item_id) {
+    return item.quantity > 1 ? `${item.quantity} items` : '1 item'
   }
 
   return ''

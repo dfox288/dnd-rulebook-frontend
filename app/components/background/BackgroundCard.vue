@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Background } from '~/types'
-import { ITEM_ID_GOLD_PIECE } from '~/constants/items'
 
 interface Props {
   background: Background
@@ -8,41 +7,38 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Use composable for proficiency/language/equipment parsing
+// Convert props.background to a computed ref for the composable
+const backgroundRef = computed(() => props.background)
+const {
+  skillProficiencies,
+  toolProficiencies,
+  languages,
+  equipmentCount,
+  startingGold
+} = useBackgroundStats(backgroundRef)
+
 /**
  * Get skill proficiencies summary - shows actual skill names
  */
 const skillsSummary = computed(() => {
-  if (!props.background.proficiencies || props.background.proficiencies.length === 0) {
-    return null
-  }
-  const skillProficiencies = props.background.proficiencies.filter(p => p.proficiency_type === 'skill')
-  if (skillProficiencies.length === 0) return null
-
-  // Extract skill names
-  const skillNames = skillProficiencies
-    .map(p => p.skill?.name)
-    .filter(Boolean) as string[]
-
-  if (skillNames.length === 0) return null
+  if (skillProficiencies.value.length === 0) return null
 
   // Show first 2 skill names
-  if (skillNames.length <= 2) {
-    return skillNames.join(', ')
+  if (skillProficiencies.value.length <= 2) {
+    return skillProficiencies.value.join(', ')
   }
 
   // Show first 2 + overflow count
-  const remaining = skillNames.length - 2
-  return `${skillNames.slice(0, 2).join(', ')} +${remaining} more`
+  const remaining = skillProficiencies.value.length - 2
+  return `${skillProficiencies.value.slice(0, 2).join(', ')} +${remaining} more`
 })
 
 /**
  * Get languages count
  */
 const languagesCount = computed(() => {
-  if (!props.background.languages || props.background.languages.length === 0) {
-    return null
-  }
-  return props.background.languages.length
+  return languages.value.length > 0 ? languages.value.length : null
 })
 
 /**
@@ -61,31 +57,6 @@ const truncatedDescription = computed(() => {
 const { getImagePath } = useEntityImage()
 const backgroundImage = computed(() => {
   return getImagePath('backgrounds', props.background.slug, 256)
-})
-
-/**
- * Equipment count - total number of items
- */
-const equipmentCount = computed(() => {
-  if (!props.background.equipment || props.background.equipment.length === 0) {
-    return null
-  }
-  return props.background.equipment.length
-})
-
-/**
- * Starting gold - check for gold piece item_id
- * Uses ITEM_ID_GOLD_PIECE constant from ~/constants/items
- */
-const startingGold = computed(() => {
-  if (!props.background.equipment || props.background.equipment.length === 0) {
-    return null
-  }
-
-  const goldItem = props.background.equipment.find(eq => eq.item_id === ITEM_ID_GOLD_PIECE)
-  if (!goldItem) return null
-
-  return goldItem.quantity
 })
 </script>
 
@@ -152,7 +123,7 @@ const startingGold = computed(() => {
 
           <!-- Tool Proficiencies -->
           <div
-            v-if="background.proficiencies && background.proficiencies.filter(p => p.proficiency_type === 'tool').length > 0"
+            v-if="toolProficiencies && toolProficiencies.length > 0"
             class="flex items-center gap-2"
           >
             <UBadge
@@ -160,7 +131,7 @@ const startingGold = computed(() => {
               variant="subtle"
               size="md"
             >
-              🔧 {{ background.proficiencies.filter(p => p.proficiency_type === 'tool').length }} Tools
+              🔧 {{ toolProficiencies.length }} Tools
             </UBadge>
           </div>
 

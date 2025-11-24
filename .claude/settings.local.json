@@ -172,7 +172,9 @@
       "Bash(do echo \"=== $cardCard.vue ===\" grep -n \"UBadge\" app/components/$card/*Card.vue)",
       "Bash(/tmp/changelog_head.txt)",
       "Bash(/tmp/changelog_tail.txt)",
-      "Bash(CHANGELOG.md)"
+      "Bash(CHANGELOG.md)",
+      "Bash(docker --version:*)",
+      "Bash(docker ps:*)"
     ],
     "deny": [],
     "ask": []

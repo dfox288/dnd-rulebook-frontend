@@ -12,13 +12,11 @@ interface Props {
   traits: TraitOrFeature[]
   showLevel?: boolean
   showCategory?: boolean
-  borderColor?: string
 }
 
 withDefaults(defineProps<Props>(), {
   showLevel: false,
-  showCategory: false,
-  borderColor: 'primary-500'
+  showCategory: false
 })
 </script>
 
@@ -31,8 +29,7 @@ withDefaults(defineProps<Props>(), {
     >
       <!-- Existing trait display -->
       <div
-        class="border-l-4 pl-4 py-2"
-        :class="`border-${borderColor}`"
+        class="py-2"
       >
         <div class="flex items-center gap-2 mb-1">
           <UBadge

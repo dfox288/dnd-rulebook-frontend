@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **UiFilterMultiSelect component** - Reusable multi-select dropdown filter with checkboxes, search, and clear functionality for selecting multiple values (damage types, alignments, etc.) (2025-11-24)
+- **UiFilterRangeSlider component** - Dual-handle range slider for min/max numeric filtering (Challenge Rating 0-30, spell levels, etc.) with custom formatting support (2025-11-24)
 - **Legendary filter on Monsters page** - Filter monsters by legendary status (All/Yes/No tri-state toggle) to find legendary creatures (2025-11-24)
 - **Base Class Only filter on Classes page** - Filter classes by base class vs subclass (All/Yes/No tri-state toggle) to show only core 13 classes (2025-11-24)
 - **Spellcaster filter on Classes page** - Filter classes by spellcasting capability (All/Yes/No tri-state toggle) to find full/half/third casters (2025-11-24)

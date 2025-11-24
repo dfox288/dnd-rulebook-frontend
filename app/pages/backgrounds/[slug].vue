@@ -26,6 +26,66 @@ const imagePath = computed(() => {
   if (!entity.value) return null
   return getImagePath('backgrounds', entity.value.slug, 512)
 })
+
+/**
+ * Use composable to extract background stats
+ */
+const {
+  skillProficiencies,
+  toolProficiencies,
+  languages,
+  equipmentCount,
+  startingGold
+} = useBackgroundStats(entity)
+
+/**
+ * Build stats array for UiDetailQuickStatsCard
+ */
+const statsForDisplay = computed(() => {
+  const stats = []
+
+  // Skills (always show if present)
+  if (skillProficiencies.value.length > 0) {
+    stats.push({
+      icon: 'i-heroicons-academic-cap',
+      label: 'Skill Proficiencies',
+      value: skillProficiencies.value.join(', ')
+    })
+  }
+
+  // Languages (show actual names)
+  if (languages.value.length > 0) {
+    stats.push({
+      icon: 'i-heroicons-language',
+      label: 'Languages',
+      value: languages.value.join(', ')
+    })
+  }
+
+  // Tool Proficiencies (show actual names)
+  if (toolProficiencies.value.length > 0) {
+    stats.push({
+      icon: 'i-heroicons-wrench',
+      label: 'Tool Proficiencies',
+      value: toolProficiencies.value.join(', ')
+    })
+  }
+
+  // Equipment + Gold combined
+  if (equipmentCount.value > 0 || startingGold.value) {
+    const parts = []
+    if (equipmentCount.value > 0) parts.push(`${equipmentCount.value} items`)
+    if (startingGold.value) parts.push(`${startingGold.value} gp`)
+
+    stats.push({
+      icon: 'i-heroicons-shopping-bag',
+      label: 'Starting Equipment',
+      value: parts.join(' + ')
+    })
+  }
+
+  return stats
+})
 </script>
 
 <template>
@@ -58,15 +118,24 @@ const imagePath = computed(() => {
         ]"
       />
 
-      <!-- Entity Image (dedicated section, before description) -->
-      <div
-        v-if="imagePath"
-        class="rounded-lg overflow-hidden"
-      >
-        <UiDetailEntityImage
-          :image-path="imagePath"
-          :image-alt="`${entity.name} background illustration`"
-        />
+      <!-- Quick Stats (2/3) + Image (1/3) Side-by-Side -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Quick Stats - 2/3 width on large screens -->
+        <div class="lg:col-span-2">
+          <UiDetailQuickStatsCard
+            :columns="2"
+            :stats="statsForDisplay"
+          />
+        </div>
+
+        <!-- Standalone Image - 1/3 width on large screens -->
+        <div class="lg:col-span-1">
+          <UiDetailStandaloneImage
+            v-if="imagePath"
+            :image-path="imagePath"
+            :image-alt="`${entity.name} background illustration`"
+          />
+        </div>
       </div>
 
       <!-- Description (always visible, outside accordion) -->
@@ -130,7 +199,6 @@ const imagePath = computed(() => {
           <UiAccordionTraitsList
             :traits="entity.traits"
             :show-category="true"
-            border-color="purple-500"
           />
         </template>
 
