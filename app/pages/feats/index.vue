@@ -1,6 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { Feat } from '~/types/api/entities'
+
+const route = useRoute()
+
+// Custom filter state
+const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as string) || null)
+
+// Query builder for custom filters
+const queryBuilder = computed(() => {
+  const params: Record<string, unknown> = {}
+  if (hasPrerequisites.value !== null) params.has_prerequisites = hasPrerequisites.value
+  return params
+})
 
 // Use entity list composable for all shared logic
 const {
@@ -12,12 +24,12 @@ const {
   loading,
   error,
   refresh,
-  clearFilters,
+  clearFilters: clearBaseFilters,
   hasActiveFilters
 } = useEntityList({
   endpoint: '/feats',
   cacheKey: 'feats-list',
-  queryBuilder: computed(() => ({})), // No custom filters for feats
+  queryBuilder,
   seo: {
     title: 'Feats - D&D 5e Compendium',
     description: 'Browse all D&D 5e feats and character abilities.'
@@ -26,6 +38,12 @@ const {
 
 // Type the data array
 const feats = computed(() => data.value as Feat[])
+
+// Clear all filters (base + custom)
+const clearFilters = () => {
+  clearBaseFilters()
+  hasPrerequisites.value = null
+}
 
 // Pagination settings
 const perPage = 24
@@ -60,6 +78,59 @@ const perPage = 24
           />
         </template>
       </UInput>
+    </div>
+
+    <!-- Filters -->
+    <div class="mb-6 space-y-4">
+      <!-- Has Prerequisites filter -->
+      <UiFilterToggle
+        v-model="hasPrerequisites"
+        label="Has Prerequisites"
+        color="warning"
+        :options="[
+          { value: null, label: 'All' },
+          { value: '1', label: 'Yes' },
+          { value: '0', label: 'No' }
+        ]"
+      />
+
+      <!-- Clear filters button -->
+      <div class="flex flex-wrap gap-2">
+        <UButton
+          v-if="searchQuery || hasPrerequisites !== null"
+          color="neutral"
+          variant="soft"
+          @click="clearFilters"
+        >
+          Clear Filters
+        </UButton>
+      </div>
+
+      <!-- Active Filter Chips -->
+      <div
+        v-if="hasActiveFilters"
+        class="flex flex-wrap items-center gap-2 pt-2"
+      >
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <UButton
+          v-if="hasPrerequisites !== null"
+          size="xs"
+          color="warning"
+          variant="soft"
+          @click="hasPrerequisites = null"
+        >
+          Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="searchQuery"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          @click="searchQuery = ''"
+        >
+          "{{ searchQuery }}" ✕
+        </UButton>
+      </div>
     </div>
 
     <!-- Loading State -->

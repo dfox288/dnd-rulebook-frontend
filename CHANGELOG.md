@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Has Prerequisites filter on Feats page** - Filter feats by prerequisite requirements (All/Yes/No tri-state toggle) to find feats available at level 1 or advanced feats (2025-11-24)
 - **Class filter on Spells page** - Filter spells by character class (Wizard, Cleric, etc.) with base classes sorted alphabetically (2025-11-24)
 - **Quick stats panel on backgrounds detail page** - Shows actual proficiency/language/equipment data at a glance (2/3 layout) (2025-11-24)
 - **useBackgroundStats composable** - Extracts skill/tool proficiency names, language names, equipment count, and starting gold from Background entities (2025-11-24)
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Background detail page image resized** from full-width to 1/3 width for consistency with classes/races pages (2025-11-24)
 - **BackgroundCard refactored** to use useBackgroundStats composable (reduces code duplication) (2025-11-24)
+- **Removed vertical border from traits/features** in UiAccordionTraitsList component across all entity detail pages (backgrounds, races, classes) for cleaner visual hierarchy (2025-11-24)
 - Normalized accordion table components with consistent styling (2025-11-23)
   - Created reusable UiAccordionDataTable base component
   - Refactored UiAccordionClassCounters, UiAccordionLevelProgression, UiAccordionRandomTablesList
@@ -33,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spells page filters now collapse by default, improving mobile experience and reducing visual clutter (2025-11-23)
 
 ### Fixed
+- **BackgroundCard tool proficiencies display** - Fixed "Cannot read properties of null" error by correctly accessing ComputedRef with `.value` (2025-11-24)
+- **Background equipment accordion** now displays all equipment items correctly (was incorrectly filtering out items with class-specific logic) (2025-11-24)
 - UiFilterToggle now uses correct API values ('1'/'0' instead of 'true'/'false') for boolean filters (2025-11-23)
 - Improved UiFilterToggle styling to match existing NuxtUI design system (2025-11-23)
 - Class counters display (resource tracking like Rage, Ki Points) with level progression table (2025-11-23)
