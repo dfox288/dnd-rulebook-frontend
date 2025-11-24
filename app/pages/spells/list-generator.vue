@@ -16,14 +16,16 @@ useSeoMeta({
 const { apiFetch } = useApi()
 
 // Fetch spellcasting classes
-const { data: classes, loading: classesLoading } = await useAsyncData<CharacterClass[]>(
+const { data: classes, status: classesStatus } = await useAsyncData<CharacterClass[]>(
   'spellcasting-classes',
   async () => {
     const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100')
-    // Filter to only spellcasting classes
-    return response.data.filter(c => c.is_spellcaster === '1')
+    // Filter to only spellcasting classes (those with spellcasting ability)
+    return response.data.filter(c => c.spellcasting_ability !== undefined)
   }
 )
+
+const classesLoading = computed(() => classesStatus.value === 'pending')
 
 // Use spell list generator composable
 const {
