@@ -41,10 +41,15 @@ const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools'
 })
 
 // Fetch classes for filter options (base classes only)
+// Note: Need to fetch 2 pages since there are 131 classes but limit is 100/page
 const { data: classes } = await useAsyncData<CharacterClass[]>('classes-filter', async () => {
-  const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100')
-  // Filter to base classes only (API returns boolean, not string)
-  return response?.data?.filter(c => c.is_base_class === true) || []
+  const [page1, page2] = await Promise.all([
+    apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100&page=1'),
+    apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100&page=2')
+  ])
+  const allClasses = [...(page1?.data || []), ...(page2?.data || [])]
+  // Filter to base classes only (API returns boolean true/false, not string)
+  return allClasses.filter(c => c.is_base_class === true)
 })
 
 // Phase 1: Fetch damage types for filter options
