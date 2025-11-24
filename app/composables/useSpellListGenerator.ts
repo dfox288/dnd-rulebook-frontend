@@ -30,6 +30,9 @@ export interface UseSpellListGeneratorReturn {
   toggleSpell: (spellId: number) => void
   selectionCount: ComputedRef<number>
   setClassData: (classData: CharacterClass) => void
+  saveToStorage: () => void
+  loadFromStorage: () => void
+  clearAll: () => void
 }
 
 export function useSpellListGenerator(): UseSpellListGeneratorReturn {
@@ -100,6 +103,49 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
 
   const selectionCount = computed(() => selectedSpells.value.size)
 
+  // LocalStorage helpers
+  const getStorageKey = () => {
+    if (!selectedClass.value) return null
+    return `dnd-spell-list-${selectedClass.value.slug}`
+  }
+
+  const saveToStorage = () => {
+    const key = getStorageKey()
+    if (!key) return
+
+    const data = {
+      classSlug: selectedClass.value!.slug,
+      characterLevel: characterLevel.value,
+      selectedSpells: Array.from(selectedSpells.value)
+    }
+    localStorage.setItem(key, JSON.stringify(data))
+  }
+
+  const loadFromStorage = () => {
+    const key = getStorageKey()
+    if (!key) return
+
+    const stored = localStorage.getItem(key)
+    if (!stored) return
+
+    try {
+      const data = JSON.parse(stored)
+      characterLevel.value = data.characterLevel || 1
+      selectedSpells.value = new Set(data.selectedSpells || [])
+    } catch (e) {
+      console.error('Failed to load spell list from localStorage:', e)
+    }
+  }
+
+  const clearAll = () => {
+    selectedSpells.value = new Set()
+    characterLevel.value = 1
+    const key = getStorageKey()
+    if (key) {
+      localStorage.removeItem(key)
+    }
+  }
+
   return {
     selectedClass,
     characterLevel,
@@ -108,6 +154,9 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
     maxSpells,
     toggleSpell,
     selectionCount,
-    setClassData
+    setClassData,
+    saveToStorage,
+    loadFromStorage,
+    clearAll
   }
 }

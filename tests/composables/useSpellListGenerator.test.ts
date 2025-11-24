@@ -1,5 +1,17 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useSpellListGenerator } from '~/composables/useSpellListGenerator'
+
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {}
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => { store[key] = value },
+    removeItem: (key: string) => { delete store[key] },
+    clear: () => { store = {} }
+  }
+})()
+global.localStorage = localStorageMock as Storage
 
 describe('useSpellListGenerator', () => {
   it('calculates spell slots from level progression', () => {
@@ -114,5 +126,62 @@ describe('useSpellListGenerator', () => {
 
     toggleSpell(1)
     expect(selectionCount.value).toBe(1)
+  })
+})
+
+describe('useSpellListGenerator - LocalStorage', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('saves selections to localStorage', () => {
+    const { toggleSpell, characterLevel, setClassData, saveToStorage } = useSpellListGenerator()
+
+    const mockClass = {
+      id: 1,
+      slug: 'wizard',
+      name: 'Wizard',
+      level_progression: []
+    } as any
+
+    setClassData(mockClass)
+    characterLevel.value = 5
+    toggleSpell(1)
+    toggleSpell(2)
+
+    saveToStorage()
+
+    const stored = localStorage.getItem('dnd-spell-list-wizard')
+    expect(stored).toBeTruthy()
+    const parsed = JSON.parse(stored!)
+    expect(parsed.classSlug).toBe('wizard')
+    expect(parsed.characterLevel).toBe(5)
+    expect(parsed.selectedSpells).toEqual([1, 2])
+  })
+
+  it('loads selections from localStorage', () => {
+    const mockData = {
+      classSlug: 'wizard',
+      characterLevel: 5,
+      selectedSpells: [1, 2, 3]
+    }
+    localStorage.setItem('dnd-spell-list-wizard', JSON.stringify(mockData))
+
+    const { selectedSpells, characterLevel, loadFromStorage, setClassData } = useSpellListGenerator()
+
+    const mockClass = {
+      id: 1,
+      slug: 'wizard',
+      name: 'Wizard',
+      level_progression: []
+    } as any
+
+    setClassData(mockClass)
+    loadFromStorage()
+
+    expect(selectedSpells.value.has(1)).toBe(true)
+    expect(selectedSpells.value.has(2)).toBe(true)
+    expect(selectedSpells.value.has(3)).toBe(true)
+    expect(characterLevel.value).toBe(5)
   })
 })
