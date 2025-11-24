@@ -95,7 +95,8 @@ const schoolOptions = computed(() => {
 const classOptions = computed(() => {
   const options: Array<{ label: string, value: string | null }> = [{ label: 'All Classes', value: null }]
   if (classes.value) {
-    const sortedClasses = classes.value.sort((a, b) => a.name.localeCompare(b.name))
+    // Create a copy before sorting to avoid mutating the reactive array
+    const sortedClasses = [...classes.value].sort((a, b) => a.name.localeCompare(b.name))
 
     options.push(...sortedClasses.map(cls => ({
       label: cls.name,
