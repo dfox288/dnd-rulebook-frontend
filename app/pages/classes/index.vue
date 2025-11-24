@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { CharacterClass } from '~/types/api/entities'
+import type { CharacterClass } from '~/types'
 
 const route = useRoute()
 
@@ -75,7 +75,7 @@ const perPage = 24
     />
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4">
+    <div class="mb-6">
       <UiFilterCollapse
         v-model="filtersOpen"
         label="Filters"
@@ -108,7 +108,7 @@ const perPage = 24
             <UiFilterToggle
               v-model="isBaseClass"
               label="Base Class Only"
-              color="error"
+              color="primary"
               :options="[
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
@@ -120,7 +120,7 @@ const perPage = 24
             <UiFilterToggle
               v-model="isSpellcaster"
               label="Spellcaster"
-              color="error"
+              color="primary"
               :options="[
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
@@ -152,7 +152,7 @@ const perPage = 24
         <UButton
           v-if="isBaseClass !== null"
           size="xs"
-          color="error"
+          color="primary"
           variant="soft"
           @click="isBaseClass = null"
         >
@@ -161,7 +161,7 @@ const perPage = 24
         <UButton
           v-if="isSpellcaster !== null"
           size="xs"
-          color="error"
+          color="primary"
           variant="soft"
           @click="isSpellcaster = null"
         >

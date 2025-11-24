@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { SpellSchool, Spell, CharacterClass } from '~/types'
+import type { SpellSchool, Spell, CharacterClass, DamageType as DamageTypeBase, AbilityScore as AbilityScoreBase } from '~/types'
 
-interface DamageType {
-  id: number
+// Extended types for filter entities (API returns code field for these)
+interface DamageType extends DamageTypeBase {
   code: string
-  name: string
 }
 
-interface AbilityScore {
-  id: number
+interface AbilityScore extends AbilityScoreBase {
   code: string
-  name: string
 }
 
 const route = useRoute()
@@ -378,16 +375,6 @@ const activeFilterCount = computed(() => {
               size="md"
               class="w-48"
             />
-
-            <!-- Clear filters button -->
-            <UButton
-              v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || selectedClass !== null || concentrationFilter !== null || ritualFilter !== null || selectedDamageTypes.length > 0 || selectedSavingThrows.length > 0 || verbalFilter !== null || somaticFilter !== null || materialFilter !== null || higherLevelsFilter !== null || castingTimeFilter !== null || rangeFilter !== null || durationFilter !== null"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
           </div>
 
           <!-- Quick Toggles -->
@@ -537,6 +524,18 @@ const activeFilterCount = computed(() => {
                 class="w-56"
               />
             </div>
+          </div>
+
+          <!-- Clear filters button -->
+          <div class="flex justify-end">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
           </div>
         </div>
       </UiFilterCollapse>

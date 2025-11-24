@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Size, Race } from '~/types'
+import type { Race, Size } from '~/types'
 
 const route = useRoute()
 const { apiFetch } = useApi()
@@ -91,7 +91,7 @@ const perPage = 24
     />
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4">
+    <div class="mb-6">
       <UiFilterCollapse
         v-model="filtersOpen"
         label="Filters"
@@ -149,7 +149,7 @@ const perPage = 24
             <UiFilterToggle
               v-model="hasDarkvision"
               label="Has Darkvision"
-              color="info"
+              color="primary"
               :options="[
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
@@ -190,7 +190,7 @@ const perPage = 24
         <UButton
           v-if="hasDarkvision !== null"
           size="xs"
-          color="info"
+          color="primary"
           variant="soft"
           @click="hasDarkvision = null"
         >

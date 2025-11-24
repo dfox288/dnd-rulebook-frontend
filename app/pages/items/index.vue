@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Item } from '~/types/api/entities'
-
-interface ItemType {
-  id: number
-  code: string
-  name: string
-  description: string
-}
+import type { Item, ItemType } from '~/types'
 
 const route = useRoute()
 const { apiFetch } = useApi()
@@ -164,7 +157,7 @@ const activeFilterCount = computed(() => {
 
         <!-- Filter Content -->
         <div class="space-y-4">
-          <!-- Basic Filters -->
+          <!-- Dropdown Filters -->
           <div class="flex flex-wrap gap-2">
             <!-- Type filter -->
             <USelectMenu
@@ -195,16 +188,6 @@ const activeFilterCount = computed(() => {
               placeholder="Filter by magic"
               class="w-44"
             />
-
-            <!-- Clear filters button -->
-            <UButton
-              v-if="searchQuery || selectedType !== null || selectedRarity !== null || selectedMagic !== null || hasCharges !== null || hasPrerequisites !== null"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
           </div>
 
           <!-- Quick Toggles -->
@@ -213,7 +196,7 @@ const activeFilterCount = computed(() => {
             <UiFilterToggle
               v-model="hasCharges"
               label="Has Charges"
-              color="warning"
+              color="primary"
               :options="[
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
@@ -225,13 +208,25 @@ const activeFilterCount = computed(() => {
             <UiFilterToggle
               v-model="hasPrerequisites"
               label="Has Prerequisites"
-              color="warning"
+              color="primary"
               :options="[
                 { value: null, label: 'All' },
                 { value: '1', label: 'Yes' },
                 { value: '0', label: 'No' }
               ]"
             />
+          </div>
+
+          <!-- Clear filters button -->
+          <div class="flex justify-end">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
           </div>
         </div>
       </UiFilterCollapse>
@@ -272,7 +267,7 @@ const activeFilterCount = computed(() => {
         <UButton
           v-if="hasCharges !== null"
           size="xs"
-          color="warning"
+          color="primary"
           variant="soft"
           @click="hasCharges = null"
         >
@@ -281,7 +276,7 @@ const activeFilterCount = computed(() => {
         <UButton
           v-if="hasPrerequisites !== null"
           size="xs"
-          color="warning"
+          color="primary"
           variant="soft"
           @click="hasPrerequisites = null"
         >

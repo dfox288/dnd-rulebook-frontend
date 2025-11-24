@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Background } from '~/types/api/entities'
+import type { Background } from '~/types'
 
 // Use entity list composable for all shared logic
 const {
@@ -46,10 +46,11 @@ const perPage = 24
     />
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4">
+    <div class="mb-6">
       <UiFilterCollapse
         v-model="filtersOpen"
         label="Filters"
+        :badge-count="0"
       >
         <template #search>
           <UInput

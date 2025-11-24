@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Feat } from '~/types/api/entities'
+import type { Feat } from '~/types'
 
 const route = useRoute()
 
@@ -71,7 +71,7 @@ const perPage = 24
     />
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4">
+    <div class="mb-6">
       <UiFilterCollapse
         v-model="filtersOpen"
         label="Filters"
@@ -102,7 +102,7 @@ const perPage = 24
           <UiFilterToggle
             v-model="hasPrerequisites"
             label="Has Prerequisites"
-            color="warning"
+            color="primary"
             :options="[
               { value: null, label: 'All' },
               { value: '1', label: 'Yes' },
@@ -133,7 +133,7 @@ const perPage = 24
         <UButton
           v-if="hasPrerequisites !== null"
           size="xs"
-          color="warning"
+          color="primary"
           variant="soft"
           @click="hasPrerequisites = null"
         >

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Refactored - List Pages Consistency Improvements (2025-11-24)
+
+**Standardization across all 7 entity list pages:**
+- **Template order consistency** - Monsters page now follows Vue SFC convention with `<script setup>` before `<template>` (was reversed) matching all other pages (2025-11-24)
+- **Type imports standardization** - All 7 pages now import types from centralized `~/types` barrel export instead of mixed `~/types/api/entities` and local interface definitions for consistency and maintainability (2025-11-24)
+- **Clear Filters button placement** - Standardized across all pages to right-aligned separate row pattern (Items and Spells moved from inline to `flex justify-end` section) for visual consistency (2025-11-24)
+- **Filter color semantics** - Unified all boolean filter toggles (has_*, is_*) to use `primary` color across all pages (Items, Races, Classes, Feats changed from `warning`/`info`/`error` to `primary`) for semantic consistency (2025-11-24)
+- **Filter spacing standardization** - Removed inconsistent `space-y-4` wrapper on Races, Classes, Feats, Backgrounds pages to match Spells, Items, Monsters pattern (all now use `mb-6` + `pt-2` on chips) (2025-11-24)
+- **Badge count addition** - Backgrounds page now shows filter badge count (set to 0) on collapse component matching all other pages for UI consistency (2025-11-24)
+- **Section comments addition** - Items page now has "Dropdown Filters" section comment matching documentation patterns (Spells has comprehensive Phase 1/2/3 comments) (2025-11-24)
+
+**Impact:**
+- ✅ 100% structural consistency - All 7 list pages follow identical patterns
+- ✅ Better maintainability - Single source for type imports
+- ✅ Visual coherence - Consistent filter UI semantics across all entities
+- ✅ Improved DX - Clear section organization with comments
+
 ### Refactored - Detail Pages Standardization Phase 3 (2025-11-24)
 
 **Phase 3 Complete - Polish & UX Enhancements:**
