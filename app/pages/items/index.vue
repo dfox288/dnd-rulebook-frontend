@@ -16,6 +16,8 @@ const { apiFetch } = useApi()
 const selectedType = ref(route.query.type ? Number(route.query.type) : null)
 const selectedRarity = ref((route.query.rarity as string) || null)
 const selectedMagic = ref((route.query.is_magic as string) || null)
+const hasCharges = ref<string | null>((route.query.has_charges as string) || null)
+const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as string) || null)
 
 // Fetch item types for filter options
 const { data: itemTypes } = await useAsyncData('item-types', async () => {
@@ -59,6 +61,8 @@ const queryBuilder = computed(() => {
   if (selectedType.value !== null) params.type = selectedType.value
   if (selectedRarity.value !== null) params.rarity = selectedRarity.value
   if (selectedMagic.value !== null) params.is_magic = selectedMagic.value
+  if (hasCharges.value !== null) params.has_charges = hasCharges.value
+  if (hasPrerequisites.value !== null) params.has_prerequisites = hasPrerequisites.value
   return params
 })
 
@@ -93,6 +97,8 @@ const clearFilters = () => {
   selectedType.value = null
   selectedRarity.value = null
   selectedMagic.value = null
+  hasCharges.value = null
+  hasPrerequisites.value = null
 }
 
 // Get type name by ID for filter chips
@@ -166,10 +172,39 @@ const perPage = 24
           placeholder="Filter by magic"
           class="w-44"
         />
+      </div>
 
-        <!-- Clear filters button -->
+      <!-- Quick Toggles -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Has Charges filter -->
+        <UiFilterToggle
+          v-model="hasCharges"
+          label="Has Charges"
+          color="warning"
+          :options="[
+            { value: null, label: 'All' },
+            { value: '1', label: 'Yes' },
+            { value: '0', label: 'No' }
+          ]"
+        />
+
+        <!-- Has Prerequisites filter -->
+        <UiFilterToggle
+          v-model="hasPrerequisites"
+          label="Has Prerequisites"
+          color="warning"
+          :options="[
+            { value: null, label: 'All' },
+            { value: '1', label: 'Yes' },
+            { value: '0', label: 'No' }
+          ]"
+        />
+      </div>
+
+      <!-- Clear filters button -->
+      <div class="flex flex-wrap gap-2">
         <UButton
-          v-if="searchQuery || selectedType !== null || selectedRarity !== null || selectedMagic !== null"
+          v-if="searchQuery || selectedType !== null || selectedRarity !== null || selectedMagic !== null || hasCharges !== null || hasPrerequisites !== null"
           color="neutral"
           variant="soft"
           @click="clearFilters"
@@ -210,6 +245,24 @@ const perPage = 24
           @click="selectedMagic = null"
         >
           {{ selectedMagic === 'true' ? 'Magic' : 'Non-Magic' }} ✕
+        </UButton>
+        <UButton
+          v-if="hasCharges !== null"
+          size="xs"
+          color="warning"
+          variant="soft"
+          @click="hasCharges = null"
+        >
+          Has Charges: {{ hasCharges === '1' ? 'Yes' : 'No' }} ✕
+        </UButton>
+        <UButton
+          v-if="hasPrerequisites !== null"
+          size="xs"
+          color="warning"
+          variant="soft"
+          @click="hasPrerequisites = null"
+        >
+          Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
         <UButton
           v-if="searchQuery"
