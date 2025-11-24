@@ -64,6 +64,17 @@ const getSizeName = (code: string) => {
   return sizes.value.find(s => s.code === code)?.name || code
 }
 
+// Filter collapse state
+const filtersOpen = ref(false)
+
+// Active filter count for badge
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (selectedSize.value) count++
+  if (hasDarkvision.value !== null) count++
+  return count
+})
+
 // Pagination settings
 const perPage = 24
 </script>
@@ -81,72 +92,85 @@ const perPage = 24
 
     <!-- Search and Filters -->
     <div class="mb-6 space-y-4">
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search races..."
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
+        :badge-count="activeFilterCount"
       >
-        <template
-          v-if="searchQuery"
-          #trailing
-        >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search races..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
         </template>
-      </UInput>
 
-      <!-- Size Filter -->
-      <div class="flex items-center gap-3 flex-wrap">
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Size:</span>
-        <div class="flex gap-2 flex-wrap">
-          <UButton
-            :color="selectedSize === '' ? 'primary' : 'neutral'"
-            :variant="selectedSize === '' ? 'solid' : 'soft'"
-            size="sm"
-            @click="selectedSize = ''"
-          >
-            All
-          </UButton>
-          <UButton
-            v-for="size in sizes"
-            :key="size.id"
-            :color="selectedSize === size.code ? 'primary' : 'neutral'"
-            :variant="selectedSize === size.code ? 'solid' : 'soft'"
-            size="sm"
-            @click="selectedSize = size.code"
-          >
-            {{ size.name }}
-          </UButton>
+        <div class="space-y-4">
+          <!-- Size Filter -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Size:</span>
+            <div class="flex gap-2 flex-wrap">
+              <UButton
+                :color="selectedSize === '' ? 'primary' : 'neutral'"
+                :variant="selectedSize === '' ? 'solid' : 'soft'"
+                size="sm"
+                @click="selectedSize = ''"
+              >
+                All
+              </UButton>
+              <UButton
+                v-for="size in sizes"
+                :key="size.id"
+                :color="selectedSize === size.code ? 'primary' : 'neutral'"
+                :variant="selectedSize === size.code ? 'solid' : 'soft'"
+                size="sm"
+                @click="selectedSize = size.code"
+              >
+                {{ size.name }}
+              </UButton>
+            </div>
+          </div>
+
+          <!-- Quick Toggles -->
+          <div class="flex flex-wrap gap-4">
+            <!-- Darkvision filter -->
+            <UiFilterToggle
+              v-model="hasDarkvision"
+              label="Has Darkvision"
+              color="info"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+          </div>
+
+          <!-- Clear filters button -->
+          <div class="flex justify-end">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
+          </div>
         </div>
-
-        <!-- Clear filters button -->
-        <UButton
-          v-if="hasActiveFilters"
-          color="neutral"
-          variant="soft"
-          @click="clearFilters"
-        >
-          Clear Filters
-        </UButton>
-      </div>
-
-      <!-- Quick Toggles -->
-      <div class="flex flex-wrap gap-4">
-        <!-- Darkvision filter -->
-        <UiFilterToggle
-          v-model="hasDarkvision"
-          label="Has Darkvision"
-          color="info"
-          :options="[
-            { value: null, label: 'All' },
-            { value: '1', label: 'Yes' },
-            { value: '0', label: 'No' }
-          ]"
-        />
-      </div>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div

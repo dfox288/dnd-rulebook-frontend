@@ -12,6 +12,9 @@ interface ItemType {
 const route = useRoute()
 const { apiFetch } = useApi()
 
+// Filter collapse state
+const filtersOpen = ref(false)
+
 // Custom filter state (entity-specific)
 const selectedType = ref(route.query.type ? Number(route.query.type) : null)
 const selectedRarity = ref((route.query.rarity as string) || null)
@@ -108,6 +111,17 @@ const getTypeName = (typeId: number) => {
 
 // Pagination settings
 const perPage = 24
+
+// Count active filters (excluding search) for collapse badge
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (selectedType.value !== null) count++
+  if (selectedRarity.value !== null) count++
+  if (selectedMagic.value !== null) count++
+  if (hasCharges.value !== null) count++
+  if (hasPrerequisites.value !== null) count++
+  return count
+})
 </script>
 
 <template>
@@ -121,97 +135,106 @@ const perPage = 24
       :has-active-filters="hasActiveFilters"
     />
 
-    <!-- Filters -->
-    <div class="mb-6 space-y-4">
-      <!-- Search input -->
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search items..."
+    <!-- Search and Filters -->
+    <div class="mb-6">
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
+        :badge-count="activeFilterCount"
       >
-        <template
-          v-if="searchQuery"
-          #trailing
-        >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search items..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
         </template>
-      </UInput>
 
-      <!-- Filter chips -->
-      <div class="flex flex-wrap gap-2">
-        <!-- Type filter -->
-        <USelectMenu
-          v-model="selectedType"
-          :items="typeOptions"
-          value-key="value"
-          text-key="label"
-          placeholder="Select type"
-          class="w-48"
-        />
+        <!-- Filter Content -->
+        <div class="space-y-4">
+          <!-- Basic Filters -->
+          <div class="flex flex-wrap gap-2">
+            <!-- Type filter -->
+            <USelectMenu
+              v-model="selectedType"
+              :items="typeOptions"
+              value-key="value"
+              text-key="label"
+              placeholder="Select type"
+              class="w-48"
+            />
 
-        <!-- Rarity filter -->
-        <USelectMenu
-          v-model="selectedRarity"
-          :items="rarityOptions"
-          value-key="value"
-          text-key="label"
-          placeholder="Select rarity"
-          class="w-44"
-        />
+            <!-- Rarity filter -->
+            <USelectMenu
+              v-model="selectedRarity"
+              :items="rarityOptions"
+              value-key="value"
+              text-key="label"
+              placeholder="Select rarity"
+              class="w-44"
+            />
 
-        <!-- Magic filter -->
-        <USelectMenu
-          v-model="selectedMagic"
-          :items="magicOptions"
-          value-key="value"
-          text-key="label"
-          placeholder="Filter by magic"
-          class="w-44"
-        />
-      </div>
+            <!-- Magic filter -->
+            <USelectMenu
+              v-model="selectedMagic"
+              :items="magicOptions"
+              value-key="value"
+              text-key="label"
+              placeholder="Filter by magic"
+              class="w-44"
+            />
 
-      <!-- Quick Toggles -->
-      <div class="flex flex-wrap gap-4">
-        <!-- Has Charges filter -->
-        <UiFilterToggle
-          v-model="hasCharges"
-          label="Has Charges"
-          color="warning"
-          :options="[
-            { value: null, label: 'All' },
-            { value: '1', label: 'Yes' },
-            { value: '0', label: 'No' }
-          ]"
-        />
+            <!-- Clear filters button -->
+            <UButton
+              v-if="searchQuery || selectedType !== null || selectedRarity !== null || selectedMagic !== null || hasCharges !== null || hasPrerequisites !== null"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
+          </div>
 
-        <!-- Has Prerequisites filter -->
-        <UiFilterToggle
-          v-model="hasPrerequisites"
-          label="Has Prerequisites"
-          color="warning"
-          :options="[
-            { value: null, label: 'All' },
-            { value: '1', label: 'Yes' },
-            { value: '0', label: 'No' }
-          ]"
-        />
-      </div>
+          <!-- Quick Toggles -->
+          <div class="flex flex-wrap gap-4">
+            <!-- Has Charges filter -->
+            <UiFilterToggle
+              v-model="hasCharges"
+              label="Has Charges"
+              color="warning"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
 
-      <!-- Clear filters button -->
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          v-if="searchQuery || selectedType !== null || selectedRarity !== null || selectedMagic !== null || hasCharges !== null || hasPrerequisites !== null"
-          color="neutral"
-          variant="soft"
-          @click="clearFilters"
-        >
-          Clear Filters
-        </UButton>
-      </div>
+            <!-- Has Prerequisites filter -->
+            <UiFilterToggle
+              v-model="hasPrerequisites"
+              label="Has Prerequisites"
+              color="warning"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+          </div>
+        </div>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div

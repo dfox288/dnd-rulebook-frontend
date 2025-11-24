@@ -45,6 +45,16 @@ const clearFilters = () => {
   hasPrerequisites.value = null
 }
 
+// Filter collapse state
+const filtersOpen = ref(false)
+
+// Active filter count for badge
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (hasPrerequisites.value !== null) count++
+  return count
+})
+
 // Pagination settings
 const perPage = 24
 </script>
@@ -60,51 +70,59 @@ const perPage = 24
       :has-active-filters="hasActiveFilters"
     />
 
-    <!-- Search -->
-    <div class="mb-6">
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search feats..."
-      >
-        <template
-          v-if="searchQuery"
-          #trailing
-        >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
-        </template>
-      </UInput>
-    </div>
-
-    <!-- Filters -->
+    <!-- Search and Filters -->
     <div class="mb-6 space-y-4">
-      <!-- Has Prerequisites filter -->
-      <UiFilterToggle
-        v-model="hasPrerequisites"
-        label="Has Prerequisites"
-        color="warning"
-        :options="[
-          { value: null, label: 'All' },
-          { value: '1', label: 'Yes' },
-          { value: '0', label: 'No' }
-        ]"
-      />
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
+        :badge-count="activeFilterCount"
+      >
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search feats..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
+        </template>
 
-      <!-- Clear filters button -->
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          v-if="searchQuery || hasPrerequisites !== null"
-          color="neutral"
-          variant="soft"
-          @click="clearFilters"
-        >
-          Clear Filters
-        </UButton>
-      </div>
+        <div class="space-y-4">
+          <!-- Has Prerequisites filter -->
+          <UiFilterToggle
+            v-model="hasPrerequisites"
+            label="Has Prerequisites"
+            color="warning"
+            :options="[
+              { value: null, label: 'All' },
+              { value: '1', label: 'Yes' },
+              { value: '0', label: 'No' }
+            ]"
+          />
+
+          <!-- Clear filters button -->
+          <div class="flex justify-end">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
+          </div>
+        </div>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { Background } from '~/types/api/entities'
 
 // Use entity list composable for all shared logic
@@ -27,6 +27,9 @@ const {
 // Type the data array
 const backgrounds = computed(() => data.value as Background[])
 
+// Filter collapse state
+const filtersOpen = ref(false)
+
 // Pagination settings
 const perPage = 24
 </script>
@@ -44,27 +47,37 @@ const perPage = 24
 
     <!-- Search and Filters -->
     <div class="mb-6 space-y-4">
-      <!-- Search input -->
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search backgrounds..."
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
       >
-        <template
-          v-if="searchQuery"
-          #trailing
-        >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search backgrounds..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
         </template>
-      </UInput>
 
-      <!-- Filter section ready for future filters -->
-      <!-- No specific filters identified in API analysis yet -->
-      <!-- Structure in place for when filters are added -->
+        <!-- Filter section ready for future filters -->
+        <!-- No specific filters identified in API analysis yet -->
+        <!-- Structure in place for when filters are added -->
+        <div class="space-y-4">
+          <!-- Future filters will go here -->
+        </div>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div

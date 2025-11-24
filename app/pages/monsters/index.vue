@@ -11,71 +11,83 @@
 
     <!-- Filters -->
     <div class="mb-6 space-y-4">
-      <!-- Search input -->
-      <UInput
-        v-model="searchQuery"
-        placeholder="Search monsters..."
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
+        :badge-count="activeFilterCount"
       >
-        <template
-          v-if="searchQuery"
-          #trailing
-        >
-          <UButton
-            color="neutral"
-            variant="link"
-            :padded="false"
-            @click="searchQuery = ''"
-          />
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search monsters..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
         </template>
-      </UInput>
 
-      <!-- Filter dropdowns -->
-      <div class="flex flex-wrap gap-2">
-        <!-- CR Filter -->
-        <USelectMenu
-          v-model="selectedCR"
-          :items="crOptions"
-          value-key="value"
-          text-key="label"
-          placeholder="Challenge Rating"
-          class="w-48"
-        />
+        <div class="space-y-4">
+          <!-- Filter dropdowns -->
+          <div class="flex flex-wrap gap-2">
+            <!-- CR Filter -->
+            <USelectMenu
+              v-model="selectedCR"
+              :items="crOptions"
+              value-key="value"
+              text-key="label"
+              placeholder="Challenge Rating"
+              class="w-48"
+            />
 
-        <!-- Type Filter -->
-        <USelectMenu
-          v-model="selectedType"
-          :items="typeOptions"
-          value-key="value"
-          text-key="label"
-          placeholder="Type"
-          class="w-48"
-        />
+            <!-- Type Filter -->
+            <USelectMenu
+              v-model="selectedType"
+              :items="typeOptions"
+              value-key="value"
+              text-key="label"
+              placeholder="Type"
+              class="w-48"
+            />
+          </div>
 
-        <!-- Clear filters button -->
-        <UButton
-          v-if="hasActiveFilters"
-          color="neutral"
-          variant="soft"
-          @click="clearFilters"
-        >
-          Clear Filters
-        </UButton>
-      </div>
+          <!-- Quick Toggles -->
+          <div class="flex flex-wrap gap-4">
+            <!-- Legendary filter -->
+            <UiFilterToggle
+              v-model="isLegendary"
+              label="Legendary"
+              color="error"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+          </div>
 
-      <!-- Quick Toggles -->
-      <div class="flex flex-wrap gap-4">
-        <!-- Legendary filter -->
-        <UiFilterToggle
-          v-model="isLegendary"
-          label="Legendary"
-          color="error"
-          :options="[
-            { value: null, label: 'All' },
-            { value: '1', label: 'Yes' },
-            { value: '0', label: 'No' }
-          ]"
-        />
-      </div>
+          <!-- Clear filters button -->
+          <div class="flex justify-end">
+            <UButton
+              v-if="hasActiveFilters"
+              color="neutral"
+              variant="soft"
+              @click="clearFilters"
+            >
+              Clear Filters
+            </UButton>
+          </div>
+        </div>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
@@ -261,6 +273,18 @@ const getCRLabel = (cr: string) => {
 const getTypeLabel = (type: string) => {
   return typeOptions.find(o => o.value === type)?.label || type
 }
+
+// Filter collapse state
+const filtersOpen = ref(false)
+
+// Active filter count for badge
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (selectedCR.value !== null) count++
+  if (selectedType.value !== null) count++
+  if (isLegendary.value !== null) count++
+  return count
+})
 
 const perPage = 24
 </script>

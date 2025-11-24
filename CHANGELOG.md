@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Phase 1C & 2 Complete (2025-11-24)
 
 #### Filter Components
+- **UiFilterCollapse component** - Reusable collapsible filter container with search slot, badge count, and smooth animations - Rolled out to all 7 entity list pages (Spells, Items, Races, Classes, Backgrounds, Feats, Monsters) reducing 40+ lines of duplicate code per page (2025-11-24)
 - **UiFilterMultiSelect component** - Reusable multi-select dropdown filter with searchable options, checkboxes, and clear functionality for selecting multiple values (damage types, alignments, sizes, languages, ability scores, etc.) - Ready for 5+ page integrations (2025-11-24)
 - **UiFilterRangeSlider component** - Dual-handle range slider for min/max numeric filtering (Challenge Rating 0-30 with 0.25 step, spell levels 0-9, speed ranges, etc.) with custom label formatting and full accessibility support - Ready for 4+ page integrations (2025-11-24)
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Collapsible filters on Spells page** - Search-first design with filters hidden by default, expandable with badge showing active count (2025-11-23)
 
 ### Changed
+- **All 7 entity list pages refactored** to use UiFilterCollapse component - Consistent collapsible filter UI with search slot and badge count across Spells, Items, Races, Classes, Backgrounds, Feats, Monsters pages (2025-11-24)
 - **Background detail page image resized** from full-width to 1/3 width for consistency with classes/races pages (2025-11-24)
 - **BackgroundCard refactored** to use useBackgroundStats composable (reduces code duplication) (2025-11-24)
 - **Removed vertical border from traits/features** in UiAccordionTraitsList component across all entity detail pages (backgrounds, races, classes) for cleaner visual hierarchy (2025-11-24)

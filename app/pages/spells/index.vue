@@ -152,46 +152,34 @@ const activeFilterCount = computed(() => {
     />
 
     <!-- Search and Filters -->
-    <div class="mb-6 space-y-4">
-      <!-- Search input with filter toggle -->
-      <div class="flex gap-2">
-        <UInput
-          v-model="searchQuery"
-          placeholder="Search spells..."
-          class="flex-1"
-        >
-          <template
-            v-if="searchQuery"
-            #trailing
-          >
-            <UButton
-              color="neutral"
-              variant="link"
-              :padded="false"
-              @click="searchQuery = ''"
-            />
-          </template>
-        </UInput>
-
-        <!-- Filter Toggle Button -->
-        <UiFilterToggleButton
-          :is-open="filtersOpen"
-          label="Filters"
-          :badge-count="activeFilterCount"
-          @toggle="filtersOpen = !filtersOpen"
-        />
-      </div>
-
-      <!-- Collapsible Filter Content -->
-      <Transition
-        enter-active-class="overflow-hidden transition-all duration-300 ease-out"
-        enter-from-class="max-h-0 opacity-0"
-        enter-to-class="max-h-96 opacity-100"
-        leave-active-class="overflow-hidden transition-all duration-200 ease-in"
-        leave-from-class="max-h-96 opacity-100"
-        leave-to-class="max-h-0 opacity-0"
+    <div class="mb-6">
+      <UiFilterCollapse
+        v-model="filtersOpen"
+        label="Filters"
+        :badge-count="activeFilterCount"
       >
-        <div v-if="filtersOpen" class="space-y-4">
+        <template #search>
+          <UInput
+            v-model="searchQuery"
+            placeholder="Search spells..."
+            class="flex-1"
+          >
+            <template
+              v-if="searchQuery"
+              #trailing
+            >
+              <UButton
+                color="neutral"
+                variant="link"
+                :padded="false"
+                @click="searchQuery = ''"
+              />
+            </template>
+          </UInput>
+        </template>
+
+        <!-- Filter Content -->
+        <div class="space-y-4">
         <!-- Basic Filters -->
         <div class="flex flex-wrap gap-2 mb-4">
             <!-- Level filter -->
@@ -262,7 +250,7 @@ const activeFilterCount = computed(() => {
             />
         </div>
         </div>
-      </Transition>
+      </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
