@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ **Complements 886 unit tests** - Full coverage from component to user experience
 
 ### Fixed
+- **Class filter dropdown not populating in spell filters** - Fixed type mismatch (boolean vs string '1') and pagination issue. Now fetches all 15 base classes including Warlock & Wizard (2025-11-25)
 - Nuxt manifest initialization errors in test environment (2025-11-24)
   - Fixed "Cannot read properties of undefined (reading 'then')" errors from fetchManifest
   - Added $fetch.create() mock support for useApi composable
