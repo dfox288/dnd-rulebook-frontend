@@ -174,7 +174,8 @@
       "Bash(/tmp/changelog_tail.txt)",
       "Bash(CHANGELOG.md)",
       "Bash(docker --version:*)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "Bash(do echo -n \"Testing $entity: \")"
     ],
     "deny": [],
     "ask": []

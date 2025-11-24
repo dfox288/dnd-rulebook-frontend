@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Spells Filter Enhancement Phase 3 (2025-11-24)
+
+**Phase 3 Implementation:**
+- **Casting Time filter on Spells page** - Dropdown selector with 10 common casting time values (1 action, 1 bonus action, 1 reaction, 1 minute, 10 minutes, 1/8/12/24 hours) for filtering spells by casting speed (2025-11-24)
+- **Range filter on Spells page** - Dropdown selector with 15 common range values (Self, Touch, 5/10/30/60/90/120/150/300/500 feet, 1 mile, Sight, Unlimited) for finding spells that fit tactical positioning needs (2025-11-24)
+- **Duration filter on Spells page** - Dropdown selector with 19 duration values including Instantaneous, concentration variants (up to 1 min/10 min/1 hr/8 hr/24 hr), and timed durations (1 round to 30 days) for buff/debuff planning (2025-11-24)
+- **Spell Properties section on Spells page** - Grouped casting time, range, and duration filters in dedicated section for easier spell property filtering (2025-11-24)
+- **API utilization increase on Spells page** - From 38% (11 filters) to 48% (14 filters) - +10 percentage points improvement, moving closer to 50%+ goal (2025-11-24)
+- **Filter chips for direct field filters** - Active casting time, range, and duration filters displayed as removable info-colored chips (2025-11-24)
+- **Hardcoded filter options strategy** - Used pre-defined common values for faster performance over dynamic API extraction (no per_page=9999 overhead) (2025-11-24)
+
 ### Added - Spells Filter Enhancement Phase 2 (2025-11-24)
 
 **Phase 2 Implementation:**

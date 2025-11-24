@@ -41,6 +41,11 @@ const somaticFilter = ref<string | null>((route.query.has_somatic as string) || 
 const materialFilter = ref<string | null>((route.query.has_material as string) || null)
 const higherLevelsFilter = ref<string | null>((route.query.has_higher_levels as string) || null)
 
+// Phase 3: Direct field filters
+const castingTimeFilter = ref<string | null>((route.query.casting_time as string) || null)
+const rangeFilter = ref<string | null>((route.query.range as string) || null)
+const durationFilter = ref<string | null>((route.query.duration as string) || null)
+
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
   const response = await apiFetch<{ data: SpellSchool[] }>('/spell-schools')
@@ -126,6 +131,62 @@ const savingThrowOptions = computed(() => {
   }))
 })
 
+// Phase 3: Casting time options (hardcoded common values)
+const castingTimeOptions = [
+  { label: 'All Casting Times', value: null },
+  { label: '1 Action', value: '1 action' },
+  { label: '1 Bonus Action', value: '1 bonus action' },
+  { label: '1 Reaction', value: '1 reaction' },
+  { label: '1 Minute', value: '1 minute' },
+  { label: '10 Minutes', value: '10 minutes' },
+  { label: '1 Hour', value: '1 hour' },
+  { label: '8 Hours', value: '8 hours' },
+  { label: '12 Hours', value: '12 hours' },
+  { label: '24 Hours', value: '24 hours' }
+]
+
+// Phase 3: Range options (hardcoded common values)
+const rangeOptions = [
+  { label: 'All Ranges', value: null },
+  { label: 'Self', value: 'Self' },
+  { label: 'Touch', value: 'Touch' },
+  { label: '5 feet', value: '5 feet' },
+  { label: '10 feet', value: '10 feet' },
+  { label: '30 feet', value: '30 feet' },
+  { label: '60 feet', value: '60 feet' },
+  { label: '90 feet', value: '90 feet' },
+  { label: '120 feet', value: '120 feet' },
+  { label: '150 feet', value: '150 feet' },
+  { label: '300 feet', value: '300 feet' },
+  { label: '500 feet', value: '500 feet' },
+  { label: '1 mile', value: '1 mile' },
+  { label: 'Sight', value: 'Sight' },
+  { label: 'Unlimited', value: 'Unlimited' }
+]
+
+// Phase 3: Duration options (hardcoded common values)
+const durationOptions = [
+  { label: 'All Durations', value: null },
+  { label: 'Instantaneous', value: 'Instantaneous' },
+  { label: '1 round', value: '1 round' },
+  { label: '1 minute', value: '1 minute' },
+  { label: '10 minutes', value: '10 minutes' },
+  { label: '1 hour', value: '1 hour' },
+  { label: '2 hours', value: '2 hours' },
+  { label: '8 hours', value: '8 hours' },
+  { label: '24 hours', value: '24 hours' },
+  { label: '7 days', value: '7 days' },
+  { label: '10 days', value: '10 days' },
+  { label: '30 days', value: '30 days' },
+  { label: 'Until dispelled', value: 'Until dispelled' },
+  { label: 'Special', value: 'Special' },
+  { label: 'Concentration, up to 1 minute', value: 'Concentration, up to 1 minute' },
+  { label: 'Concentration, up to 10 minutes', value: 'Concentration, up to 10 minutes' },
+  { label: 'Concentration, up to 1 hour', value: 'Concentration, up to 1 hour' },
+  { label: 'Concentration, up to 8 hours', value: 'Concentration, up to 8 hours' },
+  { label: 'Concentration, up to 24 hours', value: 'Concentration, up to 24 hours' }
+]
+
 // Query builder for custom filters
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
@@ -144,6 +205,11 @@ const queryBuilder = computed(() => {
   if (somaticFilter.value !== null) params.has_somatic = somaticFilter.value
   if (materialFilter.value !== null) params.has_material = materialFilter.value
   if (higherLevelsFilter.value !== null) params.has_higher_levels = higherLevelsFilter.value
+
+  // Phase 3: Direct field filters
+  if (castingTimeFilter.value !== null) params.casting_time = castingTimeFilter.value
+  if (rangeFilter.value !== null) params.range = rangeFilter.value
+  if (durationFilter.value !== null) params.duration = durationFilter.value
 
   return params
 })
@@ -188,6 +254,10 @@ const clearFilters = () => {
   somaticFilter.value = null
   materialFilter.value = null
   higherLevelsFilter.value = null
+  // Phase 3: Clear direct field filters
+  castingTimeFilter.value = null
+  rangeFilter.value = null
+  durationFilter.value = null
 }
 
 // Get school name by ID for filter chips
@@ -229,6 +299,10 @@ const activeFilterCount = computed(() => {
   if (somaticFilter.value !== null) count++
   if (materialFilter.value !== null) count++
   if (higherLevelsFilter.value !== null) count++
+  // Phase 3: Count direct field filters
+  if (castingTimeFilter.value !== null) count++
+  if (rangeFilter.value !== null) count++
+  if (durationFilter.value !== null) count++
   return count
 })
 </script>
@@ -307,7 +381,7 @@ const activeFilterCount = computed(() => {
 
             <!-- Clear filters button -->
             <UButton
-              v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || selectedClass !== null || concentrationFilter !== null || ritualFilter !== null || selectedDamageTypes.length > 0 || selectedSavingThrows.length > 0 || verbalFilter !== null || somaticFilter !== null || materialFilter !== null || higherLevelsFilter !== null"
+              v-if="searchQuery || selectedLevel !== null || selectedSchool !== null || selectedClass !== null || concentrationFilter !== null || ritualFilter !== null || selectedDamageTypes.length > 0 || selectedSavingThrows.length > 0 || verbalFilter !== null || somaticFilter !== null || materialFilter !== null || higherLevelsFilter !== null || castingTimeFilter !== null || rangeFilter !== null || durationFilter !== null"
               color="neutral"
               variant="soft"
               @click="clearFilters"
@@ -425,6 +499,44 @@ const activeFilterCount = computed(() => {
               color="primary"
               class="w-64"
             />
+          </div>
+
+          <!-- Phase 3: Direct Field Filters -->
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Spell Properties
+            </label>
+            <div class="flex flex-wrap gap-2">
+              <!-- Casting Time filter -->
+              <USelectMenu
+                v-model="castingTimeFilter"
+                :items="castingTimeOptions"
+                value-key="value"
+                placeholder="All Casting Times"
+                size="md"
+                class="w-56"
+              />
+
+              <!-- Range filter -->
+              <USelectMenu
+                v-model="rangeFilter"
+                :items="rangeOptions"
+                value-key="value"
+                placeholder="All Ranges"
+                size="md"
+                class="w-56"
+              />
+
+              <!-- Duration filter -->
+              <USelectMenu
+                v-model="durationFilter"
+                :items="durationOptions"
+                value-key="value"
+                placeholder="All Durations"
+                size="md"
+                class="w-56"
+              />
+            </div>
           </div>
         </div>
       </UiFilterCollapse>
@@ -547,6 +659,34 @@ const activeFilterCount = computed(() => {
           @click="higherLevelsFilter = null"
         >
           Scaling: {{ higherLevelsFilter === '1' ? 'Has Scaling' : 'No Scaling' }} ✕
+        </UButton>
+        <!-- Phase 3: Direct field chips -->
+        <UButton
+          v-if="castingTimeFilter !== null"
+          size="xs"
+          color="info"
+          variant="soft"
+          @click="castingTimeFilter = null"
+        >
+          {{ castingTimeFilter }} ✕
+        </UButton>
+        <UButton
+          v-if="rangeFilter !== null"
+          size="xs"
+          color="info"
+          variant="soft"
+          @click="rangeFilter = null"
+        >
+          {{ rangeFilter }} ✕
+        </UButton>
+        <UButton
+          v-if="durationFilter !== null"
+          size="xs"
+          color="info"
+          variant="soft"
+          @click="durationFilter = null"
+        >
+          {{ durationFilter }} ✕
         </UButton>
       </div>
     </div>
