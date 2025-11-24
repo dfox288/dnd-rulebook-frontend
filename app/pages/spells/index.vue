@@ -480,7 +480,7 @@ const activeFilterCount = computed(() => {
               v-model="selectedDamageTypes"
               :options="damageTypeOptions"
               label="Damage Types"
-              placeholder="Select damage types"
+              placeholder="All Damage Types"
               color="primary"
               class="w-64"
             />
@@ -490,7 +490,7 @@ const activeFilterCount = computed(() => {
               v-model="selectedSavingThrows"
               :options="savingThrowOptions"
               label="Saving Throws"
-              placeholder="Select saving throws"
+              placeholder="All Saving Throws"
               color="primary"
               class="w-64"
             />
