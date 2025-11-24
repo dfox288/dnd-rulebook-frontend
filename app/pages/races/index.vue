@@ -14,7 +14,7 @@ const { data: sizesResponse } = await useAsyncData<{ data: Size[] }>(
   'sizes',
   async () => {
     const response = await apiFetch<{ data: Size[] }>('/sizes')
-    return response
+    return response || { data: [] }
   }
 )
 

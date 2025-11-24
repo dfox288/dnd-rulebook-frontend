@@ -18,7 +18,7 @@ const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as st
 // Fetch item types for filter options
 const { data: itemTypes } = await useAsyncData('item-types', async () => {
   const response = await apiFetch<{ data: ItemType[] }>('/item-types')
-  return response.data
+  return response?.data || []
 })
 
 // Rarity options from D&D rules

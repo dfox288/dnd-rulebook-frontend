@@ -21,7 +21,7 @@ const { data: classes, status: classesStatus } = await useAsyncData<CharacterCla
   async () => {
     const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100')
     // Filter to only spellcasting classes (those with spellcasting ability)
-    return response.data.filter(c => c.spellcasting_ability !== undefined)
+    return response?.data?.filter(c => c.spellcasting_ability !== undefined) || []
   }
 )
 
@@ -78,7 +78,7 @@ const { data: spells, status: spellsStatus } = await useAsyncData(
     const response = await apiFetch<{ data: Spell[] }>(
       `/spells?classes=${selectedClass.value.slug}&per_page=1000`
     )
-    return response.data
+    return response?.data || []
   },
   {
     watch: [selectedClass],
