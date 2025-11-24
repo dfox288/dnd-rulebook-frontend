@@ -109,7 +109,7 @@ const abilityScoreIncreases = computed(() => {
 
         <!-- Standalone Image - 1/3 width on large screens -->
         <div class="lg:col-span-1">
-          <UiDetailStandaloneImage
+          <UiDetailEntityImage
             v-if="imagePath"
             :image-path="imagePath"
             :image-alt="`${race.name} character portrait`"

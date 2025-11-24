@@ -85,9 +85,9 @@ const imagePath = computed(() => {
       />
 
       <!-- Quick Stats + Image (side-by-side) -->
-      <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Quick Stats (2/3 width) -->
-        <div class="lg:w-2/3">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Quick Stats - 2/3 width on large screens -->
+        <div class="lg:col-span-2">
           <UiDetailQuickStatsCard
             :stats="[
               { icon: 'i-heroicons-clock', label: 'Casting Time', value: spell.casting_time },
@@ -98,8 +98,8 @@ const imagePath = computed(() => {
           />
         </div>
 
-        <!-- Image (1/3 width) -->
-        <div class="lg:w-1/3">
+        <!-- Image - 1/3 width on large screens -->
+        <div class="lg:col-span-1">
           <UiDetailEntityImage
             :image-path="imagePath"
             :image-alt="`${spell.name} spell illustration`"
