@@ -3,62 +3,62 @@
  * Do not make direct changes to the file.
  *
  * Generated from: http://localhost:8080/docs/api.json
- * Generated at: 2025-11-23T01:04:59.186Z
+ * Generated at: 2025-11-24T23:15:11.539Z
  *
  * To regenerate: npm run types:sync
  */
 
 export interface paths {
-  '/v1/ability-scores': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+    "/v1/ability-scores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all ability scores
          * @description Returns a paginated list of the 6 core ability scores in D&D 5e (Strength, Dexterity,
          *     Constitution, Intelligence, Wisdom, Charisma). Supports searching by name or code (e.g., "STR", "DEX").
          */
-    get: operations['ability-scores.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/ability-scores/{abilityScore}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["ability-scores.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ability-scores/{abilityScore}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single ability score
          * @description Returns detailed information about a specific ability score including its full name,
          *     code abbreviation, and associated skills.
          */
-    get: operations['ability-scores.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/ability-scores/{abilityScore}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["ability-scores.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/ability-scores/{abilityScore}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all spells that require this ability score for saving throws
          * @description Returns a paginated list of spells that require saving throws using this ability score.
          *     Spells are ordered alphabetically by name and include relationships (spell school,
@@ -69,8 +69,7 @@ export interface paths {
          *     - Dexterity saves: `GET /api/v1/ability-scores/DEX/spells` (Fireball, Lightning Bolt)
          *     - Wisdom saves: `GET /api/v1/ability-scores/WIS/spells` (Charm Person, Hold Person)
          *     - Constitution saves: `GET /api/v1/ability-scores/CON/spells` (Cloudkill, Stinking Cloud)
-         *     - By ID: `GET /api/v1/ability-scores/2/spells`
-         *     - By name: `GET /api/v1/ability-scores/dexterity/spells`
+         *     - By name (lowercase): `GET /api/v1/ability-scores/dexterity/spells`
          *     - Pagination: `GET /api/v1/ability-scores/STR/spells?per_page=25`
          *
          *     **Common Save Distribution (Approximate):**
@@ -122,23 +121,23 @@ export interface paths {
          *     - Least common: INT (~15 spells) - exploit this vs low-INT enemies!
          *     - Save DCs range from 13 (level 1) to 19+ (level 17+)
          */
-    get: operations['ability-scores.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/backgrounds': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["ability-scores.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/backgrounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all backgrounds
          * @description Returns a paginated list of D&D 5e character backgrounds with comprehensive filtering
          *     capabilities. Supports proficiency filtering, skill/tool grants, language choices,
@@ -182,6 +181,12 @@ export interface paths {
          *     - Equipment Planning: Compare starting equipment for early-game optimization
          *     - Build Synergy: Match background skills with class features (Rogue + Criminal)
          *
+         *     **Tag-Based Filtering Examples (Meilisearch):**
+         *     - Criminal backgrounds: `GET /api/v1/backgrounds?filter=tag_slugs IN [criminal]`
+         *     - Noble backgrounds: `GET /api/v1/backgrounds?filter=tag_slugs IN [noble]`
+         *     - Guild member backgrounds: `GET /api/v1/backgrounds?filter=tag_slugs IN [guild-member]`
+         *     - Multiple tags (OR): `GET /api/v1/backgrounds?filter=tag_slugs IN [criminal, outlander]`
+         *
          *     **Query Parameters:**
          *     - `q` (string): Full-text search term (searches name, description, feature text)
          *     - `filter` (string): Meilisearch filter expression (limited fields for backgrounds)
@@ -210,45 +215,45 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples.
          */
-    get: operations['backgrounds.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/backgrounds/{background}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["backgrounds.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/backgrounds/{background}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single background
          * @description Returns detailed information about a specific background including proficiencies,
          *     traits with random tables (personality, ideals, bonds, flaws), languages, and sources.
          *     Supports selective relationship loading via the 'include' parameter.
          */
-    get: operations['backgrounds.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/classes': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["backgrounds.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all classes and subclasses
          * @description Returns a paginated list of D&D 5e character classes and subclasses. Includes hit dice,
          *     spellcasting abilities, proficiencies, class features, level progression tables, and
@@ -283,6 +288,18 @@ export interface paths {
          *     - **Optimization:** Find INT-based spellcasters (`?filter=spellcasting_ability_code = INT`)
          *     - **Build Planning:** Cleric or Paladin with specific spells (`?spells=revivify&filter=spellcasting_ability_code = WIS OR spellcasting_ability_code = CHA`)
          *
+         *     **Tag-Based Filtering Examples (Meilisearch):**
+         *     - Full spellcasters: `GET /api/v1/classes?filter=tag_slugs IN [full-caster]`
+         *     - Martial classes: `GET /api/v1/classes?filter=tag_slugs IN [martial]`
+         *     - Half casters: `GET /api/v1/classes?filter=tag_slugs IN [half-caster]`
+         *     - Combined filters: `GET /api/v1/classes?filter=tag_slugs IN [spellcaster] AND hit_die >= 8`
+         *
+         *     **Base Class vs Subclass Filtering (Meilisearch):**
+         *     - Base classes only: `GET /api/v1/classes?filter=is_subclass = false`
+         *     - Subclasses only: `GET /api/v1/classes?filter=is_subclass = true`
+         *     - Base spellcasters: `GET /api/v1/classes?filter=is_subclass = false AND tag_slugs IN [spellcaster]`
+         *     - High HP subclasses: `GET /api/v1/classes?filter=is_subclass = true AND hit_die >= 10`
+         *
          *     **Parameter Reference:**
          *     - `is_spellcaster` (bool): Filter by spellcasting ability (true=has spellcasting, false=no spellcasting)
          *     - `hit_die` (int): Filter by hit die size (6, 8, 10, or 12)
@@ -303,109 +320,119 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples.
          */
-    get: operations['classes.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/classes/{class}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["classes.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/classes/{class}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single class
          * @description Returns detailed information about a specific class or subclass including parent class,
          *     subclasses, proficiencies, traits, features, level progression, spell slot tables,
          *     and counters. Supports selective relationship loading via the 'include' parameter.
+         *
+         *     **Feature Inheritance for Subclasses:**
+         *     - By default, subclasses return ALL features (inherited base class features + subclass-specific features)
+         *     - Use `?include_base_features=false` to return only subclass-specific features
+         *     - Base classes are unaffected by this parameter
+         *
+         *     **Examples:**
+         *     - Get Arcane Trickster with all 40 features: `GET /classes/rogue-arcane-trickster`
+         *     - Get only Arcane Trickster's 6 unique features: `GET /classes/rogue-arcane-trickster?include_base_features=false`
+         *     - Get base Rogue (always 34 features): `GET /classes/rogue`
          */
-    get: operations['classes.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/classes/{class}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["classes.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/classes/{class}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get spells available to a class
          * @description Returns a paginated list of spells available to a specific class. Supports the same
          *     filtering options as the main spell list (level, school, concentration, ritual).
          *     Useful for building spell lists for spellcasting classes.
          */
-    get: operations['classes.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/conditions': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["classes.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/conditions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all D&D conditions
          * @description Returns a paginated list of D&D 5e conditions (Blinded, Charmed, Frightened, etc.).
          *     These are status effects that can be applied to creatures during combat.
          */
-    get: operations['conditions.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/conditions/{condition}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["conditions.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/conditions/{condition}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single condition
          * @description Returns detailed information about a specific D&D condition including its rules
          *     and effects on gameplay.
          */
-    get: operations['conditions.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/conditions/{condition}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["conditions.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/conditions/{condition}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all spells that inflict this condition
          * @description Returns a paginated list of spells that can inflict this condition on targets
          *     through saving throw failures. Useful for building control-focused characters
@@ -414,7 +441,7 @@ export interface paths {
          *     **Basic Examples:**
          *     - Poison spells: `GET /api/v1/conditions/poisoned/spells`
          *     - Stun spells: `GET /api/v1/conditions/stunned/spells`
-         *     - By ID: `GET /api/v1/conditions/5/spells`
+         *     - By slug: `GET /api/v1/conditions/grappled/spells`
          *     - Pagination: `GET /api/v1/conditions/paralyzed/spells?per_page=25`
          *
          *     **Common Condition Use Cases:**
@@ -452,23 +479,23 @@ export interface paths {
          *     - Most powerful: Paralyzed (auto-crits), Stunned (no actions), Incapacitated
          *     - Duration: Varies from 1 round to 1 minute (concentration) to permanent
          */
-    get: operations['conditions.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/conditions/{condition}/monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["conditions.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/conditions/{condition}/monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all monsters that inflict this condition
          * @description Returns a paginated list of monsters that can inflict this condition through
          *     their attacks, traits, special abilities, or innate spellcasting. Useful for
@@ -477,7 +504,7 @@ export interface paths {
          *     **Basic Examples:**
          *     - Poisoning monsters: `GET /api/v1/conditions/poisoned/monsters`
          *     - Paralyzing monsters: `GET /api/v1/conditions/paralyzed/monsters`
-         *     - By ID: `GET /api/v1/conditions/5/monsters`
+         *     - By slug: `GET /api/v1/conditions/frightened/monsters`
          *     - Pagination: `GET /api/v1/conditions/frightened/monsters?per_page=25`
          *
          *     **Common Condition Monsters:**
@@ -521,23 +548,23 @@ export interface paths {
          *     - Most dangerous: Paralyzed (auto-crits), Petrified (permanent), Stunned (helpless)
          *     - CR correlation: Higher CR monsters inflict more conditions simultaneously
          */
-    get: operations['conditions.monsters']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/damage-types/{damageType}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["conditions.monsters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/damage-types/{damageType}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all spells that deal this damage type
          * @description Returns a paginated list of spells that deal this type of damage through their
          *     primary or secondary effects. Useful for building themed characters (fire mage,
@@ -545,7 +572,7 @@ export interface paths {
          *
          *     **Basic Examples:**
          *     - Fire spells: `GET /api/v1/damage-types/fire/spells`
-         *     - Fire by ID: `GET /api/v1/damage-types/1/spells`
+         *     - Fire by code: `GET /api/v1/damage-types/F/spells`
          *     - Pagination: `GET /api/v1/damage-types/fire/spells?per_page=25&page=2`
          *
          *     **Damage Type Use Cases:**
@@ -577,23 +604,23 @@ export interface paths {
          *     - Least resisted: Force, Psychic, Radiant (best for reliable damage)
          *     - Most resisted: Fire, Poison (many creatures have resistance/immunity)
          */
-    get: operations['damage-types.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/damage-types/{damageType}/items': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["damage-types.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/damage-types/{damageType}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all items that deal this damage type
          * @description Returns a paginated list of weapons, ammunition, and magic items that deal
          *     this type of damage. Useful for optimizing weapon selection and finding items
@@ -602,7 +629,7 @@ export interface paths {
          *     **Basic Examples:**
          *     - Slashing weapons: `GET /api/v1/damage-types/slashing/items`
          *     - Fire items: `GET /api/v1/damage-types/fire/items`
-         *     - By ID: `GET /api/v1/damage-types/1/items`
+         *     - Slashing by code: `GET /api/v1/damage-types/S/items`
          *     - Pagination: `GET /api/v1/damage-types/slashing/items?per_page=50`
          *
          *     **Physical Damage Types (Weapons):**
@@ -634,65 +661,65 @@ export interface paths {
          *     - Elemental types: Fire (~12), Poison (~6), Cold (~5), Lightning (~4)
          *     - Magic weapons override resistances to non-magical damage
          */
-    get: operations['damage-types.items']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/damage-types': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["damage-types.items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/damage-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all damage types
          * @description Returns a paginated list of D&D 5e damage types (Fire, Cold, Poison, Slashing, etc.).
          *     Used for spell effects, weapon damage, and resistances/immunities.
          */
-    get: operations['damage-types.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/damage-types/{damageType}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["damage-types.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/damage-types/{damageType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single damage type
          * @description Returns detailed information about a specific D&D damage type including its name
          *     and associated spells, weapons, or effects.
          */
-    get: operations['damage-types.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/feats': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["damage-types.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/feats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all feats
          * @description Returns a paginated list of D&D 5e feats with comprehensive filtering capabilities.
          *     Supports prerequisite filtering (race, ability score, proficiency), granted benefits
@@ -737,6 +764,12 @@ export interface paths {
          *     - Multiclass Synergies: Match feats with class features (War Caster for Sorcerer/Paladin)
          *     - Min-Max Optimization: Filter by granted bonuses (Lucky, Great Weapon Master)
          *
+         *     **Tag-Based Filtering Examples (Meilisearch):**
+         *     - Combat feats: `GET /api/v1/feats?filter=tag_slugs IN [combat]`
+         *     - Magic feats: `GET /api/v1/feats?filter=tag_slugs IN [magic]`
+         *     - Skill improvement feats: `GET /api/v1/feats?filter=tag_slugs IN [skill-improvement]`
+         *     - Multiple tags (OR): `GET /api/v1/feats?filter=tag_slugs IN [combat, magic]`
+         *
          *     **Query Parameters:**
          *     - `q` (string): Full-text search term (searches name, description, text)
          *     - `filter` (string): Meilisearch filter expression (limited - use legacy parameters)
@@ -773,44 +806,44 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples.
          */
-    get: operations['feats.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/feats/{feat}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["feats.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/feats/{feat}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single feat
          * @description Returns detailed information about a specific feat including modifiers, proficiencies,
          *     conditions, prerequisites, and source citations. Supports selective relationship loading.
          */
-    get: operations['feats.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/items': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["feats.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all items
          * @description Returns a paginated list of D&D 5e items including weapons, armor, and magic items.
          *     Supports advanced filtering including spell-based queries (AND/OR logic), spell level,
@@ -863,171 +896,171 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples.
          */
-    get: operations['items.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/items/{item}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["items.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/items/{item}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single item
          * @description Returns detailed information about a specific item including item type, damage type,
          *     properties, abilities, random tables, modifiers, proficiencies, and prerequisites.
          *     Supports selective relationship loading via the 'include' parameter.
          */
-    get: operations['items.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/item-properties': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["items.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/item-properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all item properties
          * @description Returns a paginated list of D&D 5e item properties (Versatile, Finesse, Two-Handed, etc.).
          *     These special properties modify how weapons and equipment function.
          */
-    get: operations['item-properties.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/item-properties/{itemProperty}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["item-properties.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/item-properties/{itemProperty}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single item property
          * @description Returns detailed information about a specific item property including its name
          *     and rules text describing how it affects gameplay.
          */
-    get: operations['item-properties.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/item-types': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["item-properties.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/item-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all item types
          * @description Returns a paginated list of D&D 5e item types (Weapon, Armor, Potion, Wondrous Item, etc.).
          *     Used to categorize equipment and magical items.
          */
-    get: operations['item-types.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/item-types/{itemType}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["item-types.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/item-types/{itemType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single item type
          * @description Returns detailed information about a specific item type category including all items
          *     that belong to this type.
          */
-    get: operations['item-types.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/languages': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["item-types.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/languages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all D&D languages
          * @description Returns a paginated list of languages in D&D 5e including Common, Elvish, Dwarvish,
          *     and exotic languages. Includes script information, language type, and rarity.
          */
-    get: operations['languages.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/languages/{language}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["languages.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/languages/{language}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single language
          * @description Returns detailed information about a specific D&D language including its script,
          *     type (standard/exotic), and rarity.
          */
-    get: operations['languages.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/languages/{language}/races': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["languages.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/languages/{language}/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all races that speak this language natively or as a choice
          * @description Returns races that either automatically know this language or can choose it as a racial
          *     language option. Use this to find which races provide access to specific languages for
@@ -1041,7 +1074,7 @@ export interface paths {
          *     GET /api/v1/languages/common/races
          *
          *     # By numeric ID
-         *     GET /api/v1/languages/5/races?per_page=25
+         *     GET /api/v1/languages/gnomish/races?per_page=25
          *     ```
          *
          *     **Common Language → Race Queries:**
@@ -1076,23 +1109,23 @@ export interface paths {
          *     Returns paginated race data with size, speed, sources, and traits. Default 50 results per page.
          *     Use `per_page` parameter to adjust pagination (max 100).
          */
-    get: operations['languages.races']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/languages/{language}/backgrounds': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["languages.races"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/languages/{language}/backgrounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all backgrounds that teach or grant this language
          * @description Returns backgrounds that provide access to this language, either as a fixed language grant
          *     or as a language choice. Use this to plan character backgrounds that grant specific languages
@@ -1106,7 +1139,7 @@ export interface paths {
          *     GET /api/v1/languages/common/backgrounds
          *
          *     # By numeric ID
-         *     GET /api/v1/languages/8/backgrounds?per_page=20
+         *     GET /api/v1/languages/orc/backgrounds?per_page=20
          *     ```
          *
          *     **Common Language → Background Queries:**
@@ -1147,23 +1180,23 @@ export interface paths {
          *     Returns paginated background data with traits, proficiencies, and sources. Default 50 results per page.
          *     Use `per_page` parameter to adjust pagination (max 100).
          */
-    get: operations['languages.backgrounds']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["languages.backgrounds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all monsters
          * @description Returns a paginated list of D&D 5e monsters with advanced filtering capabilities.
          *     Supports spell filtering (AND/OR logic), spell level, spellcasting ability, challenge rating,
@@ -1205,47 +1238,72 @@ export interface paths {
          *     - `WIS` = Divine casters (Clerics, Druids, Monks)
          *     - `CHA` = Charisma casters (Sorcerers, Warlocks, Bards)
          *
-         *     See `docs/API-EXAMPLES.md` for 300+ lines of comprehensive usage examples.
+         *     **Advanced Meilisearch Filter Examples:**
+         *     - CR range: `GET /api/v1/monsters?filter=challenge_rating >= 10 AND challenge_rating <= 15`
+         *     - High HP: `GET /api/v1/monsters?filter=hit_points_average > 100`
+         *     - Multiple ranges: `GET /api/v1/monsters?filter=challenge_rating >= 5 AND hit_points_average > 50 AND armor_class >= 15`
+         *     - Boss fights: `GET /api/v1/monsters?filter=challenge_rating >= 20 AND experience_points >= 25000`
+         *     - Weak monsters: `GET /api/v1/monsters?filter=challenge_rating <= 1 AND hit_points_average < 20`
+         *     - Tank enemies: `GET /api/v1/monsters?filter=armor_class >= 18 AND hit_points_average >= 100`
+         *
+         *     **Tag-Based Filtering Examples:**
+         *     - All fiends: `GET /api/v1/monsters?filter=tag_slugs IN [fiend]`
+         *     - Fire-immune creatures: `GET /api/v1/monsters?filter=tag_slugs IN [fire-immune]`
+         *     - Fiends OR undead: `GET /api/v1/monsters?filter=tag_slugs IN [fiend, undead]`
+         *     - Fire-immune dragons: `GET /api/v1/monsters?filter=tag_slugs IN [fire-immune] AND type = dragon`
+         *     - High CR fiends: `GET /api/v1/monsters?filter=tag_slugs IN [fiend] AND challenge_rating IN [15, 16, 17, 18, 19, 20]`
+         *
+         *     **Spell-Based Filtering Examples:**
+         *     - Fireball casters: `GET /api/v1/monsters?filter=spell_slugs IN [fireball]`
+         *     - Fireball OR Lightning Bolt: `GET /api/v1/monsters?filter=spell_slugs IN [fireball, lightning-bolt]`
+         *     - Spellcasting dragons: `GET /api/v1/monsters?filter=type = dragon AND spell_slugs IN [fireball, polymorph]`
+         *
+         *     **Meilisearch Operators:**
+         *     - Comparison: `=`, `!=`, `>`, `>=`, `<`, `<=`
+         *     - Logic: `AND`, `OR`
+         *     - Membership: `IN [value1, value2]`
+         *
+         *     See `docs/API-EXAMPLES.md` and `docs/MEILISEARCH-FILTERS.md` for comprehensive examples.
          */
-    get: operations['monsters.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/monsters/{monster}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["monsters.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/monsters/{monster}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single monster
          * @description Returns detailed information about a specific monster including traits, actions,
          *     legendary actions, spellcasting, modifiers, conditions, and source citations.
          *     Supports selective relationship loading via the 'include' parameter.
          */
-    get: operations['monsters.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/monsters/{monster}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["monsters.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/monsters/{monster}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get all spells for a specific monster
          * @description Returns a collection of spells that the monster can cast, ordered by spell level then name.
          *     Returns an empty collection for non-spellcasters.
@@ -1271,70 +1329,70 @@ export interface paths {
          *     Powered by SpellcasterStrategy which syncs 1,098 spell relationships
          *     across 129 spellcasting monsters with 100% match rate.
          */
-    get: operations['monsters.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/proficiency-types': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["monsters.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proficiency-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all proficiency types
          * @description Returns a paginated list of D&D 5e proficiency types including weapons, armor, tools,
          *     languages, and skills. Supports filtering by category and subcategory (e.g., "weapon/martial").
          */
-    get: operations['proficiency-types.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/proficiency-types/{proficiencyType}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["proficiency-types.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proficiency-types/{proficiencyType}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single proficiency type
          * @description Returns detailed information about a specific proficiency type including category,
          *     subcategory, and optional associated item.
          */
-    get: operations['proficiency-types.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/proficiency-types/{proficiencyType}/classes': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["proficiency-types.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proficiency-types/{proficiencyType}/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all classes proficient with this proficiency type (weapon/armor/tool/skill/language)
          * @description **Examples:**
          *     ```bash
          *     # By numeric ID
-         *     GET /api/v1/proficiency-types/23/classes
+         *     GET /api/v1/proficiency-types/flail/classes
          *
          *     # By name (most common for proficiencies)
          *     GET /api/v1/proficiency-types/Longsword/classes
@@ -1342,7 +1400,7 @@ export interface paths {
          *     GET /api/v1/proficiency-types/Heavy%20Armor/classes
          *
          *     # With pagination
-         *     GET /api/v1/proficiency-types/Longsword/classes?per_page=25
+         *     GET /api/v1/proficiency-types/longsword/classes?per_page=25
          *     ```
          *
          *     **Common Proficiency Queries:**
@@ -1382,28 +1440,28 @@ export interface paths {
          *     - Includes base classes AND subclasses (e.g., Eldritch Knight Fighter counts separately)
          *     - Check `parent_class_id` in response to distinguish base vs subclass
          */
-    get: operations['proficiency-types.classes']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/proficiency-types/{proficiencyType}/races': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["proficiency-types.classes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proficiency-types/{proficiencyType}/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all races that have this proficiency type (weapon/armor/tool/skill/language/trait)
          * @description **Examples:**
          *     ```bash
          *     # By numeric ID
-         *     GET /api/v1/proficiency-types/15/races
+         *     GET /api/v1/proficiency-types/quarterstaff/races
          *
          *     # By name (recommended for readability)
          *     GET /api/v1/proficiency-types/Elvish/races
@@ -1411,7 +1469,7 @@ export interface paths {
          *     GET /api/v1/proficiency-types/Darkvision/races
          *
          *     # With pagination
-         *     GET /api/v1/proficiency-types/Dwarven%20Resilience/races?per_page=10
+         *     GET /api/v1/proficiency-types/dwarven-resilience/races?per_page=10
          *     ```
          *
          *     **Common Racial Proficiency Queries:**
@@ -1447,28 +1505,28 @@ export interface paths {
          *     - Check `parent_race_id` in response to distinguish base race vs subrace
          *     - Results alphabetically sorted for consistent browsing
          */
-    get: operations['proficiency-types.races']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/proficiency-types/{proficiencyType}/backgrounds': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["proficiency-types.races"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/proficiency-types/{proficiencyType}/backgrounds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all backgrounds that grant this proficiency type (skill/tool/language/equipment)
          * @description **Examples:**
          *     ```bash
          *     # By numeric ID
-         *     GET /api/v1/proficiency-types/9/backgrounds
+         *     GET /api/v1/proficiency-types/dagger/backgrounds
          *
          *     # By name (recommended for clarity)
          *     GET /api/v1/proficiency-types/Stealth/backgrounds
@@ -1476,7 +1534,7 @@ export interface paths {
          *     GET /api/v1/proficiency-types/Deception/backgrounds
          *
          *     # With pagination
-         *     GET /api/v1/proficiency-types/Insight/backgrounds?per_page=15
+         *     GET /api/v1/proficiency-types/insight/backgrounds?per_page=15
          *     ```
          *
          *     **Common Background Proficiency Queries:**
@@ -1519,23 +1577,23 @@ export interface paths {
          *     - All backgrounds are base-level (no "sub-backgrounds" like races/classes have)
          *     - Check background description for thematic fit beyond mechanical proficiencies
          */
-    get: operations['proficiency-types.backgrounds']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/races': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["proficiency-types.backgrounds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all races and subraces
          * @description Returns a paginated list of D&D 5e races and subraces. Supports filtering by
          *     proficiencies, skills, languages, size, speed, and innate spells. Includes ability
@@ -1570,6 +1628,12 @@ export interface paths {
          *
          *     - Combined filters: `GET /api/v1/races?spells=darkness&spell_level=1`
          *       (Returns: Races with Darkness AND at least one level 1 spell)
+         *
+         *     **Tag-Based Filtering Examples (Meilisearch):**
+         *     - Darkvision races: `GET /api/v1/races?filter=tag_slugs IN [darkvision]`
+         *     - Fey ancestry: `GET /api/v1/races?filter=tag_slugs IN [fey-ancestry]`
+         *     - Multiple tags (OR): `GET /api/v1/races?filter=tag_slugs IN [darkvision, fey-ancestry]`
+         *     - Combined filters: `GET /api/v1/races?filter=tag_slugs IN [darkvision] AND speed >= 35`
          *
          *     **Use Cases:**
          *     - Character optimization: Which races get free teleportation? (`?spells=misty-step`)
@@ -1612,45 +1676,45 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples and best practices.
          */
-    get: operations['races.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/races/{race}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["races.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/races/{race}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single race
          * @description Returns detailed information about a specific race or subrace including parent race,
          *     subraces, ability modifiers, proficiencies, traits, languages, and spells.
          *     Supports selective relationship loading via the 'include' parameter.
          */
-    get: operations['races.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/races/{race}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["races.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/races/{race}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get innate spells for a race
          * @description Returns all innate spells granted by a specific race or subrace,
          *     sorted by spell level and then alphabetically. Includes spell school
@@ -1668,96 +1732,198 @@ export interface paths {
          *     - High Elf: 1 wizard cantrip (player's choice)
          *     - Forest Gnome: Minor Illusion (0)
          */
-    get: operations['races.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/search': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["races.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Global search across all D&D entities
          * @description Search simultaneously across spells, items, races, classes, backgrounds, feats, and monsters.
-         *     Returns grouped results with relevance ranking powered by Meilisearch.
+         *     Returns grouped results with relevance ranking powered by Meilisearch. Perfect for implementing
+         *     universal search bars, type-ahead autocomplete, and cross-entity content discovery.
+         *
+         *     **Basic Examples:**
+         *     - Search everything: `GET /api/v1/search?q=fire`
+         *     - Search by keyword: `GET /api/v1/search?q=dragon` (finds Dragon spells, Dragon race, Dragon monsters)
+         *     - Search specific types: `GET /api/v1/search?q=healing&types=spells,items`
+         *     - Limit results per type: `GET /api/v1/search?q=magic&limit=10` (10 per entity type)
+         *     - Debug mode: `GET /api/v1/search?q=test&debug=true` (includes execution time, Meilisearch host)
+         *
+         *     **Type-Specific Search Examples:**
+         *     - Spells only: `GET /api/v1/search?q=fireball&types=spells`
+         *     - Monsters only: `GET /api/v1/search?q=ancient&types=monsters`
+         *     - Items + Equipment: `GET /api/v1/search?q=sword&types=items`
+         *     - Character options: `GET /api/v1/search?q=elf&types=races,classes,backgrounds,feats`
+         *     - Combat content: `GET /api/v1/search?q=attack&types=spells,items,monsters`
+         *
+         *     **Multi-Type Search Examples:**
+         *     - Fire-themed content: `GET /api/v1/search?q=fire&types=spells,monsters,items` (Fire spells, fire-breathing monsters, fire resistance items)
+         *     - Healing options: `GET /api/v1/search?q=healing&types=spells,items,classes` (Healing spells, potions, Cleric)
+         *     - Stealth builds: `GET /api/v1/search?q=stealth&types=spells,items,backgrounds,feats` (Invisibility, Cloak of Elvenkind, Criminal, Skulker)
+         *     - Undead encounters: `GET /api/v1/search?q=undead&types=monsters,spells,items` (Zombie, Turn Undead, Holy Water)
+         *
+         *     **Fuzzy Matching Examples (Typo-Tolerant):**
+         *     - "firebll" → finds "Fireball" (1 character typo)
+         *     - "ligt" → finds "Light" (1 character typo)
+         *     - "elv" → finds "Elf", "Elven", "Elvish" (prefix matching)
+         *     - "wizar" → finds "Wizard" (partial word matching)
+         *
+         *     **Use Cases:**
+         *     - **Universal Search Bar**: Single endpoint for navbar/header search across entire D&D compendium
+         *     - **Type-Ahead Autocomplete**: Fast fuzzy matching with <50ms average response time
+         *     - **Content Discovery**: "What D&D content relates to dragons?" (spells, monsters, races, items)
+         *     - **Character Building**: Find related spells, items, and feats for specific builds
+         *     - **DM Encounter Prep**: Search for monsters + spells + items for themed encounters
+         *     - **Rules Lookup**: Quick reference across all entity types ("What gives advantage?")
+         *     - **Mobile Apps**: Lightweight endpoint for cross-entity search on mobile devices
+         *     - **API Exploration**: Discover available content before querying specific endpoints
+         *
+         *     **Query Parameters:**
+         *     - `q` (string, required): Search query term (min 2 characters)
+         *     - `types` (string, optional): Comma-separated entity types to search (default: all)
+         *       - Valid types: `spells`, `items`, `monsters`, `races`, `classes`, `backgrounds`, `feats`
+         *     - `limit` (int, optional): Maximum results per entity type (default: 20, max: 100)
+         *     - `debug` (bool, optional): Include debug info (execution time, Meilisearch host)
+         *
+         *     **Response Structure:**
+         *     ```json
+         *     {
+         *       "data": {
+         *         "query": "fire",
+         *         "types_searched": ["spells", "items", "monsters", "races", "classes", "backgrounds", "feats"],
+         *         "limit_per_type": 20,
+         *         "total_results": 42,
+         *         "spells": [...],      // Array of spell objects
+         *         "items": [...],       // Array of item objects
+         *         "monsters": [...],    // Array of monster objects
+         *         "races": [...],       // Array of race objects
+         *         "classes": [...],     // Array of class objects
+         *         "backgrounds": [...], // Array of background objects
+         *         "feats": [...]        // Array of feat objects
+         *       }
+         *     }
+         *     ```
+         *
+         *     **Performance:**
+         *     - Average response time: <50ms for most queries
+         *     - p95 response time: <100ms
+         *     - Searches 3,600+ documents across 7 entity types
+         *     - Powered by Meilisearch for typo-tolerance and relevance ranking
+         *
+         *     **Relevance Ranking:**
+         *     Results are sorted by Meilisearch relevance score, which considers:
+         *     - Exact matches (highest priority)
+         *     - Prefix matches (e.g., "fire" matches "Fireball")
+         *     - Typo tolerance (1-2 character differences)
+         *     - Field importance (name > description)
+         *     - Word proximity (closer words rank higher)
+         *
+         *     **Data Source:**
+         *     - 477 spells, 516 items, 598 monsters, 131 classes
+         *     - Races, subraces, backgrounds, feats from all D&D 5e sourcebooks
+         *     - Indexed in Meilisearch for fast fuzzy search
+         *     - Falls back to database LIKE queries if Meilisearch unavailable
+         *
+         *     **Example Frontend Implementation:**
+         *     ```javascript
+         *     // Universal search bar with type-ahead
+         *     const searchAll = async (query) => {
+         *       const response = await fetch(`/api/v1/search?q=${query}&limit=5`);
+         *       const data = await response.json();
+         *       return data.data; // { spells: [...], items: [...], ... }
+         *     };
+         *
+         *     // Category-specific search (e.g., spell picker)
+         *     const searchSpells = async (query) => {
+         *       const response = await fetch(`/api/v1/search?q=${query}&types=spells&limit=10`);
+         *       const data = await response.json();
+         *       return data.data.spells; // Array of matching spells
+         *     };
+         *     ```
+         *
+         *     See `docs/API-EXAMPLES.md` for comprehensive usage examples and integration patterns.
          */
-    get: operations['search']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sizes': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sizes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all creature sizes
          * @description Returns a paginated list of D&D 5e creature sizes (Tiny, Small, Medium, Large, Huge, Gargantuan).
          *     Used to categorize creatures, races, and determine space occupied in combat.
          */
-    get: operations['sizes.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sizes/{size}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sizes.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sizes/{size}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single size category
          * @description Returns detailed information about a specific creature size including its space
          *     requirements and rules implications.
          */
-    get: operations['sizes.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sizes/{size}/races': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sizes.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sizes/{size}/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all races of this size category
          * @description Returns a paginated list of playable and monster races that are of the specified size.
          *     Size affects combat mechanics, grappling rules, mounted combat, and dungeon navigation.
          *
          *     **Examples:**
          *     ```bash
-         *     # By ID (sizes use numeric IDs: 1=Tiny, 2=Small, 3=Medium, 4=Large, 5=Huge, 6=Gargantuan)
-         *     GET /api/v1/sizes/2/races      # Small races
-         *     GET /api/v1/sizes/3/races      # Medium races
-         *     GET /api/v1/sizes/1/races?per_page=25
+         *     # By code (T=Tiny, S=Small, M=Medium, L=Large, H=Huge, G=Gargantuan)
+         *     GET /api/v1/sizes/S/races      # Small races
+         *     GET /api/v1/sizes/M/races      # Medium races
+         *     GET /api/v1/sizes/T/races?per_page=25
          *     ```
          *
          *     **Size Categories & Common Races:**
@@ -1821,33 +1987,33 @@ export interface paths {
          *     - Gargantuan: 20ft × 20ft space (16 squares)
          *     - **Squeezing:** Can squeeze through spaces half your width at half speed (Small through 1.25ft)
          */
-    get: operations['sizes.races']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sizes/{size}/monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sizes.races"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sizes/{size}/monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all monsters of this size category
          * @description Returns a paginated list of monsters that are of the specified size.
          *     Size affects encounter balance, tactics, space control, and environmental challenges.
          *
          *     **Examples:**
          *     ```bash
-         *     # By ID (sizes use numeric IDs: 1=Tiny, 2=Small, 3=Medium, 4=Large, 5=Huge, 6=Gargantuan)
-         *     GET /api/v1/sizes/1/monsters     # Tiny monsters
-         *     GET /api/v1/sizes/4/monsters     # Large monsters
-         *     GET /api/v1/sizes/5/monsters?per_page=25  # Huge monsters
+         *     # By code (T=Tiny, S=Small, M=Medium, L=Large, H=Huge, G=Gargantuan)
+         *     GET /api/v1/sizes/T/monsters     # Tiny monsters
+         *     GET /api/v1/sizes/L/monsters     # Large monsters
+         *     GET /api/v1/sizes/H/monsters?per_page=25  # Huge monsters
          *     ```
          *
          *     **Size Categories & Common Monsters:**
@@ -1931,107 +2097,107 @@ export interface paths {
          *     - **Cavern/outdoor:** Only limitation is Gargantuan (20ft × 20ft minimum)
          *     - **Flying creatures:** Size matters less (can maneuver in 3D space)
          */
-    get: operations['sizes.monsters']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/skills': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sizes.monsters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all D&D skills
          * @description Returns a paginated list of D&D 5e skills (Acrobatics, Stealth, Perception, etc.).
          *     Supports filtering by associated ability score (e.g., "dex", "wis").
          */
-    get: operations['skills.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/skills/{skill}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["skills.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/skills/{skill}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single skill
          * @description Returns detailed information about a specific D&D skill including its associated
          *     ability score (Strength, Dexterity, etc.).
          */
-    get: operations['skills.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sources': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["skills.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all D&D sourcebooks
          * @description Returns a paginated list of D&D 5e sourcebooks (PHB, Xanathar's, Tasha's, etc.).
          *     Supports searching by name or code (e.g., "PHB", "XGE").
          */
-    get: operations['sources.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/sources/{source}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sources.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/sources/{source}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single sourcebook
          * @description Returns detailed information about a specific D&D sourcebook including its full name,
          *     code abbreviation, and publication date.
          */
-    get: operations['sources.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["sources.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all spells
          * @description Returns a paginated list of D&D 5e spells with comprehensive filtering capabilities.
          *     Supports spell level, school of magic, concentration/ritual status, damage types,
@@ -2042,8 +2208,8 @@ export interface paths {
          *     - Cantrips (level 0): `GET /api/v1/spells?level=0` (67 cantrips)
          *     - Low-level spells: `GET /api/v1/spells?level=1` (93 1st level spells)
          *     - High-level spells: `GET /api/v1/spells?level=9` (17 legendary 9th level spells)
-         *     - Evocation school: `GET /api/v1/spells?school=3` (all evocation spells)
-         *     - Enchantment school: `GET /api/v1/spells?school=4` (all enchantment spells)
+         *     - Evocation school: `GET /api/v1/spells?school=EV` (all evocation spells)
+         *     - Enchantment school: `GET /api/v1/spells?school=EN` (all enchantment spells)
          *     - Concentration spells: `GET /api/v1/spells?concentration=true` (buffing, control)
          *     - Ritual spells: `GET /api/v1/spells?ritual=true` (non-combat utility spells)
          *     - Pagination: `GET /api/v1/spells?per_page=50&page=2`
@@ -2060,7 +2226,7 @@ export interface paths {
          *     - DEX saves: `GET /api/v1/spells?saving_throw=DEX` (Fireball, Lightning Bolt, Grease)
          *     - DEX or CON: `GET /api/v1/spells?saving_throw=DEX,CON` (physical resistance tests)
          *     - Mental saves (INT/WIS/CHA): `GET /api/v1/spells?saving_throw=INT,WIS,CHA` (mind-affecting)
-         *     - Enchantment WIS saves: `GET /api/v1/spells?saving_throw=WIS&school=4` (Charm Person, Dominate)
+         *     - Enchantment WIS saves: `GET /api/v1/spells?saving_throw=WIS&school=EN` (Charm Person, Dominate)
          *     - STR saves: `GET /api/v1/spells?saving_throw=STR` (forced movement, restraints)
          *     - CON saves: `GET /api/v1/spells?saving_throw=CON` (poison, disease, exhaustion)
          *
@@ -2072,14 +2238,22 @@ export interface paths {
          *     - Verbal + Somatic: `GET /api/v1/spells?requires_verbal=true&requires_somatic=true&requires_material=false`
          *
          *     **Advanced Meilisearch Filtering:**
-         *     - Level range: `GET /api/v1/spells?filter=level >= 1 AND level <= 3`
-         *     - Multiple schools: `GET /api/v1/spells?filter=school_code = EV OR school_code = C`
-         *     - Concentration + level: `GET /api/v1/spells?filter=concentration = true AND level <= 2`
+         *     - Level range: `GET /api/v1/spells?filter=level >= 1 AND level <= 3` (low-tier spells)
+         *     - Low-level spells: `GET /api/v1/spells?filter=level IN [0, 1, 2, 3]` (early-game options)
+         *     - High-level spells: `GET /api/v1/spells?filter=level >= 7` (legendary magic)
+         *     - Multiple schools: `GET /api/v1/spells?filter=school_code = EV OR school_code = C` (damage or buffs)
+         *     - Concentration + level: `GET /api/v1/spells?filter=concentration = true AND level <= 2` (early buffs)
+         *     - Non-concentration damage: `GET /api/v1/spells?filter=concentration = false AND school_code = EV` (burst damage)
+         *
+         *     **Meilisearch Operators:**
+         *     - Comparison: `=`, `!=`, `>`, `>=`, `<`, `<=`
+         *     - Logic: `AND`, `OR`
+         *     - Membership: `IN [value1, value2]`
          *
          *     **Combined Filtering Examples:**
          *     - Low-level fire DEX saves: `GET /api/v1/spells?damage_type=fire&saving_throw=DEX&level=1` (Burning Hands)
-         *     - Silent enchantment spells: `GET /api/v1/spells?school=4&requires_verbal=false` (sneaky mind control)
-         *     - Material-free evocation: `GET /api/v1/spells?school=3&requires_material=false` (pure arcane damage)
+         *     - Silent enchantment spells: `GET /api/v1/spells?school=EN&requires_verbal=false` (sneaky mind control)
+         *     - Material-free evocation: `GET /api/v1/spells?school=EV&requires_material=false` (pure arcane damage)
          *     - Low-level AOE ritual: `GET /api/v1/spells?level=2&ritual=true` (utility without slots)
          *     - Search + filter: `GET /api/v1/spells?q=fire&level=3` (3rd level fire-themed spells)
          *
@@ -2128,45 +2302,45 @@ export interface paths {
          *
          *     See `docs/API-EXAMPLES.md` for comprehensive usage examples.
          */
-    get: operations['spells.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells/{spell}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells/{spell}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single spell
          * @description Returns detailed information about a specific spell including relationships
          *     like spell school, sources, damage effects, and associated classes.
          *     Supports selective relationship loading via the 'include' parameter.
          */
-    get: operations['spells.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells/{spell}/classes': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells/{spell}/classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get all classes that can learn this spell
          * @description Returns a list of D&D 5e character classes that have this spell in their spell list,
          *     ordered alphabetically by class name. This includes both base classes and subclasses
@@ -2187,23 +2361,23 @@ export interface paths {
          *     Powered by the `class_spells` pivot table which tracks 1,917 class-spell relationships
          *     across 131 classes/subclasses and 477 spells imported from official D&D sourcebooks.
          */
-    get: operations['spells.classes']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells/{spell}/monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.classes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells/{spell}/monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get all monsters that can cast this spell
          * @description Returns a list of D&D 5e monsters that can cast this spell, ordered alphabetically
          *     by monster name. This includes spellcasting monsters like liches, archmages, dragons,
@@ -2225,23 +2399,23 @@ export interface paths {
          *     across 129 spellcasting monsters. Synced automatically by SpellcasterStrategy during
          *     monster imports with 100% spell name match rate.
          */
-    get: operations['spells.monsters']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells/{spell}/items': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.monsters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells/{spell}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get all magic items that contain this spell
          * @description Returns a list of D&D 5e magic items that contain or can cast this spell, ordered
          *     alphabetically by item name. This includes spell scrolls, charged items (staves, wands,
@@ -2263,23 +2437,23 @@ export interface paths {
          *     across charged items, spell scrolls, and magical equipment. Synced automatically by
          *     ChargedItemStrategy during item imports using case-insensitive spell name matching.
          */
-    get: operations['spells.items']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spells/{spell}/races': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.items"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spells/{spell}/races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get all races that can cast this spell
          * @description Returns a list of D&D 5e races and subraces that can cast this spell through racial
          *     abilities, ordered alphabetically by race name. This includes innate spellcasting
@@ -2301,65 +2475,65 @@ export interface paths {
          *     across races and subraces, representing innate racial spellcasting abilities from
          *     official D&D sourcebooks.
          */
-    get: operations['spells.races']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spell-schools': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spells.races"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spell-schools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all schools of magic
          * @description Returns a paginated list of the 8 schools of magic in D&D 5e (Abjuration, Conjuration,
          *     Divination, Enchantment, Evocation, Illusion, Necromancy, Transmutation).
          */
-    get: operations['spell-schools.index']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spell-schools/{spellSchool}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spell-schools.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spell-schools/{spellSchool}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * Get a single school of magic
          * @description Returns detailed information about a specific school of magic including its name
          *     and associated spells.
          */
-    get: operations['spell-schools.show']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/v1/spell-schools/{spellSchool}/spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
+        get: operations["spell-schools.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/spell-schools/{spellSchool}/spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
          * List all spells in this school of magic
          * @description Returns a paginated list of spells belonging to a specific school of magic.
          *     Supports all spell fields including level, concentration, ritual, damage types,
@@ -2394,3074 +2568,3078 @@ export interface paths {
          *     - Transmutation: ~55 spells (versatile utility)
          *     - Conjuration: ~45 spells (summoning & teleportation)
          */
-    get: operations['spell-schools.spells']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+        get: operations["spell-schools.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    /** AbilityScoreResource */
-    AbilityScoreResource: {
-      id: number
-      code: string
-      name: string
-    }
-    /** BackgroundResource */
-    BackgroundResource: {
-      id: number
-      slug: string
-      name: string
-      traits?: components['schemas']['TraitResource'][]
-      proficiencies?: components['schemas']['ProficiencyResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-      languages?: components['schemas']['EntityLanguageResource'][]
-      equipment?: components['schemas']['EntityItemResource'][]
-      tags?: components['schemas']['TagResource'][]
-    }
-    /** ClassCounterResource */
-    ClassCounterResource: {
-      id: number
-      level: number
-      counter_name: string
-      counter_value: number
-      /** @enum {string} */
-      reset_timing: 'Short Rest' | 'Long Rest' | 'Does Not Reset'
-    }
-    /** ClassFeatureResource */
-    ClassFeatureResource: {
-      id: number
-      level: number
-      feature_name: string
-      description: string
-      is_optional: boolean
-      sort_order: number
-    }
-    /** ClassLevelProgressionResource */
-    ClassLevelProgressionResource: {
-      id: number
-      level: number
-      cantrips_known: number | null
-      spells_known: number | null
-      spell_slots_1st: number | null
-      spell_slots_2nd: number | null
-      spell_slots_3rd: number | null
-      spell_slots_4th: number | null
-      spell_slots_5th: number | null
-      spell_slots_6th: number | null
-      spell_slots_7th: number | null
-      spell_slots_8th: number | null
-      spell_slots_9th: number | null
-    }
-    /** ClassResource */
-    ClassResource: {
-      id: string
-      slug: string
-      name: string
-      hit_die: string
-      description: string
-      primary_ability: string
-      spellcasting_ability?: components['schemas']['AbilityScoreResource']
-      parent_class_id: string
-      is_base_class: string
-      parent_class?: components['schemas']['ClassResource']
-      subclasses?: components['schemas']['ClassResource'][]
-      proficiencies?: components['schemas']['ProficiencyResource'][]
-      traits?: components['schemas']['TraitResource'][]
-      features?: components['schemas']['ClassFeatureResource'][]
-      level_progression?: components['schemas']['ClassLevelProgressionResource'][]
-      equipment?: components['schemas']['EntityItemResource'][]
-      counters?: components['schemas']['ClassCounterResource'][]
-      spells?: components['schemas']['SpellResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-      tags?: components['schemas']['TagResource'][]
-    }
-    /** ConditionResource */
-    ConditionResource: {
-      id: number
-      name: string
-      slug: string
-      description: string
-    }
-    /** DamageTypeResource */
-    DamageTypeResource: {
-      id: number
-      name: string
-    }
-    /** EntityConditionResource */
-    EntityConditionResource: {
-      id: number
-      condition_id: number | null
-      condition?: components['schemas']['ConditionResource']
-      effect_type: string
-      description: string | null
-    }
-    /** EntityItemResource */
-    EntityItemResource: {
-      id: number
-      item_id: number | null
-      item?: components['schemas']['ItemResource']
-      quantity: number
-      is_choice: boolean
-      choice_group: string | null
-      choice_option: number | null
-      choice_description: string | null
-      proficiency_subcategory: string | null
-      description: string | null
-    }
-    /** EntityLanguageResource */
-    EntityLanguageResource: {
-      language?: components['schemas']['LanguageResource']
-      is_choice: boolean
-    }
-    /** EntityPrerequisiteResource */
-    EntityPrerequisiteResource: {
-      id: number
-      prerequisite_type: string | null
-      prerequisite_id: number | null
-      minimum_value: number | null
-      description: string | null
-      group_id: number
-      /** @description Generic prerequisite field (polymorphic relationship) */
-      prerequisite?: components['schemas']['AbilityScoreResource'] | components['schemas']['RaceResource'] | components['schemas']['SkillResource'] | components['schemas']['ProficiencyTypeResource'] | null
-      /** @description Conditionally include nested resources based on prerequisite type */
-      ability_score?: components['schemas']['AbilityScoreResource']
-      race?: components['schemas']['RaceResource']
-      skill?: components['schemas']['SkillResource']
-      proficiency_type?: components['schemas']['ProficiencyTypeResource']
-    }
-    /** EntitySourceResource */
-    EntitySourceResource: {
-      code: string
-      name: string
-      pages: string | null
-    }
-    /** EntitySpellResource */
-    EntitySpellResource: {
-      id: number
-      spell_id: number
-      spell?: components['schemas']['SpellResource']
-      ability_score_id: number | null
-      ability_score?: components['schemas']['AbilityScoreResource']
-      level_requirement: number | null
-      usage_limit: string | null
-      is_cantrip: boolean
-      /** @description Charge costs (for items that cast spells) */
-      charges_cost_min: number | null
-      charges_cost_max: number | null
-      charges_cost_formula: string | null
-    }
-    /** FeatResource */
-    FeatResource: {
-      id: number
-      slug: string
-      name: string
-      prerequisites_text: string | null
-      prerequisites?: components['schemas']['EntityPrerequisiteResource'][]
-      description: string
-      modifiers?: components['schemas']['ModifierResource'][]
-      proficiencies?: components['schemas']['ProficiencyResource'][]
-      conditions?: components['schemas']['EntityConditionResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-      tags?: components['schemas']['TagResource'][]
-    }
-    /** ItemAbilityResource */
-    ItemAbilityResource: {
-      id: number
-      item_id: number
-      ability_type: string
-      spell_id: number | null
-      name: string | null
-      description: string | null
-      roll_formula: string | null
-      charges_cost: number | null
-      usage_limit: string | null
-      save_dc: number | null
-      attack_bonus: number | null
-      sort_order: number
-      /** @description Relationships */
-      spell?: components['schemas']['SpellResource']
-    }
-    /** ItemPropertyResource */
-    ItemPropertyResource: {
-      id: number
-      code: string
-      name: string
-      description: string
-    }
-    /** ItemResource */
-    ItemResource: {
-      id: number
-      name: string
-      slug: string
-      item_type_id: number
-      detail: string | null
-      rarity: string | null
-      requires_attunement: boolean
-      is_magic: boolean
-      cost_cp: number | null
-      weight: string | null
-      damage_dice: string | null
-      versatile_damage: string | null
-      damage_type_id: number | null
-      range_normal: number | null
-      range_long: number | null
-      armor_class: number | null
-      strength_requirement: number | null
-      stealth_disadvantage: boolean
-      description: string
-      /** @description Charge mechanics (magic items) */
-      charges_max: string | null
-      recharge_formula: string | null
-      recharge_timing: string | null
-      /** @description Relationships */
-      item_type?: components['schemas']['ItemTypeResource']
-      damage_type?: components['schemas']['DamageTypeResource']
-      properties?: components['schemas']['ItemPropertyResource'][]
-      abilities?: components['schemas']['ItemAbilityResource'][]
-      random_tables?: components['schemas']['RandomTableResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-      proficiencies?: components['schemas']['ProficiencyResource'][]
-      modifiers?: components['schemas']['ModifierResource'][]
-      prerequisites?: components['schemas']['EntityPrerequisiteResource'][]
-      tags?: components['schemas']['TagResource'][]
-      spells?: components['schemas']['ItemSpellResource'][]
-      saving_throws?: components['schemas']['SavingThrowResource'][]
-    }
-    /** ItemSpellResource */
-    ItemSpellResource: {
-      id: string
-      name: string
-      slug: string
-      level: string
-      school?: components['schemas']['SpellSchoolResource']
-      /** @description Charge cost data from pivot table (entity_spells) */
-      charges_cost_min: string
-      charges_cost_max: string
-      charges_cost_formula: string
-      /** @description Other usage metadata from pivot */
-      usage_limit: string
-      level_requirement: string
-    }
-    /** ItemTypeResource */
-    ItemTypeResource: {
-      id: number
-      code: string
-      name: string
-      description: string | null
-    }
-    /** LanguageResource */
-    LanguageResource: {
-      id: number
-      name: string
-      slug: string
-      script: string | null
-      typical_speakers: string | null
-      description: string | null
-    }
-    /** ModifierResource */
-    ModifierResource: {
-      id: number
-      modifier_category: string
-      ability_score?: components['schemas']['AbilityScoreResource']
-      skill?: components['schemas']['SkillResource']
-      damage_type?: components['schemas']['DamageTypeResource'] | null
-      value: string
-      condition: string | null
-      is_choice: boolean
-      choice_count: number | null
-      choice_constraint: string | null
-    }
-    /** MonsterActionResource */
-    MonsterActionResource: {
-      id: number
-      action_type: string
-      name: string
-      description: string
-      attack_data: string | null
-      recharge: string | null
-      sort_order: number
-    }
-    /** MonsterLegendaryActionResource */
-    MonsterLegendaryActionResource: {
-      id: number
-      name: string
-      description: string
-      action_cost: number
-      is_lair_action: boolean
-      attack_data: string | null
-      recharge: string | null
-      sort_order: number
-    }
-    /** MonsterResource */
-    MonsterResource: {
-      id: number
-      slug: string
-      name: string
-      size?: components['schemas']['SizeResource']
-      type: string
-      alignment: string | null
-      armor_class: number
-      armor_type: string | null
-      hit_points_average: number
-      hit_dice: string
-      speed_walk: number
-      speed_fly: number | null
-      speed_swim: number | null
-      speed_burrow: number | null
-      speed_climb: number | null
-      can_hover: boolean
-      strength: number
-      dexterity: number
-      constitution: number
-      intelligence: number
-      wisdom: number
-      charisma: number
-      challenge_rating: string
-      experience_points: number
-      description: string | null
-      traits?: components['schemas']['MonsterTraitResource'][]
-      actions?: components['schemas']['MonsterActionResource'][]
-      legendary_actions?: components['schemas']['MonsterLegendaryActionResource'][]
-      spellcasting?: components['schemas']['MonsterSpellcastingResource']
-      modifiers?: components['schemas']['ModifierResource'][]
-      conditions?: components['schemas']['EntityConditionResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-    }
-    /** MonsterSpellcastingResource */
-    MonsterSpellcastingResource: {
-      id: number
-      description: string
-      spell_slots: string | null
-      spellcasting_ability: string | null
-      spell_save_dc: number | null
-      spell_attack_bonus: number | null
-    }
-    /** MonsterTraitResource */
-    MonsterTraitResource: {
-      id: number
-      name: string
-      description: string
-      attack_data: string | null
-      sort_order: number
-    }
-    /** ProficiencyResource */
-    ProficiencyResource: {
-      id: number
-      proficiency_type: string
-      proficiency_subcategory: string | null
-      proficiency_type_id: number | null
-      proficiency_type_detail?: components['schemas']['ProficiencyTypeResource']
-      skill?: components['schemas']['SkillResource']
-      item?: {
-        id: number
-        name: string
-      }
-      ability_score?: components['schemas']['AbilityScoreResource']
-      proficiency_name: string | null
-      grants: boolean
-      is_choice: boolean
-      choice_group: string | null
-      choice_option: number | null
-      quantity: number | null
-    }
-    /** ProficiencyTypeResource */
-    ProficiencyTypeResource: {
-      id: number
-      slug: string
-      name: string
-      category: string
-      subcategory: string | null
-      item?: components['schemas']['ItemResource']
-    }
-    /** RaceResource */
-    RaceResource: {
-      id: number
-      slug: string
-      name: string
-      size?: components['schemas']['SizeResource']
-      speed: number
-      traits?: components['schemas']['TraitResource'][]
-      modifiers?: components['schemas']['ModifierResource'][]
-      sources?: components['schemas']['EntitySourceResource'][]
-      parent_race?: components['schemas']['RaceResource']
-      subraces?: components['schemas']['RaceResource'][]
-      proficiencies?: components['schemas']['ProficiencyResource'][]
-      languages?: components['schemas']['EntityLanguageResource'][]
-      conditions?: components['schemas']['EntityConditionResource'][]
-      spells?: components['schemas']['EntitySpellResource'][]
-      tags?: components['schemas']['TagResource'][]
-    }
-    /** RandomTableEntryResource */
-    RandomTableEntryResource: {
-      id: number
-      roll_min: number | null
-      roll_max: number | null
-      result_text: string | null
-      sort_order: number
-    }
-    /** RandomTableResource */
-    RandomTableResource: {
-      id: number
-      table_name: string
-      dice_type: string | null
-      description: string | null
-      entries?: components['schemas']['RandomTableEntryResource'][]
-    }
-    /** SavingThrowResource */
-    SavingThrowResource: {
-      ability_score: {
-        id: string
-        code: string
-        name: string
-      }
-      dc: string
-      save_effect: string
-      is_initial_save: boolean
-      save_modifier: string
-    }
-    /** SearchResource */
-    SearchResource: {
-      data: {
-        spells: components['schemas']['SpellResource'][]
-        items: components['schemas']['ItemResource'][]
-        races: components['schemas']['RaceResource'][]
-        classes: components['schemas']['ClassResource'][]
-        backgrounds: components['schemas']['BackgroundResource'][]
-        feats: components['schemas']['FeatResource'][]
-        monsters: components['schemas']['MonsterResource'][]
-      }
-      meta: {
-        query: string
-        types_searched: string
-        limit_per_type: string
-        total_results: string
-      }
-    }
-    /** SizeResource */
-    SizeResource: {
-      id: number
-      code: string
-      name: string
-    }
-    /** SkillResource */
-    SkillResource: {
-      id: number
-      name: string
-      slug: string
-      ability_score?: components['schemas']['AbilityScoreResource']
-    }
-    /** SourceResource */
-    SourceResource: {
-      id: number
-      code: string
-      name: string
-      publisher: string
-      publication_year: number
-      edition: string
-    }
-    /** SpellEffectResource */
-    SpellEffectResource: {
-      id: number
-      effect_type: string
-      description: string | null
-      dice_formula: string | null
-      base_value: number | null
-      scaling_type: string | null
-      min_character_level: number | null
-      min_spell_slot: number | null
-      scaling_increment: string | null
-      damage_type?: components['schemas']['DamageTypeResource']
-    }
-    /** SpellResource */
-    SpellResource: {
-      id: number
-      slug: string
-      name: string
-      level: number
-      school?: components['schemas']['SpellSchoolResource']
-      casting_time: string
-      range: string
-      components: string
-      material_components: string | null
-      duration: string
-      needs_concentration: boolean
-      is_ritual: boolean
-      description: string
-      higher_levels: string | null
-      sources?: components['schemas']['EntitySourceResource'][]
-      effects?: components['schemas']['SpellEffectResource'][]
-      classes?: components['schemas']['ClassResource'][]
-      tags?: components['schemas']['TagResource'][]
-      saving_throws?: components['schemas']['SavingThrowResource'][]
-      random_tables?: components['schemas']['RandomTableResource'][]
-    }
-    /** SpellSchoolResource */
-    SpellSchoolResource: {
-      id: number
-      code: string
-      name: string
-      description: string | null
-    }
-    /** TagResource */
-    TagResource: {
-      id: string
-      name: string
-      slug: string
-      type: string
-    }
-    /** TraitResource */
-    TraitResource: {
-      id: string
-      name: string
-      category: string
-      description: string
-      sort_order: string
-      random_tables?: components['schemas']['RandomTableResource'][]
-    }
-  }
-  responses: {
-    /** @description Validation error */
-    ValidationException: {
-      headers: {
-        [name: string]: unknown
-      }
-      content: {
-        'application/json': {
-          /** @description Errors overview. */
-          message: string
-          /** @description A detailed description of each field that failed validation. */
-          errors: {
-            [key: string]: string[]
-          }
-        }
-      }
-    }
-    /** @description Not found */
-    ModelNotFoundException: {
-      headers: {
-        [name: string]: unknown
-      }
-      content: {
-        'application/json': {
-          /** @description Error overview. */
-          message: string
-        }
-      }
-    }
-  }
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+    schemas: {
+        /** AbilityScoreResource */
+        AbilityScoreResource: {
+            id: number;
+            code: string;
+            name: string;
+        };
+        /** BackgroundResource */
+        BackgroundResource: {
+            id: number;
+            slug: string;
+            name: string;
+            traits?: components["schemas"]["TraitResource"][];
+            proficiencies?: components["schemas"]["ProficiencyResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            languages?: components["schemas"]["EntityLanguageResource"][];
+            equipment?: components["schemas"]["EntityItemResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
+        /** ClassCounterResource */
+        ClassCounterResource: {
+            id: number;
+            level: number;
+            counter_name: string;
+            counter_value: number;
+            /** @enum {string} */
+            reset_timing: "Short Rest" | "Long Rest" | "Does Not Reset";
+        };
+        /** ClassFeatureResource */
+        ClassFeatureResource: {
+            id: number;
+            level: number;
+            feature_name: string;
+            description: string;
+            is_optional: boolean;
+            sort_order: number;
+            /** @description Relationships */
+            random_tables?: components["schemas"]["RandomTableResource"][];
+        };
+        /** ClassLevelProgressionResource */
+        ClassLevelProgressionResource: {
+            id: number;
+            level: number;
+            cantrips_known: number | null;
+            spells_known: number | null;
+            spell_slots_1st: number | null;
+            spell_slots_2nd: number | null;
+            spell_slots_3rd: number | null;
+            spell_slots_4th: number | null;
+            spell_slots_5th: number | null;
+            spell_slots_6th: number | null;
+            spell_slots_7th: number | null;
+            spell_slots_8th: number | null;
+            spell_slots_9th: number | null;
+        };
+        /** ClassResource */
+        ClassResource: {
+            id: string;
+            slug: string;
+            name: string;
+            hit_die: string;
+            description: string;
+            primary_ability: string;
+            spellcasting_ability?: components["schemas"]["AbilityScoreResource"];
+            parent_class_id: string;
+            is_base_class: string;
+            parent_class?: components["schemas"]["ClassResource"];
+            subclasses?: components["schemas"]["ClassResource"][];
+            proficiencies?: components["schemas"]["ProficiencyResource"][];
+            traits?: components["schemas"]["TraitResource"][];
+            /** @description Features: Use getAllFeatures() to merge base + subclass features when appropriate */
+            features?: components["schemas"]["ClassFeatureResource"][];
+            level_progression?: components["schemas"]["ClassLevelProgressionResource"][];
+            counters?: components["schemas"]["ClassCounterResource"][];
+            spells?: components["schemas"]["SpellResource"][];
+            equipment?: components["schemas"]["EntityItemResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
+        /** ConditionResource */
+        ConditionResource: {
+            id: number;
+            name: string;
+            slug: string;
+            description: string;
+        };
+        /** DamageTypeResource */
+        DamageTypeResource: {
+            id: number;
+            code: string;
+            name: string;
+        };
+        /** EntityConditionResource */
+        EntityConditionResource: {
+            id: number;
+            condition_id: number | null;
+            condition?: components["schemas"]["ConditionResource"];
+            effect_type: string;
+            description: string | null;
+        };
+        /** EntityItemResource */
+        EntityItemResource: {
+            id: number;
+            item_id: number | null;
+            item?: components["schemas"]["ItemResource"];
+            quantity: number;
+            is_choice: boolean;
+            choice_group: string | null;
+            choice_option: number | null;
+            choice_description: string | null;
+            proficiency_subcategory: string | null;
+            description: string | null;
+        };
+        /** EntityLanguageResource */
+        EntityLanguageResource: {
+            language?: components["schemas"]["LanguageResource"];
+            is_choice: boolean;
+        };
+        /** EntityPrerequisiteResource */
+        EntityPrerequisiteResource: {
+            id: number;
+            prerequisite_type: string | null;
+            prerequisite_id: number | null;
+            minimum_value: number | null;
+            description: string | null;
+            group_id: number;
+            /** @description Generic prerequisite field (polymorphic relationship) */
+            prerequisite?: components["schemas"]["AbilityScoreResource"] | components["schemas"]["RaceResource"] | components["schemas"]["SkillResource"] | components["schemas"]["ProficiencyTypeResource"] | null;
+            /** @description Conditionally include nested resources based on prerequisite type */
+            ability_score?: components["schemas"]["AbilityScoreResource"];
+            race?: components["schemas"]["RaceResource"];
+            skill?: components["schemas"]["SkillResource"];
+            proficiency_type?: components["schemas"]["ProficiencyTypeResource"];
+        };
+        /** EntitySourceResource */
+        EntitySourceResource: {
+            code: string;
+            name: string;
+            pages: string | null;
+        };
+        /** EntitySpellResource */
+        EntitySpellResource: {
+            id: number;
+            spell_id: number;
+            spell?: components["schemas"]["SpellResource"];
+            ability_score_id: number | null;
+            ability_score?: components["schemas"]["AbilityScoreResource"];
+            level_requirement: number | null;
+            usage_limit: string | null;
+            is_cantrip: boolean;
+            /** @description Charge costs (for items that cast spells) */
+            charges_cost_min: number | null;
+            charges_cost_max: number | null;
+            charges_cost_formula: string | null;
+        };
+        /** FeatResource */
+        FeatResource: {
+            id: number;
+            slug: string;
+            name: string;
+            prerequisites_text: string | null;
+            prerequisites?: components["schemas"]["EntityPrerequisiteResource"][];
+            description: string;
+            modifiers?: components["schemas"]["ModifierResource"][];
+            proficiencies?: components["schemas"]["ProficiencyResource"][];
+            conditions?: components["schemas"]["EntityConditionResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
+        /** ItemAbilityResource */
+        ItemAbilityResource: {
+            id: number;
+            item_id: number;
+            ability_type: string;
+            spell_id: number | null;
+            name: string | null;
+            description: string | null;
+            roll_formula: string | null;
+            charges_cost: number | null;
+            usage_limit: string | null;
+            save_dc: number | null;
+            attack_bonus: number | null;
+            sort_order: number;
+            /** @description Relationships */
+            spell?: components["schemas"]["SpellResource"];
+        };
+        /** ItemPropertyResource */
+        ItemPropertyResource: {
+            id: number;
+            code: string;
+            name: string;
+            description: string;
+        };
+        /** ItemResource */
+        ItemResource: {
+            id: number;
+            name: string;
+            slug: string;
+            item_type_id: number;
+            detail: string | null;
+            rarity: string | null;
+            requires_attunement: boolean;
+            is_magic: boolean;
+            cost_cp: number | null;
+            weight: string | null;
+            damage_dice: string | null;
+            versatile_damage: string | null;
+            damage_type_id: number | null;
+            range_normal: number | null;
+            range_long: number | null;
+            armor_class: number | null;
+            strength_requirement: number | null;
+            stealth_disadvantage: boolean;
+            description: string;
+            /** @description Charge mechanics (magic items) */
+            charges_max: string | null;
+            recharge_formula: string | null;
+            recharge_timing: string | null;
+            /** @description Relationships */
+            item_type?: components["schemas"]["ItemTypeResource"];
+            damage_type?: components["schemas"]["DamageTypeResource"];
+            properties?: components["schemas"]["ItemPropertyResource"][];
+            abilities?: components["schemas"]["ItemAbilityResource"][];
+            random_tables?: components["schemas"]["RandomTableResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            proficiencies?: components["schemas"]["ProficiencyResource"][];
+            modifiers?: components["schemas"]["ModifierResource"][];
+            prerequisites?: components["schemas"]["EntityPrerequisiteResource"][];
+            tags?: components["schemas"]["TagResource"][];
+            spells?: components["schemas"]["ItemSpellResource"][];
+            saving_throws?: components["schemas"]["SavingThrowResource"][];
+        };
+        /** ItemSpellResource */
+        ItemSpellResource: {
+            id: string;
+            name: string;
+            slug: string;
+            level: string;
+            school?: components["schemas"]["SpellSchoolResource"];
+            /** @description Charge cost data from pivot table (entity_spells) */
+            charges_cost_min: string;
+            charges_cost_max: string;
+            charges_cost_formula: string;
+            /** @description Other usage metadata from pivot */
+            usage_limit: string;
+            level_requirement: string;
+        };
+        /** ItemTypeResource */
+        ItemTypeResource: {
+            id: number;
+            code: string;
+            name: string;
+            description: string | null;
+        };
+        /** LanguageResource */
+        LanguageResource: {
+            id: number;
+            name: string;
+            slug: string;
+            script: string | null;
+            typical_speakers: string | null;
+            description: string | null;
+        };
+        /** ModifierResource */
+        ModifierResource: {
+            id: number;
+            modifier_category: string;
+            ability_score?: components["schemas"]["AbilityScoreResource"];
+            skill?: components["schemas"]["SkillResource"];
+            damage_type?: components["schemas"]["DamageTypeResource"] | null;
+            value: string;
+            condition: string | null;
+            is_choice: boolean;
+            choice_count: number | null;
+            choice_constraint: string | null;
+            level: number | null;
+        };
+        /** MonsterActionResource */
+        MonsterActionResource: {
+            id: number;
+            action_type: string;
+            name: string;
+            description: string;
+            attack_data: string | null;
+            recharge: string | null;
+            sort_order: number;
+        };
+        /** MonsterLegendaryActionResource */
+        MonsterLegendaryActionResource: {
+            id: number;
+            name: string;
+            description: string;
+            action_cost: number;
+            is_lair_action: boolean;
+            attack_data: string | null;
+            recharge: string | null;
+            sort_order: number;
+        };
+        /** MonsterResource */
+        MonsterResource: {
+            id: number;
+            slug: string;
+            name: string;
+            sort_name: string | null;
+            size?: components["schemas"]["SizeResource"];
+            type: string;
+            alignment: string | null;
+            is_npc: boolean;
+            armor_class: number;
+            armor_type: string | null;
+            hit_points_average: number;
+            hit_dice: string;
+            speed_walk: number;
+            speed_fly: number | null;
+            speed_swim: number | null;
+            speed_burrow: number | null;
+            speed_climb: number | null;
+            can_hover: boolean;
+            strength: number;
+            dexterity: number;
+            constitution: number;
+            intelligence: number;
+            wisdom: number;
+            charisma: number;
+            challenge_rating: string;
+            experience_points: number;
+            passive_perception: number | null;
+            description: string | null;
+            traits?: components["schemas"]["MonsterTraitResource"][];
+            actions?: components["schemas"]["MonsterActionResource"][];
+            legendary_actions?: components["schemas"]["MonsterLegendaryActionResource"][];
+            spells?: components["schemas"]["EntitySpellResource"][];
+            modifiers?: components["schemas"]["ModifierResource"][];
+            conditions?: components["schemas"]["EntityConditionResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
+        /** MonsterTraitResource */
+        MonsterTraitResource: {
+            id: number;
+            name: string;
+            description: string;
+            attack_data: string | null;
+            sort_order: number;
+        };
+        /** ProficiencyResource */
+        ProficiencyResource: {
+            id: number;
+            proficiency_type: string;
+            proficiency_subcategory: string | null;
+            proficiency_type_id: number | null;
+            proficiency_type_detail?: components["schemas"]["ProficiencyTypeResource"];
+            skill?: components["schemas"]["SkillResource"];
+            item?: {
+                id: number;
+                name: string;
+            };
+            ability_score?: components["schemas"]["AbilityScoreResource"];
+            proficiency_name: string | null;
+            grants: boolean;
+            is_choice: boolean;
+            choice_group: string | null;
+            choice_option: number | null;
+            quantity: number | null;
+            level: number | null;
+        };
+        /** ProficiencyTypeResource */
+        ProficiencyTypeResource: {
+            id: number;
+            slug: string;
+            name: string;
+            category: string;
+            subcategory: string | null;
+            item?: components["schemas"]["ItemResource"];
+        };
+        /** RaceResource */
+        RaceResource: {
+            id: number;
+            slug: string;
+            name: string;
+            size?: components["schemas"]["SizeResource"];
+            speed: number;
+            traits?: components["schemas"]["TraitResource"][];
+            modifiers?: components["schemas"]["ModifierResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            parent_race?: components["schemas"]["RaceResource"];
+            subraces?: components["schemas"]["RaceResource"][];
+            proficiencies?: components["schemas"]["ProficiencyResource"][];
+            languages?: components["schemas"]["EntityLanguageResource"][];
+            conditions?: components["schemas"]["EntityConditionResource"][];
+            spells?: components["schemas"]["EntitySpellResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
+        /** RandomTableEntryResource */
+        RandomTableEntryResource: {
+            id: number;
+            roll_min: number | null;
+            roll_max: number | null;
+            result_text: string | null;
+            level: number | null;
+            sort_order: number;
+        };
+        /** RandomTableResource */
+        RandomTableResource: {
+            id: number;
+            table_name: string;
+            dice_type: string | null;
+            description: string | null;
+            entries?: components["schemas"]["RandomTableEntryResource"][];
+        };
+        /** SavingThrowResource */
+        SavingThrowResource: {
+            ability_score: {
+                id: string;
+                code: string;
+                name: string;
+            };
+            dc: string;
+            save_effect: string;
+            is_initial_save: boolean;
+            save_modifier: string;
+        };
+        /** SearchResource */
+        SearchResource: {
+            data: {
+                spells: components["schemas"]["SpellResource"][];
+                items: components["schemas"]["ItemResource"][];
+                races: components["schemas"]["RaceResource"][];
+                classes: components["schemas"]["ClassResource"][];
+                backgrounds: components["schemas"]["BackgroundResource"][];
+                feats: components["schemas"]["FeatResource"][];
+                monsters: components["schemas"]["MonsterResource"][];
+            };
+            meta: {
+                query: string;
+                types_searched: string;
+                limit_per_type: string;
+                total_results: string;
+            };
+        };
+        /** SizeResource */
+        SizeResource: {
+            id: number;
+            code: string;
+            name: string;
+        };
+        /** SkillResource */
+        SkillResource: {
+            id: number;
+            name: string;
+            slug: string;
+            ability_score?: components["schemas"]["AbilityScoreResource"];
+        };
+        /** SourceResource */
+        SourceResource: {
+            id: number;
+            code: string;
+            name: string;
+            publisher: string;
+            publication_year: number;
+            edition: string;
+        };
+        /** SpellEffectResource */
+        SpellEffectResource: {
+            id: number;
+            effect_type: string;
+            description: string | null;
+            dice_formula: string | null;
+            base_value: number | null;
+            scaling_type: string | null;
+            min_character_level: number | null;
+            min_spell_slot: number | null;
+            scaling_increment: string | null;
+            damage_type?: components["schemas"]["DamageTypeResource"];
+        };
+        /** SpellResource */
+        SpellResource: {
+            id: number;
+            slug: string;
+            name: string;
+            level: number;
+            school?: components["schemas"]["SpellSchoolResource"];
+            casting_time: string;
+            range: string;
+            components: string;
+            material_components: string | null;
+            duration: string;
+            needs_concentration: boolean;
+            is_ritual: boolean;
+            description: string;
+            higher_levels: string | null;
+            sources?: components["schemas"]["EntitySourceResource"][];
+            effects?: components["schemas"]["SpellEffectResource"][];
+            classes?: components["schemas"]["ClassResource"][];
+            tags?: components["schemas"]["TagResource"][];
+            saving_throws?: components["schemas"]["SavingThrowResource"][];
+            random_tables?: components["schemas"]["RandomTableResource"][];
+        };
+        /** SpellSchoolResource */
+        SpellSchoolResource: {
+            id: number;
+            code: string;
+            name: string;
+            description: string | null;
+        };
+        /** TagResource */
+        TagResource: {
+            id: string;
+            name: string;
+            slug: string;
+            type: string;
+        };
+        /** TraitResource */
+        TraitResource: {
+            id: string;
+            name: string;
+            category: string;
+            description: string;
+            sort_order: string;
+            random_tables?: components["schemas"]["RandomTableResource"][];
+        };
+    };
+    responses: {
+        /** @description Validation error */
+        ValidationException: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description Errors overview. */
+                    message: string;
+                    /** @description A detailed description of each field that failed validation. */
+                    errors: {
+                        [key: string]: string[];
+                    };
+                };
+            };
+        };
+        /** @description Not found */
+        ModelNotFoundException: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @description Error overview. */
+                    message: string;
+                };
+            };
+        };
+    };
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  'ability-scores.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'ability-scores.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The ability score ID */
-        abilityScore: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `AbilityScoreResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['AbilityScoreResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'ability-scores.spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The ability score (by ID, code, or name) */
-        abilityScore: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'backgrounds.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Background-specific filters (backwards compatibility) */
-        grants_proficiency?: string
-        /** @description Filter by granted skill */
-        grants_skill?: string
-        /** @description Filter by spoken language */
-        speaks_language?: string
-        /** @description Filter by language choice count */
-        language_choice_count?: number
-        /** @description Filter entities granting any languages */
-        grants_languages?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Note: Backgrounds have limited filterable fields. Use search (q parameter) for most queries.
-                 * @example name = Acolyte
+    "ability-scores.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "ability-scores.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ability score ID */
+                abilityScore: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `AbilityScoreResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["AbilityScoreResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "ability-scores.spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ability score (by ID, code, or name) */
+                abilityScore: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "backgrounds.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Background-specific filters (backwards compatibility) */
+                grants_proficiency?: string;
+                /** @description Filter by granted skill */
+                grants_skill?: string;
+                /** @description Filter by spoken language */
+                speaks_language?: string;
+                /** @description Filter by language choice count */
+                language_choice_count?: number;
+                /** @description Filter entities granting any languages */
+                grants_languages?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Available fields: source_codes (array), tag_slugs (array). Use search (q parameter) for text queries.
+                 * @example tag_slugs IN [criminal, noble]
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `BackgroundResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['BackgroundResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'backgrounds.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'sources' | 'sources.source' | 'traits' | 'traits.randomTables' | 'traits.randomTables.entries' | 'proficiencies' | 'proficiencies.skill' | 'proficiencies.proficiencyType' | 'languages' | 'languages.language'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'description' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The background ID */
-        background: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `BackgroundResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['BackgroundResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'classes.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'hit_die' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Class-specific filters (backwards compatibility) */
-        base_only?: boolean
-        grants_proficiency?: string
-        grants_skill?: string
-        grants_saving_throw?: string
-        /** @description Spell filtering */
-        spells?: string
-        spells_operator?: 'AND' | 'OR'
-        spell_level?: number
-        /** @description Entity-specific filters */
-        is_spellcaster?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        hit_die?: '6' | '8' | '10' | '12'
-        max_spell_level?: number
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR. Available fields: hit_die (int), is_spellcaster (bool), spellcasting_ability_code (string), is_subclass (bool).
-                 * @example is_spellcaster = true AND hit_die >= 8
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `BackgroundResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BackgroundResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "backgrounds.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "sources" | "sources.source" | "traits" | "traits.randomTables" | "traits.randomTables.entries" | "proficiencies" | "proficiencies.skill" | "proficiencies.proficiencyType" | "languages" | "languages.language";
+                "fields[]"?: "id" | "name" | "slug" | "description" | "created_at" | "updated_at";
+            };
+            header?: never;
+            path: {
+                /** @description The background ID */
+                background: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `BackgroundResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BackgroundResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "classes.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "hit_die" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Class-specific filters (backwards compatibility) */
+                base_only?: boolean;
+                grants_proficiency?: string;
+                grants_skill?: string;
+                grants_saving_throw?: string;
+                /** @description Spell filtering */
+                spells?: string;
+                spells_operator?: "AND" | "OR";
+                spell_level?: number;
+                /** @description Entity-specific filters */
+                is_spellcaster?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                hit_die?: "6" | "8" | "10" | "12";
+                max_spell_level?: number;
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: hit_die (int), is_spellcaster (bool), spellcasting_ability_code (string), is_subclass (bool), tag_slugs (array).
+                 * @example is_subclass = false AND tag_slugs IN [spellcaster]
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `ClassResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ClassResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'classes.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'sources' | 'sources.source' | 'features' | 'proficiencies' | 'proficiencies.skill' | 'proficiencies.proficiencyType' | 'levelProgression' | 'counters' | 'spellcastingAbility'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'description' | 'hit_die' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The class ID */
-        class: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ClassResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ClassResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'classes.spells': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Spell filters */
-        level?: number
-        school?: number
-        concentration?: boolean
-        ritual?: boolean
-        /** @description Sorting (spells table doesn't have timestamps) */
-        sort_by?: 'name' | 'level'
-        sort_direction?: 'asc' | 'desc'
-      }
-      header?: never
-      path: {
-        /** @description The class ID */
-        class: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'conditions.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'conditions.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The condition ID */
-        condition: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ConditionResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ConditionResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'conditions.spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The condition (by ID or slug) */
-        condition: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'conditions.monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The condition (by ID or slug) */
-        condition: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `MonsterResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['MonsterResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'damage-types.spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The damage type (by ID, code, or name) */
-        damageType: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'damage-types.items': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The damage type (by ID, code, or name) */
-        damageType: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `ItemResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'damage-types.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'damage-types.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The damage type ID */
-        damageType: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `DamageTypeResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['DamageTypeResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'feats.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Feat-specific filters (backwards compatibility) */
-        prerequisite_race?: string
-        /** @description Filter by prerequisite ability score */
-        prerequisite_ability?: string
-        /** @description Minimum ability score value */
-        min_value?: number
-        /** @description Filter by prerequisite proficiency */
-        prerequisite_proficiency?: string
-        /** @description Filter by presence of prerequisites */
-        has_prerequisites?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /** @description Filter by granted proficiency */
-        grants_proficiency?: string
-        /** @description Filter by granted skill */
-        grants_skill?: string
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Note: Prerequisites are stored relationally. Use legacy parameters (prerequisite_race, prerequisite_ability) for prerequisite filtering.
-                 * @example name = "War Caster"
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ClassResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ClassResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "classes.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "sources" | "sources.source" | "features" | "features.randomTables" | "features.randomTables.entries" | "proficiencies" | "proficiencies.skill" | "proficiencies.proficiencyType" | "levelProgression" | "counters" | "spellcastingAbility";
+                "fields[]"?: "id" | "name" | "slug" | "description" | "hit_die" | "created_at" | "updated_at";
+                include_base_features?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The class ID */
+                class: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ClassResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ClassResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "classes.spells": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Spell filters */
+                level?: number;
+                school?: number;
+                concentration?: boolean;
+                ritual?: boolean;
+                /** @description Sorting (spells table doesn't have timestamps) */
+                sort_by?: "name" | "level";
+                sort_direction?: "asc" | "desc";
+            };
+            header?: never;
+            path: {
+                /** @description The class ID */
+                class: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "conditions.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "conditions.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The condition ID */
+                condition: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ConditionResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ConditionResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "conditions.spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The condition (by ID or slug) */
+                condition: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "conditions.monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The condition (by ID or slug) */
+                condition: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `MonsterResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MonsterResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "damage-types.spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The damage type (by ID, code, or name) */
+                damageType: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "damage-types.items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The damage type (by ID, code, or name) */
+                damageType: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "damage-types.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "damage-types.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The damage type ID */
+                damageType: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `DamageTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["DamageTypeResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "feats.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Feat-specific filters (backwards compatibility) */
+                prerequisite_race?: string;
+                /** @description Filter by prerequisite ability score */
+                prerequisite_ability?: string;
+                /** @description Minimum ability score value */
+                min_value?: number;
+                /** @description Filter by prerequisite proficiency */
+                prerequisite_proficiency?: string;
+                /** @description Filter by presence of prerequisites */
+                has_prerequisites?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /** @description Filter by granted proficiency */
+                grants_proficiency?: string;
+                /** @description Filter by granted skill */
+                grants_skill?: string;
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Available fields: source_codes (array), tag_slugs (array). Use legacy parameters (prerequisite_race, prerequisite_ability) for prerequisite filtering.
+                 * @example tag_slugs IN [combat, magic]
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `FeatResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['FeatResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'feats.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'sources' | 'sources.source' | 'modifiers' | 'modifiers.abilityScore' | 'modifiers.skill' | 'proficiencies' | 'proficiencies.skill' | 'proficiencies.proficiencyType' | 'conditions' | 'prerequisites' | 'prerequisites.prerequisite'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'description' | 'prerequisites_text' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The feat ID */
-        feat: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `FeatResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['FeatResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'items.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'type' | 'rarity' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Item-specific filters (backwards compatibility) */
-        min_strength?: number
-        has_prerequisites?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /** @description Spell filtering (similar to Monster) */
-        spells?: string
-        spells_operator?: 'AND' | 'OR'
-        spell_level?: number
-        /** @description Item type filter */
-        type?: string
-        /** @description Has charges filter */
-        has_charges?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /** @description Rarity filter */
-        rarity?: string
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: is_magic (bool), requires_attunement (bool), rarity (string), type (string), weight (float), spell_slugs (array).
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `FeatResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["FeatResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "feats.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "sources" | "sources.source" | "modifiers" | "modifiers.abilityScore" | "modifiers.skill" | "proficiencies" | "proficiencies.skill" | "proficiencies.proficiencyType" | "conditions" | "prerequisites" | "prerequisites.prerequisite";
+                "fields[]"?: "id" | "name" | "slug" | "description" | "prerequisites_text" | "created_at" | "updated_at";
+            };
+            header?: never;
+            path: {
+                /** @description The feat ID */
+                feat: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `FeatResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["FeatResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "items.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "type" | "rarity" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Item-specific filters (backwards compatibility) */
+                min_strength?: number;
+                has_prerequisites?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /** @description Spell filtering (similar to Monster) */
+                spells?: string;
+                spells_operator?: "AND" | "OR";
+                spell_level?: number;
+                /** @description Item type filter */
+                type?: string;
+                /** @description Has charges filter */
+                has_charges?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /** @description Rarity filter */
+                rarity?: string;
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: is_magic (bool), requires_attunement (bool), rarity (string), type_code (string), weight (float), cost_cp (int), spell_slugs (array), tag_slugs (array).
                  * @example is_magic = true AND rarity IN [rare, very_rare, legendary]
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `ItemResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'items.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'sources' | 'sources.source' | 'modifiers' | 'abilities' | 'prerequisites' | 'prerequisites.prerequisite' | 'spells' | 'spells.spellSchool'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'type' | 'rarity' | 'description' | 'magic' | 'attunement' | 'strength_requirement' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The item ID */
-        item: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ItemResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'item-properties.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `ItemPropertyResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemPropertyResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'item-properties.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The item property ID */
-        itemProperty: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ItemPropertyResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemPropertyResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'item-types.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `ItemTypeResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemTypeResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'item-types.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The item type ID */
-        itemType: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ItemTypeResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemTypeResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'languages.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'languages.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The language ID */
-        language: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `LanguageResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['LanguageResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'languages.races': {
-    parameters: {
-      query?: {
-        per_page?: number
-      }
-      header?: never
-      path: {
-        /** @description The language ID */
-        language: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'languages.backgrounds': {
-    parameters: {
-      query?: {
-        per_page?: number
-      }
-      header?: never
-      path: {
-        /** @description The language ID */
-        language: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `BackgroundResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['BackgroundResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'monsters.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'challenge_rating' | 'hit_points_average' | 'armor_class' | 'experience_points'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query */
-        q?: string
-        /** @description Challenge rating filters */
-        challenge_rating?: number
-        min_cr?: number
-        max_cr?: number
-        /** @description Type filter (dragon, humanoid, undead, etc.) */
-        type?: string
-        /** @description Size filter (T, S, M, L, H, G) */
-        size?: string
-        /** @description Alignment filter */
-        alignment?: string
-        /** @description Spell filter (comma-separated spell slugs) */
-        spells?: string
-        /** @description Spell filter operator (AND = must have all spells, OR = must have at least one) */
-        spells_operator?: 'AND' | 'OR'
-        /** @description Spell level filter (0-9, where 0 = cantrips) */
-        spell_level?: number
-        /** @description Spellcasting ability filter (INT, WIS, CHA) */
-        spellcasting_ability?: 'INT' | 'WIS' | 'CHA'
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR. Available fields: challenge_rating (string), type (string), size_code (string), alignment (string), armor_class (int), hit_points_average (int), experience_points (int), spell_slugs (array).
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "items.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "sources" | "sources.source" | "modifiers" | "abilities" | "prerequisites" | "prerequisites.prerequisite" | "spells" | "spells.spellSchool";
+                "fields[]"?: "id" | "name" | "slug" | "type" | "rarity" | "description" | "magic" | "attunement" | "strength_requirement" | "created_at" | "updated_at";
+            };
+            header?: never;
+            path: {
+                /** @description The item ID */
+                item: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "item-properties.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ItemPropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemPropertyResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "item-properties.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The item property ID */
+                itemProperty: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ItemPropertyResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemPropertyResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "item-types.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `ItemTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemTypeResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "item-types.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The item type ID */
+                itemType: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ItemTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemTypeResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "languages.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "languages.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The language ID */
+                language: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `LanguageResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["LanguageResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "languages.races": {
+        parameters: {
+            query?: {
+                per_page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The language ID */
+                language: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "languages.backgrounds": {
+        parameters: {
+            query?: {
+                per_page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The language ID */
+                language: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `BackgroundResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BackgroundResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "monsters.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "challenge_rating" | "hit_points_average" | "armor_class" | "experience_points";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query */
+                q?: string;
+                /** @description Challenge rating filters */
+                challenge_rating?: number;
+                min_cr?: number;
+                max_cr?: number;
+                /** @description Type filter (dragon, humanoid, undead, etc.) */
+                type?: string;
+                /** @description Size filter (T, S, M, L, H, G) */
+                size?: string;
+                /** @description Alignment filter */
+                alignment?: string;
+                /** @description Spell filter (comma-separated spell slugs) */
+                spells?: string;
+                /** @description Spell filter operator (AND = must have all spells, OR = must have at least one) */
+                spells_operator?: "AND" | "OR";
+                /** @description Spell level filter (0-9, where 0 = cantrips) */
+                spell_level?: number;
+                /** @description Spellcasting ability filter (INT, WIS, CHA) */
+                spellcasting_ability?: "INT" | "WIS" | "CHA";
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: challenge_rating (string), type (string), size_code (string), alignment (string), armor_class (int), hit_points_average (int), experience_points (int), spell_slugs (array), tag_slugs (array).
                  * @example challenge_rating >= 5 AND challenge_rating <= 10 AND type = dragon
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `MonsterResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['MonsterResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'monsters.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'size' | 'traits' | 'actions' | 'legendaryActions' | 'spellcasting' | 'sources' | 'sources.source' | 'modifiers' | 'modifiers.abilityScore' | 'modifiers.skill' | 'modifiers.damageType' | 'conditions'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'size_id' | 'type' | 'alignment' | 'armor_class' | 'armor_type' | 'hit_points_average' | 'hit_dice' | 'speed_walk' | 'speed_fly' | 'speed_swim' | 'speed_burrow' | 'speed_climb' | 'can_hover' | 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma' | 'challenge_rating' | 'experience_points' | 'description'
-      }
-      header?: never
-      path: {
-        /** @description The monster ID */
-        monster: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `MonsterResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['MonsterResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'monsters.spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The monster ID */
-        monster: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'proficiency-types.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-        category?: string
-        subcategory?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'proficiency-types.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The proficiency type slug */
-        proficiencyType: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `ProficiencyTypeResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ProficiencyTypeResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'proficiency-types.classes': {
-    parameters: {
-      query?: {
-        per_page?: number
-      }
-      header?: never
-      path: {
-        /** @description The proficiency type slug */
-        proficiencyType: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `ClassResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ClassResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'proficiency-types.races': {
-    parameters: {
-      query?: {
-        per_page?: number
-      }
-      header?: never
-      path: {
-        /** @description The proficiency type slug */
-        proficiencyType: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'proficiency-types.backgrounds': {
-    parameters: {
-      query?: {
-        per_page?: number
-      }
-      header?: never
-      path: {
-        /** @description The proficiency type slug */
-        proficiencyType: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `BackgroundResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['BackgroundResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'races.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'size' | 'speed' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Race-specific filters (backwards compatibility) */
-        grants_proficiency?: string
-        /** @description Filter by granted skill */
-        grants_skill?: string
-        /** @description Filter by proficiency type/category */
-        grants_proficiency_type?: string
-        /** @description Filter by spoken language */
-        speaks_language?: string
-        /** @description Filter by language choice count */
-        language_choice_count?: number
-        /** @description Filter entities granting any languages */
-        grants_languages?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /** @description Spell filtering */
-        spells?: string
-        spells_operator?: 'AND' | 'OR'
-        spell_level?: number
-        has_innate_spells?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /** @description Entity-specific filters */
-        ability_bonus?: 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA'
-        size?: 'T' | 'S' | 'M' | 'L' | 'H' | 'G'
-        min_speed?: number
-        has_darkvision?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR. Available fields: size (string), speed (int), has_darkvision (bool), darkvision_range (int).
-                 * @example speed >= 30 AND has_darkvision = true
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `MonsterResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MonsterResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "monsters.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "size" | "traits" | "actions" | "legendaryActions" | "spellcasting" | "sources" | "sources.source" | "modifiers" | "modifiers.abilityScore" | "modifiers.skill" | "modifiers.damageType" | "conditions";
+                "fields[]"?: "id" | "name" | "slug" | "size_id" | "type" | "alignment" | "armor_class" | "armor_type" | "hit_points_average" | "hit_dice" | "speed_walk" | "speed_fly" | "speed_swim" | "speed_burrow" | "speed_climb" | "can_hover" | "strength" | "dexterity" | "constitution" | "intelligence" | "wisdom" | "charisma" | "challenge_rating" | "experience_points" | "description";
+            };
+            header?: never;
+            path: {
+                /** @description The monster ID */
+                monster: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `MonsterResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MonsterResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "monsters.spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The monster ID */
+                monster: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "proficiency-types.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+                category?: string;
+                subcategory?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "proficiency-types.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The proficiency type slug */
+                proficiencyType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `ProficiencyTypeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ProficiencyTypeResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "proficiency-types.classes": {
+        parameters: {
+            query?: {
+                per_page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The proficiency type slug */
+                proficiencyType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ClassResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ClassResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "proficiency-types.races": {
+        parameters: {
+            query?: {
+                per_page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The proficiency type slug */
+                proficiencyType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "proficiency-types.backgrounds": {
+        parameters: {
+            query?: {
+                per_page?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The proficiency type slug */
+                proficiencyType: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `BackgroundResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["BackgroundResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "races.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "size" | "speed" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Race-specific filters (backwards compatibility) */
+                grants_proficiency?: string;
+                /** @description Filter by granted skill */
+                grants_skill?: string;
+                /** @description Filter by proficiency type/category */
+                grants_proficiency_type?: string;
+                /** @description Filter by spoken language */
+                speaks_language?: string;
+                /** @description Filter by language choice count */
+                language_choice_count?: number;
+                /** @description Filter entities granting any languages */
+                grants_languages?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /** @description Spell filtering */
+                spells?: string;
+                spells_operator?: "AND" | "OR";
+                spell_level?: number;
+                has_innate_spells?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /** @description Entity-specific filters */
+                ability_bonus?: "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
+                size?: "T" | "S" | "M" | "L" | "H" | "G";
+                min_speed?: number;
+                has_darkvision?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: size_code (string), speed (int), has_darkvision (bool), darkvision_range (int), spell_slugs (array), tag_slugs (array).
+                 * @example speed >= 30 AND tag_slugs IN [darkvision]
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'races.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'sources' | 'sources.source' | 'traits' | 'proficiencies' | 'proficiencies.skill' | 'proficiencies.proficiencyType' | 'modifiers' | 'languages'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'description' | 'size' | 'speed' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The race ID */
-        race: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'races.spells': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The race ID */
-        race: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'search': {
-    parameters: {
-      query: {
-        'q': string
-        'types[]'?: 'spell' | 'item' | 'race' | 'class' | 'background' | 'feat' | 'monster'
-        'limit'?: number
-        'debug'?: boolean
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SearchResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['SearchResource']
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'sizes.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'sizes.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The size ID */
-        size: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SizeResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SizeResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'sizes.races': {
-    parameters: {
-      query?: {
-        per_page?: string
-      }
-      header?: never
-      path: {
-        /** @description The size ID */
-        size: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'sizes.monsters': {
-    parameters: {
-      query?: {
-        per_page?: string
-      }
-      header?: never
-      path: {
-        /** @description The size ID */
-        size: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `MonsterResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['MonsterResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'skills.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-        /** @description Filter by ability score code */
-        ability?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SkillResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SkillResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'skills.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The skill ID */
-        skill: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SkillResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SkillResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'sources.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SourceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SourceResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'sources.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The source ID */
-        source: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SourceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SourceResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spells.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search */
-        search?: string
-        /** @description Sorting */
-        sort_by?: 'name' | 'level' | 'created_at' | 'updated_at'
-        sort_direction?: 'asc' | 'desc'
-        /** @description Search query (Scout/Meilisearch) */
-        q?: string
-        /** @description Spell-specific filters (backwards compatibility) */
-        level?: number
-        school?: number
-        concentration?: '1' | '' | '1' | '0' | '1' | '0' | 'true' | 'false'
-        ritual?: '1' | '' | '1' | '0' | '1' | '0' | 'true' | 'false'
-        /** @description Damage/Effect filtering (NEW) */
-        damage_type?: string
-        saving_throw?: string
-        /** @description Component filtering (NEW) */
-        requires_verbal?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        requires_somatic?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        requires_material?: '0' | '1' | '0' | '1' | '1' | '' | 'true' | 'false'
-        /**
-                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR. Available fields: level (int), school_code (string), concentration (bool), ritual (bool).
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "races.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "sources" | "sources.source" | "traits" | "proficiencies" | "proficiencies.skill" | "proficiencies.proficiencyType" | "modifiers" | "languages";
+                "fields[]"?: "id" | "name" | "slug" | "description" | "size" | "speed" | "created_at" | "updated_at";
+            };
+            header?: never;
+            path: {
+                /** @description The race ID */
+                race: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "races.spells": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The race ID */
+                race: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+                "types[]"?: "spell" | "item" | "race" | "class" | "background" | "feat" | "monster";
+                limit?: number;
+                debug?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SearchResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResource"];
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "sizes.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "sizes.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The size ID */
+                size: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SizeResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SizeResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "sizes.races": {
+        parameters: {
+            query?: {
+                per_page?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The size ID */
+                size: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "sizes.monsters": {
+        parameters: {
+            query?: {
+                per_page?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The size ID */
+                size: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `MonsterResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MonsterResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "skills.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+                /** @description Filter by ability score code */
+                ability?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SkillResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SkillResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "skills.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The skill ID */
+                skill: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SkillResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SkillResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "sources.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SourceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SourceResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "sources.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The source ID */
+                source: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SourceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SourceResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spells.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search */
+                search?: string;
+                /** @description Sorting */
+                sort_by?: "name" | "level" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Search query (Scout/Meilisearch) */
+                q?: string;
+                /** @description Spell-specific filters (backwards compatibility) */
+                level?: number;
+                school?: string;
+                /** @description Accepts ID, code (EV, EN), or name (evocation) */
+                concentration?: "1" | "" | "1" | "0" | "1" | "0" | "true" | "false";
+                ritual?: "1" | "" | "1" | "0" | "1" | "0" | "true" | "false";
+                /** @description Damage/Effect filtering (NEW) */
+                damage_type?: string;
+                saving_throw?: string;
+                /** @description Component filtering (NEW) */
+                requires_verbal?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                requires_somatic?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                requires_material?: "0" | "1" | "0" | "1" | "1" | "" | "true" | "false";
+                /**
+                 * @description Meilisearch filter expression for advanced filtering. Supports operators: =, !=, >, >=, <, <=, AND, OR, IN. Available fields: level (int), school_code (string), concentration (bool), ritual (bool), tag_slugs (array).
                  * @example level >= 1 AND level <= 3 AND school_code = EV
                  */
-        filter?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'spells.show': {
-    parameters: {
-      query?: {
-        'include[]'?: 'spellSchool' | 'sources' | 'sources.source' | 'effects' | 'effects.damageType' | 'classes' | 'randomTables' | 'randomTables.entries'
-        'fields[]'?: 'id' | 'name' | 'slug' | 'level' | 'description' | 'casting_time' | 'range' | 'components' | 'duration' | 'concentration' | 'ritual' | 'created_at' | 'updated_at'
-      }
-      header?: never
-      path: {
-        /** @description The spell ID */
-        spell: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-      422: components['responses']['ValidationException']
-    }
-  }
-  'spells.classes': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The spell to find classes for (accepts ID or slug) */
-        spell: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `ClassResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ClassResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spells.monsters': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The spell to find monsters for (accepts ID or slug) */
-        spell: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `MonsterResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['MonsterResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spells.items': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The spell to find items for (accepts ID or slug) */
-        spell: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `ItemResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['ItemResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spells.races': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The spell to find races for (accepts ID or slug) */
-        spell: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Array of `RaceResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['RaceResource'][]
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spell-schools.index': {
-    parameters: {
-      query?: {
-        /** @description Pagination */
-        per_page?: number
-        page?: number
-        /** @description Search (consistent with main entity endpoints) */
-        q?: string
-      }
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: string[]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      422: components['responses']['ValidationException']
-    }
-  }
-  'spell-schools.show': {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description The spell school ID */
-        spellSchool: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description `SpellSchoolResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellSchoolResource']
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
-  'spell-schools.spells': {
-    parameters: {
-      query?: {
-        per_page?: string
-      }
-      header?: never
-      path: {
-        /** @description The school of magic (by ID, code, or slug) */
-        spellSchool: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description Paginated set of `SpellResource` */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': {
-            data: components['schemas']['SpellResource'][]
-            links: {
-              first: string | null
-              last: string | null
-              prev: string | null
-              next: string | null
-            }
-            meta: {
-              current_page: number
-              from: number | null
-              last_page: number
-              /** @description Generated paginator links. */
-              links: {
-                url: string | null
-                label: string
-                active: boolean
-              }[]
-              /** @description Base path for paginator generated URLs. */
-              path: string | null
-              /** @description Number of items shown per page. */
-              per_page: number
-              /** @description Number of the last item in the slice. */
-              to: number | null
-              /** @description Total number of items being paginated. */
-              total: number
-            }
-          }
-        }
-      }
-      404: components['responses']['ModelNotFoundException']
-    }
-  }
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "spells.show": {
+        parameters: {
+            query?: {
+                "include[]"?: "spellSchool" | "sources" | "sources.source" | "effects" | "effects.damageType" | "classes" | "randomTables" | "randomTables.entries";
+                "fields[]"?: "id" | "name" | "slug" | "level" | "description" | "casting_time" | "range" | "components" | "duration" | "concentration" | "ritual" | "created_at" | "updated_at";
+            };
+            header?: never;
+            path: {
+                /** @description The spell ID */
+                spell: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "spells.classes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The spell to find classes for (accepts ID or slug) */
+                spell: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ClassResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ClassResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spells.monsters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The spell to find monsters for (accepts ID or slug) */
+                spell: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `MonsterResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["MonsterResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spells.items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The spell to find items for (accepts ID or slug) */
+                spell: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `ItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ItemResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spells.races": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The spell to find races for (accepts ID or slug) */
+                spell: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `RaceResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RaceResource"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spell-schools.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Search (consistent with main entity endpoints) */
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: string[];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "spell-schools.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The spell school ID */
+                spellSchool: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `SpellSchoolResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellSchoolResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
+    "spell-schools.spells": {
+        parameters: {
+            query?: {
+                per_page?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The school of magic (by ID, code, or slug) */
+                spellSchool: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `SpellResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["SpellResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+        };
+    };
 }

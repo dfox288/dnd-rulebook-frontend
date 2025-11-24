@@ -1,15 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { SpellSchool, Spell, CharacterClass, DamageType as DamageTypeBase, AbilityScore as AbilityScoreBase } from '~/types'
-
-// Extended types for filter entities (API returns code field for these)
-interface DamageType extends DamageTypeBase {
-  code: string
-}
-
-interface AbilityScore extends AbilityScoreBase {
-  code: string
-}
+import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore } from '~/types'
 
 const route = useRoute()
 const { apiFetch } = useApi()
