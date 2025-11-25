@@ -140,14 +140,12 @@ const sourceOptions = computed(() => {
   }))
 })
 
-// Sort options
+// Sort options (removed Recently Added/Updated per UX feedback)
 const sortOptions = [
   { label: 'Name (A-Z)', value: 'name:asc' },
   { label: 'Name (Z-A)', value: 'name:desc' },
   { label: 'Level (Low-High)', value: 'level:asc' },
-  { label: 'Level (High-Low)', value: 'level:desc' },
-  { label: 'Recently Added', value: 'created_at:desc' },
-  { label: 'Recently Updated', value: 'updated_at:desc' }
+  { label: 'Level (High-Low)', value: 'level:desc' }
 ]
 
 // Computed sort value for USelectMenu binding (combines sortBy:sortDirection)
@@ -300,9 +298,9 @@ const clearLevelFilter = () => {
   maxLevel.value = null
 }
 
-// Get source name by code for filter chips
+// Get source name by code for filter chips (show full name instead of code)
 const getSourceName = (code: string) => {
-  return code // Display "PHB", "XGE", etc.
+  return sources.value?.find(s => s.code === code)?.name || code
 }
 
 // Get tag name by slug for filter chips
@@ -343,18 +341,6 @@ const activeFilterCount = useFilterCount(
       :has-active-filters="hasActiveFilters"
     />
 
-    <!-- Sort Controls -->
-    <div class="mb-4 flex justify-end">
-      <USelectMenu
-        v-model="sortValue"
-        :items="sortOptions"
-        value-key="value"
-        placeholder="Sort by..."
-        size="md"
-        class="w-full sm:w-64"
-      />
-    </div>
-
     <!-- Search and Filters -->
     <div class="mb-6">
       <UiFilterCollapse
@@ -363,23 +349,33 @@ const activeFilterCount = useFilterCount(
         :badge-count="activeFilterCount"
       >
         <template #search>
-          <UInput
-            v-model="searchQuery"
-            placeholder="Search spells..."
-            class="flex-1"
-          >
-            <template
-              v-if="searchQuery"
-              #trailing
+          <div class="flex gap-2 w-full">
+            <UInput
+              v-model="searchQuery"
+              placeholder="Search spells..."
+              class="flex-1"
             >
-              <UButton
-                color="neutral"
-                variant="link"
-                :padded="false"
-                @click="searchQuery = ''"
-              />
-            </template>
-          </UInput>
+              <template
+                v-if="searchQuery"
+                #trailing
+              >
+                <UButton
+                  color="neutral"
+                  variant="link"
+                  :padded="false"
+                  @click="searchQuery = ''"
+                />
+              </template>
+            </UInput>
+            <USelectMenu
+              v-model="sortValue"
+              :items="sortOptions"
+              value-key="value"
+              placeholder="Sort by..."
+              size="md"
+              class="w-full sm:w-48"
+            />
+          </div>
         </template>
 
         <!-- Filter Content -->
