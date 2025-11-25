@@ -29,6 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Documentation:** `docs/UI-FILTER-LAYOUT-GUIDE.md` (comprehensive migration guide)
 
+### Removed - Light Mode (2025-11-25)
+
+**🌙 Dark Mode Only:**
+- Removed light/dark mode toggle button from navbar
+- App now permanently locked to dark mode
+- Simplified UI (one less button)
+- Better for D&D aesthetic (dark/mystical theme)
+- Consistent experience across all users
+
 ### Changed - Navigation Restructure (2025-11-25)
 
 **📚 Compendium Dropdown:**

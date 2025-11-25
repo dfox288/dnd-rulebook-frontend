@@ -106,9 +106,9 @@ const isReferenceExpanded = ref(false)
       <!-- Navigation Bar -->
       <nav class="border-b border-rose-300/50 dark:border-rose-700/50 bg-gradient-to-r from-rose-50 via-rose-100 to-rose-50 dark:from-rose-950 dark:via-rose-900 dark:to-rose-950 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center h-16">
+          <div class="flex justify-center items-center h-16">
             <!-- Site Logo (Left) -->
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 absolute left-4 sm:left-6 lg:left-8">
               <NuxtLink
                 to="/"
                 class="flex items-center hover:opacity-80 transition-opacity"
