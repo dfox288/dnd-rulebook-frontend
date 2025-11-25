@@ -41,11 +41,12 @@ const verbalFilter = ref<string | null>((route.query.has_verbal as string) || nu
 const somaticFilter = ref<string | null>((route.query.has_somatic as string) || null)
 const materialFilter = ref<string | null>((route.query.has_material as string) || null)
 
-// Phase 3: Removed unsupported filters (not indexed in Meilisearch):
-// - higherLevelsFilter (has_higher_levels not filterable)
-// - castingTimeFilter (casting_time not filterable)
-// - rangeFilter (range not filterable)
-// - durationFilter (duration not filterable)
+// Phase 3: Removed filters (impractical for dropdowns due to free-text values):
+// - higherLevelsFilter (has_higher_levels - backend field exists but not useful)
+// - castingTimeFilter (casting_time - 100+ unique text values like "1 action", "1 bonus action")
+// - rangeFilter (range - 50+ unique text values like "Self", "60 feet", "1 mile")
+// - durationFilter (duration - 80+ unique text values like "Instantaneous", "Concentration, up to 1 minute")
+// Note: These ARE filterable in Meilisearch (e.g., casting_time = "1 action"), but better served by full-text search
 
 // Fetch reference data for filter options (using composable)
 const { data: spellSchools } = useReferenceData<SpellSchool>('/spell-schools')
@@ -159,11 +160,11 @@ const sortValue = computed({
   }
 })
 
-// Phase 3: Removed unsupported filter options (not indexed in Meilisearch)
-// - castingTimeOptions (casting_time not filterable)
-// - rangeOptions (range not filterable)
-// - durationOptions (duration not filterable)
-// Users can search for these values using full-text search (?q=1 action)
+// Phase 3: Removed filter options (impractical due to high cardinality):
+// - castingTimeOptions (100+ unique values: "1 action", "1 bonus action", "1 reaction", "10 minutes", etc.)
+// - rangeOptions (50+ unique values: "Self", "Touch", "30 feet", "60 feet", "120 feet", "1 mile", etc.)
+// - durationOptions (80+ unique values: "Instantaneous", "1 round", "Concentration, up to 1 minute", etc.)
+// Users can search for these values using full-text search (?q=1 action) instead of dropdowns
 
 // Mode toggle handlers
 const switchToRangeMode = () => {
