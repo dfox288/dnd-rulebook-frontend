@@ -256,18 +256,13 @@ const perPage = 24
       >
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active filters:</span>
-          <UButton
-            v-if="searchQuery"
-            size="xs"
-            color="neutral"
-            variant="soft"
-            @click="searchQuery = ''"
-          >
-            "{{ searchQuery }}" ✕
-          </UButton>
+          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
+
+          <!-- 1. Source chips (neutral color) -->
           <UButton
             v-for="source in selectedSources"
             :key="source"
+            data-testid="source-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"
@@ -275,34 +270,53 @@ const perPage = 24
           >
             {{ sources?.find(s => s.code === source)?.name || source }} ✕
           </UButton>
+
+          <!-- 2. Entity-specific: Skills, Tool Types -->
           <UButton
             v-for="skill in selectedSkills"
             :key="skill"
+            data-testid="skill-filter-chip"
             size="xs"
             color="background"
             variant="soft"
             @click="selectedSkills = selectedSkills.filter(s => s !== skill)"
           >
-            {{ getSkillName(skill) }} ✕
+            Skill: {{ getSkillName(skill) }} ✕
           </UButton>
           <UButton
             v-for="toolType in selectedToolTypes"
             :key="toolType"
+            data-testid="tool-type-filter-chip"
             size="xs"
             color="background"
             variant="soft"
             @click="selectedToolTypes = selectedToolTypes.filter(t => t !== toolType)"
           >
-            {{ getToolTypeName(toolType) }} ✕
+            Tool: {{ getToolTypeName(toolType) }} ✕
           </UButton>
+
+          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
           <UButton
             v-if="languageChoiceFilter !== null"
+            data-testid="language-choice-filter-chip"
             size="xs"
-            color="background"
+            color="primary"
             variant="soft"
             @click="languageChoiceFilter = null"
           >
             Language Choice: {{ languageChoiceFilter === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+
+          <!-- 4. Search query (always last, neutral color) -->
+          <UButton
+            v-if="searchQuery"
+            data-testid="search-filter-chip"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          >
+            "{{ searchQuery }}" ✕
           </UButton>
         </div>
 

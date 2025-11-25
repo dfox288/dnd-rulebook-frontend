@@ -281,35 +281,13 @@ const activeFilterCount = useFilterCount(
           >
             Active filters:
           </span>
+          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
 
-          <!-- Improved Abilities chips -->
-          <UButton
-            v-for="ability in selectedImprovedAbilities"
-            :key="ability"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedImprovedAbilities = selectedImprovedAbilities.filter(a => a !== ability)"
-          >
-            {{ getAbilityName(ability) }} ✕
-          </UButton>
-
-          <!-- Prerequisite Types chips -->
-          <UButton
-            v-for="type in selectedPrerequisiteTypes"
-            :key="type"
-            size="xs"
-            color="info"
-            variant="soft"
-            @click="selectedPrerequisiteTypes = selectedPrerequisiteTypes.filter(t => t !== type)"
-          >
-            {{ getPrerequisiteTypeLabel(type) }} ✕
-          </UButton>
-
-          <!-- Source chips -->
+          <!-- 1. Source chips (neutral color) -->
           <UButton
             v-for="source in selectedSources"
             :key="source"
+            data-testid="source-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"
@@ -318,9 +296,34 @@ const activeFilterCount = useFilterCount(
             {{ getSourceName(source) }} ✕
           </UButton>
 
-          <!-- Boolean filter chips -->
+          <!-- 2. Entity-specific: Improved Abilities, Prerequisite Types -->
+          <UButton
+            v-for="ability in selectedImprovedAbilities"
+            :key="ability"
+            data-testid="improved-ability-filter-chip"
+            size="xs"
+            color="feat"
+            variant="soft"
+            @click="selectedImprovedAbilities = selectedImprovedAbilities.filter(a => a !== ability)"
+          >
+            ASI: {{ getAbilityName(ability) }} ✕
+          </UButton>
+          <UButton
+            v-for="type in selectedPrerequisiteTypes"
+            :key="type"
+            data-testid="prerequisite-type-filter-chip"
+            size="xs"
+            color="feat"
+            variant="soft"
+            @click="selectedPrerequisiteTypes = selectedPrerequisiteTypes.filter(t => t !== type)"
+          >
+            Prereq: {{ getPrerequisiteTypeLabel(type) }} ✕
+          </UButton>
+
+          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
           <UButton
             v-if="hasPrerequisites !== null"
+            data-testid="has-prerequisites-filter-chip"
             size="xs"
             color="primary"
             variant="soft"
@@ -328,9 +331,9 @@ const activeFilterCount = useFilterCount(
           >
             Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
           </UButton>
-
           <UButton
             v-if="grantsProficiencies !== null"
+            data-testid="grants-proficiencies-filter-chip"
             size="xs"
             color="primary"
             variant="soft"
@@ -339,9 +342,10 @@ const activeFilterCount = useFilterCount(
             Grants Proficiencies: {{ grantsProficiencies === '1' ? 'Yes' : 'No' }} ✕
           </UButton>
 
-          <!-- Search chip -->
+          <!-- 4. Search query (always last, neutral color) -->
           <UButton
             v-if="searchQuery"
+            data-testid="search-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"

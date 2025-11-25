@@ -383,66 +383,74 @@ const perPage = 24
           >
             Active filters:
           </span>
+          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
+
+          <!-- 1. Source chips (neutral color) -->
+          <UButton
+            v-for="source in selectedSources"
+            :key="source"
+            data-testid="source-filter-chip"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="selectedSources = selectedSources.filter(s => s !== source)"
+          >
+            {{ getSourceName(source) }} ✕
+          </UButton>
+
+          <!-- 2. Entity-specific: Size, Speed, Parent Race, Abilities -->
           <UButton
             v-if="selectedSize"
             data-testid="size-filter-chip"
             size="xs"
-            color="primary"
+            color="race"
             variant="soft"
             @click="selectedSize = ''"
           >
-            {{ getSizeName(selectedSize) }} ✕
+            Size: {{ getSizeName(selectedSize) }} ✕
           </UButton>
           <UButton
             v-if="speedMin !== 10 || speedMax !== 35"
             data-testid="speed-filter-chip"
             size="xs"
-            color="primary"
+            color="race"
             variant="soft"
             @click="speedMin = 10; speedMax = 35"
           >
             Speed: {{ speedMin }}-{{ speedMax }} ft ✕
           </UButton>
           <UButton
-            v-for="source in selectedSources"
-            :key="source"
-            data-testid="source-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedSources = selectedSources.filter(s => s !== source)"
-          >
-            {{ getSourceName(source) }} ✕
-          </UButton>
-          <UButton
             v-if="selectedParentRace"
             data-testid="parent-race-filter-chip"
             size="xs"
-            color="primary"
+            color="race"
             variant="soft"
             @click="selectedParentRace = ''"
           >
-            {{ selectedParentRace }} ✕
+            Parent: {{ selectedParentRace }} ✕
           </UButton>
           <UButton
-            v-if="raceTypeFilter === '0'"
+            v-for="ability in selectedAbilityBonuses"
+            :key="ability"
+            data-testid="ability-filter-chip"
+            size="xs"
+            color="race"
+            variant="soft"
+            @click="selectedAbilityBonuses = selectedAbilityBonuses.filter(a => a !== ability)"
+          >
+            {{ ability }} Bonus ✕
+          </UButton>
+
+          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
+          <UButton
+            v-if="raceTypeFilter !== null"
             data-testid="race-type-filter-chip"
             size="xs"
             color="primary"
             variant="soft"
             @click="raceTypeFilter = null"
           >
-            Base Races Only ✕
-          </UButton>
-          <UButton
-            v-if="raceTypeFilter === '1'"
-            data-testid="race-type-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="raceTypeFilter = null"
-          >
-            Subraces Only ✕
+            Race Type: {{ raceTypeFilter === '0' ? 'Base Only' : 'Subraces' }} ✕
           </UButton>
           <UButton
             v-if="hasInnateSpellsFilter !== null"
@@ -454,20 +462,11 @@ const perPage = 24
           >
             Innate Spells: {{ hasInnateSpellsFilter === '1' ? 'Yes' : 'No' }} ✕
           </UButton>
-          <UButton
-            v-for="ability in selectedAbilityBonuses"
-            :key="ability"
-            data-testid="ability-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedAbilityBonuses = selectedAbilityBonuses.filter(a => a !== ability)"
-          >
-            {{ ability }} Bonus ✕
-          </UButton>
+
+          <!-- 4. Search query (always last, neutral color) -->
           <UButton
             v-if="searchQuery"
-            data-testid="search-query-chip"
+            data-testid="search-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"

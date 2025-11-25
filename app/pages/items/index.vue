@@ -524,20 +524,61 @@ const activeFilterCount = useFilterCount(
             />
           </template>
 
-          <!-- Advanced Filters: Multiselects (Properties, Damage Types, Sources) -->
+          <!-- Advanced Filters: Organized by usage frequency -->
           <template #advanced>
-            <!-- Cost Range Filter -->
+            <!-- HIGH FREQUENCY: General item filters -->
+            <UiFilterMultiSelect
+              v-model="selectedProperties"
+              :options="propertyOptions"
+              label="Properties"
+              placeholder="All Properties"
+              color="item"
+              class="w-full sm:w-48"
+              data-testid="properties-filter"
+            />
+
             <USelectMenu
               v-model="selectedCostRange"
               :items="costRangeOptions"
               value-key="value"
-              placeholder="Cost"
+              placeholder="Cost Range"
               size="md"
               class="w-full sm:w-44"
               data-testid="cost-filter"
             />
 
-            <!-- AC Range Filter -->
+            <!-- WEAPON FILTERS: Grouped together -->
+            <UiFilterMultiSelect
+              v-model="selectedDamageTypes"
+              :options="damageTypeOptions"
+              label="Damage Types"
+              placeholder="All Damage Types"
+              color="error"
+              class="w-full sm:w-48"
+              data-testid="damage-types-filter"
+            />
+
+            <UiFilterMultiSelect
+              v-model="selectedDamageDice"
+              :options="damageDiceOptions"
+              label="Damage Dice"
+              placeholder="All Damage Dice"
+              color="error"
+              class="w-full sm:w-48"
+              data-testid="damage-dice-filter"
+            />
+
+            <USelectMenu
+              v-model="selectedRange"
+              :items="rangeOptions"
+              value-key="value"
+              placeholder="Weapon Range"
+              size="md"
+              class="w-full sm:w-44"
+              data-testid="range-filter"
+            />
+
+            <!-- ARMOR FILTERS -->
             <USelectMenu
               v-model="selectedACRange"
               :items="acRangeOptions"
@@ -548,61 +589,23 @@ const activeFilterCount = useFilterCount(
               data-testid="ac-filter"
             />
 
-            <UiFilterMultiSelect
-              v-model="selectedProperties"
-              :options="propertyOptions"
-              label="Properties"
-              placeholder="All Properties"
-              color="primary"
-              class="w-full sm:w-48"
-            />
-
-            <UiFilterMultiSelect
-              v-model="selectedDamageTypes"
-              :options="damageTypeOptions"
-              label="Damage Types"
-              placeholder="All Damage Types"
-              color="primary"
-              class="w-full sm:w-48"
-            />
-
-            <!-- Weapon/Armor Shopping Filters (TIER 2 HIGH IMPACT) -->
-            <UiFilterMultiSelect
-              v-model="selectedDamageDice"
-              :options="damageDiceOptions"
-              label="Damage Dice"
-              placeholder="All Damage Dice"
-              color="primary"
-              class="w-full sm:w-48"
-              data-testid="damage-dice-filter"
-            />
-
+            <!-- NICHE FILTERS: Less commonly used -->
             <UiFilterMultiSelect
               v-model="selectedVersatileDamage"
               :options="versatileDamageOptions"
-              label="Versatile Damage"
+              label="Versatile Dice"
               placeholder="All Versatile"
-              color="primary"
+              color="info"
               class="w-full sm:w-48"
               data-testid="versatile-damage-filter"
-            />
-
-            <USelectMenu
-              v-model="selectedRange"
-              :items="rangeOptions"
-              value-key="value"
-              placeholder="Range"
-              size="md"
-              class="w-full sm:w-48"
-              data-testid="range-filter"
             />
 
             <UiFilterMultiSelect
               v-model="selectedRechargeTiming"
               :options="rechargeTimingOptions"
-              label="Recharge Timing"
-              placeholder="All Timings"
-              color="primary"
+              label="Recharge"
+              placeholder="All Recharge"
+              color="spell"
               class="w-full sm:w-48"
               data-testid="recharge-timing-filter"
             />

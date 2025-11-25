@@ -276,59 +276,13 @@ const perPage = 24
       >
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active filters:</span>
-          <UButton
-            v-if="isBaseClass !== null"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="isBaseClass = null"
-          >
-            Base Class Only: {{ isBaseClass === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <UButton
-            v-if="isSpellcaster !== null"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="isSpellcaster = null"
-          >
-            Spellcaster: {{ isSpellcaster === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Hit Die Chips -->
-          <UButton
-            v-for="hitDie in selectedHitDice"
-            :key="hitDie"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedHitDice = selectedHitDice.filter(d => d !== hitDie)"
-          >
-            d{{ hitDie }} ✕
-          </UButton>
-          <!-- Spellcasting Ability Chip -->
-          <UButton
-            v-if="selectedSpellcastingAbility"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedSpellcastingAbility = null"
-          >
-            {{ spellcastingAbilityOptions.find(o => o.value === selectedSpellcastingAbility)?.label }} ✕
-          </UButton>
-          <!-- Parent Class Chip -->
-          <UButton
-            v-if="selectedParentClass"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="selectedParentClass = null"
-          >
-            {{ selectedParentClass }} ✕
-          </UButton>
-          <!-- Source Chips -->
+          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
+
+          <!-- 1. Source chips (neutral color) -->
           <UButton
             v-for="source in selectedSources"
             :key="source"
+            data-testid="source-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"
@@ -336,8 +290,66 @@ const perPage = 24
           >
             {{ sources?.find(s => s.code === source)?.name || source }} ✕
           </UButton>
+
+          <!-- 2. Entity-specific: Hit Die, Spellcasting Ability, Parent Class -->
+          <UButton
+            v-for="hitDie in selectedHitDice"
+            :key="hitDie"
+            data-testid="hit-die-filter-chip"
+            size="xs"
+            color="class"
+            variant="soft"
+            @click="selectedHitDice = selectedHitDice.filter(d => d !== hitDie)"
+          >
+            Hit Die: d{{ hitDie }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedSpellcastingAbility"
+            data-testid="spellcasting-ability-filter-chip"
+            size="xs"
+            color="class"
+            variant="soft"
+            @click="selectedSpellcastingAbility = null"
+          >
+            Spellcasting: {{ spellcastingAbilityOptions.find(o => o.value === selectedSpellcastingAbility)?.label }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedParentClass"
+            data-testid="parent-class-filter-chip"
+            size="xs"
+            color="class"
+            variant="soft"
+            @click="selectedParentClass = null"
+          >
+            Parent: {{ selectedParentClass }} ✕
+          </UButton>
+
+          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
+          <UButton
+            v-if="isBaseClass !== null"
+            data-testid="is-base-class-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="isBaseClass = null"
+          >
+            Base Class: {{ isBaseClass === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="isSpellcaster !== null"
+            data-testid="is-spellcaster-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="isSpellcaster = null"
+          >
+            Spellcaster: {{ isSpellcaster === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+
+          <!-- 4. Search query (always last, neutral color) -->
           <UButton
             v-if="searchQuery"
+            data-testid="search-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"

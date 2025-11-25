@@ -685,137 +685,9 @@ const perPage = 24
           >
             Active filters:
           </span>
-          <UButton
-            v-if="getCRFilterText"
-            data-testid="cr-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="clearCRFilter"
-          >
-            {{ getCRFilterText }} ✕
-          </UButton>
-          <UButton
-            v-if="selectedType !== null"
-            size="xs"
-            color="info"
-            variant="soft"
-            @click="selectedType = null"
-          >
-            {{ getTypeLabel(selectedType) }} ✕
-          </UButton>
-          <UButton
-            v-if="getSizeFilterText"
-            data-testid="size-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="clearSizeFilter"
-          >
-            {{ getSizeFilterText }} ✕
-          </UButton>
-          <UButton
-            v-if="getAlignmentFilterText"
-            data-testid="alignment-filter-chip"
-            size="xs"
-            color="secondary"
-            variant="soft"
-            @click="clearAlignmentFilter"
-          >
-            {{ getAlignmentFilterText }} ✕
-          </UButton>
-          <UButton
-            v-if="isLegendary !== null"
-            size="xs"
-            color="error"
-            variant="soft"
-            @click="isLegendary = null"
-          >
-            Legendary: {{ isLegendary === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Movement Types Chip -->
-          <UButton
-            v-if="getMovementTypesFilterText"
-            data-testid="movement-types-chip"
-            size="xs"
-            color="info"
-            variant="soft"
-            @click="clearMovementTypesFilter"
-          >
-            {{ getMovementTypesFilterText }} ✕
-          </UButton>
-          <!-- AC Range Chip -->
-          <UButton
-            v-if="selectedACRange"
-            size="xs"
-            color="info"
-            variant="soft"
-            @click="selectedACRange = null"
-          >
-            AC: {{ acRangeOptions.find(o => o.value === selectedACRange)?.label }} ✕
-          </UButton>
-          <!-- HP Range Chip -->
-          <UButton
-            v-if="selectedHPRange"
-            size="xs"
-            color="info"
-            variant="soft"
-            @click="selectedHPRange = null"
-          >
-            HP: {{ hpRangeOptions.find(o => o.value === selectedHPRange)?.label }} ✕
-          </UButton>
-          <!-- Armor Type Chip -->
-          <UButton
-            v-if="getArmorTypeFilterText"
-            data-testid="armor-type-filter-chip"
-            size="xs"
-            color="neutral"
-            variant="soft"
-            @click="clearArmorTypeFilter"
-          >
-            {{ getArmorTypeFilterText }} ✕
-          </UButton>
-          <!-- Has Lair Actions Chip -->
-          <UButton
-            v-if="hasLairActions !== null"
-            size="xs"
-            color="warning"
-            variant="soft"
-            @click="hasLairActions = null"
-          >
-            Has Lair Actions: {{ hasLairActions === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Has Reactions Chip -->
-          <UButton
-            v-if="hasReactions !== null"
-            size="xs"
-            color="secondary"
-            variant="soft"
-            @click="hasReactions = null"
-          >
-            Has Reactions: {{ hasReactions === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Is Spellcaster Chip -->
-          <UButton
-            v-if="isSpellcaster !== null"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="isSpellcaster = null"
-          >
-            Is Spellcaster: {{ isSpellcaster === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Has Magic Resistance Chip -->
-          <UButton
-            v-if="hasMagicResistance !== null"
-            size="xs"
-            color="success"
-            variant="soft"
-            @click="hasMagicResistance = null"
-          >
-            Has Magic Resistance: {{ hasMagicResistance === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-          <!-- Source Chips -->
+          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
+
+          <!-- 1. Source chips (neutral color) -->
           <UButton
             v-for="source in selectedSources"
             :key="source"
@@ -827,8 +699,145 @@ const perPage = 24
           >
             {{ sources?.find(s => s.code === source)?.name || source }} ✕
           </UButton>
+
+          <!-- 2. Entity-specific: CR, Type, Size, Alignment, Movement, AC, HP, Armor -->
+          <UButton
+            v-if="getCRFilterText"
+            data-testid="cr-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="clearCRFilter"
+          >
+            {{ getCRFilterText }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedType !== null"
+            data-testid="type-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="selectedType = null"
+          >
+            Type: {{ getTypeLabel(selectedType) }} ✕
+          </UButton>
+          <UButton
+            v-if="getSizeFilterText"
+            data-testid="size-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="clearSizeFilter"
+          >
+            {{ getSizeFilterText }} ✕
+          </UButton>
+          <UButton
+            v-if="getAlignmentFilterText"
+            data-testid="alignment-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="clearAlignmentFilter"
+          >
+            {{ getAlignmentFilterText }} ✕
+          </UButton>
+          <UButton
+            v-if="getMovementTypesFilterText"
+            data-testid="movement-types-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="clearMovementTypesFilter"
+          >
+            {{ getMovementTypesFilterText }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedACRange"
+            data-testid="ac-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="selectedACRange = null"
+          >
+            AC: {{ acRangeOptions.find(o => o.value === selectedACRange)?.label }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedHPRange"
+            data-testid="hp-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="selectedHPRange = null"
+          >
+            HP: {{ hpRangeOptions.find(o => o.value === selectedHPRange)?.label }} ✕
+          </UButton>
+          <UButton
+            v-if="getArmorTypeFilterText"
+            data-testid="armor-type-filter-chip"
+            size="xs"
+            color="monster"
+            variant="soft"
+            @click="clearArmorTypeFilter"
+          >
+            {{ getArmorTypeFilterText }} ✕
+          </UButton>
+
+          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
+          <UButton
+            v-if="isLegendary !== null"
+            data-testid="is-legendary-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="isLegendary = null"
+          >
+            Legendary: {{ isLegendary === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="hasLairActions !== null"
+            data-testid="has-lair-actions-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="hasLairActions = null"
+          >
+            Lair Actions: {{ hasLairActions === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="hasReactions !== null"
+            data-testid="has-reactions-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="hasReactions = null"
+          >
+            Reactions: {{ hasReactions === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="isSpellcaster !== null"
+            data-testid="is-spellcaster-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="isSpellcaster = null"
+          >
+            Spellcaster: {{ isSpellcaster === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="hasMagicResistance !== null"
+            data-testid="has-magic-resistance-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="hasMagicResistance = null"
+          >
+            Magic Resistance: {{ hasMagicResistance === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+
+          <!-- 4. Search query (always last, neutral color) -->
           <UButton
             v-if="searchQuery"
+            data-testid="search-filter-chip"
             size="xs"
             color="neutral"
             variant="soft"
