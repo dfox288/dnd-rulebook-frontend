@@ -179,6 +179,7 @@ describe('Items Page - Filter Layout', () => {
       expect(component.selectedProperties).toEqual([])
       expect(component.selectedDamageTypes).toEqual([])
       expect(component.selectedSources).toEqual([])
+      expect(component.selectedCostRange).toBeNull()
     })
 
     it('only shows clear filters button when filters are active', async () => {
