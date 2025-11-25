@@ -76,7 +76,7 @@ const { data: spells, status: spellsStatus } = await useAsyncData(
   async () => {
     if (!selectedClass.value) return []
     const response = await apiFetch<{ data: Spell[] }>(
-      `/spells?filter=class_slugs IN [${selectedClass.value.slug}]&per_page=500`
+      `/spells?filter=class_slugs IN [${selectedClass.value.slug}]&per_page=100`
     )
     return response?.data || []
   },

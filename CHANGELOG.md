@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Deprecated API syntax:** Changed `?classes=wizard` → `?filter=class_slugs IN [wizard]` (using Meilisearch filter syntax)
 - **Wrong type checks:** Removed `=== '1'` checks for booleans (now checking boolean fields directly)
 - **Missing badges:** Added component requirement badges (V/S/M) using `requires_verbal`, `requires_somatic`, `requires_material`
-- **Excessive pagination:** Reduced `per_page=1000` → `per_page=500` (more reasonable limit)
+- **Pagination limit:** Changed `per_page=1000` → `per_page=100` (API max limit, was causing 422 errors)
 
 **Impact:**
 - Concentration/Ritual badges now work correctly (were never showing before)
