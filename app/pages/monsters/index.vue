@@ -37,36 +37,34 @@ const typeOptions = [
   { label: 'Undead', value: 'undead' }
 ]
 
-// Query builder (Meilisearch syntax)
+// Query builder (hybrid: composable + manual CR range)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
   const meilisearchFilters: string[] = []
 
-  // CR range filter (convert UI range to Meilisearch range query)
+  // Standard filters via composable
+  const { queryParams: standardParams } = useMeilisearchFilters([
+    { ref: selectedType, field: 'type' },
+    { ref: isLegendary, field: 'is_legendary', type: 'boolean' }
+  ])
+
+  if (standardParams.value.filter) {
+    meilisearchFilters.push(standardParams.value.filter as string)
+  }
+
+  // Special handling for CR range (UI string → numeric range)
   if (selectedCR.value) {
-    if (selectedCR.value === '0-4') {
-      meilisearchFilters.push('challenge_rating >= 0 AND challenge_rating <= 4')
-    } else if (selectedCR.value === '5-10') {
-      meilisearchFilters.push('challenge_rating >= 5 AND challenge_rating <= 10')
-    } else if (selectedCR.value === '11-16') {
-      meilisearchFilters.push('challenge_rating >= 11 AND challenge_rating <= 16')
-    } else if (selectedCR.value === '17+') {
-      meilisearchFilters.push('challenge_rating >= 17')
+    const crMap: Record<string, string> = {
+      '0-4': 'challenge_rating >= 0 AND challenge_rating <= 4',
+      '5-10': 'challenge_rating >= 5 AND challenge_rating <= 10',
+      '11-16': 'challenge_rating >= 11 AND challenge_rating <= 16',
+      '17+': 'challenge_rating >= 17'
+    }
+    if (crMap[selectedCR.value]) {
+      meilisearchFilters.push(crMap[selectedCR.value])
     }
   }
 
-  // Type filter (string value, no quotes needed)
-  if (selectedType.value) {
-    meilisearchFilters.push(`type = ${selectedType.value}`)
-  }
-
-  // is_legendary filter (convert string to boolean)
-  if (isLegendary.value !== null) {
-    const boolValue = isLegendary.value === '1' || isLegendary.value === 'true'
-    meilisearchFilters.push(`is_legendary = ${boolValue}`)
-  }
-
-  // Combine all filters with AND
   if (meilisearchFilters.length > 0) {
     params.filter = meilisearchFilters.join(' AND ')
   }
@@ -119,13 +117,7 @@ const getTypeLabel = (type: string) => {
 const filtersOpen = ref(false)
 
 // Active filter count for badge
-const activeFilterCount = computed(() => {
-  let count = 0
-  if (selectedCR.value !== null) count++
-  if (selectedType.value !== null) count++
-  if (isLegendary.value !== null) count++
-  return count
-})
+const activeFilterCount = useFilterCount(selectedCR, selectedType, isLegendary)
 
 const perPage = 24
 </script>
