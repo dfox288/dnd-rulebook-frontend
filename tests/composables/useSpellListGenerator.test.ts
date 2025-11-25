@@ -106,17 +106,39 @@ describe('useSpellListGenerator', () => {
   })
 
   it('toggles spell selection', () => {
-    const { selectedSpells, toggleSpell } = useSpellListGenerator()
+    const { selectedSpells, toggleSpell, setClassData, characterLevel } = useSpellListGenerator()
 
-    toggleSpell(1)
+    // Set up a class first so maxSpells > 0
+    const wizardClass = {
+      id: 1,
+      slug: 'wizard',
+      name: 'Wizard',
+      level_progression: []
+    } as Record<string, unknown>
+    setClassData(wizardClass)
+    characterLevel.value = 5
+
+    const added = toggleSpell(1)
+    expect(added).toBe(true)
     expect(selectedSpells.value.has(1)).toBe(true)
 
-    toggleSpell(1)
+    const removed = toggleSpell(1)
+    expect(removed).toBe(true)
     expect(selectedSpells.value.has(1)).toBe(false)
   })
 
   it('tracks selection count', () => {
-    const { toggleSpell, selectionCount } = useSpellListGenerator()
+    const { toggleSpell, selectionCount, setClassData, characterLevel } = useSpellListGenerator()
+
+    // Set up a class first so maxSpells > 0
+    const wizardClass = {
+      id: 1,
+      slug: 'wizard',
+      name: 'Wizard',
+      level_progression: []
+    } as Record<string, unknown>
+    setClassData(wizardClass)
+    characterLevel.value = 5
 
     expect(selectionCount.value).toBe(0)
 
@@ -126,6 +148,41 @@ describe('useSpellListGenerator', () => {
 
     toggleSpell(1)
     expect(selectionCount.value).toBe(1)
+  })
+
+  it('prevents selecting more spells than maxSpells allows', () => {
+    const { toggleSpell, selectionCount, maxSpells, setClassData, characterLevel, selectedSpells } = useSpellListGenerator()
+
+    // Set up wizard at level 3 (max spells = 3 + 3 = 6)
+    const wizardClass = {
+      id: 1,
+      slug: 'wizard',
+      name: 'Wizard',
+      level_progression: []
+    } as Record<string, unknown>
+
+    setClassData(wizardClass)
+    characterLevel.value = 3
+
+    expect(maxSpells.value).toBe(6)
+
+    // Add 6 spells (should all succeed)
+    for (let i = 1; i <= 6; i++) {
+      const success = toggleSpell(i)
+      expect(success).toBe(true)
+    }
+    expect(selectionCount.value).toBe(6)
+
+    // Try to add 7th spell (should fail)
+    const failedAdd = toggleSpell(7)
+    expect(failedAdd).toBe(false)
+    expect(selectionCount.value).toBe(6)
+    expect(selectedSpells.value.has(7)).toBe(false)
+
+    // Deselecting should still work
+    const deselect = toggleSpell(1)
+    expect(deselect).toBe(true)
+    expect(selectionCount.value).toBe(5)
   })
 })
 

@@ -20,8 +20,10 @@ const { data: classes, status: classesStatus } = await useAsyncData<CharacterCla
   'spellcasting-classes',
   async () => {
     const response = await apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100')
-    // Filter to only spellcasting classes (those with spellcasting ability)
-    return response?.data?.filter(c => c.spellcasting_ability !== undefined) || []
+    // Filter to only BASE spellcasting classes (no subclasses, must have spellcasting ability)
+    return response?.data?.filter(c =>
+      c.is_base_class === true && c.spellcasting_ability !== null && c.spellcasting_ability !== undefined
+    ) || []
   }
 )
 
@@ -60,12 +62,27 @@ const levelOptions = Array.from({ length: 20 }, (_, i) => ({
 // Selected class option (for USelectMenu v-model)
 const selectedClassOption = ref<string | undefined>(undefined)
 
-// Watch for class selection
-watch(selectedClassOption, (selectedSlug) => {
-  if (selectedSlug && classes.value) {
-    const selectedClass = classes.value.find(c => c.slug === selectedSlug)
-    if (selectedClass) {
-      setClassData(selectedClass)
+// Watch for class selection with confirmation if spells already selected
+watch(selectedClassOption, (newSlug, oldSlug) => {
+  if (newSlug && classes.value) {
+    const newClass = classes.value.find(c => c.slug === newSlug)
+    if (newClass) {
+      // If changing class and spells are already selected, confirm
+      if (oldSlug && selectionCount.value > 0) {
+        const confirmed = confirm(
+          `Changing class will clear your ${selectionCount.value} selected spell${selectionCount.value > 1 ? 's' : ''}. Continue?`
+        )
+        if (!confirmed) {
+          // Revert selection
+          selectedClassOption.value = oldSlug
+          return
+        }
+      }
+      setClassData(newClass)
+      // Clear selections when changing class
+      if (oldSlug && oldSlug !== newSlug) {
+        clearAll()
+      }
     }
   }
 })
@@ -315,7 +332,13 @@ const handleClearAll = () => {
                 >
                   <UCheckbox
                     :model-value="selectedSpells.has(spell.id)"
-                    @update:model-value="toggleSpell(spell.id)"
+                    :disabled="!selectedSpells.has(spell.id) && selectionCount >= maxSpells"
+                    @update:model-value="() => {
+                      const success = toggleSpell(spell.id)
+                      if (!success && !selectedSpells.has(spell.id)) {
+                        alert(`You've reached the maximum of ${maxSpells} spells for this class and level.`)
+                      }
+                    }"
                   />
                   <div class="flex-1">
                     <div class="font-medium">

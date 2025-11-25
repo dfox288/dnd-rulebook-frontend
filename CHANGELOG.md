@@ -11,26 +11,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed - Spell List Generator (2025-11-25)
 
-**🐛 Critical Bug Fix: Updated spell list generator to use Meilisearch API:**
+**🐛 Multiple Bug Fixes and UX Improvements:**
 
-**Issues Fixed:**
+**API & Data Issues Fixed:**
 - **Wrong field names:** Changed `concentration` → `needs_concentration`, `ritual` → `is_ritual` (badges now display correctly)
 - **Deprecated API syntax:** Changed `?classes=wizard` → `?filter=class_slugs IN [wizard]` (using Meilisearch filter syntax)
 - **Wrong type checks:** Removed `=== '1'` checks for booleans (now checking boolean fields directly)
 - **Missing badges:** Added component requirement badges (V/S/M) using `requires_verbal`, `requires_somatic`, `requires_material`
-- **Pagination limit:** Changed `per_page=1000` → `per_page=100` (API max limit, was causing 422 errors)
+- **Pagination limit:** Changed `per_page=1000` → `per_page=100` (API max limit, was causing 422 errors for druid/wizard)
+
+**UX Improvements:**
+- **Spell selection limit:** Now prevents selecting more spells than class/level allows (shows alert when at limit)
+- **Class filtering:** Only shows base spellcasting classes (no subclasses like "Arcane Archer")
+- **Class change confirmation:** Warns user before clearing selected spells when switching classes
+- **Visual feedback:** Checkboxes disabled when at spell limit
 
 **Impact:**
-- Concentration/Ritual badges now work correctly (were never showing before)
-- Component badges (V/S/M) now display for all spells
-- API calls use modern Meilisearch filter syntax (consistent with spell index page)
-- Better UI: improved badge layout with flexbox wrapping
+- ✅ Concentration/Ritual badges now work correctly (were never showing before)
+- ✅ Component badges (V/S/M) display for all spells (when backend populates data)
+- ✅ All classes work including druid (was showing 0 spells due to 422 error)
+- ✅ Can't accidentally select more spells than allowed
+- ✅ Cleaner class dropdown (12 base classes instead of 131 including subclasses)
+- ✅ Better UX when switching classes (confirms before clearing selections)
 
 **Files Changed:**
-- `app/pages/spells/list-generator.vue` - Updated API call and badge rendering
-- `tests/pages/spells/list-generator.test.ts` - Added 3 new tests to prevent regression
+- `app/pages/spells/list-generator.vue` - API, UI, validation, confirmations
+- `app/composables/useSpellListGenerator.ts` - Spell limit validation
+- `tests/pages/spells/list-generator.test.ts` - 3 new regression tests
+- `tests/composables/useSpellListGenerator.test.ts` - Updated + 1 new validation test
 
-**Test Results:** ✅ 5/5 tests passing (889/889 total suite passing)
+**Test Results:** ✅ 8/8 composable tests, 5/5 page tests passing
 
 ### Changed - API Integration (2025-11-25)
 

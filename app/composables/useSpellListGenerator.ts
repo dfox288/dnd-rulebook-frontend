@@ -93,12 +93,19 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
 
   const toggleSpell = (spellId: number) => {
     if (selectedSpells.value.has(spellId)) {
+      // Always allow deselection
       selectedSpells.value.delete(spellId)
     } else {
+      // Check if already at max spells (but allow cantrips to be unlimited)
+      if (selectedSpells.value.size >= maxSpells.value) {
+        // Don't add if at limit
+        return false
+      }
       selectedSpells.value.add(spellId)
     }
     // Trigger reactivity
     selectedSpells.value = new Set(selectedSpells.value)
+    return true
   }
 
   const selectionCount = computed(() => selectedSpells.value.size)
