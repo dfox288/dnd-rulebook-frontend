@@ -172,43 +172,39 @@ const activeFilterCount = useFilterCount(
         </template>
 
         <!-- Filter Content -->
-        <div class="space-y-4">
-          <!-- Dropdown Filters -->
-          <div class="flex flex-wrap gap-2">
-            <!-- Type filter -->
+        <UiFilterLayout>
+          <!-- Primary Filters: Most frequently used (Type, Rarity, Magic) -->
+          <template #primary>
             <USelectMenu
               v-model="selectedType"
               :items="typeOptions"
               value-key="value"
-              text-key="label"
-              placeholder="Select type"
-              class="w-48"
+              placeholder="All Types"
+              size="md"
+              class="w-full sm:w-48"
             />
 
-            <!-- Rarity filter -->
             <USelectMenu
               v-model="selectedRarity"
               :items="rarityOptions"
               value-key="value"
-              text-key="label"
-              placeholder="Select rarity"
-              class="w-44"
+              placeholder="All Rarities"
+              size="md"
+              class="w-full sm:w-44"
             />
 
-            <!-- Magic filter -->
             <USelectMenu
               v-model="selectedMagic"
               :items="magicOptions"
               value-key="value"
-              text-key="label"
-              placeholder="Filter by magic"
-              class="w-44"
+              placeholder="All Items"
+              size="md"
+              class="w-full sm:w-44"
             />
-          </div>
+          </template>
 
-          <!-- Quick Toggles -->
-          <div class="flex flex-wrap gap-4">
-            <!-- Has Charges filter -->
+          <!-- Quick Toggles: Binary filters (Charges, Prerequisites) -->
+          <template #quick>
             <UiFilterToggle
               v-model="hasCharges"
               label="Has Charges"
@@ -220,7 +216,6 @@ const activeFilterCount = useFilterCount(
               ]"
             />
 
-            <!-- Has Prerequisites filter -->
             <UiFilterToggle
               v-model="hasPrerequisites"
               label="Has Prerequisites"
@@ -231,81 +226,93 @@ const activeFilterCount = useFilterCount(
                 { value: '0', label: 'No' }
               ]"
             />
-          </div>
+          </template>
 
-          <!-- Clear filters button -->
-          <div class="flex justify-end">
-            <UButton
-              v-if="hasActiveFilters"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
-          </div>
-        </div>
+          <!-- Advanced Filters: Empty for now -->
+          <template #advanced />
+
+          <!-- Actions: Empty (Clear Filters moved to chips row) -->
+          <template #actions />
+        </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
         v-if="hasActiveFilters"
-        class="flex flex-wrap items-center gap-2 pt-2"
+        class="flex flex-wrap items-center justify-between gap-2 pt-2"
       >
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            v-if="activeFilterCount > 0 || searchQuery"
+            class="text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
+            Active filters:
+          </span>
+          <UButton
+            v-if="selectedType !== null"
+            size="xs"
+            color="warning"
+            variant="soft"
+            @click="selectedType = null"
+          >
+            {{ getTypeName(selectedType) }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedRarity !== null"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedRarity = null"
+          >
+            {{ selectedRarity }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedMagic !== null"
+            size="xs"
+            color="info"
+            variant="soft"
+            @click="selectedMagic = null"
+          >
+            {{ selectedMagic === 'true' ? 'Magic' : 'Non-Magic' }} ✕
+          </UButton>
+          <UButton
+            v-if="hasCharges !== null"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="hasCharges = null"
+          >
+            Has Charges: {{ hasCharges === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="hasPrerequisites !== null"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="hasPrerequisites = null"
+          >
+            Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="searchQuery"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          >
+            "{{ searchQuery }}" ✕
+          </UButton>
+        </div>
+
+        <!-- Clear Filters Button (right-aligned) -->
         <UButton
-          v-if="selectedType !== null"
-          size="xs"
-          color="warning"
-          variant="soft"
-          @click="selectedType = null"
-        >
-          {{ getTypeName(selectedType) }} ✕
-        </UButton>
-        <UButton
-          v-if="selectedRarity !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="selectedRarity = null"
-        >
-          {{ selectedRarity }} ✕
-        </UButton>
-        <UButton
-          v-if="selectedMagic !== null"
-          size="xs"
-          color="info"
-          variant="soft"
-          @click="selectedMagic = null"
-        >
-          {{ selectedMagic === 'true' ? 'Magic' : 'Non-Magic' }} ✕
-        </UButton>
-        <UButton
-          v-if="hasCharges !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="hasCharges = null"
-        >
-          Has Charges: {{ hasCharges === '1' ? 'Yes' : 'No' }} ✕
-        </UButton>
-        <UButton
-          v-if="hasPrerequisites !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="hasPrerequisites = null"
-        >
-          Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
-        </UButton>
-        <UButton
-          v-if="searchQuery"
-          size="xs"
+          v-if="activeFilterCount > 0 || searchQuery"
           color="neutral"
           variant="soft"
-          @click="searchQuery = ''"
+          size="sm"
+          @click="clearFilters"
         >
-          "{{ searchQuery }}" ✕
+          Clear filters
         </UButton>
       </div>
     </div>
