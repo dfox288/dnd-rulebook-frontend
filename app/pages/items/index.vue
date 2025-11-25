@@ -30,6 +30,17 @@ const selectedSources = ref<string[]>(
   route.query.source ? (Array.isArray(route.query.source) ? route.query.source : [route.query.source]) as string[] : []
 )
 
+// Cost filter
+const selectedCostRange = ref<string | null>(null)
+const costRangeOptions = [
+  { label: 'All Prices', value: null },
+  { label: 'Under 1 gp', value: 'under-100' },
+  { label: '1-10 gp', value: '100-1000' },
+  { label: '10-100 gp', value: '1000-10000' },
+  { label: '100-1000 gp', value: '10000-100000' },
+  { label: '1000+ gp', value: 'over-100000' }
+]
+
 // Fetch item types for filter options (using composable)
 const { data: itemTypes } = useReferenceData<ItemType>('/item-types')
 
@@ -155,6 +166,21 @@ const queryBuilder = computed(() => {
     // TODO: Remove this filter from UI or add backend support
   }
 
+  // Cost range filter
+  if (selectedCostRange.value) {
+    const ranges: Record<string, string> = {
+      'under-100': 'cost_cp < 100',
+      '100-1000': 'cost_cp >= 100 AND cost_cp <= 1000',
+      '1000-10000': 'cost_cp >= 1000 AND cost_cp <= 10000',
+      '10000-100000': 'cost_cp >= 10000 AND cost_cp <= 100000',
+      'over-100000': 'cost_cp >= 100000'
+    }
+    const rangeFilter = ranges[selectedCostRange.value]
+    if (rangeFilter) {
+      meilisearchFilters.push(rangeFilter)
+    }
+  }
+
   // Combine all filters
   if (meilisearchFilters.length > 0) {
     params.filter = meilisearchFilters.join(' AND ')
@@ -201,6 +227,7 @@ const clearFilters = () => {
   selectedProperties.value = []
   selectedDamageTypes.value = []
   selectedSources.value = []
+  selectedCostRange.value = null
 }
 
 // Get type name by ID for filter chips
@@ -237,7 +264,8 @@ const activeFilterCount = useFilterCount(
   stealthDisadvantage,
   selectedProperties,
   selectedDamageTypes,
-  selectedSources
+  selectedSources,
+  selectedCostRange
 )
 </script>
 
@@ -360,6 +388,20 @@ const activeFilterCount = useFilterCount(
 
           <!-- Advanced Filters: Multiselects (Properties, Damage Types, Sources) -->
           <template #advanced>
+            <!-- Cost Range Filter -->
+            <div>
+              <label class="text-sm font-medium mb-2 block">Cost</label>
+              <USelectMenu
+                v-model="selectedCostRange"
+                :items="costRangeOptions"
+                value-key="value"
+                placeholder="All Prices"
+                size="md"
+                class="w-full sm:w-44"
+                data-testid="cost-filter"
+              />
+            </div>
+
             <UiFilterMultiSelect
               v-model="selectedProperties"
               :options="propertyOptions"
@@ -467,6 +509,16 @@ const activeFilterCount = useFilterCount(
             @click="stealthDisadvantage = null"
           >
             Stealth Disadv.: {{ stealthDisadvantage === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <!-- Cost Range Chip -->
+          <UButton
+            v-if="selectedCostRange"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedCostRange = null"
+          >
+            {{ costRangeOptions.find(o => o.value === selectedCostRange)?.label }} ✕
           </UButton>
           <!-- Property chips -->
           <UButton
