@@ -177,6 +177,16 @@ git commit -m "chore: Sync API types"
 
 ---
 
+## 🚫 Git Worktrees
+
+**DO NOT use git worktrees for this project.**
+
+- Work directly on the `main` branch
+- Commit frequently with descriptive messages
+- No need for isolated workspaces
+
+---
+
 ## 📋 List Page Pattern
 
 **All 17 entity list pages use `useEntityList` composable.**
@@ -327,6 +337,90 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 
 ---
 
+## Filter Composables
+
+**For entity list pages with Meilisearch filters, use these composables:**
+
+### `useMeilisearchFilters()`
+
+Declarative filter builder. Converts refs to Meilisearch filter params.
+
+```typescript
+const { queryParams } = useMeilisearchFilters([
+  { ref: selectedLevel, field: 'level' },
+  { ref: concentrationFilter, field: 'concentration', type: 'boolean' },
+  { ref: selectedDamageTypes, field: 'damage_types', type: 'in' }
+])
+
+// Pass to useEntityList
+const { ... } = useEntityList({
+  endpoint: '/spells',
+  queryBuilder: queryParams,
+  // ...
+})
+```
+
+**Supported filter types:**
+- `equals` - field = value (default)
+- `boolean` - Converts '1'/'true' to true, '0'/'false' to false
+- `in` - field IN [value1, value2]
+- `range` - field >= min AND field <= max
+- `isEmpty` - field IS EMPTY / IS NOT EMPTY
+- `greaterThan` - field > value
+
+**Transform function:** For ID→code lookups:
+```typescript
+{
+  ref: selectedSchool,
+  field: 'school_code',
+  transform: (id) => spellSchools.value?.find(s => s.id === id)?.code || null
+}
+```
+
+### `useReferenceData<T>()`
+
+Type-safe reference entity fetching. Replaces useAsyncData + apiFetch pattern.
+
+```typescript
+// Simple fetch
+const { data: schools } = useReferenceData<SpellSchool>('/spell-schools')
+
+// Multi-page with transform
+const { data: classes } = useReferenceData<CharacterClass>('/classes', {
+  pages: 2,
+  transform: (data) => data.filter(c => c.is_base_class === true)
+})
+
+// Use in computed options
+const schoolOptions = computed(() =>
+  schools.value?.map(s => ({ label: s.name, value: s.id })) || []
+)
+```
+
+### `useFilterCount()`
+
+Count active filters for badge display.
+
+```typescript
+const activeFilterCount = useFilterCount(
+  selectedLevel,
+  selectedSchool,
+  selectedDamageTypes  // arrays, nulls, empty strings auto-skipped
+)
+
+// Use in template
+<UiFilterCollapse :badge-count="activeFilterCount" />
+```
+
+**When to use:**
+- ✅ All entity list pages with filters
+- ✅ New filter pages (follow existing patterns)
+- ❌ Special cases (keep manual if composable doesn't fit)
+
+**Gold Standard:** `app/pages/spells/index.vue` (10 filters using all 3 composables)
+
+---
+
 ## Development Commands
 
 ```bash
@@ -436,3 +530,4 @@ Before marking features complete:
 **Project Status:** Production-ready. 6 entity types, 8 reusable components, 87 tests, comprehensive docs. Ready for advanced features or deployment.
 
 **Next Agent:** Read `docs/CURRENT_STATUS.md` first, then this file for patterns and setup.
+- make a note in claude.md not to use git worktrees
