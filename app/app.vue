@@ -26,12 +26,9 @@ useHead({
 // Get current route for active link highlighting
 const route = useRoute()
 
-// Dark mode
+// Force dark mode only
 const colorMode = useColorMode()
-
-const toggleColorMode = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-}
+colorMode.preference = 'dark'
 
 // Compendium dropdown items (main game entities)
 const compendiumItems = ref([
@@ -165,17 +162,6 @@ const isReferenceExpanded = ref(false)
                   Reference
                 </UButton>
               </UDropdownMenu>
-            </div>
-
-            <!-- Dark Mode Toggle (Right) -->
-            <div class="flex items-center space-x-4">
-              <UButton
-                :icon="colorMode.value === 'dark' ? 'i-heroicons-moon-20-solid' : 'i-heroicons-sun-20-solid'"
-                color="neutral"
-                variant="ghost"
-                aria-label="Toggle dark mode"
-                @click="toggleColorMode"
-              />
             </div>
           </div>
 
