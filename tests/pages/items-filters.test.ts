@@ -154,6 +154,11 @@ describe('Items Page - Filter Layout', () => {
       component.selectedMagic = 'true'
       component.hasCharges = '1'
       component.hasPrerequisites = '1'
+      component.requiresAttunement = '1'
+      component.stealthDisadvantage = '1'
+      component.selectedProperties = ['Finesse', 'Light']
+      component.selectedDamageTypes = ['S', 'P']
+      component.selectedSources = ['PHB', 'DMG']
       await wrapper.vm.$nextTick()
 
       // Find and click clear filters button
@@ -169,6 +174,11 @@ describe('Items Page - Filter Layout', () => {
       expect(component.selectedMagic).toBeNull()
       expect(component.hasCharges).toBeNull()
       expect(component.hasPrerequisites).toBeNull()
+      expect(component.requiresAttunement).toBeNull()
+      expect(component.stealthDisadvantage).toBeNull()
+      expect(component.selectedProperties).toEqual([])
+      expect(component.selectedDamageTypes).toEqual([])
+      expect(component.selectedSources).toEqual([])
     })
 
     it('only shows clear filters button when filters are active', async () => {
@@ -192,6 +202,257 @@ describe('Items Page - Filter Layout', () => {
         btn.text().includes('Clear filters')
       )
       expect(clearButton).toBeDefined()
+    })
+  })
+
+  describe('Attunement filter', () => {
+    it('shows attunement toggle filter in QUICK section', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      // Should have requiresAttunement ref
+      expect(component.requiresAttunement).toBeDefined()
+    })
+
+    it('shows attunement filter chip when set to Yes', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.requiresAttunement = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Attunement: Yes')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('shows attunement filter chip when set to No', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.requiresAttunement = '0'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Attunement: No')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('clicking attunement chip clears the filter', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.requiresAttunement = '1'
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Attunement: Yes')
+      )
+      expect(chip).toBeDefined()
+      await chip!.trigger('click')
+
+      expect(component.requiresAttunement).toBeNull()
+    })
+  })
+
+  describe('Stealth Disadvantage filter', () => {
+    it('shows stealth disadvantage toggle filter in QUICK section', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      // Should have stealthDisadvantage ref
+      expect(component.stealthDisadvantage).toBeDefined()
+    })
+
+    it('shows stealth disadvantage filter chip when set to Yes', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.stealthDisadvantage = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Stealth Disadv.: Yes')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('clicking stealth disadvantage chip clears the filter', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.stealthDisadvantage = '1'
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Stealth Disadv.: Yes')
+      )
+      expect(chip).toBeDefined()
+      await chip!.trigger('click')
+
+      expect(component.stealthDisadvantage).toBeNull()
+    })
+  })
+
+  describe('Properties filter', () => {
+    it('shows properties multiselect filter in ADVANCED section', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      // Should have selectedProperties ref
+      expect(component.selectedProperties).toBeDefined()
+      expect(Array.isArray(component.selectedProperties)).toBe(true)
+    })
+
+    it('shows property filter chips when properties are selected', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedProperties = ['Finesse', 'Light']
+      await wrapper.vm.$nextTick()
+
+      const finesseChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Finesse')
+      )
+      const lightChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Light')
+      )
+
+      expect(finesseChip).toBeDefined()
+      expect(lightChip).toBeDefined()
+    })
+
+    it('clicking property chip removes that property from filter', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedProperties = ['Finesse', 'Light']
+      await wrapper.vm.$nextTick()
+
+      const finesseChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Finesse') && btn.text().includes('✕')
+      )
+      expect(finesseChip).toBeDefined()
+      await finesseChip!.trigger('click')
+
+      expect(component.selectedProperties).toEqual(['Light'])
+    })
+  })
+
+  describe('Damage Type filter', () => {
+    it('shows damage type multiselect filter in ADVANCED section', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      // Should have selectedDamageTypes ref
+      expect(component.selectedDamageTypes).toBeDefined()
+      expect(Array.isArray(component.selectedDamageTypes)).toBe(true)
+    })
+
+    it('shows damage type filter chips when damage types are selected', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedDamageTypes = ['S', 'P']
+      await wrapper.vm.$nextTick()
+
+      // Chips should show the damage type (either full name "Slashing" if loaded, or code "S" as fallback)
+      const slashingChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('S') && btn.text().includes('✕')
+      )
+      const piercingChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('P') && btn.text().includes('✕')
+      )
+
+      expect(slashingChip).toBeDefined()
+      expect(piercingChip).toBeDefined()
+    })
+
+    it('clicking damage type chip removes that type from filter', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedDamageTypes = ['S', 'P']
+      await wrapper.vm.$nextTick()
+
+      // Find first damage type chip (should be 'S')
+      const damageTypeChips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('✕') && (btn.text().includes('S') || btn.text().includes('P'))
+      )
+      expect(damageTypeChips.length).toBeGreaterThan(0)
+
+      // Click first chip
+      await damageTypeChips[0].trigger('click')
+
+      // One damage type should remain
+      expect(component.selectedDamageTypes.length).toBe(1)
+    })
+  })
+
+  describe('Source filter', () => {
+    it('shows source multiselect filter in ADVANCED section', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      // Should have selectedSources ref
+      expect(component.selectedSources).toBeDefined()
+      expect(Array.isArray(component.selectedSources)).toBe(true)
+    })
+
+    it('shows source filter chips when sources are selected', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedSources = ['PHB', 'DMG']
+      await wrapper.vm.$nextTick()
+
+      // Chips should show the source (either full name or code as fallback)
+      const phbChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('PHB') && btn.text().includes('✕')
+      )
+      const dmgChip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('DMG') && btn.text().includes('✕')
+      )
+
+      expect(phbChip).toBeDefined()
+      expect(dmgChip).toBeDefined()
+    })
+
+    it('clicking source chip removes that source from filter', async () => {
+      const wrapper = await mountSuspended(ItemsPage)
+
+      const component = wrapper.vm as any
+      component.selectedSources = ['PHB', 'DMG']
+      await wrapper.vm.$nextTick()
+
+      // Find source chips
+      const sourceChips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('✕') && (btn.text().includes('PHB') || btn.text().includes('DMG'))
+      )
+      expect(sourceChips.length).toBeGreaterThan(0)
+
+      // Click first source chip
+      await sourceChips[0].trigger('click')
+
+      // One source should remain
+      expect(component.selectedSources.length).toBe(1)
     })
   })
 })

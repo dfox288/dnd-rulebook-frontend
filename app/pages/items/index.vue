@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Item, ItemType } from '~/types'
+import type { Item, ItemType, DamageType, Source } from '~/types'
 
 const route = useRoute()
 // Note: useApi no longer needed for reference fetches (handled by useReferenceData)
@@ -8,15 +8,45 @@ const route = useRoute()
 // Filter collapse state
 const filtersOpen = ref(false)
 
-// Custom filter state (entity-specific)
+// Custom filter state (entity-specific) - PRIMARY section
 const selectedType = ref(route.query.type ? Number(route.query.type) : null)
 const selectedRarity = ref((route.query.rarity as string) || null)
 const selectedMagic = ref((route.query.is_magic as string) || null)
+
+// QUICK section (toggles)
 const hasCharges = ref<string | null>((route.query.has_charges as string) || null)
 const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as string) || null)
+const requiresAttunement = ref<string | null>((route.query.requires_attunement as string) || null)
+const stealthDisadvantage = ref<string | null>((route.query.stealth_disadvantage as string) || null)
+
+// ADVANCED section (multiselects)
+const selectedProperties = ref<string[]>(
+  route.query.property ? (Array.isArray(route.query.property) ? route.query.property : [route.query.property]) as string[] : []
+)
+const selectedDamageTypes = ref<string[]>(
+  route.query.damage_type ? (Array.isArray(route.query.damage_type) ? route.query.damage_type : [route.query.damage_type]) as string[] : []
+)
+const selectedSources = ref<string[]>(
+  route.query.source ? (Array.isArray(route.query.source) ? route.query.source : [route.query.source]) as string[] : []
+)
 
 // Fetch item types for filter options (using composable)
 const { data: itemTypes } = useReferenceData<ItemType>('/item-types')
+
+// Fetch damage types for filter options
+const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
+
+// Fetch sources for filter options
+const { data: sources } = useReferenceData<Source>('/sources')
+
+// Fetch item properties (weapon/armor properties)
+// Note: Using /item-properties endpoint instead of /weapon-properties
+const { data: itemProperties } = useReferenceData<{
+  id: number
+  code: string
+  name: string
+  description: string
+}>('/item-properties')
 
 // Rarity options from D&D rules
 const rarityOptions = [
@@ -48,6 +78,33 @@ const typeOptions = computed(() => {
   return options
 })
 
+// Damage type filter options
+const damageTypeOptions = computed(() => {
+  if (!damageTypes.value) return []
+  return damageTypes.value.map(dt => ({
+    label: dt.name,
+    value: dt.code
+  }))
+})
+
+// Source filter options
+const sourceOptions = computed(() => {
+  if (!sources.value) return []
+  return sources.value.map(source => ({
+    label: source.name,
+    value: source.code
+  }))
+})
+
+// Item property filter options (weapon/armor properties like Finesse, Versatile, etc.)
+const propertyOptions = computed(() => {
+  if (!itemProperties.value) return []
+  return itemProperties.value.map(prop => ({
+    label: prop.name,
+    value: prop.code
+  }))
+})
+
 // Query builder for custom filters (hybrid: composable + manual for special cases)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
@@ -58,7 +115,12 @@ const queryBuilder = computed(() => {
     { ref: selectedType, field: 'item_type_id' },
     { ref: selectedRarity, field: 'rarity' },
     { ref: selectedMagic, field: 'is_magic', type: 'boolean' },
-    { ref: hasPrerequisites, field: 'prerequisites', type: 'isEmpty' }
+    { ref: hasPrerequisites, field: 'prerequisites', type: 'isEmpty' },
+    { ref: requiresAttunement, field: 'requires_attunement', type: 'boolean' },
+    { ref: stealthDisadvantage, field: 'stealth_disadvantage', type: 'boolean' },
+    { ref: selectedDamageTypes, field: 'damage_type_code', type: 'in' },
+    { ref: selectedSources, field: 'source_codes', type: 'in' },
+    { ref: selectedProperties, field: 'property_codes', type: 'in' }
   ])
 
   // Extract standard filter string
@@ -113,11 +175,31 @@ const clearFilters = () => {
   selectedMagic.value = null
   hasCharges.value = null
   hasPrerequisites.value = null
+  requiresAttunement.value = null
+  stealthDisadvantage.value = null
+  selectedProperties.value = []
+  selectedDamageTypes.value = []
+  selectedSources.value = []
 }
 
 // Get type name by ID for filter chips
 const getTypeName = (typeId: number) => {
   return itemTypes.value?.find((t: ItemType) => t.id === typeId)?.name || 'Unknown'
+}
+
+// Get damage type name by code for filter chips
+const getDamageTypeName = (code: string) => {
+  return damageTypes.value?.find(dt => dt.code === code)?.name || code
+}
+
+// Get source name by code for filter chips
+const getSourceName = (code: string) => {
+  return sources.value?.find(s => s.code === code)?.name || code
+}
+
+// Get property name by code for filter chips
+const getPropertyName = (code: string) => {
+  return itemProperties.value?.find(p => p.code === code)?.name || code
 }
 
 // Pagination settings
@@ -129,7 +211,12 @@ const activeFilterCount = useFilterCount(
   selectedRarity,
   selectedMagic,
   hasCharges,
-  hasPrerequisites
+  hasPrerequisites,
+  requiresAttunement,
+  stealthDisadvantage,
+  selectedProperties,
+  selectedDamageTypes,
+  selectedSources
 )
 </script>
 
@@ -203,7 +290,7 @@ const activeFilterCount = useFilterCount(
             />
           </template>
 
-          <!-- Quick Toggles: Binary filters (Charges, Prerequisites) -->
+          <!-- Quick Toggles: Binary filters (Charges, Prerequisites, Attunement, Stealth) -->
           <template #quick>
             <UiFilterToggle
               v-model="hasCharges"
@@ -226,10 +313,59 @@ const activeFilterCount = useFilterCount(
                 { value: '0', label: 'No' }
               ]"
             />
+
+            <UiFilterToggle
+              v-model="requiresAttunement"
+              label="Attunement"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+
+            <UiFilterToggle
+              v-model="stealthDisadvantage"
+              label="Stealth Disadv."
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
           </template>
 
-          <!-- Advanced Filters: Empty for now -->
-          <template #advanced />
+          <!-- Advanced Filters: Multiselects (Properties, Damage Types, Sources) -->
+          <template #advanced>
+            <UiFilterMultiSelect
+              v-model="selectedProperties"
+              :options="propertyOptions"
+              label="Properties"
+              placeholder="All Properties"
+              color="primary"
+              class="w-full sm:w-48"
+            />
+
+            <UiFilterMultiSelect
+              v-model="selectedDamageTypes"
+              :options="damageTypeOptions"
+              label="Damage Types"
+              placeholder="All Damage Types"
+              color="primary"
+              class="w-full sm:w-48"
+            />
+
+            <UiFilterMultiSelect
+              v-model="selectedSources"
+              :options="sourceOptions"
+              label="Sources"
+              placeholder="All Sources"
+              color="primary"
+              class="w-full sm:w-48"
+            />
+          </template>
 
           <!-- Actions: Empty (Clear Filters moved to chips row) -->
           <template #actions />
@@ -292,6 +428,57 @@ const activeFilterCount = useFilterCount(
             @click="hasPrerequisites = null"
           >
             Has Prerequisites: {{ hasPrerequisites === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="requiresAttunement !== null"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="requiresAttunement = null"
+          >
+            Attunement: {{ requiresAttunement === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="stealthDisadvantage !== null"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="stealthDisadvantage = null"
+          >
+            Stealth Disadv.: {{ stealthDisadvantage === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <!-- Property chips -->
+          <UButton
+            v-for="property in selectedProperties"
+            :key="property"
+            size="xs"
+            color="warning"
+            variant="soft"
+            @click="selectedProperties = selectedProperties.filter(p => p !== property)"
+          >
+            {{ getPropertyName(property) }} ✕
+          </UButton>
+          <!-- Damage type chips -->
+          <UButton
+            v-for="damageType in selectedDamageTypes"
+            :key="damageType"
+            size="xs"
+            color="error"
+            variant="soft"
+            @click="selectedDamageTypes = selectedDamageTypes.filter(dt => dt !== damageType)"
+          >
+            {{ getDamageTypeName(damageType) }} ✕
+          </UButton>
+          <!-- Source chips -->
+          <UButton
+            v-for="source in selectedSources"
+            :key="source"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="selectedSources = selectedSources.filter(s => s !== source)"
+          >
+            {{ getSourceName(source) }} ✕
           </UButton>
           <UButton
             v-if="searchQuery"
