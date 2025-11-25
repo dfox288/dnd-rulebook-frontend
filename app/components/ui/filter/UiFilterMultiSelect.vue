@@ -91,32 +91,28 @@ const clearAll = () => {
     </label>
 
     <!-- Select Menu Container -->
-    <div class="relative flex items-center gap-2">
+    <div class="flex items-center gap-2">
       <!-- Multi-Select Dropdown -->
-      <div class="flex-1 relative">
-        <USelectMenu
-          :model-value="normalizedValue"
-          :items="options"
-          multiple
-          searchable
-          :placeholder="placeholder"
-          :aria-label="`${label} filter`"
-          value-key="value"
-          @update:model-value="handleChange"
-        />
-        <div
-          v-if="normalizedValue.length > 0"
-          class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none"
-        >
-          <UBadge
-            :color="color as any"
-            size="xs"
-            variant="soft"
-          >
-            {{ normalizedValue.length }}
-          </UBadge>
-        </div>
-      </div>
+      <USelectMenu
+        :model-value="normalizedValue"
+        :items="options"
+        multiple
+        searchable
+        :placeholder="placeholder"
+        :aria-label="`${label} filter`"
+        value-key="value"
+        @update:model-value="handleChange"
+      />
+
+      <!-- Selection Count Badge -->
+      <UBadge
+        v-if="normalizedValue.length > 0"
+        :color="color as any"
+        size="sm"
+        variant="soft"
+      >
+        {{ normalizedValue.length }}
+      </UBadge>
 
       <!-- Clear Button -->
       <UButton
@@ -124,7 +120,7 @@ const clearAll = () => {
         icon="i-heroicons-x-mark"
         color="neutral"
         variant="ghost"
-        size="xs"
+        size="sm"
         :aria-label="`Clear ${label} filter`"
         @click="clearAll"
       />
