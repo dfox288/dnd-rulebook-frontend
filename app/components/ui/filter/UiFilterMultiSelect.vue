@@ -93,7 +93,7 @@ const clearAll = () => {
     <!-- Select Menu Container -->
     <div class="flex items-center gap-2">
       <!-- Multi-Select Dropdown (fixed width to prevent jumping) -->
-      <div class="w-48 min-w-48 shrink-0">
+      <div class="w-48 min-w-48 max-w-48 shrink-0">
         <USelectMenu
           :model-value="normalizedValue"
           :items="options"
@@ -102,6 +102,7 @@ const clearAll = () => {
           :placeholder="placeholder"
           :aria-label="`${label} filter`"
           value-key="value"
+          class="w-full"
           @update:model-value="handleChange"
         />
       </div>
