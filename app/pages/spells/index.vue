@@ -332,7 +332,7 @@ const activeFilterCount = computed(() => {
         </template>
 
         <!-- Filter Content -->
-        <div class="space-y-5">
+        <div class="space-y-4">
           <!-- TIER 1: Primary Filters (Most Used) -->
           <div class="flex flex-wrap gap-3">
             <!-- Level filter -->
@@ -367,103 +367,93 @@ const activeFilterCount = computed(() => {
           </div>
 
           <!-- TIER 2: Quick Toggles -->
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
-            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
-              Quick Filters
-            </h4>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              <!-- Concentration filter -->
-              <UiFilterToggle
-                v-model="concentrationFilter"
-                label="Concentration"
-                color="primary"
-                :options="[
-                  { value: null, label: 'All' },
-                  { value: '1', label: 'Yes' },
-                  { value: '0', label: 'No' }
-                ]"
-              />
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <!-- Concentration filter -->
+            <UiFilterToggle
+              v-model="concentrationFilter"
+              label="Concentration"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
 
-              <!-- Ritual filter -->
-              <UiFilterToggle
-                v-model="ritualFilter"
-                label="Ritual"
-                color="primary"
-                :options="[
-                  { value: null, label: 'All' },
-                  { value: '1', label: 'Yes' },
-                  { value: '0', label: 'No' }
-                ]"
-              />
+            <!-- Ritual filter -->
+            <UiFilterToggle
+              v-model="ritualFilter"
+              label="Ritual"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
 
-              <!-- Verbal Component -->
-              <UiFilterToggle
-                v-model="verbalFilter"
-                label="V"
-                color="primary"
-                :options="[
-                  { value: null, label: 'All' },
-                  { value: '1', label: 'Yes' },
-                  { value: '0', label: 'No' }
-                ]"
-              />
+            <!-- Verbal Component -->
+            <UiFilterToggle
+              v-model="verbalFilter"
+              label="Verbal"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
 
-              <!-- Somatic Component -->
-              <UiFilterToggle
-                v-model="somaticFilter"
-                label="S"
-                color="primary"
-                :options="[
-                  { value: null, label: 'All' },
-                  { value: '1', label: 'Yes' },
-                  { value: '0', label: 'No' }
-                ]"
-              />
+            <!-- Somatic Component -->
+            <UiFilterToggle
+              v-model="somaticFilter"
+              label="Somatic"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
 
-              <!-- Material Component -->
-              <UiFilterToggle
-                v-model="materialFilter"
-                label="M"
-                color="primary"
-                :options="[
-                  { value: null, label: 'All' },
-                  { value: '1', label: 'Yes' },
-                  { value: '0', label: 'No' }
-                ]"
-              />
-            </div>
+            <!-- Material Component -->
+            <UiFilterToggle
+              v-model="materialFilter"
+              label="Material"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
           </div>
 
-          <!-- TIER 3: Advanced Filters -->
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
-            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
-              Advanced Filters
-            </h4>
-            <div class="flex flex-wrap gap-3">
-              <!-- Damage Types filter -->
-              <UiFilterMultiSelect
-                v-model="selectedDamageTypes"
-                :options="damageTypeOptions"
-                label="Damage Types"
-                placeholder="All Damage Types"
-                color="primary"
-                class="w-full sm:w-64"
-              />
+          <!-- TIER 3: Advanced Filters (aligned with primary filters) -->
+          <div class="flex flex-wrap gap-3">
+            <!-- Damage Types filter -->
+            <UiFilterMultiSelect
+              v-model="selectedDamageTypes"
+              :options="damageTypeOptions"
+              label="Damage Types"
+              placeholder="All Damage Types"
+              color="primary"
+              class="w-full sm:w-48"
+            />
 
-              <!-- Saving Throws filter -->
-              <UiFilterMultiSelect
-                v-model="selectedSavingThrows"
-                :options="savingThrowOptions"
-                label="Saving Throws"
-                placeholder="All Saving Throws"
-                color="primary"
-                class="w-full sm:w-64"
-              />
-            </div>
+            <!-- Saving Throws filter -->
+            <UiFilterMultiSelect
+              v-model="selectedSavingThrows"
+              :options="savingThrowOptions"
+              label="Saving Throws"
+              placeholder="All Saving Throws"
+              color="primary"
+              class="w-full sm:w-48"
+            />
           </div>
 
           <!-- Clear filters button -->
-          <div class="flex justify-end border-t border-gray-200 dark:border-gray-700 pt-5">
+          <div class="flex justify-end">
             <UButton
               v-if="hasActiveFilters"
               color="neutral"
