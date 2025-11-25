@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Backgrounds Source Filter** (2025-11-25) - Added source book filter to backgrounds page
+  - Filter by source books: PHB, ERLW, WGTE (only sources used by backgrounds)
+  - Uses `source_codes IN [...]` Meilisearch filter via useMeilisearchFilters composable
+  - Multi-select UI with UiFilterMultiSelect component
+  - Active filter chip displays selected sources with click-to-remove
+  - Badge count shows number of active filters
+  - 13 comprehensive tests covering all functionality (TDD approach)
+  - **API Limitation:** Only 1 filter available - Backgrounds have minimal Meilisearch indexing
+  - See `docs/BACKGROUNDS-FILTER-ANALYSIS.md` for complete API analysis and recommendations
+
 ### Changed
 
 - **Spell Level Filter - Multiselect UX** (2025-11-25) - Replaced exact/range toggle with simpler multiselect

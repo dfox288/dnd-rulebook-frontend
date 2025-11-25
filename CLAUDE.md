@@ -184,6 +184,7 @@ git commit -m "chore: Sync API types"
 - Work directly on the `main` branch
 - Commit frequently with descriptive messages
 - No need for isolated workspaces
+- ⚠️ **CRITICAL:** Never invoke `superpowers:using-git-worktrees` skill for this frontend project
 
 ---
 
