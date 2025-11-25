@@ -83,17 +83,30 @@ const perPage = 24
       <!-- Active Filter Chips -->
       <div
         v-if="hasActiveFilters"
-        class="flex flex-wrap items-center gap-2 pt-2"
+        class="flex flex-wrap items-center justify-between gap-2 pt-2"
       >
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active filters:</span>
+          <UButton
+            v-if="searchQuery"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          >
+            "{{ searchQuery }}" ✕
+          </UButton>
+        </div>
+
+        <!-- Clear Filters Button (right-aligned) -->
         <UButton
           v-if="searchQuery"
-          size="xs"
           color="neutral"
           variant="soft"
-          @click="searchQuery = ''"
+          size="sm"
+          @click="clearFilters"
         >
-          "{{ searchQuery }}" ✕
+          Clear filters
         </UButton>
       </div>
     </div>
