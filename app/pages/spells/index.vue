@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore } from '~/types'
+import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore, Source } from '~/types'
 
 const route = useRoute()
 // Note: useApi no longer needed for reference fetches (handled by useReferenceData)
@@ -8,8 +8,15 @@ const route = useRoute()
 // Filter collapse state
 const filtersOpen = ref(false)
 
+// Sorting state
+const sortBy = ref<string>((route.query.sort_by as string) || 'name')
+const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
+
 // Custom filter state (entity-specific)
+const levelFilterMode = ref<'exact' | 'range'>('exact')
 const selectedLevel = ref(route.query.level ? Number(route.query.level) : null)
+const minLevel = ref<number | null>(route.query.min_level ? Number(route.query.min_level) : null)
+const maxLevel = ref<number | null>(route.query.max_level ? Number(route.query.max_level) : null)
 const selectedSchool = ref(route.query.school ? Number(route.query.school) : null)
 const selectedClass = ref<string | null>((route.query.class as string) || null)
 const concentrationFilter = ref<string | null>((route.query.concentration as string) || null)
@@ -21,6 +28,9 @@ const selectedDamageTypes = ref<string[]>(
 )
 const selectedSavingThrows = ref<string[]>(
   route.query.saving_throw ? (Array.isArray(route.query.saving_throw) ? route.query.saving_throw : [route.query.saving_throw]) as string[] : []
+)
+const selectedSources = ref<string[]>(
+  route.query.source ? (Array.isArray(route.query.source) ? route.query.source : [route.query.source]) as string[] : []
 )
 
 // Phase 2: Component flag filters
@@ -45,6 +55,8 @@ const { data: classes } = useReferenceData<CharacterClass>('/classes', {
 const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
 
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
+
+const { data: sources } = useReferenceData<Source>('/sources')
 
 // Spell level options (0 = Cantrip, 1-9 = Spell levels)
 const levelOptions = [
@@ -106,15 +118,60 @@ const savingThrowOptions = computed(() => {
   }))
 })
 
+// Source filter options
+const sourceOptions = computed(() => {
+  if (!sources.value) return []
+  return sources.value.map(source => ({
+    label: source.code, // Display "PHB", "XGE", etc.
+    value: source.code
+  }))
+})
+
+// Sort options
+const sortOptions = [
+  { label: 'Name (A-Z)', value: 'name:asc' },
+  { label: 'Name (Z-A)', value: 'name:desc' },
+  { label: 'Level (Low-High)', value: 'level:asc' },
+  { label: 'Level (High-Low)', value: 'level:desc' },
+  { label: 'Recently Added', value: 'created_at:desc' },
+  { label: 'Recently Updated', value: 'updated_at:desc' }
+]
+
+// Computed sort value for USelectMenu binding (combines sortBy:sortDirection)
+const sortValue = computed({
+  get: () => `${sortBy.value}:${sortDirection.value}`,
+  set: (value: string) => {
+    const [newSortBy, newSortDirection] = value.split(':')
+    sortBy.value = newSortBy
+    sortDirection.value = newSortDirection as 'asc' | 'desc'
+  }
+})
+
 // Phase 3: Removed unsupported filter options (not indexed in Meilisearch)
 // - castingTimeOptions (casting_time not filterable)
 // - rangeOptions (range not filterable)
 // - durationOptions (duration not filterable)
 // Users can search for these values using full-text search (?q=1 action)
 
+// Mode toggle handlers
+const switchToRangeMode = () => {
+  levelFilterMode.value = 'range'
+  selectedLevel.value = null
+}
+
+const switchToExactMode = () => {
+  levelFilterMode.value = 'exact'
+  minLevel.value = null
+  maxLevel.value = null
+}
+
 // Query builder for custom filters (using composable)
-const { queryParams } = useMeilisearchFilters([
-  { ref: selectedLevel, field: 'level' },
+const { queryParams: filterParams } = useMeilisearchFilters([
+  // Use range filter in range mode, exact filter in exact mode
+  ...(levelFilterMode.value === 'range'
+    ? [{ field: 'level', type: 'range' as const, min: minLevel, max: maxLevel, ref: levelFilterMode }]
+    : [{ ref: selectedLevel, field: 'level' }]
+  ),
   {
     ref: selectedSchool,
     field: 'school_code',
@@ -125,10 +182,18 @@ const { queryParams } = useMeilisearchFilters([
   { ref: ritualFilter, field: 'ritual', type: 'boolean' },
   { ref: selectedDamageTypes, field: 'damage_types', type: 'in' },
   { ref: selectedSavingThrows, field: 'saving_throws', type: 'in' },
+  { ref: selectedSources, field: 'source_codes', type: 'in' },
   { ref: verbalFilter, field: 'requires_verbal', type: 'boolean' },
   { ref: somaticFilter, field: 'requires_somatic', type: 'boolean' },
   { ref: materialFilter, field: 'requires_material', type: 'boolean' }
 ])
+
+// Combined query params (filters + sorting)
+const queryParams = computed(() => ({
+  ...filterParams.value,
+  sort_by: sortBy.value,
+  sort_direction: sortDirection.value
+}))
 
 // Use entity list composable for all shared logic
 const {
@@ -165,6 +230,7 @@ const clearFilters = () => {
   // Phase 1: Clear multi-select filters
   selectedDamageTypes.value = []
   selectedSavingThrows.value = []
+  selectedSources.value = []
   // Phase 2: Clear component flag filters
   verbalFilter.value = null
   somaticFilter.value = null
@@ -192,6 +258,11 @@ const getSavingThrowName = (code: string) => {
   return code // Display "STR", "DEX", etc.
 }
 
+// Get source name by code for filter chips
+const getSourceName = (code: string) => {
+  return code // Display "PHB", "XGE", etc.
+}
+
 // Pagination settings
 const perPage = 24
 
@@ -204,6 +275,7 @@ const activeFilterCount = useFilterCount(
   ritualFilter,
   selectedDamageTypes,
   selectedSavingThrows,
+  selectedSources,
   verbalFilter,
   somaticFilter,
   materialFilter
@@ -220,6 +292,18 @@ const activeFilterCount = useFilterCount(
       :loading="loading"
       :has-active-filters="hasActiveFilters"
     />
+
+    <!-- Sort Controls -->
+    <div class="mb-4 flex justify-end">
+      <USelectMenu
+        v-model="sortValue"
+        :items="sortOptions"
+        value-key="value"
+        placeholder="Sort by..."
+        size="md"
+        class="w-full sm:w-64"
+      />
+    </div>
 
     <!-- Search and Filters -->
     <div class="mb-6">
@@ -357,6 +441,15 @@ const activeFilterCount = useFilterCount(
               color="primary"
               class="w-full sm:w-48"
             />
+
+            <UiFilterMultiSelect
+              v-model="selectedSources"
+              :options="sourceOptions"
+              label="Sources"
+              placeholder="All Sources"
+              color="primary"
+              class="w-full sm:w-48"
+            />
           </template>
 
           <!-- Actions: Clear filters button -->
@@ -454,6 +547,17 @@ const activeFilterCount = useFilterCount(
           @click="selectedSavingThrows = selectedSavingThrows.filter(st => st !== savingThrow)"
         >
           {{ getSavingThrowName(savingThrow) }} Save ✕
+        </UButton>
+        <!-- Source chips -->
+        <UButton
+          v-for="source in selectedSources"
+          :key="source"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          @click="selectedSources = selectedSources.filter(s => s !== source)"
+        >
+          {{ getSourceName(source) }} ✕
         </UButton>
         <!-- Phase 2: Component flag chips -->
         <UButton
