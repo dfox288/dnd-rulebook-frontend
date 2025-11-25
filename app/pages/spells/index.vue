@@ -17,6 +17,11 @@ const levelFilterMode = ref<'exact' | 'range'>('exact')
 const selectedLevel = ref(route.query.level ? Number(route.query.level) : null)
 const minLevel = ref<number | null>(route.query.min_level ? Number(route.query.min_level) : null)
 const maxLevel = ref<number | null>(route.query.max_level ? Number(route.query.max_level) : null)
+// Slider value for range mode (array of [min, max])
+const sliderRange = ref<[number, number]>([
+  minLevel.value ?? 0,
+  maxLevel.value ?? 9
+])
 const selectedSchool = ref(route.query.school ? Number(route.query.school) : null)
 const selectedClass = ref<string | null>((route.query.class as string) || null)
 const concentrationFilter = ref<string | null>((route.query.concentration as string) || null)
@@ -168,13 +173,24 @@ const sortValue = computed({
 const switchToRangeMode = () => {
   levelFilterMode.value = 'range'
   selectedLevel.value = null
+  // Initialize slider to current min/max or full range
+  sliderRange.value = [minLevel.value ?? 0, maxLevel.value ?? 9]
 }
 
 const switchToExactMode = () => {
   levelFilterMode.value = 'exact'
   minLevel.value = null
   maxLevel.value = null
+  sliderRange.value = [0, 9]
 }
+
+// Sync slider changes to min/max refs
+watch(sliderRange, (newRange) => {
+  if (levelFilterMode.value === 'range') {
+    minLevel.value = newRange[0]
+    maxLevel.value = newRange[1]
+  }
+})
 
 // Query builder for custom filters (using composable)
 const { queryParams: filterParams } = useMeilisearchFilters([
@@ -417,26 +433,20 @@ const activeFilterCount = useFilterCount(
               <!-- Range Level Mode -->
               <div
                 v-else
-                class="flex gap-2 w-full"
+                class="flex flex-col gap-2 w-full sm:w-64"
               >
-                <USelectMenu
-                  v-model="minLevel"
-                  data-testid="level-min-select"
-                  :items="levelOptions"
-                  value-key="value"
-                  placeholder="Min Level"
+                <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                  <span>Level {{ sliderRange[0] === 0 ? 'Cantrip' : sliderRange[0] }}</span>
+                  <span>Level {{ sliderRange[1] }}</span>
+                </div>
+                <USlider
+                  v-model="sliderRange"
+                  data-testid="level-range-slider"
+                  :min="0"
+                  :max="9"
+                  :step="1"
                   size="md"
-                  class="w-full sm:w-24"
-                />
-                <span class="self-center text-gray-500">to</span>
-                <USelectMenu
-                  v-model="maxLevel"
-                  data-testid="level-max-select"
-                  :items="levelOptions"
-                  value-key="value"
-                  placeholder="Max Level"
-                  size="md"
-                  class="w-full sm:w-24"
+                  class="w-full"
                 />
               </div>
             </div>

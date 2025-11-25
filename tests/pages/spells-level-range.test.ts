@@ -30,7 +30,7 @@ describe('Spells Page - Level Range Filtering', () => {
       expect(exactDropdown.exists()).toBe(true)
     })
 
-    it('shows min/max level dropdowns in range mode', async () => {
+    it('shows range slider in range mode', async () => {
       const wrapper = await mountSuspended(SpellsPage)
 
       // Open filters first
@@ -43,12 +43,10 @@ describe('Spells Page - Level Range Filtering', () => {
       const rangeButton = modeToggle.findAll('button').find(btn => btn.text().includes('Range'))
       await rangeButton?.trigger('click')
 
-      // Check for min/max dropdowns
-      const minDropdown = wrapper.find('[data-testid="level-min-select"]')
-      const maxDropdown = wrapper.find('[data-testid="level-max-select"]')
+      // Check for slider (not dropdowns)
+      const slider = wrapper.find('[data-testid="level-range-slider"]')
 
-      expect(minDropdown.exists()).toBe(true)
-      expect(maxDropdown.exists()).toBe(true)
+      expect(slider.exists()).toBe(true)
     })
   })
 
