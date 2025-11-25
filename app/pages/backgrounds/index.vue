@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Background, Source, Skill } from '~/types'
+import type { Background, Skill } from '~/types'
 
 const route = useRoute()
 
@@ -10,38 +10,24 @@ const filtersOpen = ref(false)
 // Sorting state
 const sortBy = ref<string>((route.query.sort_by as string) || 'name')
 const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
+const sortValue = useSortValue(sortBy, sortDirection)
 
-// Custom filter state (entity-specific)
-const selectedSources = ref<string[]>(
-  route.query.source ? (Array.isArray(route.query.source) ? route.query.source : [route.query.source]) as string[] : []
-)
-
-// New filters for Tier 2 implementation
-const selectedSkills = ref<string[]>(
-  route.query.skill ? (Array.isArray(route.query.skill) ? route.query.skill : [route.query.skill]) as string[] : []
-)
-
-const selectedToolTypes = ref<string[]>(
-  route.query.tool_type ? (Array.isArray(route.query.tool_type) ? route.query.tool_type : [route.query.tool_type]) as string[] : []
-)
-
-const languageChoiceFilter = ref<string | null>((route.query.grants_language_choice as string) || null)
-
-// Fetch reference data for filter options
-const { data: sources } = useReferenceData<Source>('/sources', {
+// Source filter (using composable) - filtered to only PHB, ERLW, WGTE
+const { selectedSources, sourceOptions, getSourceName, clearSources } = useSourceFilter({
   transform: (data) => data.filter(s => ['PHB', 'ERLW', 'WGTE'].includes(s.code))
 })
 
-const { data: skills } = useReferenceData<Skill>('/skills')
+// Entity-specific filter state
+const selectedSkills = ref<string[]>(
+  route.query.skill ? (Array.isArray(route.query.skill) ? route.query.skill : [route.query.skill]) as string[] : []
+)
+const selectedToolTypes = ref<string[]>(
+  route.query.tool_type ? (Array.isArray(route.query.tool_type) ? route.query.tool_type : [route.query.tool_type]) as string[] : []
+)
+const languageChoiceFilter = ref<string | null>((route.query.grants_language_choice as string) || null)
 
-// Source filter options (backgrounds only use PHB, ERLW, WGTE)
-const sourceOptions = computed(() => {
-  if (!sources.value) return []
-  return sources.value.map(source => ({
-    label: source.name,
-    value: source.code
-  }))
-})
+// Fetch reference data
+const { data: skills } = useReferenceData<Skill>('/skills')
 
 // Skill filter options
 const skillOptions = computed(() => {
@@ -59,7 +45,13 @@ const toolTypeOptions = [
   { label: 'Gaming Sets', value: 'gaming-sets' }
 ]
 
-// Query builder for custom filters
+// Sort options
+const sortOptions = [
+  { label: 'Name (A-Z)', value: 'name:asc' },
+  { label: 'Name (Z-A)', value: 'name:desc' }
+]
+
+// Query builder for filters
 const { queryParams: filterParams } = useMeilisearchFilters([
   { ref: selectedSources, field: 'source_codes', type: 'in' },
   { ref: selectedSkills, field: 'skill_proficiencies', type: 'in' },
@@ -74,7 +66,7 @@ const queryParams = computed(() => ({
   sort_direction: sortDirection.value
 }))
 
-// Use entity list composable for all shared logic
+// Use entity list composable
 const {
   searchQuery,
   currentPage,
@@ -96,44 +88,22 @@ const {
   }
 })
 
-// Type the data array
 const backgrounds = computed(() => data.value as Background[])
 
-// Clear all filters (base + custom)
+// Clear all filters
 const clearFilters = () => {
   clearBaseFilters()
-  selectedSources.value = []
+  clearSources()
   selectedSkills.value = []
   selectedToolTypes.value = []
   languageChoiceFilter.value = null
 }
 
 // Helper functions for filter chips
-const getSkillName = (code: string) => {
-  return skills.value?.find(s => s.code === code)?.name || code
-}
+const getSkillName = (code: string) => skills.value?.find(s => s.code === code)?.name || code
+const getToolTypeName = (value: string) => toolTypeOptions.find(t => t.value === value)?.label || value
 
-const getToolTypeName = (value: string) => {
-  return toolTypeOptions.find(t => t.value === value)?.label || value
-}
-
-// Sort options
-const sortOptions = [
-  { label: 'Name (A-Z)', value: 'name:asc' },
-  { label: 'Name (Z-A)', value: 'name:desc' }
-]
-
-// Computed sort value for USelectMenu binding
-const sortValue = computed({
-  get: () => `${sortBy.value}:${sortDirection.value}`,
-  set: (value: string) => {
-    const [newSortBy, newSortDirection] = value.split(':')
-    sortBy.value = newSortBy
-    sortDirection.value = newSortDirection as 'asc' | 'desc'
-  }
-})
-
-// Active filter count for badge
+// Active filter count
 const activeFilterCount = useFilterCount(
   selectedSources,
   selectedSkills,
@@ -141,7 +111,6 @@ const activeFilterCount = useFilterCount(
   languageChoiceFilter
 )
 
-// Pagination settings
 const perPage = 24
 </script>
 
@@ -164,44 +133,15 @@ const perPage = 24
         :badge-count="activeFilterCount"
       >
         <template #search>
-          <div class="flex flex-wrap gap-2 w-full">
-            <UInput
-              v-model="searchQuery"
-              placeholder="Search backgrounds..."
-              class="flex-1 min-w-[200px]"
-            >
-              <template
-                v-if="searchQuery"
-                #trailing
-              >
-                <UButton
-                  color="neutral"
-                  variant="link"
-                  :padded="false"
-                  @click="searchQuery = ''"
-                />
-              </template>
-            </UInput>
-
-            <!-- Source filter moved to prominent position -->
-            <UiFilterMultiSelect
-              v-model="selectedSources"
-              :options="sourceOptions"
-              placeholder="All Sources"
-              color="background"
-              width-class="flex-1 min-w-[192px]"
-              data-testid="source-filter"
-            />
-
-            <USelectMenu
-              v-model="sortValue"
-              :items="sortOptions"
-              value-key="value"
-              placeholder="Sort by..."
-              size="md"
-              class="flex-1 min-w-[192px]"
-            />
-          </div>
+          <UiEntitySearchRow
+            v-model:search="searchQuery"
+            v-model:sources="selectedSources"
+            v-model:sort="sortValue"
+            placeholder="Search backgrounds..."
+            :source-options="sourceOptions"
+            :sort-options="sortOptions"
+            color="background"
+          />
         </template>
 
         <!-- Filters: All in primary row to save space -->
@@ -240,133 +180,82 @@ const perPage = 24
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
-      <div
-        v-if="hasActiveFilters"
-        class="flex flex-wrap items-center justify-between gap-2 pt-2"
+      <UiFilterChips
+        :visible="hasActiveFilters"
+        :search-query="searchQuery"
+        :active-count="activeFilterCount"
+        @clear-search="searchQuery = ''"
+        @clear-all="clearFilters"
       >
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active filters:</span>
-          <!-- CHIP ORDER: Source → Entity-specific → Boolean toggles → Search (last) -->
-
-          <!-- 1. Source chips (neutral color) -->
-          <UButton
+        <template #sources>
+          <UiFilterChip
             v-for="source in selectedSources"
             :key="source"
-            data-testid="source-filter-chip"
-            size="xs"
             color="neutral"
-            variant="soft"
-            @click="selectedSources = selectedSources.filter(s => s !== source)"
+            test-id="source-filter-chip"
+            @remove="selectedSources = selectedSources.filter(s => s !== source)"
           >
-            {{ sources?.find(s => s.code === source)?.name || source }} ✕
-          </UButton>
+            {{ getSourceName(source) }}
+          </UiFilterChip>
+        </template>
 
-          <!-- 2. Entity-specific: Skills, Tool Types -->
-          <UButton
-            v-for="skill in selectedSkills"
-            :key="skill"
-            data-testid="skill-filter-chip"
-            size="xs"
-            color="background"
-            variant="soft"
-            @click="selectedSkills = selectedSkills.filter(s => s !== skill)"
-          >
-            Skill: {{ getSkillName(skill) }} ✕
-          </UButton>
-          <UButton
-            v-for="toolType in selectedToolTypes"
-            :key="toolType"
-            data-testid="tool-type-filter-chip"
-            size="xs"
-            color="background"
-            variant="soft"
-            @click="selectedToolTypes = selectedToolTypes.filter(t => t !== toolType)"
-          >
-            Tool: {{ getToolTypeName(toolType) }} ✕
-          </UButton>
-
-          <!-- 3. Boolean toggles (primary color, "Label: Yes/No" format) -->
-          <UButton
-            v-if="languageChoiceFilter !== null"
-            data-testid="language-choice-filter-chip"
-            size="xs"
-            color="primary"
-            variant="soft"
-            @click="languageChoiceFilter = null"
-          >
-            Language Choice: {{ languageChoiceFilter === '1' ? 'Yes' : 'No' }} ✕
-          </UButton>
-
-          <!-- 4. Search query (always last, neutral color) -->
-          <UButton
-            v-if="searchQuery"
-            data-testid="search-filter-chip"
-            size="xs"
-            color="neutral"
-            variant="soft"
-            @click="searchQuery = ''"
-          >
-            "{{ searchQuery }}" ✕
-          </UButton>
-        </div>
-
-        <!-- Clear Filters Button (right-aligned) -->
-        <UButton
-          color="neutral"
-          variant="soft"
-          size="sm"
-          @click="clearFilters"
+        <!-- Entity-specific chips -->
+        <UiFilterChip
+          v-for="skill in selectedSkills"
+          :key="skill"
+          color="background"
+          test-id="skill-filter-chip"
+          @remove="selectedSkills = selectedSkills.filter(s => s !== skill)"
         >
-          Clear filters
-        </UButton>
-      </div>
+          Skill: {{ getSkillName(skill) }}
+        </UiFilterChip>
+        <UiFilterChip
+          v-for="toolType in selectedToolTypes"
+          :key="toolType"
+          color="background"
+          test-id="tool-type-filter-chip"
+          @remove="selectedToolTypes = selectedToolTypes.filter(t => t !== toolType)"
+        >
+          Tool: {{ getToolTypeName(toolType) }}
+        </UiFilterChip>
+
+        <template #toggles>
+          <UiFilterChip
+            v-if="languageChoiceFilter !== null"
+            color="primary"
+            test-id="language-choice-filter-chip"
+            @remove="languageChoiceFilter = null"
+          >
+            Language Choice: {{ languageChoiceFilter === '1' ? 'Yes' : 'No' }}
+          </UiFilterChip>
+        </template>
+      </UiFilterChips>
     </div>
 
-    <!-- Loading State -->
-    <UiListSkeletonCards v-if="loading" />
-
-    <!-- Error State -->
-    <UiListErrorState
-      v-else-if="error"
+    <!-- List States (Loading/Error/Empty/Results) -->
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Backgrounds"
-      @retry="refresh"
-    />
-
-    <!-- Empty State -->
-    <UiListEmptyState
-      v-else-if="backgrounds.length === 0"
-      entity-name="backgrounds"
+      :empty="backgrounds.length === 0"
+      :meta="meta"
+      :total="totalResults"
+      entity-name="background"
+      entity-name-plural="Backgrounds"
       :has-filters="hasActiveFilters"
+      :current-page="currentPage"
+      :per-page="perPage"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <!-- Results -->
-    <div v-else>
-      <!-- Results count -->
-      <UiListResultsCount
-        :from="meta?.from || 0"
-        :to="meta?.to || 0"
-        :total="totalResults"
-        entity-name="background"
-      />
-
-      <!-- Backgrounds Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      @update:current-page="currentPage = $event"
+    >
+      <template #grid>
         <BackgroundCard
           v-for="background in backgrounds"
           :key="background.id"
           :background="background"
         />
-      </div>
-
-      <!-- Pagination -->
-      <UiListPagination
-        v-model="currentPage"
-        :total="totalResults"
-        :items-per-page="perPage"
-      />
-    </div>
+      </template>
+    </UiListStates>
 
     <!-- Back to Home -->
     <UiBackLink />
