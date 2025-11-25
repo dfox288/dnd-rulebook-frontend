@@ -332,10 +332,9 @@ const activeFilterCount = computed(() => {
         </template>
 
         <!-- Filter Content -->
-        <div class="space-y-4">
-          <!-- TIER 1: Primary Filters (Most Used) -->
-          <div class="flex flex-wrap gap-3">
-            <!-- Level filter -->
+        <UiFilterLayout>
+          <!-- Primary Filters: Most frequently used (Level, School, Class) -->
+          <template #primary>
             <USelectMenu
               v-model="selectedLevel"
               :items="levelOptions"
@@ -345,7 +344,6 @@ const activeFilterCount = computed(() => {
               class="w-full sm:w-48"
             />
 
-            <!-- School filter -->
             <USelectMenu
               v-model="selectedSchool"
               :items="schoolOptions"
@@ -355,7 +353,6 @@ const activeFilterCount = computed(() => {
               class="w-full sm:w-48"
             />
 
-            <!-- Class filter -->
             <USelectMenu
               v-model="selectedClass"
               :items="classOptions"
@@ -364,11 +361,10 @@ const activeFilterCount = computed(() => {
               size="md"
               class="w-full sm:w-48"
             />
-          </div>
+          </template>
 
-          <!-- TIER 2: Quick Toggles -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <!-- Concentration filter -->
+          <!-- Quick Toggles: Binary filters (Concentration, Ritual, Components) -->
+          <template #quick>
             <UiFilterToggle
               v-model="concentrationFilter"
               label="Concentration"
@@ -380,7 +376,6 @@ const activeFilterCount = computed(() => {
               ]"
             />
 
-            <!-- Ritual filter -->
             <UiFilterToggle
               v-model="ritualFilter"
               label="Ritual"
@@ -392,7 +387,6 @@ const activeFilterCount = computed(() => {
               ]"
             />
 
-            <!-- Verbal Component -->
             <UiFilterToggle
               v-model="verbalFilter"
               label="Verbal"
@@ -404,7 +398,6 @@ const activeFilterCount = computed(() => {
               ]"
             />
 
-            <!-- Somatic Component -->
             <UiFilterToggle
               v-model="somaticFilter"
               label="Somatic"
@@ -416,7 +409,6 @@ const activeFilterCount = computed(() => {
               ]"
             />
 
-            <!-- Material Component -->
             <UiFilterToggle
               v-model="materialFilter"
               label="Material"
@@ -427,11 +419,10 @@ const activeFilterCount = computed(() => {
                 { value: '0', label: 'No' }
               ]"
             />
-          </div>
+          </template>
 
-          <!-- TIER 3: Advanced Filters (aligned with primary filters) -->
-          <div class="flex flex-wrap gap-3">
-            <!-- Damage Types filter -->
+          <!-- Advanced Filters: Less frequently used (Damage Types, Saving Throws) -->
+          <template #advanced>
             <UiFilterMultiSelect
               v-model="selectedDamageTypes"
               :options="damageTypeOptions"
@@ -441,7 +432,6 @@ const activeFilterCount = computed(() => {
               class="w-full sm:w-48"
             />
 
-            <!-- Saving Throws filter -->
             <UiFilterMultiSelect
               v-model="selectedSavingThrows"
               :options="savingThrowOptions"
@@ -450,10 +440,10 @@ const activeFilterCount = computed(() => {
               color="primary"
               class="w-full sm:w-48"
             />
-          </div>
+          </template>
 
-          <!-- Clear filters button -->
-          <div class="flex justify-end">
+          <!-- Actions: Clear filters button -->
+          <template #actions>
             <UButton
               v-if="hasActiveFilters"
               color="neutral"
@@ -462,8 +452,8 @@ const activeFilterCount = computed(() => {
             >
               Clear Filters
             </UButton>
-          </div>
-        </div>
+          </template>
+        </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
