@@ -247,7 +247,8 @@ const handleClearAll = () => {
             v-model="characterLevel"
             :items="levelOptions"
             value-key="value"
-            placeholder="Level"
+            label-key="label"
+            placeholder="Select level"
           />
         </div>
       </div>

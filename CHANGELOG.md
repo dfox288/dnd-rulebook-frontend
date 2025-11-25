@@ -42,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Test Results:** ✅ 8/8 composable tests, 5/5 page tests passing
 
+**Additional Fix (2025-11-25):**
+- **Level selector not responding:** Added `label-key="label"` to USelectMenu for proper display and selection
+
 ### Changed - API Integration (2025-11-25)
 
 **🚨 BREAKING CHANGE: Complete migration to Meilisearch-only filtering:**
