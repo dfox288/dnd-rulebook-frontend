@@ -84,7 +84,10 @@ const clearAll = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
+  <div
+    class="flex flex-col gap-2"
+    :class="widthClass"
+  >
     <!-- Label -->
     <label
       v-if="label"
@@ -96,7 +99,7 @@ const clearAll = () => {
     <!-- Select Menu Container -->
     <div class="flex items-center gap-2">
       <!-- Multi-Select Dropdown -->
-      <div :class="widthClass">
+      <div class="flex-1">
         <USelectMenu
           :model-value="normalizedValue"
           :items="options"
