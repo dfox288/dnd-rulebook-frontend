@@ -157,9 +157,10 @@ onMounted(() => {
   }
 })
 
-// Watch for class/level changes and load
-watch([selectedClass, characterLevel], () => {
-  if (selectedClass.value) {
+// Watch only for class changes to load saved data (not level changes)
+// Level changes should trigger saves, not loads
+watch(selectedClass, (newClass, oldClass) => {
+  if (newClass && newClass !== oldClass) {
     loadFromStorage()
   }
 })
@@ -173,6 +174,17 @@ watchDebounced(
     }
   },
   { debounce: 500, deep: true }
+)
+
+// Auto-save on level changes (debounced)
+watchDebounced(
+  characterLevel,
+  () => {
+    if (selectedClass.value) {
+      saveToStorage()
+    }
+  },
+  { debounce: 500 }
 )
 
 // Get selected spell objects
