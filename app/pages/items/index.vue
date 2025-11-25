@@ -41,6 +41,15 @@ const costRangeOptions = [
   { label: '1000+ gp', value: 'over-100000' }
 ]
 
+// AC filter
+const selectedACRange = ref<string | null>(null)
+const acRangeOptions = [
+  { label: 'All AC', value: null },
+  { label: 'Light (11-14)', value: '11-14' },
+  { label: 'Medium (15-16)', value: '15-16' },
+  { label: 'Heavy (17+)', value: '17-21' }
+]
+
 // Fetch item types for filter options (using composable)
 const { data: itemTypes } = useReferenceData<ItemType>('/item-types')
 
@@ -181,6 +190,19 @@ const queryBuilder = computed(() => {
     }
   }
 
+  // AC range filter
+  if (selectedACRange.value) {
+    const ranges: Record<string, string> = {
+      '11-14': 'armor_class >= 11 AND armor_class <= 14',
+      '15-16': 'armor_class >= 15 AND armor_class <= 16',
+      '17-21': 'armor_class >= 17 AND armor_class <= 21'
+    }
+    const rangeFilter = ranges[selectedACRange.value]
+    if (rangeFilter) {
+      meilisearchFilters.push(rangeFilter)
+    }
+  }
+
   // Combine all filters
   if (meilisearchFilters.length > 0) {
     params.filter = meilisearchFilters.join(' AND ')
@@ -228,6 +250,7 @@ const clearFilters = () => {
   selectedDamageTypes.value = []
   selectedSources.value = []
   selectedCostRange.value = null
+  selectedACRange.value = null
 }
 
 // Get type name by ID for filter chips
@@ -265,7 +288,8 @@ const activeFilterCount = useFilterCount(
   selectedProperties,
   selectedDamageTypes,
   selectedSources,
-  selectedCostRange
+  selectedCostRange,
+  selectedACRange
 )
 </script>
 
@@ -402,6 +426,20 @@ const activeFilterCount = useFilterCount(
               />
             </div>
 
+            <!-- AC Range Filter -->
+            <div>
+              <label class="text-sm font-medium mb-2 block">Armor Class</label>
+              <USelectMenu
+                v-model="selectedACRange"
+                :items="acRangeOptions"
+                value-key="value"
+                placeholder="All AC"
+                size="md"
+                class="w-full sm:w-44"
+                data-testid="ac-filter"
+              />
+            </div>
+
             <UiFilterMultiSelect
               v-model="selectedProperties"
               :options="propertyOptions"
@@ -519,6 +557,16 @@ const activeFilterCount = useFilterCount(
             @click="selectedCostRange = null"
           >
             {{ costRangeOptions.find(o => o.value === selectedCostRange)?.label }} ✕
+          </UButton>
+          <!-- AC Range Chip -->
+          <UButton
+            v-if="selectedACRange"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedACRange = null"
+          >
+            AC: {{ acRangeOptions.find(o => o.value === selectedACRange)?.label }} ✕
           </UButton>
           <!-- Property chips -->
           <UButton
