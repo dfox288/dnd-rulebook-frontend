@@ -76,3 +76,91 @@ describe('Classes Hit Die Filter', () => {
     expect(component.selectedHitDice).toEqual([6, 12])
   })
 })
+
+describe('Classes Spellcasting Ability Filter', () => {
+  it('has spellcasting ability filter state', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Should have selectedSpellcastingAbility ref
+    expect(component.selectedSpellcastingAbility).toBeDefined()
+    expect(component.selectedSpellcastingAbility).toBeNull()
+  })
+
+  it('has correct spellcasting ability options', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Should have spellcastingAbilityOptions
+    expect(component.spellcastingAbilityOptions).toBeDefined()
+    expect(Array.isArray(component.spellcastingAbilityOptions)).toBe(true)
+    expect(component.spellcastingAbilityOptions.length).toBe(4)
+
+    // Verify option labels
+    const labels = component.spellcastingAbilityOptions.map((o: any) => o.label)
+    expect(labels).toContain('All Abilities')
+    expect(labels).toContain('Intelligence')
+    expect(labels).toContain('Wisdom')
+    expect(labels).toContain('Charisma')
+  })
+})
+
+describe('Classes Parent Class Filter', () => {
+  it('has parent class filter state', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Should have selectedParentClass ref
+    expect(component.selectedParentClass).toBeDefined()
+    expect(component.selectedParentClass).toBeNull()
+  })
+
+  it('fetches parent class options from base classes', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Wait for data to load
+    await new Promise(resolve => setTimeout(resolve, 100))
+    await wrapper.vm.$nextTick()
+
+    // Should have parentClassOptions computed
+    expect(component.parentClassOptions).toBeDefined()
+    expect(Array.isArray(component.parentClassOptions)).toBe(true)
+    expect(component.parentClassOptions.length).toBeGreaterThan(0)
+
+    // Should have "All Classes" option
+    const labels = component.parentClassOptions.map((o: any) => o.label)
+    expect(labels).toContain('All Classes')
+  })
+})
+
+describe('Classes Sources Filter', () => {
+  it('has sources filter state', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Should have selectedSources ref (array)
+    expect(component.selectedSources).toBeDefined()
+    expect(Array.isArray(component.selectedSources)).toBe(true)
+    expect(component.selectedSources.length).toBe(0)
+  })
+
+  it('fetches source options from API', async () => {
+    const wrapper = await mountSuspended(ClassesIndexPage)
+
+    const component = wrapper.vm as any
+
+    // Wait for data to load
+    await new Promise(resolve => setTimeout(resolve, 100))
+    await wrapper.vm.$nextTick()
+
+    // Should have sourceOptions computed
+    expect(component.sourceOptions).toBeDefined()
+    expect(Array.isArray(component.sourceOptions)).toBe(true)
+  })
+})

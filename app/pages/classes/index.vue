@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { CharacterClass } from '~/types'
+import type { CharacterClass, Source } from '~/types'
 
 const route = useRoute()
 
@@ -17,11 +17,49 @@ const hitDieOptions = [
   { label: 'd12', value: 12 }
 ]
 
+// Spellcasting Ability filter
+const selectedSpellcastingAbility = ref<string | null>(null)
+const spellcastingAbilityOptions = [
+  { label: 'All Abilities', value: null },
+  { label: 'Intelligence', value: 'INT' },
+  { label: 'Wisdom', value: 'WIS' },
+  { label: 'Charisma', value: 'CHA' }
+]
+
+// Parent Class filter - fetch base classes for dropdown
+const { data: baseClasses } = useReferenceData<CharacterClass>('/classes', {
+  transform: (data) => data.filter(c => c.is_base_class === true)
+})
+
+const parentClassOptions = computed(() => {
+  const options = [{ label: 'All Classes', value: null }]
+  if (baseClasses.value) {
+    baseClasses.value.forEach(cls => {
+      options.push({ label: cls.name, value: cls.name })
+    })
+  }
+  return options
+})
+
+const selectedParentClass = ref<string | null>(null)
+
+// Source filter
+const { data: sources } = useReferenceData<Source>('/sources')
+
+const sourceOptions = computed(() =>
+  sources.value?.map(s => ({ label: s.name, value: s.code })) || []
+)
+
+const selectedSources = ref<string[]>([])
+
 // Query builder (using composable)
 const { queryParams } = useMeilisearchFilters([
   { ref: isBaseClass, field: 'is_base_class', type: 'boolean' },
   { ref: isSpellcaster, field: 'is_spellcaster', type: 'boolean' },
-  { ref: selectedHitDice, field: 'hit_die', type: 'in' }
+  { ref: selectedHitDice, field: 'hit_die', type: 'in' },
+  { ref: selectedSpellcastingAbility, field: 'spellcasting_ability' },
+  { ref: selectedParentClass, field: 'parent_class_name' },
+  { ref: selectedSources, field: 'source_codes', type: 'in' }
 ])
 
 // Use entity list composable for all shared logic
@@ -55,13 +93,23 @@ const clearFilters = () => {
   isBaseClass.value = null
   isSpellcaster.value = null
   selectedHitDice.value = []
+  selectedSpellcastingAbility.value = null
+  selectedParentClass.value = null
+  selectedSources.value = []
 }
 
 // Filter collapse state
 const filtersOpen = ref(false)
 
 // Active filter count for badge
-const activeFilterCount = useFilterCount(isBaseClass, isSpellcaster, selectedHitDice)
+const activeFilterCount = useFilterCount(
+  isBaseClass,
+  isSpellcaster,
+  selectedHitDice,
+  selectedSpellcastingAbility,
+  selectedParentClass,
+  selectedSources
+)
 
 // Pagination settings
 const perPage = 24
@@ -143,6 +191,41 @@ const perPage = 24
               color="primary"
               data-testid="hit-die-filter"
             />
+
+            <!-- Spellcasting Ability Filter -->
+            <div>
+              <USelectMenu
+                v-model="selectedSpellcastingAbility"
+                :items="spellcastingAbilityOptions"
+                value-key="value"
+                placeholder="All Abilities"
+                size="md"
+                class="w-full sm:w-44"
+                data-testid="spellcasting-ability-filter"
+              />
+            </div>
+
+            <!-- Parent Class Filter -->
+            <div>
+              <USelectMenu
+                v-model="selectedParentClass"
+                :items="parentClassOptions"
+                value-key="value"
+                placeholder="All Classes"
+                size="md"
+                class="w-full sm:w-44"
+                data-testid="parent-class-filter"
+              />
+            </div>
+
+            <!-- Sources Filter -->
+            <UiFilterMultiSelect
+              v-model="selectedSources"
+              :options="sourceOptions"
+              placeholder="All Sources"
+              color="secondary"
+              data-testid="source-filter"
+            />
           </div>
         </div>
       </UiFilterCollapse>
@@ -183,6 +266,37 @@ const perPage = 24
             @click="selectedHitDice = selectedHitDice.filter(d => d !== hitDie)"
           >
             d{{ hitDie }} ✕
+          </UButton>
+          <!-- Spellcasting Ability Chip -->
+          <UButton
+            v-if="selectedSpellcastingAbility"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedSpellcastingAbility = null"
+          >
+            {{ spellcastingAbilityOptions.find(o => o.value === selectedSpellcastingAbility)?.label }} ✕
+          </UButton>
+          <!-- Parent Class Chip -->
+          <UButton
+            v-if="selectedParentClass"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedParentClass = null"
+          >
+            {{ selectedParentClass }} ✕
+          </UButton>
+          <!-- Source Chips -->
+          <UButton
+            v-for="source in selectedSources"
+            :key="source"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="selectedSources = selectedSources.filter(s => s !== source)"
+          >
+            {{ sources?.find(s => s.code === source)?.name || source }} ✕
           </UButton>
           <UButton
             v-if="searchQuery"

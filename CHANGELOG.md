@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Source multiselect filter for Classes (PHB, XGE, TCE, etc.) (2025-11-25)
+- Parent class filter for Classes (browse subclasses by parent) (2025-11-25)
+- Spellcasting ability dropdown for Classes (INT, WIS, CHA) (2025-11-25)
 - Hit die multiselect filter for Classes (d6, d8, d10, d12) (2025-11-25)
 - Hit Points range filter for Monsters (Low 1-50, Medium 51-150, High 151-300, Very High 301+) (2025-11-25)
 - Armor Class range filter for Monsters (Low 10-14, Medium 15-17, High 18+) (2025-11-25)
