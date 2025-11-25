@@ -130,7 +130,7 @@ const isReferenceExpanded = ref(false)
                   variant="ghost"
                   trailing-icon="i-heroicons-chevron-down-20-solid"
                   :class="isCompendiumActive
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300'"
                 >
                   Compendium
@@ -143,7 +143,7 @@ const isReferenceExpanded = ref(false)
                   variant="ghost"
                   trailing-icon="i-heroicons-chevron-down-20-solid"
                   :class="isToolsActive
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300'"
                 >
                   Tools
@@ -156,7 +156,7 @@ const isReferenceExpanded = ref(false)
                   variant="ghost"
                   trailing-icon="i-heroicons-chevron-down-20-solid"
                   :class="isReferenceActive
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300'"
                 >
                   Reference
@@ -172,7 +172,7 @@ const isReferenceExpanded = ref(false)
               <button
                 class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors"
                 :class="isCompendiumActive
-                  ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                  ? 'bg-gray-100 dark:bg-gray-800 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 @click="isCompendiumExpanded = !isCompendiumExpanded"
               >
@@ -194,7 +194,7 @@ const isReferenceExpanded = ref(false)
                   :to="item.to"
                   class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   :class="route.path.startsWith(item.to)
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 >
                   <UIcon
@@ -212,7 +212,7 @@ const isReferenceExpanded = ref(false)
               <button
                 class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors"
                 :class="isToolsActive
-                  ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                  ? 'bg-gray-100 dark:bg-gray-800 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 @click="isToolsExpanded = !isToolsExpanded"
               >
@@ -234,7 +234,7 @@ const isReferenceExpanded = ref(false)
                   :to="item.to"
                   class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   :class="route.path.startsWith(item.to)
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 >
                   <UIcon
@@ -252,7 +252,7 @@ const isReferenceExpanded = ref(false)
               <button
                 class="w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors"
                 :class="isReferenceActive
-                  ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                  ? 'bg-gray-100 dark:bg-gray-800 text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 @click="isReferenceExpanded = !isReferenceExpanded"
               >
@@ -274,7 +274,7 @@ const isReferenceExpanded = ref(false)
                   :to="item.to"
                   class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                   :class="route.path.startsWith(item.to)
-                    ? 'bg-gray-100 dark:bg-gray-800 text-blue-600 dark:text-blue-400'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'"
                 >
                   <UIcon
