@@ -27,12 +27,12 @@ const selectedSavingThrows = ref<string[]>(
 const verbalFilter = ref<string | null>((route.query.has_verbal as string) || null)
 const somaticFilter = ref<string | null>((route.query.has_somatic as string) || null)
 const materialFilter = ref<string | null>((route.query.has_material as string) || null)
-const higherLevelsFilter = ref<string | null>((route.query.has_higher_levels as string) || null)
 
-// Phase 3: Direct field filters
-const castingTimeFilter = ref<string | null>((route.query.casting_time as string) || null)
-const rangeFilter = ref<string | null>((route.query.range as string) || null)
-const durationFilter = ref<string | null>((route.query.duration as string) || null)
+// Phase 3: Removed unsupported filters (not indexed in Meilisearch):
+// - higherLevelsFilter (has_higher_levels not filterable)
+// - castingTimeFilter (casting_time not filterable)
+// - rangeFilter (range not filterable)
+// - durationFilter (duration not filterable)
 
 // Fetch spell schools for filter options
 const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
@@ -124,94 +124,83 @@ const savingThrowOptions = computed(() => {
   }))
 })
 
-// Phase 3: Casting time options (hardcoded common values)
-const castingTimeOptions = [
-  { label: 'All Casting Times', value: null },
-  { label: '1 Action', value: '1 action' },
-  { label: '1 Bonus Action', value: '1 bonus action' },
-  { label: '1 Reaction', value: '1 reaction' },
-  { label: '1 Minute', value: '1 minute' },
-  { label: '10 Minutes', value: '10 minutes' },
-  { label: '1 Hour', value: '1 hour' },
-  { label: '8 Hours', value: '8 hours' },
-  { label: '12 Hours', value: '12 hours' },
-  { label: '24 Hours', value: '24 hours' }
-]
-
-// Phase 3: Range options (hardcoded common values)
-const rangeOptions = [
-  { label: 'All Ranges', value: null },
-  { label: 'Self', value: 'Self' },
-  { label: 'Touch', value: 'Touch' },
-  { label: '5 feet', value: '5 feet' },
-  { label: '10 feet', value: '10 feet' },
-  { label: '30 feet', value: '30 feet' },
-  { label: '60 feet', value: '60 feet' },
-  { label: '90 feet', value: '90 feet' },
-  { label: '120 feet', value: '120 feet' },
-  { label: '150 feet', value: '150 feet' },
-  { label: '300 feet', value: '300 feet' },
-  { label: '500 feet', value: '500 feet' },
-  { label: '1 mile', value: '1 mile' },
-  { label: 'Sight', value: 'Sight' },
-  { label: 'Unlimited', value: 'Unlimited' }
-]
-
-// Phase 3: Duration options (hardcoded common values)
-const durationOptions = [
-  { label: 'All Durations', value: null },
-  { label: 'Instantaneous', value: 'Instantaneous' },
-  { label: '1 round', value: '1 round' },
-  { label: '1 minute', value: '1 minute' },
-  { label: '10 minutes', value: '10 minutes' },
-  { label: '1 hour', value: '1 hour' },
-  { label: '2 hours', value: '2 hours' },
-  { label: '8 hours', value: '8 hours' },
-  { label: '24 hours', value: '24 hours' },
-  { label: '7 days', value: '7 days' },
-  { label: '10 days', value: '10 days' },
-  { label: '30 days', value: '30 days' },
-  { label: 'Until dispelled', value: 'Until dispelled' },
-  { label: 'Special', value: 'Special' },
-  { label: 'Concentration, up to 1 minute', value: 'Concentration, up to 1 minute' },
-  { label: 'Concentration, up to 10 minutes', value: 'Concentration, up to 10 minutes' },
-  { label: 'Concentration, up to 1 hour', value: 'Concentration, up to 1 hour' },
-  { label: 'Concentration, up to 8 hours', value: 'Concentration, up to 8 hours' },
-  { label: 'Concentration, up to 24 hours', value: 'Concentration, up to 24 hours' }
-]
+// Phase 3: Removed unsupported filter options (not indexed in Meilisearch)
+// - castingTimeOptions (casting_time not filterable)
+// - rangeOptions (range not filterable)
+// - durationOptions (duration not filterable)
+// Users can search for these values using full-text search (?q=1 action)
 
 // Query builder for custom filters
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
   const meilisearchFilters: string[] = []
 
-  // MySQL fallback filters (simple column filters)
-  if (selectedLevel.value !== null) params.level = selectedLevel.value
-  if (selectedSchool.value !== null) params.school = selectedSchool.value
-  if (concentrationFilter.value !== null) params.concentration = concentrationFilter.value
-  if (ritualFilter.value !== null) params.ritual = ritualFilter.value
+  // Level filter (Meilisearch)
+  if (selectedLevel.value !== null) {
+    meilisearchFilters.push(`level = ${selectedLevel.value}`)
+  }
 
-  // Meilisearch filter: Class filtering
+  // School filter (Meilisearch) - Convert ID to school_code
+  if (selectedSchool.value !== null) {
+    const schoolCode = spellSchools.value?.find(s => s.id === selectedSchool.value)?.code
+    if (schoolCode) {
+      meilisearchFilters.push(`school_code = ${schoolCode}`)
+    }
+  }
+
+  // Class filter (Meilisearch)
   if (selectedClass.value !== null) {
     meilisearchFilters.push(`class_slugs IN [${selectedClass.value}]`)
   }
 
-  // Phase 1: Multi-select filters (comma-separated)
-  if (selectedDamageTypes.value.length > 0) params.damage_type = selectedDamageTypes.value.join(',')
-  if (selectedSavingThrows.value.length > 0) params.saving_throw = selectedSavingThrows.value.join(',')
+  // Concentration filter (Meilisearch) - Convert string to boolean
+  if (concentrationFilter.value !== null) {
+    const boolValue = concentrationFilter.value === '1' || concentrationFilter.value === 'true'
+    meilisearchFilters.push(`concentration = ${boolValue}`)
+  }
 
-  // Phase 2: Component flag filters
-  if (verbalFilter.value !== null) params.has_verbal = verbalFilter.value
-  if (somaticFilter.value !== null) params.has_somatic = somaticFilter.value
-  if (materialFilter.value !== null) params.has_material = materialFilter.value
-  if (higherLevelsFilter.value !== null) params.has_higher_levels = higherLevelsFilter.value
+  // Ritual filter (Meilisearch) - Convert string to boolean
+  if (ritualFilter.value !== null) {
+    const boolValue = ritualFilter.value === '1' || ritualFilter.value === 'true'
+    meilisearchFilters.push(`ritual = ${boolValue}`)
+  }
 
-  // Phase 3: Direct field filters
-  if (castingTimeFilter.value !== null) params.casting_time = castingTimeFilter.value
-  if (rangeFilter.value !== null) params.range = rangeFilter.value
-  if (durationFilter.value !== null) params.duration = durationFilter.value
+  // Damage types filter (Meilisearch multi-select)
+  if (selectedDamageTypes.value.length > 0) {
+    const codes = selectedDamageTypes.value.join(', ')
+    meilisearchFilters.push(`damage_types IN [${codes}]`)
+  }
 
-  // Combine Meilisearch filters with AND
+  // Saving throws filter (Meilisearch multi-select)
+  if (selectedSavingThrows.value.length > 0) {
+    const codes = selectedSavingThrows.value.join(', ')
+    meilisearchFilters.push(`saving_throws IN [${codes}]`)
+  }
+
+  // Component filters (Meilisearch) - Convert string to boolean
+  if (verbalFilter.value !== null) {
+    const boolValue = verbalFilter.value === '1' || verbalFilter.value === 'true'
+    meilisearchFilters.push(`requires_verbal = ${boolValue}`)
+  }
+
+  if (somaticFilter.value !== null) {
+    const boolValue = somaticFilter.value === '1' || somaticFilter.value === 'true'
+    meilisearchFilters.push(`requires_somatic = ${boolValue}`)
+  }
+
+  if (materialFilter.value !== null) {
+    const boolValue = materialFilter.value === '1' || materialFilter.value === 'true'
+    meilisearchFilters.push(`requires_material = ${boolValue}`)
+  }
+
+  // NOTE: Removed unsupported filters (not indexed in Meilisearch):
+  // - has_higher_levels (field not filterable)
+  // - casting_time (field not filterable)
+  // - range (field not filterable)
+  // - duration (field not filterable)
+  // Users can still search for these values using full-text search (?q=1 action)
+
+  // Combine all Meilisearch filters with AND
   if (meilisearchFilters.length > 0) {
     params.filter = meilisearchFilters.join(' AND ')
   }
@@ -258,11 +247,7 @@ const clearFilters = () => {
   verbalFilter.value = null
   somaticFilter.value = null
   materialFilter.value = null
-  higherLevelsFilter.value = null
-  // Phase 3: Clear direct field filters
-  castingTimeFilter.value = null
-  rangeFilter.value = null
-  durationFilter.value = null
+  // Phase 3: Removed unsupported filters (already removed from refs)
 }
 
 // Get school name by ID for filter chips
@@ -303,11 +288,7 @@ const activeFilterCount = computed(() => {
   if (verbalFilter.value !== null) count++
   if (somaticFilter.value !== null) count++
   if (materialFilter.value !== null) count++
-  if (higherLevelsFilter.value !== null) count++
-  // Phase 3: Count direct field filters
-  if (castingTimeFilter.value !== null) count++
-  if (rangeFilter.value !== null) count++
-  if (durationFilter.value !== null) count++
+  // Phase 3: Removed unsupported filter counts
   return count
 })
 </script>
@@ -469,21 +450,7 @@ const activeFilterCount = computed(() => {
           </div>
 
           <!-- Phase 2: Spell Scaling -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Spell Scaling
-            </label>
-            <UiFilterToggle
-              v-model="higherLevelsFilter"
-              label="At Higher Levels"
-              color="primary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Has Scaling' },
-                { value: '0', label: 'No Scaling' }
-              ]"
-            />
-          </div>
+          <!-- Removed: Spell Scaling filter (has_higher_levels not filterable in Meilisearch) -->
 
           <!-- Phase 1: Multi-select Filters -->
           <div class="flex flex-wrap gap-2">
@@ -508,43 +475,8 @@ const activeFilterCount = computed(() => {
             />
           </div>
 
-          <!-- Phase 3: Direct Field Filters -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Spell Properties
-            </label>
-            <div class="flex flex-wrap gap-2">
-              <!-- Casting Time filter -->
-              <USelectMenu
-                v-model="castingTimeFilter"
-                :items="castingTimeOptions"
-                value-key="value"
-                placeholder="All Casting Times"
-                size="md"
-                class="w-56"
-              />
-
-              <!-- Range filter -->
-              <USelectMenu
-                v-model="rangeFilter"
-                :items="rangeOptions"
-                value-key="value"
-                placeholder="All Ranges"
-                size="md"
-                class="w-56"
-              />
-
-              <!-- Duration filter -->
-              <USelectMenu
-                v-model="durationFilter"
-                :items="durationOptions"
-                value-key="value"
-                placeholder="All Durations"
-                size="md"
-                class="w-56"
-              />
-            </div>
-          </div>
+          <!-- Removed: Phase 3 Direct Field Filters (casting_time, range, duration not filterable in Meilisearch) -->
+          <!-- Users can search for these values using full-text search (e.g., ?q=1 action) -->
 
           <!-- Clear filters button -->
           <div class="flex justify-end">
@@ -670,43 +602,7 @@ const activeFilterCount = computed(() => {
         >
           Material: {{ materialFilter === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
-        <UButton
-          v-if="higherLevelsFilter !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="higherLevelsFilter = null"
-        >
-          Scaling: {{ higherLevelsFilter === '1' ? 'Has Scaling' : 'No Scaling' }} ✕
-        </UButton>
-        <!-- Phase 3: Direct field chips -->
-        <UButton
-          v-if="castingTimeFilter !== null"
-          size="xs"
-          color="info"
-          variant="soft"
-          @click="castingTimeFilter = null"
-        >
-          {{ castingTimeFilter }} ✕
-        </UButton>
-        <UButton
-          v-if="rangeFilter !== null"
-          size="xs"
-          color="info"
-          variant="soft"
-          @click="rangeFilter = null"
-        >
-          {{ rangeFilter }} ✕
-        </UButton>
-        <UButton
-          v-if="durationFilter !== null"
-          size="xs"
-          color="info"
-          variant="soft"
-          @click="durationFilter = null"
-        >
-          {{ durationFilter }} ✕
-        </UButton>
+        <!-- Removed: Filter chips for unsupported filters (higherLevels, castingTime, range, duration) -->
       </div>
     </div>
 

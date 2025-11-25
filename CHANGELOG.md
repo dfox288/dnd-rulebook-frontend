@@ -11,12 +11,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed - API Integration (2025-11-25)
 
-**Migrated spell class filtering to Meilisearch:**
-- Updated spell class filter to use Meilisearch syntax: `?filter=class_slugs IN [wizard]` (was `?classes=wizard`)
-- Enables advanced filtering capabilities (AND/OR/IN operators, combined filters)
+**🚨 BREAKING CHANGE: Complete migration to Meilisearch-only filtering:**
+
+**All spell filters migrated to Meilisearch syntax:**
+- **Level:** `?filter=level = 3` (was `?level=3` - now ignored by API)
+- **School:** `?filter=school_code = EV` (was `?school=2` - now ignored by API)
+- **Class:** `?filter=class_slugs IN [wizard]` (was `?classes=wizard` - already working)
+- **Concentration:** `?filter=concentration = true` (was `?concentration=1` - now ignored by API)
+- **Ritual:** `?filter=ritual = true` (was `?ritual=1` - now ignored by API)
+- **Damage Types:** `?filter=damage_types IN [F, C]` (was `?damage_type=F,C` - now ignored by API)
+- **Saving Throws:** `?filter=saving_throws IN [DEX, WIS]` (was `?saving_throw=DEX,WIS` - now ignored by API)
+- **Verbal:** `?filter=requires_verbal = true` (was `?has_verbal=1` - now ignored by API)
+- **Somatic:** `?filter=requires_somatic = true` (was `?has_somatic=1` - now ignored by API)
+- **Material:** `?filter=requires_material = true` (was `?has_material=1` - now ignored by API)
+
+**Benefits:**
+- All filters now work correctly (9 were broken, using deprecated MySQL params that returned ALL spells)
+- Combined filters supported: `?filter=level = 3 AND class_slugs IN [wizard] AND school_code = EV`
+- Performance improvement: Meilisearch is faster than MySQL (<50ms response times)
+- Future-proof: Enables advanced queries with AND/OR/IN operators
+- Fixed critical bug where most filters were silently ignored
+
+**API changes:**
 - Fixed `is_base_class` TypeScript type: `boolean` (was incorrectly typed as `string`)
 - Updated ClassCard component to use boolean comparison for base class detection
-- All 15 base class filters working (Artificer, Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, and 3 Sidekick classes)
+
+### Removed - Unsupported Filters (2025-11-25)
+
+**Removed 4 filters not indexed in Meilisearch:**
+- ❌ **Has Higher Levels** (spell scaling) - Field not filterable in Meilisearch
+- ❌ **Casting Time** (e.g., "1 action") - Field not filterable in Meilisearch
+- ❌ **Range** (e.g., "60 feet") - Field not filterable in Meilisearch
+- ❌ **Duration** (e.g., "Instantaneous") - Field not filterable in Meilisearch
+
+**Alternative:** Users can still search for these values using full-text search: `?q=1 action`
+
+**Rationale:** These text fields are not indexed in Meilisearch for performance reasons. The `concentration` boolean filter covers most duration use cases.
 
 ### Added - Playwright E2E Testing (2025-11-24)
 
