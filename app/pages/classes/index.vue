@@ -8,30 +8,11 @@ const route = useRoute()
 const isBaseClass = ref<string | null>((route.query.is_base_class as string) || null)
 const isSpellcaster = ref<string | null>((route.query.is_spellcaster as string) || null)
 
-// Query builder for custom filters (Meilisearch syntax)
-const queryBuilder = computed(() => {
-  const params: Record<string, unknown> = {}
-  const meilisearchFilters: string[] = []
-
-  // is_base_class filter (convert string to boolean)
-  if (isBaseClass.value !== null) {
-    const boolValue = isBaseClass.value === '1' || isBaseClass.value === 'true'
-    meilisearchFilters.push(`is_base_class = ${boolValue}`)
-  }
-
-  // is_spellcaster filter (convert string to boolean)
-  if (isSpellcaster.value !== null) {
-    const boolValue = isSpellcaster.value === '1' || isSpellcaster.value === 'true'
-    meilisearchFilters.push(`is_spellcaster = ${boolValue}`)
-  }
-
-  // Combine all filters with AND
-  if (meilisearchFilters.length > 0) {
-    params.filter = meilisearchFilters.join(' AND ')
-  }
-
-  return params
-})
+// Query builder (using composable)
+const { queryParams } = useMeilisearchFilters([
+  { ref: isBaseClass, field: 'is_base_class', type: 'boolean' },
+  { ref: isSpellcaster, field: 'is_spellcaster', type: 'boolean' }
+])
 
 // Use entity list composable for all shared logic
 const {
@@ -48,7 +29,7 @@ const {
 } = useEntityList({
   endpoint: '/classes',
   cacheKey: 'classes-list',
-  queryBuilder,
+  queryBuilder: queryParams,
   seo: {
     title: 'Classes - D&D 5e Compendium',
     description: 'Browse all D&D 5e player classes and subclasses.'
@@ -69,12 +50,7 @@ const clearFilters = () => {
 const filtersOpen = ref(false)
 
 // Active filter count for badge
-const activeFilterCount = computed(() => {
-  let count = 0
-  if (isBaseClass.value !== null) count++
-  if (isSpellcaster.value !== null) count++
-  return count
-})
+const activeFilterCount = useFilterCount(isBaseClass, isSpellcaster)
 
 // Pagination settings
 const perPage = 24
