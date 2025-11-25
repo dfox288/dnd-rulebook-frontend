@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import UiHitPointsCard from '~/components/ui/class/UiHitPointsCard.vue'
+import UiClassHitPointsCard from '~/components/ui/class/UiClassHitPointsCard.vue'
 
-describe('UiHitPointsCard', () => {
+describe('UiClassHitPointsCard', () => {
   const mountOptions = {
     global: {
       stubs: {
@@ -18,7 +18,7 @@ describe('UiHitPointsCard', () => {
   }
 
   it('renders hit die value', () => {
-    const wrapper = mount(UiHitPointsCard, {
+    const wrapper = mount(UiClassHitPointsCard, {
       props: {
         hitDie: 8,
         className: 'rogue'
@@ -30,7 +30,7 @@ describe('UiHitPointsCard', () => {
   })
 
   it('renders HP at 1st level correctly', () => {
-    const wrapper = mount(UiHitPointsCard, {
+    const wrapper = mount(UiClassHitPointsCard, {
       props: {
         hitDie: 10,
         className: 'fighter'
@@ -42,7 +42,7 @@ describe('UiHitPointsCard', () => {
   })
 
   it('renders HP at higher levels correctly', () => {
-    const wrapper = mount(UiHitPointsCard, {
+    const wrapper = mount(UiClassHitPointsCard, {
       props: {
         hitDie: 12,
         className: 'barbarian'
@@ -57,28 +57,28 @@ describe('UiHitPointsCard', () => {
 
   it('calculates average HP correctly for different hit dice', () => {
     // d6 average = 4
-    const d6Wrapper = mount(UiHitPointsCard, {
+    const d6Wrapper = mount(UiClassHitPointsCard, {
       props: { hitDie: 6, className: 'wizard' },
       ...mountOptions
     })
     expect(d6Wrapper.text()).toContain('(or 4)')
 
     // d8 average = 5
-    const d8Wrapper = mount(UiHitPointsCard, {
+    const d8Wrapper = mount(UiClassHitPointsCard, {
       props: { hitDie: 8, className: 'rogue' },
       ...mountOptions
     })
     expect(d8Wrapper.text()).toContain('(or 5)')
 
     // d10 average = 6
-    const d10Wrapper = mount(UiHitPointsCard, {
+    const d10Wrapper = mount(UiClassHitPointsCard, {
       props: { hitDie: 10, className: 'fighter' },
       ...mountOptions
     })
     expect(d10Wrapper.text()).toContain('(or 6)')
 
     // d12 average = 7
-    const d12Wrapper = mount(UiHitPointsCard, {
+    const d12Wrapper = mount(UiClassHitPointsCard, {
       props: { hitDie: 12, className: 'barbarian' },
       ...mountOptions
     })
@@ -86,7 +86,7 @@ describe('UiHitPointsCard', () => {
   })
 
   it('includes class name in per-level description', () => {
-    const wrapper = mount(UiHitPointsCard, {
+    const wrapper = mount(UiClassHitPointsCard, {
       props: {
         hitDie: 8,
         className: 'rogue'
@@ -98,7 +98,7 @@ describe('UiHitPointsCard', () => {
   })
 
   it('displays heart icon', () => {
-    const wrapper = mount(UiHitPointsCard, {
+    const wrapper = mount(UiClassHitPointsCard, {
       props: {
         hitDie: 8,
         className: 'rogue'

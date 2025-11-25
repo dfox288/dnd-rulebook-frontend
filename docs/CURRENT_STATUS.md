@@ -1,12 +1,12 @@
 # D&D 5e Compendium Frontend - Current Status
 
-**Last Updated:** 2025-11-26 (Latest: ✅ Component Extraction & Code Deduplication Complete!)
+**Last Updated:** 2025-11-26 (Latest: ✅ API /lookups Migration Complete!)
 **Status:** ✅ **PRODUCTION-READY - Perfect Code Quality!**
 **Framework:** Nuxt 4.x + NuxtUI 4.x + Three.js + Storybook 8.x
 **7 of 7 Entity Types + 10 Reference Pages + 🆕 Builder Tools** (All Complete!)
 **Test Coverage:** 1164+ tests (103 new tests added, all passing) ✨
 **Code Quality:** ESLint 0 errors ✅ | TypeScript: Clean ✅
-**NEW TODAY:** ✅ **COMPONENT EXTRACTION** - 5 new reusable components/composables, 24% code reduction (4,241 → 3,226 lines)!
+**NEW TODAY:** ✅ **API MIGRATION** - Backend moved reference tables to `/v1/lookups/*`, all 11 Nitro routes updated, types synced!
 **MAJOR ACHIEVEMENT:** All 7 entity pages now use consistent patterns for search, sort, filters, chips, and list states
 
 ---
