@@ -35,11 +35,14 @@ interface Props {
   color?: string
   /** Placeholder text when nothing selected (default: 'Select...') */
   placeholder?: string
+  /** Width class for the dropdown container (default: 'w-48 min-w-48') */
+  widthClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   color: 'primary',
-  placeholder: 'Select...'
+  placeholder: 'Select...',
+  widthClass: 'w-48 min-w-48'
 })
 
 const emit = defineEmits<{
@@ -92,8 +95,8 @@ const clearAll = () => {
 
     <!-- Select Menu Container -->
     <div class="flex items-center gap-2">
-      <!-- Multi-Select Dropdown (fixed width to prevent jumping) -->
-      <div class="w-48 min-w-48 max-w-48 shrink-0">
+      <!-- Multi-Select Dropdown -->
+      <div :class="widthClass">
         <USelectMenu
           :model-value="normalizedValue"
           :items="options"

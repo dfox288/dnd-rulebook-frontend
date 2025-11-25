@@ -188,7 +188,7 @@ const perPage = 24
               :options="sourceOptions"
               placeholder="All Sources"
               color="class"
-              class="w-full sm:w-48"
+              width-class="flex-1 min-w-[192px]"
               data-testid="source-filter"
             />
 
@@ -198,7 +198,7 @@ const perPage = 24
               value-key="value"
               placeholder="Sort by..."
               size="md"
-              class="w-full sm:w-48"
+              class="flex-1 min-w-[192px]"
             />
           </div>
         </template>
