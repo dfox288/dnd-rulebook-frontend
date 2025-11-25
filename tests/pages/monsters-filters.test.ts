@@ -359,7 +359,11 @@ describe('Monsters Page - Filter Layout', () => {
       component.selectedAlignments = ['Lawful Good', 'Chaotic Evil', 'Neutral']
       await wrapper.vm.$nextTick()
 
-      expect(component.selectedAlignments).toEqual(['Lawful Good', 'Chaotic Evil', 'Neutral'])
+      // Check length and content (order doesn't matter for multiselect)
+      expect(component.selectedAlignments.length).toBe(3)
+      expect(component.selectedAlignments).toContain('Lawful Good')
+      expect(component.selectedAlignments).toContain('Chaotic Evil')
+      expect(component.selectedAlignments).toContain('Neutral')
     })
 
     it('initializes as empty array', async () => {
@@ -533,6 +537,248 @@ describe('Monsters Page - Filter Layout', () => {
       await chip!.trigger('click')
 
       expect(component.selectedHPRange).toBeNull()
+    })
+  })
+
+  describe('Armor Type Filter - Multiselect', () => {
+    it('displays armor type filter multiselect', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const multiselect = wrapper.find('[data-testid="armor-type-filter-multiselect"]')
+      expect(multiselect.exists()).toBe(true)
+    })
+
+    it('allows selecting multiple armor types', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+
+      component.selectedArmorTypes = ['natural armor', 'plate armor', 'leather armor']
+      await wrapper.vm.$nextTick()
+
+      // Check length and content (order doesn't matter for multiselect)
+      expect(component.selectedArmorTypes.length).toBe(3)
+      expect(component.selectedArmorTypes).toContain('natural armor')
+      expect(component.selectedArmorTypes).toContain('plate armor')
+      expect(component.selectedArmorTypes).toContain('leather armor')
+    })
+
+    it('initializes as empty array', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      expect(Array.isArray(component.selectedArmorTypes)).toBe(true)
+      expect(component.selectedArmorTypes.length).toBe(0)
+    })
+
+    it('shows chip with selected armor types', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.selectedArmorTypes = ['natural armor', 'plate armor']
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-testid="armor-type-filter-chip"]')
+      expect(chip.exists()).toBe(true)
+      expect(chip.text()).toContain('Armor Types')
+      expect(chip.text()).toContain('✕')
+    })
+
+    it('clicking chip clears armor type filter', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.selectedArmorTypes = ['natural armor']
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-testid="armor-type-filter-chip"]')
+      await chip.trigger('click')
+
+      expect(component.selectedArmorTypes).toEqual([])
+    })
+  })
+
+  describe('Boolean Ability Filters', () => {
+    it('displays can hover toggle', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const toggle = wrapper.find('[data-testid="can-hover-toggle"]')
+      expect(toggle.exists()).toBe(true)
+    })
+
+    it('displays has lair actions toggle', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const toggle = wrapper.find('[data-testid="has-lair-actions-toggle"]')
+      expect(toggle.exists()).toBe(true)
+    })
+
+    it('displays has reactions toggle', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const toggle = wrapper.find('[data-testid="has-reactions-toggle"]')
+      expect(toggle.exists()).toBe(true)
+    })
+
+    it('displays is spellcaster toggle', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const toggle = wrapper.find('[data-testid="is-spellcaster-toggle"]')
+      expect(toggle.exists()).toBe(true)
+    })
+
+    it('displays has magic resistance toggle', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const toggle = wrapper.find('[data-testid="has-magic-resistance-toggle"]')
+      expect(toggle.exists()).toBe(true)
+    })
+
+    it('shows chip when can hover is set to yes', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.canHover = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Can Hover: Yes') && btn.text().includes('✕')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('shows chip when has lair actions is set to yes', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.hasLairActions = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Has Lair Actions: Yes') && btn.text().includes('✕')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('shows chip when has reactions is set to yes', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.hasReactions = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Has Reactions: Yes') && btn.text().includes('✕')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('shows chip when is spellcaster is set to yes', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.isSpellcaster = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Is Spellcaster: Yes') && btn.text().includes('✕')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('shows chip when has magic resistance is set to yes', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.hasMagicResistance = '1'
+      await wrapper.vm.$nextTick()
+
+      const chips = wrapper.findAll('button').filter(btn =>
+        btn.text().includes('Has Magic Resistance: Yes') && btn.text().includes('✕')
+      )
+      expect(chips.length).toBeGreaterThan(0)
+    })
+
+    it('clears can hover filter when clicking chip', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.canHover = '1'
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.findAll('button').find(btn =>
+        btn.text().includes('Can Hover: Yes') && btn.text().includes('✕')
+      )
+      expect(chip).toBeDefined()
+      await chip!.trigger('click')
+
+      expect(component.canHover).toBeNull()
+    })
+
+    it('includes all 6 new filters in activeFilterCount', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+
+      expect(component.activeFilterCount).toBe(0)
+
+      component.selectedArmorTypes = ['natural armor']
+      component.canHover = '1'
+      component.hasLairActions = '1'
+      component.hasReactions = '1'
+      component.isSpellcaster = '1'
+      component.hasMagicResistance = '1'
+      await wrapper.vm.$nextTick()
+
+      expect(component.activeFilterCount).toBe(6)
+    })
+
+    it('clears all 6 new filters when clearFilters is called', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+
+      component.selectedArmorTypes = ['natural armor']
+      component.canHover = '1'
+      component.hasLairActions = '1'
+      component.hasReactions = '1'
+      component.isSpellcaster = '1'
+      component.hasMagicResistance = '1'
+      await wrapper.vm.$nextTick()
+
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
+      expect(component.selectedArmorTypes).toEqual([])
+      expect(component.canHover).toBeNull()
+      expect(component.hasLairActions).toBeNull()
+      expect(component.hasReactions).toBeNull()
+      expect(component.isSpellcaster).toBeNull()
+      expect(component.hasMagicResistance).toBeNull()
     })
   })
 })
