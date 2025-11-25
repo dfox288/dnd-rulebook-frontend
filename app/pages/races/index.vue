@@ -7,7 +7,7 @@ const { apiFetch } = useApi()
 
 // Custom filter state (entity-specific)
 const selectedSize = ref((route.query.size as string) || '')
-const hasDarkvision = ref<string | null>((route.query.has_darkvision as string) || null)
+// NOTE: hasDarkvision removed - not filterable in Meilisearch backend
 
 // Fetch available sizes for filter options
 const { data: sizesResponse } = await useAsyncData<{ data: Size[] }>(
@@ -20,11 +20,26 @@ const { data: sizesResponse } = await useAsyncData<{ data: Size[] }>(
 
 const sizes = computed(() => sizesResponse.value?.data || [])
 
-// Query builder for custom filters
+// Query builder for custom filters (Meilisearch)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
-  if (selectedSize.value) params.size = selectedSize.value
-  if (hasDarkvision.value !== null) params.has_darkvision = hasDarkvision.value
+  const meilisearchFilters: string[] = []
+
+  // Size filter (use size_code, NOT size!)
+  if (selectedSize.value) {
+    meilisearchFilters.push(`size_code = ${selectedSize.value}`)
+  }
+
+  // NOTE: has_darkvision is NOT filterable in Meilisearch
+  // Available filterable attributes: size_code, size_name, ability_*_bonus,
+  // speed, tag_slugs, source_codes, has_innate_spells, is_subrace, etc.
+  // Darkvision filter has been removed until backend adds it to filterable attributes
+
+  // Combine all filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
+
   return params
 })
 
@@ -56,7 +71,6 @@ const races = computed(() => racesData.value as Race[])
 const clearFilters = () => {
   clearBaseFilters()
   selectedSize.value = ''
-  hasDarkvision.value = null
 }
 
 // Helper for filter chips
@@ -71,7 +85,6 @@ const filtersOpen = ref(false)
 const activeFilterCount = computed(() => {
   let count = 0
   if (selectedSize.value) count++
-  if (hasDarkvision.value !== null) count++
   return count
 })
 
@@ -143,20 +156,7 @@ const perPage = 24
             </div>
           </div>
 
-          <!-- Quick Toggles -->
-          <div class="flex flex-wrap gap-4">
-            <!-- Darkvision filter -->
-            <UiFilterToggle
-              v-model="hasDarkvision"
-              label="Has Darkvision"
-              color="primary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-          </div>
+          <!-- NOTE: Darkvision filter removed - not filterable in Meilisearch backend -->
 
           <!-- Clear filters button -->
           <div class="flex justify-end">
@@ -186,15 +186,6 @@ const perPage = 24
           @click="selectedSize = ''"
         >
           {{ getSizeName(selectedSize) }} ✕
-        </UButton>
-        <UButton
-          v-if="hasDarkvision !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="hasDarkvision = null"
-        >
-          Has Darkvision: {{ hasDarkvision === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
         <UButton
           v-if="searchQuery"

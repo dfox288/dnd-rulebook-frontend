@@ -8,11 +8,28 @@ const route = useRoute()
 const isBaseClass = ref<string | null>((route.query.is_base_class as string) || null)
 const isSpellcaster = ref<string | null>((route.query.is_spellcaster as string) || null)
 
-// Query builder for custom filters
+// Query builder for custom filters (Meilisearch syntax)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
-  if (isBaseClass.value !== null) params.is_base_class = isBaseClass.value
-  if (isSpellcaster.value !== null) params.is_spellcaster = isSpellcaster.value
+  const meilisearchFilters: string[] = []
+
+  // is_base_class filter (convert string to boolean)
+  if (isBaseClass.value !== null) {
+    const boolValue = isBaseClass.value === '1' || isBaseClass.value === 'true'
+    meilisearchFilters.push(`is_base_class = ${boolValue}`)
+  }
+
+  // is_spellcaster filter (convert string to boolean)
+  if (isSpellcaster.value !== null) {
+    const boolValue = isSpellcaster.value === '1' || isSpellcaster.value === 'true'
+    meilisearchFilters.push(`is_spellcaster = ${boolValue}`)
+  }
+
+  // Combine all filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
+
   return params
 })
 

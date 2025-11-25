@@ -51,14 +51,52 @@ const typeOptions = computed(() => {
   return options
 })
 
-// Query builder for custom filters
+// Query builder for custom filters (Meilisearch syntax)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
-  if (selectedType.value !== null) params.type = selectedType.value
-  if (selectedRarity.value !== null) params.rarity = selectedRarity.value
-  if (selectedMagic.value !== null) params.is_magic = selectedMagic.value
-  if (hasCharges.value !== null) params.has_charges = hasCharges.value
-  if (hasPrerequisites.value !== null) params.has_prerequisites = hasPrerequisites.value
+  const meilisearchFilters: string[] = []
+
+  // Type filter (use item_type_id for Meilisearch)
+  if (selectedType.value !== null) {
+    meilisearchFilters.push(`item_type_id = ${selectedType.value}`)
+  }
+
+  // Rarity filter (string value)
+  if (selectedRarity.value !== null) {
+    meilisearchFilters.push(`rarity = ${selectedRarity.value}`)
+  }
+
+  // is_magic filter (convert string to boolean)
+  if (selectedMagic.value !== null) {
+    const boolValue = selectedMagic.value === 'true' || selectedMagic.value === '1'
+    meilisearchFilters.push(`is_magic = ${boolValue}`)
+  }
+
+  // has_charges filter (check if charges_max > 0)
+  if (hasCharges.value !== null) {
+    const hasCharge = hasCharges.value === '1' || hasCharges.value === 'true'
+    if (hasCharge) {
+      meilisearchFilters.push('charges_max > 0')
+    } else {
+      meilisearchFilters.push('charges_max = 0')
+    }
+  }
+
+  // has_prerequisites filter (check if prerequisites field is not empty)
+  if (hasPrerequisites.value !== null) {
+    const hasPrereq = hasPrerequisites.value === '1' || hasPrerequisites.value === 'true'
+    if (hasPrereq) {
+      meilisearchFilters.push('prerequisites IS NOT EMPTY')
+    } else {
+      meilisearchFilters.push('prerequisites IS EMPTY')
+    }
+  }
+
+  // Combine all filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
+
   return params
 })
 

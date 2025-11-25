@@ -37,12 +37,40 @@ const typeOptions = [
   { label: 'Undead', value: 'undead' }
 ]
 
-// Query builder
+// Query builder (Meilisearch syntax)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
-  if (selectedCR.value) params.cr = selectedCR.value
-  if (selectedType.value) params.type = selectedType.value
-  if (isLegendary.value !== null) params.is_legendary = isLegendary.value
+  const meilisearchFilters: string[] = []
+
+  // CR range filter (convert UI range to Meilisearch range query)
+  if (selectedCR.value) {
+    if (selectedCR.value === '0-4') {
+      meilisearchFilters.push('challenge_rating >= 0 AND challenge_rating <= 4')
+    } else if (selectedCR.value === '5-10') {
+      meilisearchFilters.push('challenge_rating >= 5 AND challenge_rating <= 10')
+    } else if (selectedCR.value === '11-16') {
+      meilisearchFilters.push('challenge_rating >= 11 AND challenge_rating <= 16')
+    } else if (selectedCR.value === '17+') {
+      meilisearchFilters.push('challenge_rating >= 17')
+    }
+  }
+
+  // Type filter (string value, no quotes needed)
+  if (selectedType.value) {
+    meilisearchFilters.push(`type = ${selectedType.value}`)
+  }
+
+  // is_legendary filter (convert string to boolean)
+  if (isLegendary.value !== null) {
+    const boolValue = isLegendary.value === '1' || isLegendary.value === 'true'
+    meilisearchFilters.push(`is_legendary = ${boolValue}`)
+  }
+
+  // Combine all filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
+
   return params
 })
 

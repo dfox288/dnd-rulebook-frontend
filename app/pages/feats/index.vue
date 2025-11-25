@@ -7,10 +7,22 @@ const route = useRoute()
 // Custom filter state
 const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as string) || null)
 
-// Query builder for custom filters
+// Query builder for custom filters (Meilisearch syntax)
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
-  if (hasPrerequisites.value !== null) params.has_prerequisites = hasPrerequisites.value
+  const meilisearchFilters: string[] = []
+
+  // has_prerequisites filter (convert string to boolean)
+  if (hasPrerequisites.value !== null) {
+    const boolValue = hasPrerequisites.value === '1' || hasPrerequisites.value === 'true'
+    meilisearchFilters.push(`has_prerequisites = ${boolValue}`)
+  }
+
+  // Combine all filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
+
   return params
 })
 
