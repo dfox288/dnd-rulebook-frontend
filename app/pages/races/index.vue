@@ -103,69 +103,79 @@ const perPage = 24
 
         <div class="space-y-4">
           <!-- Size Filter -->
-          <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Size:</span>
-            <div class="flex gap-2 flex-wrap">
-              <UButton
-                :color="selectedSize === '' ? 'primary' : 'neutral'"
-                :variant="selectedSize === '' ? 'solid' : 'soft'"
-                size="sm"
-                @click="selectedSize = ''"
-              >
-                All
-              </UButton>
-              <UButton
-                v-for="size in sizes"
-                :key="size.id"
-                :color="selectedSize === size.code ? 'primary' : 'neutral'"
-                :variant="selectedSize === size.code ? 'solid' : 'soft'"
-                size="sm"
-                @click="selectedSize = size.code"
-              >
-                {{ size.name }}
-              </UButton>
-            </div>
+          <div
+            data-testid="size-filter-buttons"
+            class="flex gap-2 flex-wrap"
+          >
+            <UButton
+              :color="selectedSize === '' ? 'primary' : 'neutral'"
+              :variant="selectedSize === '' ? 'solid' : 'soft'"
+              size="sm"
+              @click="selectedSize = ''"
+            >
+              All
+            </UButton>
+            <UButton
+              v-for="size in sizes"
+              :key="size.id"
+              :color="selectedSize === size.code ? 'primary' : 'neutral'"
+              :variant="selectedSize === size.code ? 'solid' : 'soft'"
+              size="sm"
+              @click="selectedSize = size.code"
+            >
+              {{ size.name }}
+            </UButton>
           </div>
 
           <!-- NOTE: Darkvision filter removed - not filterable in Meilisearch backend -->
-
-          <!-- Clear filters button -->
-          <div class="flex justify-end">
-            <UButton
-              v-if="hasActiveFilters"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
-          </div>
         </div>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
         v-if="hasActiveFilters"
-        class="flex flex-wrap items-center gap-2 pt-2"
+        data-testid="active-filters-row"
+        class="flex flex-wrap items-center justify-between gap-2 pt-2"
       >
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            data-testid="active-filters-label"
+            class="text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
+            Active filters:
+          </span>
+          <UButton
+            v-if="selectedSize"
+            data-testid="size-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedSize = ''"
+          >
+            {{ getSizeName(selectedSize) }} ✕
+          </UButton>
+          <UButton
+            v-if="searchQuery"
+            data-testid="search-query-chip"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          >
+            "{{ searchQuery }}" ✕
+          </UButton>
+        </div>
+
+        <!-- Clear Filters Button (right-aligned) -->
         <UButton
-          v-if="selectedSize"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="selectedSize = ''"
-        >
-          {{ getSizeName(selectedSize) }} ✕
-        </UButton>
-        <UButton
-          v-if="searchQuery"
-          size="xs"
+          v-if="activeFilterCount > 0 || searchQuery"
+          data-testid="clear-filters-button"
           color="neutral"
           variant="soft"
-          @click="searchQuery = ''"
+          size="sm"
+          @click="clearFilters"
         >
-          "{{ searchQuery }}" ✕
+          Clear filters
         </UButton>
       </div>
     </div>
