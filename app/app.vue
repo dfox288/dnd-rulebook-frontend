@@ -51,7 +51,7 @@ const isCompendiumActive = computed(() => {
 
 // Tools dropdown items (utility tools and generators)
 const toolsItems = ref([
-  { label: 'Spell List Creator', to: '/spells/list-generator', icon: 'i-heroicons-sparkles' }
+  { label: 'Spell List Creator', to: '/tools/spell-list', icon: 'i-heroicons-sparkles' }
 ])
 
 // Check if current route is in tools section
