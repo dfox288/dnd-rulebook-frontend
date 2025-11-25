@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - API Integration (2025-11-25)
+
+**Migrated spell class filtering to Meilisearch:**
+- Updated spell class filter to use Meilisearch syntax: `?filter=class_slugs IN [wizard]` (was `?classes=wizard`)
+- Enables advanced filtering capabilities (AND/OR/IN operators, combined filters)
+- Fixed `is_base_class` TypeScript type: `boolean` (was incorrectly typed as `string`)
+- Updated ClassCard component to use boolean comparison for base class detection
+- All 15 base class filters working (Artificer, Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard, and 3 Sidekick classes)
+
 ### Added - Playwright E2E Testing (2025-11-24)
 
 **End-to-end test coverage for critical user journeys:**

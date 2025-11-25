@@ -2645,7 +2645,7 @@ export interface components {
             primary_ability: string;
             spellcasting_ability?: components["schemas"]["AbilityScoreResource"];
             parent_class_id: string;
-            is_base_class: string;
+            is_base_class: boolean; // Fixed: API returns boolean, not string
             parent_class?: components["schemas"]["ClassResource"];
             subclasses?: components["schemas"]["ClassResource"][];
             proficiencies?: components["schemas"]["ProficiencyResource"][];

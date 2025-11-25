@@ -18,9 +18,8 @@ const hitDieText = computed(() => {
  * Check if this is a base class or subclass
  */
 const isBaseClass = computed(() => {
-  const value = props.characterClass.is_base_class
-  // API returns string values: '1' for base class, '0' for subclass
-  return value === '1' || value === 'true'
+  // API returns boolean: true for base class, false for subclass
+  return props.characterClass.is_base_class === true
 })
 
 /**

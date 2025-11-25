@@ -183,11 +183,18 @@ const durationOptions = [
 // Query builder for custom filters
 const queryBuilder = computed(() => {
   const params: Record<string, unknown> = {}
+  const meilisearchFilters: string[] = []
+
+  // MySQL fallback filters (simple column filters)
   if (selectedLevel.value !== null) params.level = selectedLevel.value
   if (selectedSchool.value !== null) params.school = selectedSchool.value
-  if (selectedClass.value !== null) params.classes = selectedClass.value
   if (concentrationFilter.value !== null) params.concentration = concentrationFilter.value
   if (ritualFilter.value !== null) params.ritual = ritualFilter.value
+
+  // Meilisearch filter: Class filtering
+  if (selectedClass.value !== null) {
+    meilisearchFilters.push(`class_slugs IN [${selectedClass.value}]`)
+  }
 
   // Phase 1: Multi-select filters (comma-separated)
   if (selectedDamageTypes.value.length > 0) params.damage_type = selectedDamageTypes.value.join(',')
@@ -203,6 +210,11 @@ const queryBuilder = computed(() => {
   if (castingTimeFilter.value !== null) params.casting_time = castingTimeFilter.value
   if (rangeFilter.value !== null) params.range = rangeFilter.value
   if (durationFilter.value !== null) params.duration = durationFilter.value
+
+  // Combine Meilisearch filters with AND
+  if (meilisearchFilters.length > 0) {
+    params.filter = meilisearchFilters.join(' AND ')
+  }
 
   return params
 })
