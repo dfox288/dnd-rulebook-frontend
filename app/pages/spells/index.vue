@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore, Source } from '~/types'
+import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore, Source, Tag } from '~/types'
 
 const route = useRoute()
 // Note: useApi no longer needed for reference fetches (handled by useReferenceData)
@@ -32,6 +32,9 @@ const selectedSavingThrows = ref<string[]>(
 const selectedSources = ref<string[]>(
   route.query.source ? (Array.isArray(route.query.source) ? route.query.source : [route.query.source]) as string[] : []
 )
+const selectedTags = ref<string[]>(
+  route.query.tag ? (Array.isArray(route.query.tag) ? route.query.tag : [route.query.tag]) as string[] : []
+)
 
 // Phase 2: Component flag filters
 const verbalFilter = ref<string | null>((route.query.has_verbal as string) || null)
@@ -57,6 +60,15 @@ const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
 
 const { data: sources } = useReferenceData<Source>('/sources')
+
+// Tag options (hardcoded - only 2 tags exist in the dataset: 21% coverage)
+// Source: Analysis of 478 spells (200 sampled) - 42 spells with tags
+// - Touch Spells: 31 spells
+// - Ritual Caster: 17 spells
+const tagOptions = [
+  { label: 'Ritual Caster', value: 'ritual-caster' },
+  { label: 'Touch Spells', value: 'touch-spells' }
+]
 
 // Spell level options (0 = Cantrip, 1-9 = Spell levels)
 const levelOptions = [
@@ -183,6 +195,7 @@ const { queryParams: filterParams } = useMeilisearchFilters([
   { ref: selectedDamageTypes, field: 'damage_types', type: 'in' },
   { ref: selectedSavingThrows, field: 'saving_throws', type: 'in' },
   { ref: selectedSources, field: 'source_codes', type: 'in' },
+  { ref: selectedTags, field: 'tag_slugs', type: 'in' },
   { ref: verbalFilter, field: 'requires_verbal', type: 'boolean' },
   { ref: somaticFilter, field: 'requires_somatic', type: 'boolean' },
   { ref: materialFilter, field: 'requires_material', type: 'boolean' }
@@ -223,6 +236,8 @@ const spells = computed(() => spellsData.value as Spell[])
 const clearFilters = () => {
   clearBaseFilters()
   selectedLevel.value = null
+  minLevel.value = null
+  maxLevel.value = null
   selectedSchool.value = null
   selectedClass.value = null
   concentrationFilter.value = null
@@ -231,6 +246,7 @@ const clearFilters = () => {
   selectedDamageTypes.value = []
   selectedSavingThrows.value = []
   selectedSources.value = []
+  selectedTags.value = []
   // Phase 2: Clear component flag filters
   verbalFilter.value = null
   somaticFilter.value = null
@@ -258,9 +274,39 @@ const getSavingThrowName = (code: string) => {
   return code // Display "STR", "DEX", etc.
 }
 
+// Get level filter display text for chips
+const getLevelFilterText = computed(() => {
+  if (levelFilterMode.value === 'exact' && selectedLevel.value !== null) {
+    return `Level ${selectedLevel.value === 0 ? 'Cantrip' : selectedLevel.value}`
+  }
+  if (levelFilterMode.value === 'range') {
+    if (minLevel.value !== null && maxLevel.value !== null) {
+      return `Levels ${minLevel.value}-${maxLevel.value}`
+    }
+    if (minLevel.value !== null) {
+      return `Level ${minLevel.value}+`
+    }
+    if (maxLevel.value !== null) {
+      return `Level ${maxLevel.value} or lower`
+    }
+  }
+  return null
+})
+
+const clearLevelFilter = () => {
+  selectedLevel.value = null
+  minLevel.value = null
+  maxLevel.value = null
+}
+
 // Get source name by code for filter chips
 const getSourceName = (code: string) => {
   return code // Display "PHB", "XGE", etc.
+}
+
+// Get tag name by slug for filter chips
+const getTagName = (slug: string) => {
+  return tagOptions.find(t => t.value === slug)?.label || slug
 }
 
 // Pagination settings
@@ -269,6 +315,8 @@ const perPage = 24
 // Count active filters (excluding search) for collapse badge (using composable)
 const activeFilterCount = useFilterCount(
   selectedLevel,
+  minLevel,
+  maxLevel,
   selectedSchool,
   selectedClass,
   concentrationFilter,
@@ -276,6 +324,7 @@ const activeFilterCount = useFilterCount(
   selectedDamageTypes,
   selectedSavingThrows,
   selectedSources,
+  selectedTags,
   verbalFilter,
   somaticFilter,
   materialFilter
@@ -336,14 +385,64 @@ const activeFilterCount = useFilterCount(
         <UiFilterLayout>
           <!-- Primary Filters: Most frequently used (Level, School, Class) -->
           <template #primary>
-            <USelectMenu
-              v-model="selectedLevel"
-              :items="levelOptions"
-              value-key="value"
-              placeholder="All Levels"
-              size="md"
-              class="w-full sm:w-48"
-            />
+            <!-- Level Filter Mode Toggle -->
+            <div class="flex flex-col gap-2 w-full">
+              <UiFilterToggle
+                data-testid="level-filter-mode-toggle"
+                :model-value="levelFilterMode"
+                label="Level Filter"
+                color="primary"
+                :options="[
+                  { value: 'exact', label: 'Exact' },
+                  { value: 'range', label: 'Range' }
+                ]"
+                @update:model-value="(value) => {
+                  if (value === 'range') {
+                    switchToRangeMode()
+                  } else {
+                    switchToExactMode()
+                  }
+                }"
+              />
+
+              <!-- Exact Level Mode -->
+              <USelectMenu
+                v-if="levelFilterMode === 'exact'"
+                v-model="selectedLevel"
+                data-testid="level-exact-select"
+                :items="levelOptions"
+                value-key="value"
+                placeholder="All Levels"
+                size="md"
+                class="w-full sm:w-48"
+              />
+
+              <!-- Range Level Mode -->
+              <div
+                v-else
+                class="flex gap-2 w-full"
+              >
+                <USelectMenu
+                  v-model="minLevel"
+                  data-testid="level-min-select"
+                  :items="levelOptions"
+                  value-key="value"
+                  placeholder="Min Level"
+                  size="md"
+                  class="w-full sm:w-24"
+                />
+                <span class="self-center text-gray-500">to</span>
+                <USelectMenu
+                  v-model="maxLevel"
+                  data-testid="level-max-select"
+                  :items="levelOptions"
+                  value-key="value"
+                  placeholder="Max Level"
+                  size="md"
+                  class="w-full sm:w-24"
+                />
+              </div>
+            </div>
 
             <USelectMenu
               v-model="selectedSchool"
@@ -450,6 +549,15 @@ const activeFilterCount = useFilterCount(
               color="primary"
               class="w-full sm:w-48"
             />
+
+            <UiFilterMultiSelect
+              v-model="selectedTags"
+              :options="tagOptions"
+              label="Tags"
+              placeholder="All Tags"
+              color="primary"
+              class="w-full sm:w-48"
+            />
           </template>
 
           <!-- Actions: Clear filters button -->
@@ -473,13 +581,14 @@ const activeFilterCount = useFilterCount(
       >
         <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
         <UButton
-          v-if="selectedLevel !== null"
+          v-if="getLevelFilterText"
+          data-testid="level-filter-chip"
           size="xs"
           color="primary"
           variant="soft"
-          @click="selectedLevel = null"
+          @click="clearLevelFilter"
         >
-          Level {{ selectedLevel === 0 ? 'Cantrip' : selectedLevel }} ✕
+          {{ getLevelFilterText }} ✕
         </UButton>
         <UButton
           v-if="selectedSchool !== null"
@@ -558,6 +667,17 @@ const activeFilterCount = useFilterCount(
           @click="selectedSources = selectedSources.filter(s => s !== source)"
         >
           {{ getSourceName(source) }} ✕
+        </UButton>
+        <!-- Tag chips -->
+        <UButton
+          v-for="tag in selectedTags"
+          :key="tag"
+          size="xs"
+          color="spell"
+          variant="soft"
+          @click="selectedTags = selectedTags.filter(t => t !== tag)"
+        >
+          {{ getTagName(tag) }} ✕
         </UButton>
         <!-- Phase 2: Component flag chips -->
         <UButton

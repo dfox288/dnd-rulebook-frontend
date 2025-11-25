@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Spell Source Book Filtering** (2025-11-25) - Added source book filter to spells page with multi-select UI and filter chips
+  - Filter by source books: PHB, XGE, TCE, SCAG, EE, and more
+  - Uses `source_codes IN [...]` Meilisearch filter
+  - Added to advanced filters section with UiFilterMultiSelect
+  - Filter chips display source codes with click-to-remove
+  - 6 comprehensive tests covering composable integration and multi-select behavior
+  - Sources fetched from `/sources` API endpoint via useReferenceData composable
+
+- **Spell Tag Filtering** (2025-11-25) - Added tag filter to spells page with multi-select UI and filter chips
+  - Filter by "Ritual Caster" (33 spells) and "Touch Spells" (83 spells)
+  - 21% spell coverage (107 of 478 spells have tags)
+  - Uses `tag_slugs IN [...]` Meilisearch filter
+  - Added to advanced filters section with UiFilterMultiSelect
+  - Filter chips display tag names with click-to-remove
+  - 12 comprehensive tests covering composable integration, state management, and chip behavior
+  - Tags are hardcoded (no `/tags` endpoint available from API)
+
 ### Added - UiFilterLayout Component (2025-11-25)
 
 **🎨 New Reusable Filter Layout Component:**

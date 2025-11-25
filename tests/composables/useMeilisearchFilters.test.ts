@@ -163,6 +163,18 @@ describe('useMeilisearchFilters', () => {
         filter: 'class_slugs IN [wizard]'
       })
     })
+
+    it('builds IN filter for source codes array', () => {
+      const sourceCodesRef = ref(['PHB', 'XGE', 'TCE'])
+
+      const { queryParams } = useMeilisearchFilters([
+        { ref: sourceCodesRef, field: 'source_codes', type: 'in' }
+      ])
+
+      expect(queryParams.value).toEqual({
+        filter: 'source_codes IN [PHB, XGE, TCE]'
+      })
+    })
   })
 
   describe('range filter', () => {
