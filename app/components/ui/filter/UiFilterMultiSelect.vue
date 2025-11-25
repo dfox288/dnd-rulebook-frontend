@@ -99,6 +99,7 @@ const clearAll = () => {
           :items="options"
           multiple
           searchable
+          :placeholder="placeholder"
           :aria-label="`${label} filter`"
           value-key="value"
           @update:model-value="handleChange"
