@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore } from '~/types'
 
 const route = useRoute()
-const { apiFetch } = useApi()
+// Note: useApi no longer needed for reference fetches (handled by useReferenceData)
 
 // Filter collapse state
 const filtersOpen = ref(false)
@@ -34,35 +34,17 @@ const materialFilter = ref<string | null>((route.query.has_material as string) |
 // - rangeFilter (range not filterable)
 // - durationFilter (duration not filterable)
 
-// Fetch spell schools for filter options
-const { data: spellSchools } = await useAsyncData<SpellSchool[]>('spell-schools', async () => {
-  const response = await apiFetch<{ data: SpellSchool[] }>('/spell-schools')
-  return response?.data || []
+// Fetch reference data for filter options (using composable)
+const { data: spellSchools } = useReferenceData<SpellSchool>('/spell-schools')
+
+const { data: classes } = useReferenceData<CharacterClass>('/classes', {
+  pages: 2,
+  transform: (data) => data.filter(c => c.is_base_class === true)
 })
 
-// Fetch classes for filter options (base classes only)
-// Note: Need to fetch 2 pages since there are 131 classes but limit is 100/page
-const { data: classes } = await useAsyncData<CharacterClass[]>('classes-filter', async () => {
-  const [page1, page2] = await Promise.all([
-    apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100&page=1'),
-    apiFetch<{ data: CharacterClass[] }>('/classes?per_page=100&page=2')
-  ])
-  const allClasses = [...(page1?.data || []), ...(page2?.data || [])]
-  // Filter to base classes only (API returns boolean true/false, not string)
-  return allClasses.filter(c => c.is_base_class === true)
-})
+const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
 
-// Phase 1: Fetch damage types for filter options
-const { data: damageTypes } = await useAsyncData<DamageType[]>('damage-types', async () => {
-  const response = await apiFetch<{ data: DamageType[] }>('/damage-types')
-  return response?.data || []
-})
-
-// Phase 1: Fetch ability scores (for saving throw filter options)
-const { data: abilityScores } = await useAsyncData<AbilityScore[]>('ability-scores', async () => {
-  const response = await apiFetch<{ data: AbilityScore[] }>('/ability-scores')
-  return response?.data || []
-})
+const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
 
 // Spell level options (0 = Cantrip, 1-9 = Spell levels)
 const levelOptions = [
@@ -130,83 +112,23 @@ const savingThrowOptions = computed(() => {
 // - durationOptions (duration not filterable)
 // Users can search for these values using full-text search (?q=1 action)
 
-// Query builder for custom filters
-const queryBuilder = computed(() => {
-  const params: Record<string, unknown> = {}
-  const meilisearchFilters: string[] = []
-
-  // Level filter (Meilisearch)
-  if (selectedLevel.value !== null) {
-    meilisearchFilters.push(`level = ${selectedLevel.value}`)
-  }
-
-  // School filter (Meilisearch) - Convert ID to school_code
-  if (selectedSchool.value !== null) {
-    const schoolCode = spellSchools.value?.find(s => s.id === selectedSchool.value)?.code
-    if (schoolCode) {
-      meilisearchFilters.push(`school_code = ${schoolCode}`)
-    }
-  }
-
-  // Class filter (Meilisearch)
-  if (selectedClass.value !== null) {
-    meilisearchFilters.push(`class_slugs IN [${selectedClass.value}]`)
-  }
-
-  // Concentration filter (Meilisearch) - Convert string to boolean
-  if (concentrationFilter.value !== null) {
-    const boolValue = concentrationFilter.value === '1' || concentrationFilter.value === 'true'
-    meilisearchFilters.push(`concentration = ${boolValue}`)
-  }
-
-  // Ritual filter (Meilisearch) - Convert string to boolean
-  if (ritualFilter.value !== null) {
-    const boolValue = ritualFilter.value === '1' || ritualFilter.value === 'true'
-    meilisearchFilters.push(`ritual = ${boolValue}`)
-  }
-
-  // Damage types filter (Meilisearch multi-select)
-  if (selectedDamageTypes.value.length > 0) {
-    const codes = selectedDamageTypes.value.join(', ')
-    meilisearchFilters.push(`damage_types IN [${codes}]`)
-  }
-
-  // Saving throws filter (Meilisearch multi-select)
-  if (selectedSavingThrows.value.length > 0) {
-    const codes = selectedSavingThrows.value.join(', ')
-    meilisearchFilters.push(`saving_throws IN [${codes}]`)
-  }
-
-  // Component filters (Meilisearch) - Convert string to boolean
-  if (verbalFilter.value !== null) {
-    const boolValue = verbalFilter.value === '1' || verbalFilter.value === 'true'
-    meilisearchFilters.push(`requires_verbal = ${boolValue}`)
-  }
-
-  if (somaticFilter.value !== null) {
-    const boolValue = somaticFilter.value === '1' || somaticFilter.value === 'true'
-    meilisearchFilters.push(`requires_somatic = ${boolValue}`)
-  }
-
-  if (materialFilter.value !== null) {
-    const boolValue = materialFilter.value === '1' || materialFilter.value === 'true'
-    meilisearchFilters.push(`requires_material = ${boolValue}`)
-  }
-
-  // NOTE: Removed unsupported filters (not indexed in Meilisearch):
-  // - has_higher_levels (field not filterable)
-  // - casting_time (field not filterable)
-  // - range (field not filterable)
-  // - duration (field not filterable)
-  // Users can still search for these values using full-text search (?q=1 action)
-
-  // Combine all Meilisearch filters with AND
-  if (meilisearchFilters.length > 0) {
-    params.filter = meilisearchFilters.join(' AND ')
-  }
-
-  return params
-})
+// Query builder for custom filters (using composable)
+const { queryParams } = useMeilisearchFilters([
+  { ref: selectedLevel, field: 'level' },
+  {
+    ref: selectedSchool,
+    field: 'school_code',
+    transform: (id) => spellSchools.value?.find(s => s.id === id)?.code || null
+  },
+  { ref: selectedClass, field: 'class_slugs', type: 'in' },
+  { ref: concentrationFilter, field: 'concentration', type: 'boolean' },
+  { ref: ritualFilter, field: 'ritual', type: 'boolean' },
+  { ref: selectedDamageTypes, field: 'damage_types', type: 'in' },
+  { ref: selectedSavingThrows, field: 'saving_throws', type: 'in' },
+  { ref: verbalFilter, field: 'requires_verbal', type: 'boolean' },
+  { ref: somaticFilter, field: 'requires_somatic', type: 'boolean' },
+  { ref: materialFilter, field: 'requires_material', type: 'boolean' }
+])
 
 // Use entity list composable for all shared logic
 const {
@@ -223,7 +145,7 @@ const {
 } = useEntityList({
   endpoint: '/spells',
   cacheKey: 'spells-list',
-  queryBuilder,
+  queryBuilder: queryParams,
   seo: {
     title: 'Spells - D&D 5e Compendium',
     description: 'Browse all D&D 5e spells. Filter by level, school, and search for specific spells.'
@@ -273,24 +195,19 @@ const getSavingThrowName = (code: string) => {
 // Pagination settings
 const perPage = 24
 
-// Count active filters (excluding search) for collapse badge
-const activeFilterCount = computed(() => {
-  let count = 0
-  if (selectedLevel.value !== null) count++
-  if (selectedSchool.value !== null) count++
-  if (selectedClass.value !== null) count++
-  if (concentrationFilter.value !== null) count++
-  if (ritualFilter.value !== null) count++
-  // Phase 1: Count multi-select filters
-  if (selectedDamageTypes.value.length > 0) count++
-  if (selectedSavingThrows.value.length > 0) count++
-  // Phase 2: Count component flag filters
-  if (verbalFilter.value !== null) count++
-  if (somaticFilter.value !== null) count++
-  if (materialFilter.value !== null) count++
-  // Phase 3: Removed unsupported filter counts
-  return count
-})
+// Count active filters (excluding search) for collapse badge (using composable)
+const activeFilterCount = useFilterCount(
+  selectedLevel,
+  selectedSchool,
+  selectedClass,
+  concentrationFilter,
+  ritualFilter,
+  selectedDamageTypes,
+  selectedSavingThrows,
+  verbalFilter,
+  somaticFilter,
+  materialFilter
+)
 </script>
 
 <template>
