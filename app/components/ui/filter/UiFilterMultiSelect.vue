@@ -27,8 +27,8 @@ interface Option {
 interface Props {
   /** Array of selected values */
   modelValue: string[] | null | undefined
-  /** Filter label */
-  label: string
+  /** Filter label (optional - if not provided, no label will be shown) */
+  label?: string
   /** Available options */
   options: Option[]
   /** Entity semantic color (default: 'primary') */
@@ -100,7 +100,7 @@ const clearAll = () => {
           multiple
           searchable
           :placeholder="placeholder"
-          :aria-label="`${label} filter`"
+          :aria-label="label ? `${label} filter` : 'Filter'"
           value-key="value"
           class="w-full"
           @update:model-value="handleChange"
@@ -124,7 +124,7 @@ const clearAll = () => {
         color="neutral"
         variant="ghost"
         size="sm"
-        :aria-label="`Clear ${label} filter`"
+        :aria-label="label ? `Clear ${label} filter` : 'Clear filter'"
         @click="clearAll"
       />
     </div>
