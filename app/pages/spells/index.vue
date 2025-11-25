@@ -332,9 +332,9 @@ const activeFilterCount = computed(() => {
         </template>
 
         <!-- Filter Content -->
-        <div class="space-y-4">
-          <!-- Basic Filters -->
-          <div class="flex flex-wrap gap-2 mb-4">
+        <div class="space-y-5">
+          <!-- TIER 1: Primary Filters (Most Used) -->
+          <div class="flex flex-wrap gap-3">
             <!-- Level filter -->
             <USelectMenu
               v-model="selectedLevel"
@@ -342,7 +342,7 @@ const activeFilterCount = computed(() => {
               value-key="value"
               placeholder="All Levels"
               size="md"
-              class="w-48"
+              class="w-full sm:w-48"
             />
 
             <!-- School filter -->
@@ -352,7 +352,7 @@ const activeFilterCount = computed(() => {
               value-key="value"
               placeholder="All Schools"
               size="md"
-              class="w-48"
+              class="w-full sm:w-48"
             />
 
             <!-- Class filter -->
@@ -362,47 +362,44 @@ const activeFilterCount = computed(() => {
               value-key="value"
               placeholder="All Classes"
               size="md"
-              class="w-48"
+              class="w-full sm:w-48"
             />
           </div>
 
-          <!-- Quick Toggles -->
-          <div class="flex flex-wrap gap-4">
-            <!-- Concentration filter -->
-            <UiFilterToggle
-              v-model="concentrationFilter"
-              label="Concentration"
-              color="primary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
+          <!-- TIER 2: Quick Toggles -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+              Quick Filters
+            </h4>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <!-- Concentration filter -->
+              <UiFilterToggle
+                v-model="concentrationFilter"
+                label="Concentration"
+                color="primary"
+                :options="[
+                  { value: null, label: 'All' },
+                  { value: '1', label: 'Yes' },
+                  { value: '0', label: 'No' }
+                ]"
+              />
 
-            <!-- Ritual filter -->
-            <UiFilterToggle
-              v-model="ritualFilter"
-              label="Ritual"
-              color="primary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-          </div>
+              <!-- Ritual filter -->
+              <UiFilterToggle
+                v-model="ritualFilter"
+                label="Ritual"
+                color="primary"
+                :options="[
+                  { value: null, label: 'All' },
+                  { value: '1', label: 'Yes' },
+                  { value: '0', label: 'No' }
+                ]"
+              />
 
-          <!-- Phase 2: Spell Components -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Spell Components
-            </label>
-            <div class="flex flex-wrap gap-4">
               <!-- Verbal Component -->
               <UiFilterToggle
                 v-model="verbalFilter"
-                label="Verbal (V)"
+                label="V"
                 color="primary"
                 :options="[
                   { value: null, label: 'All' },
@@ -414,7 +411,7 @@ const activeFilterCount = computed(() => {
               <!-- Somatic Component -->
               <UiFilterToggle
                 v-model="somaticFilter"
-                label="Somatic (S)"
+                label="S"
                 color="primary"
                 :options="[
                   { value: null, label: 'All' },
@@ -426,7 +423,7 @@ const activeFilterCount = computed(() => {
               <!-- Material Component -->
               <UiFilterToggle
                 v-model="materialFilter"
-                label="Material (M)"
+                label="M"
                 color="primary"
                 :options="[
                   { value: null, label: 'All' },
@@ -437,37 +434,36 @@ const activeFilterCount = computed(() => {
             </div>
           </div>
 
-          <!-- Phase 2: Spell Scaling -->
-          <!-- Removed: Spell Scaling filter (has_higher_levels not filterable in Meilisearch) -->
+          <!-- TIER 3: Advanced Filters -->
+          <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+              Advanced Filters
+            </h4>
+            <div class="flex flex-wrap gap-3">
+              <!-- Damage Types filter -->
+              <UiFilterMultiSelect
+                v-model="selectedDamageTypes"
+                :options="damageTypeOptions"
+                label="Damage Types"
+                placeholder="All Damage Types"
+                color="primary"
+                class="w-full sm:w-64"
+              />
 
-          <!-- Phase 1: Multi-select Filters -->
-          <div class="flex flex-wrap gap-2">
-            <!-- Damage Types filter -->
-            <UiFilterMultiSelect
-              v-model="selectedDamageTypes"
-              :options="damageTypeOptions"
-              label="Damage Types"
-              placeholder="All Damage Types"
-              color="primary"
-              class="w-64"
-            />
-
-            <!-- Saving Throws filter -->
-            <UiFilterMultiSelect
-              v-model="selectedSavingThrows"
-              :options="savingThrowOptions"
-              label="Saving Throws"
-              placeholder="All Saving Throws"
-              color="primary"
-              class="w-64"
-            />
+              <!-- Saving Throws filter -->
+              <UiFilterMultiSelect
+                v-model="selectedSavingThrows"
+                :options="savingThrowOptions"
+                label="Saving Throws"
+                placeholder="All Saving Throws"
+                color="primary"
+                class="w-full sm:w-64"
+              />
+            </div>
           </div>
 
-          <!-- Removed: Phase 3 Direct Field Filters (casting_time, range, duration not filterable in Meilisearch) -->
-          <!-- Users can search for these values using full-text search (e.g., ?q=1 action) -->
-
           <!-- Clear filters button -->
-          <div class="flex justify-end">
+          <div class="flex justify-end border-t border-gray-200 dark:border-gray-700 pt-5">
             <UButton
               v-if="hasActiveFilters"
               color="neutral"
