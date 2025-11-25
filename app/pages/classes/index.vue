@@ -8,10 +8,20 @@ const route = useRoute()
 const isBaseClass = ref<string | null>((route.query.is_base_class as string) || null)
 const isSpellcaster = ref<string | null>((route.query.is_spellcaster as string) || null)
 
+// Hit Die filter
+const selectedHitDice = ref<number[]>([])
+const hitDieOptions = [
+  { label: 'd6', value: 6 },
+  { label: 'd8', value: 8 },
+  { label: 'd10', value: 10 },
+  { label: 'd12', value: 12 }
+]
+
 // Query builder (using composable)
 const { queryParams } = useMeilisearchFilters([
   { ref: isBaseClass, field: 'is_base_class', type: 'boolean' },
-  { ref: isSpellcaster, field: 'is_spellcaster', type: 'boolean' }
+  { ref: isSpellcaster, field: 'is_spellcaster', type: 'boolean' },
+  { ref: selectedHitDice, field: 'hit_die', type: 'in' }
 ])
 
 // Use entity list composable for all shared logic
@@ -44,13 +54,14 @@ const clearFilters = () => {
   clearBaseFilters()
   isBaseClass.value = null
   isSpellcaster.value = null
+  selectedHitDice.value = []
 }
 
 // Filter collapse state
 const filtersOpen = ref(false)
 
 // Active filter count for badge
-const activeFilterCount = useFilterCount(isBaseClass, isSpellcaster)
+const activeFilterCount = useFilterCount(isBaseClass, isSpellcaster, selectedHitDice)
 
 // Pagination settings
 const perPage = 24
@@ -121,6 +132,18 @@ const perPage = 24
               ]"
             />
           </div>
+
+          <!-- Advanced Filters -->
+          <div class="flex flex-wrap gap-4">
+            <!-- Hit Die Filter -->
+            <UiFilterMultiSelect
+              v-model="selectedHitDice"
+              :options="hitDieOptions"
+              placeholder="All Hit Dice"
+              color="primary"
+              data-testid="hit-die-filter"
+            />
+          </div>
         </div>
       </UiFilterCollapse>
 
@@ -149,6 +172,17 @@ const perPage = 24
             @click="isSpellcaster = null"
           >
             Spellcaster: {{ isSpellcaster === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <!-- Hit Die Chips -->
+          <UButton
+            v-for="hitDie in selectedHitDice"
+            :key="hitDie"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="selectedHitDice = selectedHitDice.filter(d => d !== hitDie)"
+          >
+            d{{ hitDie }} ✕
           </UButton>
           <UButton
             v-if="searchQuery"
