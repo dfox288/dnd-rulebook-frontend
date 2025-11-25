@@ -5,17 +5,49 @@ import type { Monster } from '~/types'
 const route = useRoute()
 
 // Custom filter state
-const selectedCR = ref(route.query.cr ? String(route.query.cr) : null)
+// Note: UiFilterMultiSelect works with strings, so we store as strings and convert to numbers for filtering
+const selectedCRs = ref<string[]>(
+  route.query.cr ? (Array.isArray(route.query.cr) ? route.query.cr.map(String) : [String(route.query.cr)]) : []
+)
 const selectedType = ref(route.query.type ? String(route.query.type) : null)
 const isLegendary = ref<string | null>((route.query.is_legendary as string) || null)
 
-// CR range options
+// CR multiselect options (common D&D 5e CR values)
 const crOptions = [
-  { label: 'All CRs', value: null },
-  { label: 'CR 0-4 (Easy)', value: '0-4' },
-  { label: 'CR 5-10 (Medium)', value: '5-10' },
-  { label: 'CR 11-16 (Hard)', value: '11-16' },
-  { label: 'CR 17+ (Deadly)', value: '17+' }
+  { label: 'CR 0', value: '0' },
+  { label: 'CR 1/8', value: '0.125' },
+  { label: 'CR 1/4', value: '0.25' },
+  { label: 'CR 1/2', value: '0.5' },
+  { label: 'CR 1', value: '1' },
+  { label: 'CR 2', value: '2' },
+  { label: 'CR 3', value: '3' },
+  { label: 'CR 4', value: '4' },
+  { label: 'CR 5', value: '5' },
+  { label: 'CR 6', value: '6' },
+  { label: 'CR 7', value: '7' },
+  { label: 'CR 8', value: '8' },
+  { label: 'CR 9', value: '9' },
+  { label: 'CR 10', value: '10' },
+  { label: 'CR 11', value: '11' },
+  { label: 'CR 12', value: '12' },
+  { label: 'CR 13', value: '13' },
+  { label: 'CR 14', value: '14' },
+  { label: 'CR 15', value: '15' },
+  { label: 'CR 16', value: '16' },
+  { label: 'CR 17', value: '17' },
+  { label: 'CR 18', value: '18' },
+  { label: 'CR 19', value: '19' },
+  { label: 'CR 20', value: '20' },
+  { label: 'CR 21', value: '21' },
+  { label: 'CR 22', value: '22' },
+  { label: 'CR 23', value: '23' },
+  { label: 'CR 24', value: '24' },
+  { label: 'CR 25', value: '25' },
+  { label: 'CR 26', value: '26' },
+  { label: 'CR 27', value: '27' },
+  { label: 'CR 28', value: '28' },
+  { label: 'CR 29', value: '29' },
+  { label: 'CR 30', value: '30' }
 ]
 
 // Type options
@@ -37,41 +69,20 @@ const typeOptions = [
   { label: 'Undead', value: 'undead' }
 ]
 
-// Query builder (hybrid: composable + manual CR range)
-const queryBuilder = computed(() => {
-  const params: Record<string, unknown> = {}
-  const meilisearchFilters: string[] = []
+// Query builder (using composable for all filters)
+const { queryParams: filterParams } = useMeilisearchFilters([
+  // CR multiselect filter (convert strings to numbers for API)
+  {
+    ref: selectedCRs,
+    field: 'challenge_rating',
+    type: 'in',
+    transform: (crs) => crs.map(Number)
+  },
+  { ref: selectedType, field: 'type' },
+  { ref: isLegendary, field: 'is_legendary', type: 'boolean' }
+])
 
-  // Standard filters via composable
-  const { queryParams: standardParams } = useMeilisearchFilters([
-    { ref: selectedType, field: 'type' },
-    { ref: isLegendary, field: 'is_legendary', type: 'boolean' }
-  ])
-
-  if (standardParams.value.filter) {
-    meilisearchFilters.push(standardParams.value.filter as string)
-  }
-
-  // Special handling for CR range (UI string → numeric range)
-  if (selectedCR.value) {
-    const crMap: Record<string, string> = {
-      '0-4': 'challenge_rating >= 0 AND challenge_rating <= 4',
-      '5-10': 'challenge_rating >= 5 AND challenge_rating <= 10',
-      '11-16': 'challenge_rating >= 11 AND challenge_rating <= 16',
-      '17+': 'challenge_rating >= 17'
-    }
-    const crValue = selectedCR.value
-    if (crValue && crMap[crValue]) {
-      meilisearchFilters.push(crMap[crValue])
-    }
-  }
-
-  if (meilisearchFilters.length > 0) {
-    params.filter = meilisearchFilters.join(' AND ')
-  }
-
-  return params
-})
+const queryBuilder = computed(() => filterParams.value)
 
 // Use entity list composable
 const {
@@ -100,14 +111,31 @@ const monsters = computed(() => data.value as Monster[])
 // Clear all filters
 const clearFilters = () => {
   clearBaseFilters()
-  selectedCR.value = null
+  selectedCRs.value = []
   selectedType.value = null
   isLegendary.value = null
 }
 
 // Helper functions for filter chips
 const getCRLabel = (cr: string) => {
-  return crOptions.find(o => o.value === cr)?.label || cr
+  // Convert back to display format (e.g., "0.125" → "CR 1/8", "5" → "CR 5")
+  return crOptions.find(o => o.value === cr)?.label || `CR ${cr}`
+}
+
+// Get CR filter display text for chips
+const getCRFilterText = computed(() => {
+  if (selectedCRs.value.length === 0) return null
+
+  const labels = selectedCRs.value
+    .sort((a, b) => Number(a) - Number(b))
+    .map(cr => getCRLabel(cr).replace('CR ', '')) // Remove "CR " prefix for compactness
+
+  const prefix = selectedCRs.value.length === 1 ? 'CR' : 'CRs'
+  return `${prefix}: ${labels.join(', ')}`
+})
+
+const clearCRFilter = () => {
+  selectedCRs.value = []
 }
 
 const getTypeLabel = (type: string) => {
@@ -118,7 +146,7 @@ const getTypeLabel = (type: string) => {
 const filtersOpen = ref(false)
 
 // Active filter count for badge
-const activeFilterCount = useFilterCount(selectedCR, selectedType, isLegendary)
+const activeFilterCount = useFilterCount(selectedCRs, selectedType, isLegendary)
 
 const perPage = 24
 </script>
@@ -161,17 +189,17 @@ const perPage = 24
           </UInput>
         </template>
 
-        <div class="space-y-4">
-          <!-- Filter dropdowns -->
-          <div class="flex flex-wrap gap-2">
-            <!-- CR Filter -->
-            <USelectMenu
-              v-model="selectedCR"
-              :items="crOptions"
-              value-key="value"
-              text-key="label"
-              placeholder="Challenge Rating"
-              class="w-48"
+        <UiFilterLayout>
+          <!-- Primary Filters: Most frequently used (CR, Type) -->
+          <template #primary>
+            <!-- CR Filter Multiselect -->
+            <UiFilterMultiSelect
+              v-model="selectedCRs"
+              data-testid="cr-filter-multiselect"
+              :options="crOptions"
+              placeholder="All CRs"
+              color="primary"
+              class="w-full sm:w-48"
             />
 
             <!-- Type Filter -->
@@ -180,14 +208,14 @@ const perPage = 24
               :items="typeOptions"
               value-key="value"
               text-key="label"
-              placeholder="Type"
-              class="w-48"
+              placeholder="All Types"
+              size="md"
+              class="w-full sm:w-48"
             />
-          </div>
+          </template>
 
-          <!-- Quick Toggles -->
-          <div class="flex flex-wrap gap-4">
-            <!-- Legendary filter -->
+          <!-- Quick Toggles: Binary filters (Legendary) -->
+          <template #quick>
             <UiFilterToggle
               v-model="isLegendary"
               label="Legendary"
@@ -198,63 +226,76 @@ const perPage = 24
                 { value: '0', label: 'No' }
               ]"
             />
-          </div>
+          </template>
 
-          <!-- Clear filters button -->
-          <div class="flex justify-end">
-            <UButton
-              v-if="hasActiveFilters"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
-          </div>
-        </div>
+          <!-- Advanced Filters: Empty (no advanced filters yet) -->
+          <template #advanced />
+
+          <!-- Actions: Empty (Clear Filters moved to chips row) -->
+          <template #actions />
+        </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
         v-if="hasActiveFilters"
-        class="flex flex-wrap items-center gap-2 pt-2"
+        class="flex flex-wrap items-center justify-between gap-2 pt-2"
       >
-        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active:</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            v-if="activeFilterCount > 0 || searchQuery"
+            class="text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
+            Active filters:
+          </span>
+          <UButton
+            v-if="getCRFilterText"
+            data-testid="cr-filter-chip"
+            size="xs"
+            color="primary"
+            variant="soft"
+            @click="clearCRFilter"
+          >
+            {{ getCRFilterText }} ✕
+          </UButton>
+          <UButton
+            v-if="selectedType !== null"
+            size="xs"
+            color="info"
+            variant="soft"
+            @click="selectedType = null"
+          >
+            {{ getTypeLabel(selectedType) }} ✕
+          </UButton>
+          <UButton
+            v-if="isLegendary !== null"
+            size="xs"
+            color="error"
+            variant="soft"
+            @click="isLegendary = null"
+          >
+            Legendary: {{ isLegendary === '1' ? 'Yes' : 'No' }} ✕
+          </UButton>
+          <UButton
+            v-if="searchQuery"
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="searchQuery = ''"
+          >
+            "{{ searchQuery }}" ✕
+          </UButton>
+        </div>
+
+        <!-- Clear Filters Button (right-aligned) -->
         <UButton
-          v-if="selectedCR !== null"
-          size="xs"
-          color="primary"
-          variant="soft"
-          @click="selectedCR = null"
-        >
-          {{ getCRLabel(selectedCR) }} ✕
-        </UButton>
-        <UButton
-          v-if="selectedType !== null"
-          size="xs"
-          color="info"
-          variant="soft"
-          @click="selectedType = null"
-        >
-          {{ getTypeLabel(selectedType) }} ✕
-        </UButton>
-        <UButton
-          v-if="isLegendary !== null"
-          size="xs"
-          color="error"
-          variant="soft"
-          @click="isLegendary = null"
-        >
-          Legendary: {{ isLegendary === '1' ? 'Yes' : 'No' }} ✕
-        </UButton>
-        <UButton
-          v-if="searchQuery"
-          size="xs"
+          v-if="activeFilterCount > 0 || searchQuery"
           color="neutral"
           variant="soft"
-          @click="searchQuery = ''"
+          size="sm"
+          @click="clearFilters"
         >
-          "{{ searchQuery }}" ✕
+          Clear filters
         </UButton>
       </div>
     </div>
