@@ -179,7 +179,13 @@
       "Bash(git -C /Users/dfox/Development/dnd/frontend log -5 --oneline)",
       "Bash(paste:*)",
       "Bash(do echo \"=== $file ===\" grep -n \"opacity-15\\|group-hover:opacity-30\\|transition-all\" \"/Users/dfox/Development/dnd/frontend/$file\")",
-      "Bash(do echo \"=== Background ID $id ===\")"
+      "Bash(do echo \"=== Background ID $id ===\")",
+      "Skill(superpowers:dispatching-parallel-agents)",
+      "Bash(do echo \"=== $bg ===\" curl -s \"http://localhost:8080/api/v1/backgrounds/$bg\")",
+      "Bash(grep:*)",
+      "Bash(do curl -s \"http://localhost:8080/api/v1/monsters?per_page=100&page=$page\")",
+      "Bash(do curl -s \"http://localhost:8080/api/v1/items?per_page=200&page=$i\")",
+      "Bash(do curl -s \"http://localhost:8080/api/v1/items?q=$keyword&per_page=100\")"
     ],
     "deny": [],
     "ask": []

@@ -531,4 +531,3 @@ Before marking features complete:
 **Project Status:** Production-ready. 6 entity types, 8 reusable components, 87 tests, comprehensive docs. Ready for advanced features or deployment.
 
 **Next Agent:** Read `docs/CURRENT_STATUS.md` first, then this file for patterns and setup.
-- make a note in claude.md not to use git worktrees

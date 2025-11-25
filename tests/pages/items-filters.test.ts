@@ -153,7 +153,6 @@ describe('Items Page - Filter Layout', () => {
       component.selectedRarity = 'rare'
       component.selectedMagic = 'true'
       component.hasCharges = '1'
-      component.hasPrerequisites = '1'
       component.requiresAttunement = '1'
       component.stealthDisadvantage = '1'
       component.selectedProperties = ['Finesse', 'Light']
@@ -173,7 +172,6 @@ describe('Items Page - Filter Layout', () => {
       expect(component.selectedRarity).toBeNull()
       expect(component.selectedMagic).toBeNull()
       expect(component.hasCharges).toBeNull()
-      expect(component.hasPrerequisites).toBeNull()
       expect(component.requiresAttunement).toBeNull()
       expect(component.stealthDisadvantage).toBeNull()
       expect(component.selectedProperties).toEqual([])
