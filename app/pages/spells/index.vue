@@ -333,11 +333,11 @@ const activeFilterCount = useFilterCount(
         :badge-count="activeFilterCount"
       >
         <template #search>
-          <div class="flex gap-2 w-full">
+          <div class="flex flex-wrap gap-2 w-full">
             <UInput
               v-model="searchQuery"
               placeholder="Search spells..."
-              class="flex-1"
+              class="flex-1 min-w-[200px]"
             >
               <template
                 v-if="searchQuery"
