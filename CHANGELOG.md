@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses `level IN [0,3,9]` Meilisearch filter
   - 10 comprehensive tests (all passing with TDD workflow)
   - Simplified codebase: removed ~40 lines of mode-switching logic
+  - Improved layout: removed "Spell Level" label, renamed "Active:" to "Active filters", moved "Clear filters" button to same row
 
 ### Added
 

@@ -371,7 +371,6 @@ const activeFilterCount = useFilterCount(
               v-model="selectedLevels"
               data-testid="level-filter-multiselect"
               :options="levelOptions"
-              label="Spell Level"
               placeholder="All Levels"
               color="primary"
               class="w-full sm:w-48"
@@ -493,31 +492,23 @@ const activeFilterCount = useFilterCount(
             />
           </template>
 
-          <!-- Actions: Clear filters button -->
-          <template #actions>
-            <UButton
-              v-if="hasActiveFilters"
-              color="neutral"
-              variant="soft"
-              @click="clearFilters"
-            >
-              Clear Filters
-            </UButton>
-          </template>
+          <!-- Actions: Empty (Clear Filters moved to chips row) -->
+          <template #actions />
         </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->
       <div
         v-if="hasActiveFilters"
-        class="flex flex-wrap items-center gap-2 pt-2"
+        class="flex flex-wrap items-center justify-between gap-2 pt-2"
       >
-        <span
-          v-if="activeFilterCount > 0 || searchQuery"
-          class="text-sm font-medium text-gray-600 dark:text-gray-400"
-        >
-          Active:
-        </span>
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            v-if="activeFilterCount > 0 || searchQuery"
+            class="text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
+            Active filters:
+          </span>
         <UButton
           v-if="getLevelFilterText"
           data-testid="level-filter-chip"
@@ -646,6 +637,18 @@ const activeFilterCount = useFilterCount(
           Material: {{ materialFilter === '1' ? 'Yes' : 'No' }} ✕
         </UButton>
         <!-- Removed: Filter chips for unsupported filters (higherLevels, castingTime, range, duration) -->
+        </div>
+
+        <!-- Clear Filters Button (right-aligned) -->
+        <UButton
+          v-if="activeFilterCount > 0 || searchQuery"
+          color="neutral"
+          variant="soft"
+          size="sm"
+          @click="clearFilters"
+        >
+          Clear filters
+        </UButton>
       </div>
     </div>
 
