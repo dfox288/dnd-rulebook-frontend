@@ -153,9 +153,52 @@ const perPage = 24
           </UInput>
         </template>
 
-        <div class="space-y-4">
-          <!-- Quick Toggles -->
-          <div class="flex flex-wrap gap-4">
+        <UiFilterLayout>
+          <template #primary>
+            <!-- Hit Die Filter -->
+            <UiFilterMultiSelect
+              v-model="selectedHitDice"
+              :options="hitDieOptions"
+              placeholder="All Hit Dice"
+              color="primary"
+              class="w-full sm:w-48"
+              data-testid="hit-die-filter"
+            />
+
+            <!-- Spellcasting Ability Filter -->
+            <USelectMenu
+              v-model="selectedSpellcastingAbility"
+              :items="spellcastingAbilityOptions"
+              value-key="value"
+              placeholder="All Abilities"
+              size="md"
+              class="w-full sm:w-48"
+              data-testid="spellcasting-ability-filter"
+            />
+
+            <!-- Parent Class Filter -->
+            <USelectMenu
+              v-model="selectedParentClass"
+              :items="parentClassOptions"
+              value-key="value"
+              placeholder="All Classes"
+              size="md"
+              class="w-full sm:w-48"
+              data-testid="parent-class-filter"
+            />
+
+            <!-- Sources Filter -->
+            <UiFilterMultiSelect
+              v-model="selectedSources"
+              :options="sourceOptions"
+              placeholder="All Sources"
+              color="secondary"
+              class="w-full sm:w-48"
+              data-testid="source-filter"
+            />
+          </template>
+
+          <template #quick>
             <!-- Base Class filter -->
             <UiFilterToggle
               v-model="isBaseClass"
@@ -179,55 +222,12 @@ const perPage = 24
                 { value: '0', label: 'No' }
               ]"
             />
-          </div>
+          </template>
 
-          <!-- Advanced Filters -->
-          <div class="flex flex-wrap gap-4">
-            <!-- Hit Die Filter -->
-            <UiFilterMultiSelect
-              v-model="selectedHitDice"
-              :options="hitDieOptions"
-              placeholder="All Hit Dice"
-              color="primary"
-              data-testid="hit-die-filter"
-            />
+          <template #advanced />
 
-            <!-- Spellcasting Ability Filter -->
-            <div>
-              <USelectMenu
-                v-model="selectedSpellcastingAbility"
-                :items="spellcastingAbilityOptions"
-                value-key="value"
-                placeholder="All Abilities"
-                size="md"
-                class="w-full sm:w-44"
-                data-testid="spellcasting-ability-filter"
-              />
-            </div>
-
-            <!-- Parent Class Filter -->
-            <div>
-              <USelectMenu
-                v-model="selectedParentClass"
-                :items="parentClassOptions"
-                value-key="value"
-                placeholder="All Classes"
-                size="md"
-                class="w-full sm:w-44"
-                data-testid="parent-class-filter"
-              />
-            </div>
-
-            <!-- Sources Filter -->
-            <UiFilterMultiSelect
-              v-model="selectedSources"
-              :options="sourceOptions"
-              placeholder="All Sources"
-              color="secondary"
-              data-testid="source-filter"
-            />
-          </div>
-        </div>
+          <template #actions />
+        </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->

@@ -462,7 +462,7 @@ const perPage = 24
             />
           </template>
 
-          <!-- Quick Toggles: Binary filters (Legendary, Speed Types) -->
+          <!-- Quick Toggles: Combat/Encounter filters (Legendary, Lair Actions, Reactions, Spellcaster, Magic Resistance) -->
           <template #quick>
             <UiFilterToggle
               v-model="isLegendary"
@@ -475,6 +475,58 @@ const perPage = 24
               ]"
             />
 
+            <UiFilterToggle
+              v-model="hasLairActions"
+              data-testid="has-lair-actions-toggle"
+              label="Has Lair Actions"
+              color="warning"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+
+            <UiFilterToggle
+              v-model="hasReactions"
+              data-testid="has-reactions-toggle"
+              label="Has Reactions"
+              color="secondary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+
+            <UiFilterToggle
+              v-model="isSpellcaster"
+              data-testid="is-spellcaster-toggle"
+              label="Is Spellcaster"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+
+            <UiFilterToggle
+              v-model="hasMagicResistance"
+              data-testid="has-magic-resistance-toggle"
+              label="Has Magic Resistance"
+              color="success"
+              :options="[
+                { value: null, label: 'All' },
+                { value: '1', label: 'Yes' },
+                { value: '0', label: 'No' }
+              ]"
+            />
+          </template>
+
+          <!-- Advanced Filters: Movement toggles + Armor Type + AC + HP -->
+          <template #advanced>
+            <!-- Movement Toggles -->
             <UiFilterToggle
               v-model="hasFly"
               data-testid="has-fly-toggle"
@@ -535,57 +587,6 @@ const perPage = 24
               ]"
             />
 
-            <UiFilterToggle
-              v-model="hasLairActions"
-              data-testid="has-lair-actions-toggle"
-              label="Has Lair Actions"
-              color="warning"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-
-            <UiFilterToggle
-              v-model="hasReactions"
-              data-testid="has-reactions-toggle"
-              label="Has Reactions"
-              color="secondary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-
-            <UiFilterToggle
-              v-model="isSpellcaster"
-              data-testid="is-spellcaster-toggle"
-              label="Is Spellcaster"
-              color="primary"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-
-            <UiFilterToggle
-              v-model="hasMagicResistance"
-              data-testid="has-magic-resistance-toggle"
-              label="Has Magic Resistance"
-              color="success"
-              :options="[
-                { value: null, label: 'All' },
-                { value: '1', label: 'Yes' },
-                { value: '0', label: 'No' }
-              ]"
-            />
-          </template>
-
-          <!-- Advanced Filters: AC and HP ranges, Armor Type -->
-          <template #advanced>
             <!-- Armor Type Filter Multiselect -->
             <div>
               <label class="text-sm font-medium mb-2 block">Armor Type</label>

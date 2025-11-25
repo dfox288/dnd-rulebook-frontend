@@ -32,6 +32,18 @@ const { data: baseRaces } = useReferenceData<Race>('/races', {
   transform: (data) => data.filter(r => !r.parent_race)
 })
 
+// Size filter options
+const sizeOptions = computed(() => {
+  const options: Array<{ label: string, value: string }> = [{ label: 'All Sizes', value: '' }]
+  if (sizes.value) {
+    options.push(...sizes.value.map(size => ({
+      label: size.name,
+      value: size.code
+    })))
+  }
+  return options
+})
+
 // Source filter options
 const sourceOptions = computed(() => {
   if (!sources.value) return []
@@ -195,59 +207,55 @@ const perPage = 24
           </UInput>
         </template>
 
-        <div class="space-y-6">
-          <!-- PRIMARY FILTERS -->
-          <div class="space-y-4">
-            <!-- Size Filter -->
-            <div>
+        <UiFilterLayout>
+          <template #primary>
+            <!-- Size Filter (Dropdown) -->
+            <div data-testid="size-filter-buttons">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Size
               </label>
-              <div
-                data-testid="size-filter-buttons"
-                class="flex gap-2 flex-wrap"
-              >
-                <UButton
-                  :color="selectedSize === '' ? 'primary' : 'neutral'"
-                  :variant="selectedSize === '' ? 'solid' : 'soft'"
-                  size="sm"
-                  @click="selectedSize = ''"
-                >
-                  All
-                </UButton>
-                <UButton
-                  v-for="size in sizes"
-                  :key="size.id"
-                  :color="selectedSize === size.code ? 'primary' : 'neutral'"
-                  :variant="selectedSize === size.code ? 'solid' : 'soft'"
-                  size="sm"
-                  @click="selectedSize = size.code"
-                >
-                  {{ size.name }}
-                </UButton>
-              </div>
+              <USelectMenu
+                v-model="selectedSize"
+                :items="sizeOptions"
+                value-key="value"
+                placeholder="All Sizes"
+                size="md"
+                class="w-full sm:w-48"
+                data-testid="size-filter"
+              />
             </div>
 
-            <!-- Speed Filter -->
+            <!-- Speed Filter (Compressed Sliders) -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Speed: {{ speedMin }} - {{ speedMax }} ft
+                Speed Range
               </label>
-              <USlider
-                v-model="speedMin"
-                :min="10"
-                :max="35"
-                :step="5"
-                data-testid="speed-min-slider"
-                class="mb-2"
-              />
-              <USlider
-                v-model="speedMax"
-                :min="10"
-                :max="35"
-                :step="5"
-                data-testid="speed-max-slider"
-              />
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Min: {{ speedMin }} ft
+                  </label>
+                  <USlider
+                    v-model="speedMin"
+                    :min="10"
+                    :max="35"
+                    :step="5"
+                    data-testid="speed-min-slider"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    Max: {{ speedMax }} ft
+                  </label>
+                  <USlider
+                    v-model="speedMax"
+                    :min="10"
+                    :max="35"
+                    :step="5"
+                    data-testid="speed-max-slider"
+                  />
+                </div>
+              </div>
             </div>
 
             <!-- Source Filter -->
@@ -265,7 +273,37 @@ const perPage = 24
               :options="abilityOptions"
               data-testid="ability-filter"
             />
+          </template>
 
+          <template #quick>
+            <!-- Race Type Toggle -->
+            <UiFilterToggle
+              v-model="raceTypeFilter"
+              label="Race Type"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: 'false', label: 'Base Only' },
+                { value: 'true', label: 'Subraces' }
+              ]"
+              data-testid="race-type-filter"
+            />
+
+            <!-- Has Innate Spells Toggle -->
+            <UiFilterToggle
+              v-model="hasInnateSpellsFilter"
+              label="Innate Spells"
+              color="primary"
+              :options="[
+                { value: null, label: 'All' },
+                { value: 'true', label: 'Yes' },
+                { value: 'false', label: 'No' }
+              ]"
+              data-testid="has-innate-spells-filter"
+            />
+          </template>
+
+          <template #advanced>
             <!-- Parent Race Filter -->
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -274,56 +312,14 @@ const perPage = 24
               <USelect
                 v-model="selectedParentRace"
                 :options="[{ label: 'All Races', value: '' }, ...parentRaceOptions]"
+                class="w-full sm:w-48"
                 data-testid="parent-race-filter"
               />
             </div>
-          </div>
+          </template>
 
-          <!-- QUICK FILTERS -->
-          <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Quick Filters
-            </label>
-            <div class="flex gap-2 flex-wrap">
-              <UButton
-                :color="raceTypeFilter === null ? 'neutral' : 'primary'"
-                :variant="raceTypeFilter === null ? 'soft' : 'solid'"
-                size="sm"
-                data-testid="all-races-button"
-                @click="raceTypeFilter = null"
-              >
-                All Races
-              </UButton>
-              <UButton
-                :color="raceTypeFilter === 'false' ? 'primary' : 'neutral'"
-                :variant="raceTypeFilter === 'false' ? 'solid' : 'soft'"
-                size="sm"
-                data-testid="base-races-only-button"
-                @click="raceTypeFilter = 'false'"
-              >
-                Base Races Only
-              </UButton>
-              <UButton
-                :color="raceTypeFilter === 'true' ? 'primary' : 'neutral'"
-                :variant="raceTypeFilter === 'true' ? 'solid' : 'soft'"
-                size="sm"
-                data-testid="subraces-only-button"
-                @click="raceTypeFilter = 'true'"
-              >
-                Subraces Only
-              </UButton>
-              <UButton
-                :color="hasInnateSpellsFilter === 'true' ? 'primary' : 'neutral'"
-                :variant="hasInnateSpellsFilter === 'true' ? 'solid' : 'soft'"
-                size="sm"
-                data-testid="has-innate-spells-button"
-                @click="hasInnateSpellsFilter = hasInnateSpellsFilter === 'true' ? null : 'true'"
-              >
-                Has Innate Spells
-              </UButton>
-            </div>
-          </div>
-        </div>
+          <template #actions />
+        </UiFilterLayout>
       </UiFilterCollapse>
 
       <!-- Active Filter Chips -->

@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Filter Section Standardization & UX Improvements (2025-11-25)** - Standardized all filter sections to use UiFilterLayout component
+  - **Races Page:** Refactored to use UiFilterLayout (Primary/Quick/Advanced sections), converted Size filter from 6 buttons to dropdown (saves ~650px horizontal space), compressed Speed sliders side-by-side (saves ~50px vertical)
+  - **Classes Page:** Refactored to use UiFilterLayout, consistent `w-48` width classes on all filters for visual consistency
+  - **Monsters Page:** Reorganized Quick section (10 toggles → 5 Quick combat filters + 5 Advanced movement filters) for better logical grouping
+  - **Impact:** 7/7 entity pages now use consistent UiFilterLayout pattern, improved space efficiency on Races page, better filter organization on Monsters page
+  - See filter audit report for complete analysis and rationale
+
+### Added
+
 - **RE-AUDIT IMPLEMENTATION COMPLETE (2025-11-25)** - Added 21 new filters across 5 entity types (+45% filter coverage)
   - **Monsters (5 chip fixes + 6 new filters):** Fixed 5 critical UX bugs (missing filter chips for alignment, has_fly, has_swim, has_burrow, has_climb), added 6 new filters (armor_type, can_hover, has_lair_actions, has_reactions, is_spellcaster, has_magic_resistance) - Now 18 filters total
   - **Backgrounds (3 new filters - 300% increase!):** Added skill_proficiencies (18 skills), tool_proficiency_types (3 types), grants_language_choice (boolean) - Now 4/4 filters (100% complete, up from 25%)
