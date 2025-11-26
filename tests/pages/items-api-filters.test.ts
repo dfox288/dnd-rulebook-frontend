@@ -1,8 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import ItemsPage from '~/pages/items/index.vue'
 
 describe('Items Page - API-Driven Rarity Filter', () => {
+  // Reset Pinia store before each test to ensure clean state
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
   describe('Rarity Options Computed Property', () => {
     it('rarityOptions computed property exists', async () => {
       const wrapper = await mountSuspended(ItemsPage)
@@ -334,7 +339,12 @@ describe('Items Page - API-Driven Rarity Filter', () => {
       const wrapper = await mountSuspended(ItemsPage)
       const component = wrapper.vm as any
 
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       const initialCount = component.activeFilterCount
+      expect(initialCount).toBe(0)
 
       component.selectedRarity = 'rare'
       await wrapper.vm.$nextTick()

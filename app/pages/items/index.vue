@@ -1,53 +1,66 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { Item, ItemType, DamageType, Rarity } from '~/types'
+import { useItemFiltersStore } from '~/stores/itemFilters'
 
 const route = useRoute()
 
-// Filter collapse state
-const filtersOpen = ref(false)
+// Use filter store instead of local refs
+const store = useItemFiltersStore()
+const {
+  searchQuery,
+  sortBy,
+  sortDirection,
+  selectedSources,
+  selectedType,
+  selectedRarity,
+  selectedMagic,
+  hasCharges,
+  requiresAttunement,
+  stealthDisadvantage,
+  selectedProperties,
+  selectedDamageTypes,
+  selectedDamageDice,
+  selectedVersatileDamage,
+  selectedRechargeTiming,
+  selectedStrengthReq,
+  selectedRange,
+  selectedCostRange,
+  selectedACRange,
+  filtersOpen
+} = storeToRefs(store)
 
-// Sorting state
-const sortBy = ref<string>((route.query.sort_by as string) || 'name')
-const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
+// URL sync composable
+const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
+
+// On mount: URL params override persisted state
+onMounted(() => {
+  if (hasUrlParams.value) {
+    store.setFromUrlQuery(route.query)
+  }
+})
+
+// Sync store changes to URL (debounced)
+let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
+watch(
+  () => store.toUrlQuery,
+  (query) => {
+    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
+    urlSyncTimeout = setTimeout(() => {
+      syncToUrl(query)
+    }, 300)
+  },
+  { deep: true }
+)
+
+// Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
 
-// Source filter (using composable)
-const { selectedSources, sourceOptions, getSourceName, clearSources } = useSourceFilter()
-
-// Custom filter state (entity-specific) - PRIMARY section
-const selectedType = ref(route.query.type ? Number(route.query.type) : null)
-const selectedRarity = ref((route.query.rarity as string) || null)
-const selectedMagic = ref((route.query.is_magic as string) || null)
-
-// QUICK section (toggles)
-const hasCharges = ref<string | null>((route.query.has_charges as string) || null)
-const requiresAttunement = ref<string | null>((route.query.requires_attunement as string) || null)
-const stealthDisadvantage = ref<string | null>((route.query.stealth_disadvantage as string) || null)
-
-// ADVANCED section (multiselects)
-const selectedProperties = ref<string[]>(
-  route.query.property ? (Array.isArray(route.query.property) ? route.query.property : [route.query.property]) as string[] : []
-)
-const selectedDamageTypes = ref<string[]>(
-  route.query.damage_type ? (Array.isArray(route.query.damage_type) ? route.query.damage_type : [route.query.damage_type]) as string[] : []
-)
-
-// Weapon/Armor shopping filters (TIER 2 HIGH IMPACT)
-const selectedStrengthReq = ref<string | null>((route.query.strength_req as string) || null)
-const selectedDamageDice = ref<string[]>(
-  route.query.damage_dice ? (Array.isArray(route.query.damage_dice) ? route.query.damage_dice : [route.query.damage_dice]) as string[] : []
-)
-const selectedVersatileDamage = ref<string[]>(
-  route.query.versatile_damage ? (Array.isArray(route.query.versatile_damage) ? route.query.versatile_damage : [route.query.versatile_damage]) as string[] : []
-)
-const selectedRange = ref<string | null>((route.query.range as string) || null)
-const selectedRechargeTiming = ref<string[]>(
-  route.query.recharge_timing ? (Array.isArray(route.query.recharge_timing) ? route.query.recharge_timing : [route.query.recharge_timing]) as string[] : []
-)
+// Source filter options (still need the composable for options)
+const { sourceOptions, getSourceName } = useSourceFilter()
 
 // Cost filter
-const selectedCostRange = ref<string | null>(null)
 const costRangeOptions = [
   { label: 'All Prices', value: null },
   { label: 'Under 1 gp', value: 'under-100' },
@@ -58,7 +71,6 @@ const costRangeOptions = [
 ]
 
 // AC filter
-const selectedACRange = ref<string | null>(null)
 const acRangeOptions = [
   { label: 'All AC', value: null },
   { label: 'Light (11-14)', value: '11-14' },
@@ -278,20 +290,18 @@ const queryBuilder = computed(() => {
 
 // Use entity list composable for all shared logic
 const {
-  searchQuery,
   currentPage,
   data,
   meta,
   totalResults,
   loading,
   error,
-  refresh,
-  clearFilters: clearBaseFilters,
-  hasActiveFilters
+  refresh
 } = useEntityList({
   endpoint: '/items',
   cacheKey: 'items-list',
   queryBuilder,
+  searchQuery, // Pass store's searchQuery
   seo: {
     title: 'Items & Equipment - D&D 5e Compendium',
     description: 'Browse all D&D 5e items and equipment. Filter by type, rarity, and magic properties.'
@@ -301,26 +311,10 @@ const {
 // Type the data array
 const items = computed(() => data.value as Item[])
 
-// Clear all filters (base + custom)
+// Clear all filters - uses store action + URL clear
 const clearFilters = () => {
-  clearBaseFilters()
-  clearSources()
-  selectedType.value = null
-  selectedRarity.value = null
-  selectedMagic.value = null
-  hasCharges.value = null
-  requiresAttunement.value = null
-  stealthDisadvantage.value = null
-  selectedProperties.value = []
-  selectedDamageTypes.value = []
-  selectedCostRange.value = null
-  selectedACRange.value = null
-  // Weapon/Armor shopping filters (TIER 2 HIGH IMPACT)
-  selectedStrengthReq.value = null
-  selectedDamageDice.value = []
-  selectedVersatileDamage.value = []
-  selectedRange.value = null
-  selectedRechargeTiming.value = []
+  store.clearAll()
+  clearUrl()
 }
 
 // Get type name by ID for filter chips
@@ -338,29 +332,13 @@ const getPropertyName = (code: string) => {
   return itemProperties.value?.find(p => p.code === code)?.name || code
 }
 
-// Pagination settings
-const perPage = 24
+// Active filter count (use store getter)
+const activeFilterCount = computed(() => store.activeFilterCount)
 
-// Count active filters (excluding search) for collapse badge (using composable)
-const activeFilterCount = useFilterCount(
-  selectedType,
-  selectedRarity,
-  selectedMagic,
-  hasCharges,
-  requiresAttunement,
-  stealthDisadvantage,
-  selectedProperties,
-  selectedDamageTypes,
-  selectedSources,
-  selectedCostRange,
-  selectedACRange,
-  // Weapon/Armor shopping filters (TIER 2 HIGH IMPACT)
-  selectedStrengthReq,
-  selectedDamageDice,
-  selectedVersatileDamage,
-  selectedRange,
-  selectedRechargeTiming
-)
+// Has active filters (use store getter)
+const hasActiveFilters = computed(() => store.hasActiveFilters)
+
+const perPage = 24
 </script>
 
 <template>
