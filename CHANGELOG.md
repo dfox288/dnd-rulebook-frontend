@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Filter Persistence with Pinia + IndexedDB (2025-11-26)** - User filter selections now persist across browser sessions
+  - 7 Pinia filter stores: Spells, Items, Monsters, Races, Classes, Backgrounds, Feats
+  - IndexedDB storage via `pinia-plugin-persistedstate` for browser persistence
+  - URL sync for shareable filter links (URL params override persisted state)
+  - New composable: `useFilterUrlSync()` for bidirectional URL synchronization
+  - New utility: `idbStorage.ts` - IndexedDB adapter for persistence plugin
+  - Each store provides: `hasActiveFilters`, `activeFilterCount`, `toUrlQuery`, `clearAll()`, `setFromUrlQuery()`
+  - 200+ new store tests (all passing)
+  - Full documentation added to CLAUDE.md
+
 ### Fixed
 
 - **Test Suite CPU Spike Fix (2025-11-26)** - Resolved severe Docker CPU spikes during Vitest runs

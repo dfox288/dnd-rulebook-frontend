@@ -1,8 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import BackgroundsPage from '~/pages/backgrounds/index.vue'
 
 describe('Backgrounds Page - New Filters (skill_proficiencies, tool_proficiency_types, grants_language_choice)', () => {
+  // Reset Pinia store before each test to ensure clean state
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
   describe('skill_proficiencies filter', () => {
     it('renders skill proficiencies multiselect filter', async () => {
       const wrapper = await mountSuspended(BackgroundsPage)
@@ -67,7 +72,12 @@ describe('Backgrounds Page - New Filters (skill_proficiencies, tool_proficiency_
       const wrapper = await mountSuspended(BackgroundsPage)
       const component = wrapper.vm as any
 
+      // Clear filters to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       const initialCount = component.activeFilterCount
+      expect(initialCount).toBe(0)
 
       component.selectedSkills = ['stealth']
       await wrapper.vm.$nextTick()
@@ -146,7 +156,12 @@ describe('Backgrounds Page - New Filters (skill_proficiencies, tool_proficiency_
       const wrapper = await mountSuspended(BackgroundsPage)
       const component = wrapper.vm as any
 
+      // Clear filters to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       const initialCount = component.activeFilterCount
+      expect(initialCount).toBe(0)
 
       component.selectedToolTypes = ['gaming-sets']
       await wrapper.vm.$nextTick()

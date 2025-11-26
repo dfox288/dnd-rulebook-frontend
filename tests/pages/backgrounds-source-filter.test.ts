@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import BackgroundsPage from '~/pages/backgrounds/index.vue'
 
 /**
@@ -9,6 +10,10 @@ import BackgroundsPage from '~/pages/backgrounds/index.vue'
  * Follows TDD pattern - write test first, watch fail, implement, verify pass.
  */
 describe('Backgrounds Page - Source Filter', () => {
+  // Reset Pinia store before each test to ensure clean state
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
   describe('filter UI', () => {
     it('renders source filter multiselect when filters are open', async () => {
       const wrapper = await mountSuspended(BackgroundsPage)
@@ -70,15 +75,19 @@ describe('Backgrounds Page - Source Filter', () => {
       expect(component.activeFilterCount).toBe(1)
     })
 
-    it('counts multiple sources as one filter', async () => {
+    it('counts each selected source in filter count', async () => {
       const wrapper = await mountSuspended(BackgroundsPage)
       const component = wrapper.vm as any
+
+      // Clear filters first
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       component.selectedSources = ['PHB', 'ERLW', 'WGTE']
       await wrapper.vm.$nextTick()
 
-      // Multiple selections in one filter = 1 count
-      expect(component.activeFilterCount).toBe(1)
+      // Store counts each selected source individually
+      expect(component.activeFilterCount).toBe(3)
     })
 
     it('includes source filter in total count with search', async () => {

@@ -422,6 +422,84 @@ const activeFilterCount = useFilterCount(
 
 ---
 
+## Filter Persistence (Pinia Stores)
+
+All 7 entity list pages use Pinia stores for filter state with IndexedDB persistence.
+
+### Store Pattern
+
+```typescript
+// In page setup
+import { storeToRefs } from 'pinia'
+import { useSpellFiltersStore } from '~/stores/spellFilters'
+
+const store = useSpellFiltersStore()
+const { searchQuery, selectedLevels, selectedSchool, ... } = storeToRefs(store)
+
+// URL sync
+const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
+
+onMounted(() => {
+  if (hasUrlParams.value) {
+    store.setFromUrlQuery(route.query)
+  }
+})
+
+watch(() => store.toUrlQuery, (query) => {
+  syncToUrl(query) // debounced 300ms
+}, { deep: true })
+
+// Clear filters
+const clearFilters = () => {
+  store.clearAll()
+  clearUrl()
+}
+```
+
+### Available Stores
+
+| Page | Store | IndexedDB Key |
+|------|-------|---------------|
+| /feats | `useFeatFiltersStore` | `dnd-filters-feats` |
+| /backgrounds | `useBackgroundFiltersStore` | `dnd-filters-backgrounds` |
+| /classes | `useClassFiltersStore` | `dnd-filters-classes` |
+| /races | `useRaceFiltersStore` | `dnd-filters-races` |
+| /spells | `useSpellFiltersStore` | `dnd-filters-spells` |
+| /items | `useItemFiltersStore` | `dnd-filters-items` |
+| /monsters | `useMonsterFiltersStore` | `dnd-filters-monsters` |
+
+### Store Features
+
+- **Persistence:** Filters saved to IndexedDB (survives browser restart)
+- **URL Sync:** URL params override persisted state on mount (shareable links)
+- **Getters:** `hasActiveFilters`, `activeFilterCount`, `toUrlQuery`
+- **Actions:** `clearAll()`, `setFromUrlQuery(query)`
+
+### Testing with Pinia Stores
+
+```typescript
+import { setActivePinia, createPinia } from 'pinia'
+
+describe('Page Tests', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('tests initial state', async () => {
+    const wrapper = await mountSuspended(Page)
+    const component = wrapper.vm as any
+
+    // Clear filters if checking initial state
+    component.clearFilters()
+    await wrapper.vm.$nextTick()
+
+    expect(component.activeFilterCount).toBe(0)
+  })
+})
+```
+
+---
+
 ## Development Commands
 
 ```bash
@@ -446,12 +524,16 @@ app/
 │   ├── item/
 │   └── ui/          # Reusable UI
 ├── composables/     # Composables (auto-import)
+├── stores/          # Pinia filter stores (7 entity stores)
 ├── pages/           # File-based routing
 ├── layouts/         # Page layouts
+├── plugins/         # Nuxt plugins (pinia-persistence.client.ts)
+├── utils/           # Utility functions (idbStorage.ts)
 └── types/           # TypeScript types
 tests/
 ├── components/
 ├── composables/
+├── stores/          # Pinia store tests (200 tests)
 └── e2e/
 docs/                # Documentation
 ```
