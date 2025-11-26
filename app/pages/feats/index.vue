@@ -195,8 +195,6 @@ const perPage = 24
               ]"
             />
           </template>
-
-          <template #actions />
         </UiFilterLayout>
       </UiFilterCollapse>
 

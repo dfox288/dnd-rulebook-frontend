@@ -70,260 +70,101 @@ describe('Monsters Page - Missing Filter Chips', () => {
     })
   })
 
-  describe('Has Fly Filter Chip', () => {
-    it('shows "Has Fly: Yes" chip when filter is "1"', async () => {
+  describe('Movement Types Filter Chip', () => {
+    it('shows movement types chip with selected types', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
-      component.hasFly = '1'
+      component.selectedMovementTypes = ['fly', 'swim']
 
       await wrapper.vm.$nextTick()
 
-      const chip = wrapper.find('[data-testid="has-fly-chip"]')
+      const chip = wrapper.find('[data-testid="movement-types-chip"]')
       expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Fly: Yes')
-      expect(chip.text()).toContain('✕')
+      expect(chip.text()).toContain('Movement')
+      expect(chip.text()).toContain('Fly')
+      expect(chip.text()).toContain('Swim')
     })
 
-    it('shows "Has Fly: No" chip when filter is "0"', async () => {
+    it('shows single movement type', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
-      component.hasFly = '0'
+      component.selectedMovementTypes = ['burrow']
 
       await wrapper.vm.$nextTick()
 
-      const chip = wrapper.find('[data-testid="has-fly-chip"]')
+      const chip = wrapper.find('[data-testid="movement-types-chip"]')
       expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Fly: No')
-      expect(chip.text()).toContain('✕')
+      expect(chip.text()).toContain('Movement')
+      expect(chip.text()).toContain('Burrow')
     })
 
-    it('clicking chip clears has fly filter', async () => {
+    it('shows multiple movement types sorted', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
-      component.hasFly = '1'
+      component.selectedMovementTypes = ['swim', 'climb', 'fly']
 
       await wrapper.vm.$nextTick()
 
-      const chip = wrapper.find('[data-testid="has-fly-chip"]')
+      const chip = wrapper.find('[data-testid="movement-types-chip"]')
+      expect(chip.exists()).toBe(true)
+      // Should be sorted alphabetically
+      const text = chip.text()
+      expect(text).toContain('Climb')
+      expect(text).toContain('Fly')
+      expect(text).toContain('Swim')
+    })
+
+    it('clicking chip clears movement types filter', async () => {
+      const wrapper = await mountSuspended(MonstersPage)
+
+      const component = wrapper.vm as any
+      component.selectedMovementTypes = ['fly', 'swim']
+
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-testid="movement-types-chip"]')
       await chip.trigger('click')
 
-      expect(component.hasFly).toBeNull()
+      expect(component.selectedMovementTypes).toEqual([])
     })
 
-    it('does not show chip when filter is null', async () => {
+    it('does not show chip when no movement types selected', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
-      component.hasFly = null
+      component.selectedMovementTypes = []
 
       await wrapper.vm.$nextTick()
 
-      const chip = wrapper.find('[data-testid="has-fly-chip"]')
+      const chip = wrapper.find('[data-testid="movement-types-chip"]')
       expect(chip.exists()).toBe(false)
     })
   })
 
-  describe('Has Swim Filter Chip', () => {
-    it('shows "Has Swim: Yes" chip when filter is "1"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasSwim = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-swim-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Swim: Yes')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('shows "Has Swim: No" chip when filter is "0"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasSwim = '0'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-swim-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Swim: No')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('clicking chip clears has swim filter', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasSwim = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-swim-chip"]')
-      await chip.trigger('click')
-
-      expect(component.hasSwim).toBeNull()
-    })
-
-    it('does not show chip when filter is null', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasSwim = null
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-swim-chip"]')
-      expect(chip.exists()).toBe(false)
-    })
-  })
-
-  describe('Has Burrow Filter Chip', () => {
-    it('shows "Has Burrow: Yes" chip when filter is "1"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasBurrow = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-burrow-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Burrow: Yes')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('shows "Has Burrow: No" chip when filter is "0"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasBurrow = '0'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-burrow-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Burrow: No')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('clicking chip clears has burrow filter', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasBurrow = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-burrow-chip"]')
-      await chip.trigger('click')
-
-      expect(component.hasBurrow).toBeNull()
-    })
-
-    it('does not show chip when filter is null', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasBurrow = null
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-burrow-chip"]')
-      expect(chip.exists()).toBe(false)
-    })
-  })
-
-  describe('Has Climb Filter Chip', () => {
-    it('shows "Has Climb: Yes" chip when filter is "1"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasClimb = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-climb-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Climb: Yes')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('shows "Has Climb: No" chip when filter is "0"', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasClimb = '0'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-climb-chip"]')
-      expect(chip.exists()).toBe(true)
-      expect(chip.text()).toContain('Has Climb: No')
-      expect(chip.text()).toContain('✕')
-    })
-
-    it('clicking chip clears has climb filter', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasClimb = '1'
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-climb-chip"]')
-      await chip.trigger('click')
-
-      expect(component.hasClimb).toBeNull()
-    })
-
-    it('does not show chip when filter is null', async () => {
-      const wrapper = await mountSuspended(MonstersPage)
-
-      const component = wrapper.vm as any
-      component.hasClimb = null
-
-      await wrapper.vm.$nextTick()
-
-      const chip = wrapper.find('[data-testid="has-climb-chip"]')
-      expect(chip.exists()).toBe(false)
-    })
-  })
-
-  describe('All Missing Chips Integration', () => {
-    it('shows all 5 missing filter chips when active', async () => {
+  describe('Alignment and Movement Integration', () => {
+    it('shows both alignment and movement chips when active', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
       component.selectedAlignments = ['Lawful Good', 'Chaotic Evil']
-      component.hasFly = '1'
-      component.hasSwim = '0'
-      component.hasBurrow = '1'
-      component.hasClimb = '0'
+      component.selectedMovementTypes = ['fly', 'swim']
 
       await wrapper.vm.$nextTick()
 
-      // All 5 chips should exist
+      // Both chips should exist
       expect(wrapper.find('[data-testid="alignment-filter-chip"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="has-fly-chip"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="has-swim-chip"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="has-burrow-chip"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="has-climb-chip"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="movement-types-chip"]').exists()).toBe(true)
     })
 
-    it('clears all missing filters via clearFilters()', async () => {
+    it('clears all filters via clearFilters()', async () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
       component.selectedAlignments = ['Lawful Good']
-      component.hasFly = '1'
-      component.hasSwim = '1'
-      component.hasBurrow = '1'
-      component.hasClimb = '1'
+      component.selectedMovementTypes = ['fly', 'burrow', 'climb']
 
       await wrapper.vm.$nextTick()
 
@@ -333,10 +174,7 @@ describe('Monsters Page - Missing Filter Chips', () => {
 
       // All should be cleared
       expect(component.selectedAlignments).toEqual([])
-      expect(component.hasFly).toBeNull()
-      expect(component.hasSwim).toBeNull()
-      expect(component.hasBurrow).toBeNull()
-      expect(component.hasClimb).toBeNull()
+      expect(component.selectedMovementTypes).toEqual([])
     })
   })
 })
