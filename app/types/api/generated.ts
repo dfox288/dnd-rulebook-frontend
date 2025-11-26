@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  *
  * Generated from: http://host.docker.internal:8080/docs/api.json
- * Generated at: 2025-11-25T23:46:39.471Z
+ * Generated at: 2025-11-26T12:32:32.553Z
  *
  * To regenerate: npm run types:sync
  */
@@ -457,6 +457,24 @@ export interface paths {
          *       - `filter=is_spellcaster = false` (pure martial classes)
          *     - Use case: Distinguishing classes with Spellcasting feature vs spell-like abilities
          *
+         *     **has_optional_features** (`boolean`)
+         *     - Value range: `true` (class has invocations, maneuvers, etc.), `false` (no optional features)
+         *     - Operators: `=`, `!=`
+         *     - Examples:
+         *       - `filter=has_optional_features = true` (Warlock, Fighter, Sorcerer, Monk)
+         *       - `filter=has_optional_features = false` (classes without customization options)
+         *     - Use case: Finding classes with additional character customization choices
+         *
+         *     ### Integer Fields (Optional Features)
+         *
+         *     **optional_feature_count** (`integer`)
+         *     - Value range: 0 to 54 (number of optional features available)
+         *     - Operators: `=`, `!=`, `<`, `<=`, `>`, `>=`, `IN`, `NOT IN`
+         *     - Examples:
+         *       - `filter=optional_feature_count > 0` (classes with optional features)
+         *       - `filter=optional_feature_count >= 10` (classes with many customization options)
+         *     - Use case: Finding classes with extensive customization options
+         *
          *     ### Array Fields
          *
          *     **source_codes** (`array of strings`)
@@ -518,6 +536,15 @@ export interface paths {
          *     - Note: This field contains **available** skill choices, not guaranteed proficiencies
          *     - Use case: Finding classes with access to specific skills
          *
+         *     **optional_feature_types** (`array of strings`)
+         *     - Value examples: ["eldritch_invocation"], ["maneuver"], ["metamagic"], ["elemental_discipline"]
+         *     - Operators: `IN`, `NOT IN`
+         *     - Examples:
+         *       - `filter=optional_feature_types IN ["eldritch_invocation"]` (Warlock)
+         *       - `filter=optional_feature_types IN ["maneuver"]` (Fighter Battle Master)
+         *       - `filter=optional_feature_types IN ["metamagic"]` (Sorcerer)
+         *     - Use case: Finding classes with specific customization mechanics
+         *
          *     ## Complex Filter Examples
          *
          *     ```bash
@@ -550,6 +577,15 @@ export interface paths {
          *
          *     # Tasha's Cauldron subclasses that are spellcasters
          *     GET /api/v1/classes?filter=source_codes IN ["TCOE"] AND is_subclass = true AND is_spellcaster = true
+         *
+         *     # Classes with Eldritch Invocations (Warlock customization)
+         *     GET /api/v1/classes?filter=optional_feature_types IN ["eldritch_invocation"]
+         *
+         *     # Classes with many optional feature choices
+         *     GET /api/v1/classes?filter=optional_feature_count >= 10
+         *
+         *     # Martial classes with combat maneuvers
+         *     GET /api/v1/classes?filter=optional_feature_types IN ["maneuver"] AND is_spellcaster = false
          *     ```
          *
          *     ## Use Cases
@@ -580,6 +616,12 @@ export interface paths {
          *     - Find classes with specific tags: `filter=tag_slugs IN ["healing", "support"]`
          *     - Stealth-capable classes: `filter=skill_proficiencies IN ["Stealth"]`
          *
+         *     **Optional Features / Customization**
+         *     - Find classes with invocations: `filter=optional_feature_types IN ["eldritch_invocation"]`
+         *     - Martial classes with maneuvers: `filter=optional_feature_types IN ["maneuver"]`
+         *     - Classes with high customization: `filter=optional_feature_count >= 10`
+         *     - Sorcerer metamagic: `filter=optional_feature_types IN ["metamagic"]`
+         *
          *     ## Filter Operators
          *
          *     For complete operator documentation and syntax, see:
@@ -607,15 +649,114 @@ export interface paths {
          *     subclasses, proficiencies, traits, features, level progression, spell slot tables,
          *     and counters. Supports selective relationship loading via the 'include' parameter.
          *
-         *     **Feature Inheritance for Subclasses:**
+         *     ## Response Structure
+         *
+         *     The response separates data into three categories for API clarity:
+         *     - **Base fields** - Core entity data directly from database
+         *     - **inherited_data** - Pre-resolved parent class data (subclasses only)
+         *     - **computed** - Aggregated/calculated data for display optimization
+         *
+         *     ## Computed Object (Display-Ready Data)
+         *
+         *     The `computed` object contains pre-computed fields to reduce frontend logic.
+         *     Only included on show endpoint responses.
+         *
+         *     **computed.hit_points** - Pre-calculated D&D 5e hit point formulas:
+         *     ```json
+         *     {
+         *       "hit_die": "d10",
+         *       "hit_die_numeric": 10,
+         *       "first_level": {"value": 10, "description": "10 + your Constitution modifier"},
+         *       "higher_levels": {"roll": "1d10", "average": 6, "description": "1d10 (or 6) + your Constitution modifier per fighter level after 1st"}
+         *     }
+         *     ```
+         *
+         *     **computed.spell_slot_summary** - Spellcasting overview for UI column visibility:
+         *     ```json
+         *     {
+         *       "has_spell_slots": true,
+         *       "max_spell_level": 9,
+         *       "available_levels": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+         *       "has_cantrips": true,
+         *       "caster_type": "full"
+         *     }
+         *     ```
+         *     - `caster_type`: "full" (9th level), "half" (5th level), "third" (4th level), or null (non-caster)
+         *
+         *     **computed.section_counts** - Relationship counts for lazy-loading accordion labels:
+         *     ```json
+         *     {
+         *       "features": 34,
+         *       "proficiencies": 12,
+         *       "traits": 8,
+         *       "subclasses": 7,
+         *       "spells": 89,
+         *       "counters": 3,
+         *       "optional_features": 0
+         *     }
+         *     ```
+         *
+         *     **computed.progression_table** - Complete 20-level progression table:
+         *     ```json
+         *     {
+         *       "columns": [
+         *         {"key": "level", "label": "Level", "type": "integer"},
+         *         {"key": "proficiency_bonus", "label": "Proficiency Bonus", "type": "bonus"},
+         *         {"key": "features", "label": "Features", "type": "string"},
+         *         {"key": "sneak_attack", "label": "Sneak Attack", "type": "dice"}
+         *       ],
+         *       "rows": [
+         *         {"level": 1, "proficiency_bonus": "+2", "features": "Expertise, Sneak Attack", "sneak_attack": "1d6"},
+         *         {"level": 2, "proficiency_bonus": "+2", "features": "Cunning Action", "sneak_attack": "1d6"}
+         *       ]
+         *     }
+         *     ```
+         *     - Dynamic columns based on class data (counters, spell slots)
+         *     - Counter values interpolated (sparse data filled in)
+         *     - Also available via dedicated endpoint: `GET /classes/{slug}/progression`
+         *
+         *     ## Inherited Data (Subclasses Only)
+         *
+         *     **inherited_data** - Pre-resolved parent class data for subclasses:
+         *     ```json
+         *     {
+         *       "hit_die": 10,
+         *       "hit_points": {...},
+         *       "counters": [...],
+         *       "traits": [...],
+         *       "level_progression": [...],
+         *       "equipment": [...],
+         *       "proficiencies": [...],
+         *       "spell_slot_summary": {...}
+         *     }
+         *     ```
+         *     - Eliminates frontend inheritance resolution logic
+         *     - Only present for subclasses (is_base_class = false)
+         *     - Contains essential data from parent class that subclasses need
+         *
+         *     ## Feature Inheritance for Subclasses
+         *
          *     - By default, subclasses return ALL features (inherited base class features + subclass-specific features)
          *     - Use `?include_base_features=false` to return only subclass-specific features
          *     - Base classes are unaffected by this parameter
          *
-         *     **Examples:**
-         *     - Get Arcane Trickster with all 40 features: `GET /classes/rogue-arcane-trickster`
-         *     - Get only Arcane Trickster's 6 unique features: `GET /classes/rogue-arcane-trickster?include_base_features=false`
-         *     - Get base Rogue (always 34 features): `GET /classes/rogue`
+         *     ## Examples
+         *
+         *     ```bash
+         *     # Get Fighter with computed object
+         *     GET /api/v1/classes/fighter
+         *
+         *     # Get Arcane Trickster (subclass) with inherited_data from Rogue parent
+         *     GET /api/v1/classes/rogue-arcane-trickster
+         *
+         *     # Get only subclass-specific features (not inherited)
+         *     GET /api/v1/classes/rogue-arcane-trickster?include_base_features=false
+         *     ```
+         *
+         *     ## Note on Index vs Show
+         *
+         *     The `computed` object is **only included on show endpoint** for performance.
+         *     Index endpoint returns base fields and relationships without computed data.
          */
         get: operations["classes.show"];
         put?: never;
@@ -640,6 +781,68 @@ export interface paths {
          *     Useful for building spell lists for spellcasting classes.
          */
         get: operations["classes.spells"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/classes/{class}/progression": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the progression table for a class
+         * @description Returns a pre-computed progression table showing level-by-level advancement
+         *     including proficiency bonus, features gained, class-specific counters (like
+         *     Sneak Attack dice, Ki Points, Rage uses), and spell slots if applicable.
+         *
+         *     This endpoint is useful for lazy-loading the progression table separately
+         *     from the main class detail response.
+         *
+         *     ## Response Structure
+         *
+         *     **columns** - Dynamic column definitions based on class features:
+         *     - Always includes: level, proficiency_bonus, features
+         *     - Counter columns: sneak_attack, ki_points, rage_damage, etc. (varies by class)
+         *     - Spell slot columns: cantrips_known, spell_slots_1st through spell_slots_9th (for casters)
+         *
+         *     **rows** - 20 rows, one per level, with all column values pre-computed:
+         *     - Counter values are interpolated (sparse data filled in)
+         *     - Sneak Attack formatted as "Xd6"
+         *     - Proficiency bonus formatted as "+X"
+         *     - Features joined with commas
+         *
+         *     ## Example Response
+         *
+         *     ```json
+         *     {
+         *       "data": {
+         *         "columns": [
+         *           {"key": "level", "label": "Level", "type": "integer"},
+         *           {"key": "proficiency_bonus", "label": "Proficiency Bonus", "type": "bonus"},
+         *           {"key": "features", "label": "Features", "type": "string"},
+         *           {"key": "ki_points", "label": "Ki Points", "type": "integer"}
+         *         ],
+         *         "rows": [
+         *           {"level": 1, "proficiency_bonus": "+2", "features": "Unarmored Defense, Martial Arts", "ki_points": "—"},
+         *           {"level": 2, "proficiency_bonus": "+2", "features": "Ki, Unarmored Movement", "ki_points": "2"}
+         *         ]
+         *       }
+         *     }
+         *     ```
+         *
+         *     ## For Subclasses
+         *
+         *     When called on a subclass, returns the parent class's progression table
+         *     since subclasses inherit the base class progression mechanics.
+         */
+        get: operations["classes.progression"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1783,6 +1986,146 @@ export interface paths {
          *     - Monster encounter filtering
          */
         get: operations["lookups.monster-types.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/optional-features": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all optional features
+         * @description Returns a paginated list of D&D 5e optional features. Use `?filter=` for filtering and `?q=` for full-text search.
+         *
+         *     **Common Examples:**
+         *     ```
+         *     GET /api/v1/optional-features                                       # All optional features
+         *     GET /api/v1/optional-features?filter=feature_type = eldritch_invocation  # Warlock invocations
+         *     GET /api/v1/optional-features?filter=feature_type = metamagic        # Sorcerer metamagic
+         *     GET /api/v1/optional-features?filter=class_slugs IN [warlock]       # Warlock features
+         *     GET /api/v1/optional-features?filter=level_requirement <= 5          # Low-level features
+         *     GET /api/v1/optional-features?filter=has_spell_mechanics = true      # Features with spell-like mechanics
+         *     GET /api/v1/optional-features?q=agonizing                            # Full-text search for "agonizing"
+         *     GET /api/v1/optional-features?q=fire&filter=feature_type = elemental_discipline  # Search + filter combined
+         *     ```
+         *
+         *     **Filterable Fields by Data Type:**
+         *
+         *     **Integer Fields** (Operators: `=`, `!=`, `>`, `>=`, `<`, `<=`, `TO`):
+         *     - `id` (int): Feature ID
+         *     - `level_requirement` (int): Minimum character/class level required
+         *       - Examples: `level_requirement = 5`, `level_requirement >= 9`, `level_requirement 1 TO 10`
+         *     - `resource_cost` (int): Number of resource points required to use
+         *       - Examples: `resource_cost = 2`, `resource_cost <= 3`
+         *
+         *     **String Fields** (Operators: `=`, `!=`):
+         *     - `slug` (string): URL-friendly feature identifier
+         *     - `feature_type` (string): Type of optional feature (eldritch_invocation, metamagic, etc.)
+         *       - Examples: `feature_type = eldritch_invocation`, `feature_type = metamagic`
+         *     - `resource_type` (string): Type of resource consumed (ki_points, sorcery_points, etc.)
+         *       - Examples: `resource_type = ki_points`, `resource_type = sorcery_points`
+         *
+         *     **Boolean Fields** (Operators: `=`, `!=`, `IS NULL`, `EXISTS`):
+         *     - `has_spell_mechanics` (bool): Feature has spell-like properties (casting time, range, etc.)
+         *       - Examples: `has_spell_mechanics = true`, `has_spell_mechanics = false`
+         *
+         *     **Array Fields** (Operators: `IN`, `NOT IN`, `IS EMPTY`):
+         *     - `class_slugs` (array): Class slugs that can use this optional feature
+         *       - Examples: `class_slugs IN [warlock]`, `class_slugs IN [fighter, monk]`
+         *     - `subclass_names` (array): Subclass names that can use this feature
+         *       - Examples: `subclass_names IN [Battle Master]`, `subclass_names IN [Way of the Four Elements]`
+         *     - `source_codes` (array): Source book codes (PHB, XGE, TCoE, etc.)
+         *       - Examples: `source_codes IN [PHB]`, `source_codes NOT IN [UA]`
+         *     - `tag_slugs` (array): Tag slugs categorizing features
+         *       - Examples: `tag_slugs IN [damage]`, `tag_slugs IS EMPTY`
+         *
+         *     **Complex Filter Examples:**
+         *     - Low-level Warlock invocations: `?filter=feature_type = eldritch_invocation AND level_requirement <= 5`
+         *     - Monk elemental disciplines: `?filter=feature_type = elemental_discipline AND class_slugs IN [monk]`
+         *     - Features with spell mechanics: `?filter=has_spell_mechanics = true`
+         *     - Metamagic options: `?filter=feature_type = metamagic AND source_codes IN [PHB, TCoE]`
+         *     - Fighter maneuvers: `?filter=feature_type = maneuver AND class_slugs IN [fighter]`
+         *
+         *     **Operator Reference:**
+         *     See `docs/MEILISEARCH-FILTER-OPERATORS.md` for comprehensive operator documentation.
+         *
+         *     **Query Parameters:**
+         *     - `q` (string): Full-text search (searches name, description, prerequisite_text)
+         *     - `filter` (string): Meilisearch filter expression
+         *     - `sort_by` (string): name, level_requirement, resource_cost, created_at, updated_at (default: name)
+         *     - `sort_direction` (string): asc, desc (default: asc)
+         *     - `per_page` (int): 1-100 (default: 15)
+         *     - `page` (int): Page number (default: 1)
+         */
+        get: operations["optional-features.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/optional-features/{optionalFeature}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a single optional feature
+         * @description Returns detailed information about a specific optional feature including relationships
+         *     like classes, sources, and tags. Supports selective relationship loading via the 'include' parameter.
+         */
+        get: operations["optional-features.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/lookups/optional-feature-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all optional feature types
+         * @description Returns all D&D 5e optional feature types from the OptionalFeatureType enum.
+         *     These represent different kinds of class-specific choices available to characters.
+         *
+         *     **Examples:**
+         *     - `GET /api/v1/lookups/optional-feature-types` - All feature types
+         *
+         *     **Standard D&D 5e Optional Feature Types:**
+         *     - Eldritch Invocation (Warlock)
+         *     - Elemental Discipline (Monk - Way of the Four Elements)
+         *     - Maneuver (Fighter - Battle Master)
+         *     - Metamagic (Sorcerer)
+         *     - Fighting Style (Fighter, Paladin, Ranger)
+         *     - Artificer Infusion (Artificer)
+         *     - Rune (Fighter - Rune Knight)
+         *     - Arcane Shot (Fighter - Arcane Archer)
+         *
+         *     **Use Cases:**
+         *     - Character building: Filter optional features by type
+         *     - Class feature selection: Show available options for a specific class
+         *     - Frontend dropdowns: Populate filter options
+         */
+        get: operations["lookups.optional-feature-types.index"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3079,6 +3422,52 @@ export interface components {
             equipment?: components["schemas"]["EntityItemResource"][];
             tags?: components["schemas"]["TagResource"][];
         };
+        /** ClassComputedResource */
+        ClassComputedResource: {
+            /** @description Pre-computed hit points using D&D 5e formulas. */
+            hit_points: {
+                hit_die: string;
+                hit_die_numeric: number;
+                first_level: {
+                    value: number;
+                    description: string;
+                };
+                higher_levels: {
+                    roll: string;
+                    average: number;
+                    description: string;
+                };
+            } | null;
+            /** @description Spell slot summary for frontend column visibility optimization. */
+            spell_slot_summary?: {
+                has_spell_slots: boolean;
+                max_spell_level: number | null;
+                available_levels: number[];
+                has_cantrips: boolean;
+                caster_type: string | null;
+            } | null;
+            /** @description Section counts for lazy-loading accordions in UI. */
+            section_counts?: {
+                features: number | null;
+                proficiencies: number | null;
+                traits: number | null;
+                subclasses: number | null;
+                spells: number | null;
+                counters: number | null;
+                optional_features: number | null;
+            } | null;
+            /** @description Pre-computed progression table for detail views. */
+            progression_table?: {
+                columns: {
+                    key: string;
+                    label: string;
+                    type: string;
+                }[];
+                rows: {
+                    [key: string]: unknown;
+                }[];
+            } | null;
+        };
         /** ClassCounterResource */
         ClassCounterResource: {
             id: number;
@@ -3117,6 +3506,7 @@ export interface components {
         };
         /** ClassResource */
         ClassResource: {
+            /** @description === BASE FIELDS === */
             id: string;
             slug: string;
             name: string;
@@ -3126,6 +3516,7 @@ export interface components {
             spellcasting_ability?: components["schemas"]["AbilityScoreResource"];
             parent_class_id: string;
             is_base_class: string;
+            /** @description === RELATIONSHIPS === */
             parent_class?: components["schemas"]["ClassResource"];
             subclasses?: components["schemas"]["ClassResource"][];
             proficiencies?: components["schemas"]["ProficiencyResource"][];
@@ -3135,9 +3526,43 @@ export interface components {
             level_progression?: components["schemas"]["ClassLevelProgressionResource"][];
             counters?: components["schemas"]["ClassCounterResource"][];
             spells?: components["schemas"]["SpellResource"][];
+            optional_features?: components["schemas"]["OptionalFeatureResource"][];
             equipment?: components["schemas"]["EntityItemResource"][];
             sources?: components["schemas"]["EntitySourceResource"][];
             tags?: components["schemas"]["TagResource"][];
+            /**
+             * @description Pre-resolved inheritance data from parent class.
+             *     Only present for subclasses - contains data they inherit from their base class.
+             */
+            inherited_data?: {
+                hit_die: number | null;
+                hit_points: {
+                    hit_die: string;
+                    hit_die_numeric: number;
+                    first_level: {
+                        value: number;
+                        description: string;
+                    };
+                    higher_levels: {
+                        roll: string;
+                        average: number;
+                        description: string;
+                    };
+                } | null;
+                counters: components["schemas"]["ClassCounterResource"][] | null;
+                traits: components["schemas"]["TraitResource"][] | null;
+                level_progression: components["schemas"]["ClassLevelProgressionResource"][] | null;
+                equipment: components["schemas"]["EntityItemResource"][] | null;
+                proficiencies: components["schemas"]["ProficiencyResource"][] | null;
+                spell_slot_summary: {
+                    has_spell_slots: boolean;
+                    max_spell_level: number | null;
+                    available_levels: number[];
+                    has_cantrips: boolean;
+                    caster_type: string | null;
+                } | null;
+            } | null;
+            computed?: components["schemas"]["ClassComputedResource"] | null;
         };
         /** ConditionResource */
         ConditionResource: {
@@ -3405,6 +3830,31 @@ export interface components {
             attack_data: string | null;
             sort_order: number;
         };
+        /** OptionalFeatureResource */
+        OptionalFeatureResource: {
+            id: number;
+            slug: string;
+            name: string;
+            feature_type: string;
+            feature_type_label: string;
+            level_requirement: number | null;
+            prerequisite_text: string | null;
+            description: string;
+            /** @description Spell-like properties */
+            casting_time: string | null;
+            range: string | null;
+            duration: string | null;
+            spell_school?: components["schemas"]["SpellSchoolResource"];
+            /** @description Resource properties */
+            resource_type: string;
+            resource_cost: number | null;
+            /** @description Computed attribute */
+            has_spell_mechanics: string;
+            /** @description Relationships */
+            classes?: components["schemas"]["ClassResource"][];
+            sources?: components["schemas"]["EntitySourceResource"][];
+            tags?: components["schemas"]["TagResource"][];
+        };
         /** ProficiencyResource */
         ProficiencyResource: {
             id: number;
@@ -3413,10 +3863,11 @@ export interface components {
             proficiency_type_id: number | null;
             proficiency_type_detail?: components["schemas"]["ProficiencyTypeResource"];
             skill?: components["schemas"]["SkillResource"];
+            /** @description Linked item reference (for weapon/armor proficiencies). */
             item?: {
                 id: number;
                 name: string;
-            };
+            } | null;
             ability_score?: components["schemas"]["AbilityScoreResource"];
             proficiency_name: string | null;
             grants: boolean;
@@ -3472,18 +3923,21 @@ export interface components {
         };
         /** SavingThrowResource */
         SavingThrowResource: {
+            /** @description The ability score for this saving throw. */
             ability_score: {
-                id: string;
+                id: number;
                 code: string;
                 name: string;
             };
             dc: string;
             save_effect: string;
             is_initial_save: boolean;
-            save_modifier: string;
+            /** @description 'advantage', 'disadvantage', or null */
+            save_modifier: string | null;
         };
         /** SearchResource */
         SearchResource: {
+            /** @description Search results grouped by entity type. */
             data: {
                 spells: components["schemas"]["SpellResource"][];
                 items: components["schemas"]["ItemResource"][];
@@ -3493,11 +3947,12 @@ export interface components {
                 feats: components["schemas"]["FeatResource"][];
                 monsters: components["schemas"]["MonsterResource"][];
             };
+            /** @description Search metadata. */
             meta: {
                 query: string;
-                types_searched: string;
-                limit_per_type: string;
-                total_results: string;
+                types_searched: string[];
+                limit_per_type: number;
+                total_results: number;
             };
         };
         /** SizeResource */
@@ -3519,13 +3974,13 @@ export interface components {
             code: string;
             name: string;
             publisher: string;
-            publication_year: number;
-            url: string;
-            author: string;
-            artist: string;
-            website: string;
-            category: string;
-            description: string;
+            publication_year: number | null;
+            url: string | null;
+            author: string | null;
+            artist: string | null;
+            website: string | null;
+            category: string | null;
+            description: string | null;
         };
         /** SpellEffectResource */
         SpellEffectResource: {
@@ -3911,7 +4366,7 @@ export interface operations {
                 /** @description Search query (Scout/Meilisearch) */
                 q?: string;
                 /**
-                 * @description Meilisearch filter expression. Supports all operators by data type: Integer (=,!=,>,>=,<,<=,TO), String (=,!=), Boolean (=,!=,IS NULL,EXISTS), Array (IN,NOT IN,IS EMPTY). Fields: id, slug, hit_die, spell_count, max_spell_level, primary_ability, spellcasting_ability, parent_class_name, is_base_class, is_subclass, has_spells, is_spellcaster, source_codes, tag_slugs, saving_throw_proficiencies, armor_proficiencies, weapon_proficiencies, tool_proficiencies, skill_proficiencies. See docs/MEILISEARCH-FILTER-OPERATORS.md for details.
+                 * @description Meilisearch filter expression. Supports all operators by data type: Integer (=,!=,>,>=,<,<=,TO), String (=,!=), Boolean (=,!=,IS NULL,EXISTS), Array (IN,NOT IN,IS EMPTY). Fields: id, slug, hit_die, spell_count, max_spell_level, optional_feature_count, primary_ability, spellcasting_ability, parent_class_name, is_base_class, is_subclass, has_spells, is_spellcaster, has_optional_features, source_codes, tag_slugs, saving_throw_proficiencies, armor_proficiencies, weapon_proficiencies, tool_proficiencies, skill_proficiencies, optional_feature_types. See docs/MEILISEARCH-FILTER-OPERATORS.md for details.
                  * @example is_base_class = true AND armor_proficiencies IN ["Heavy Armor"]
                  */
                 filter?: string;
@@ -4056,6 +4511,45 @@ export interface operations {
             };
             404: components["responses"]["ModelNotFoundException"];
             422: components["responses"]["ValidationException"];
+        };
+    };
+    "classes.progression": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The class ID */
+                class: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            columns: {
+                                key: string;
+                                label: string;
+                                type: string;
+                            }[];
+                            rows: {
+                                [key: string]: unknown;
+                            }[];
+                        };
+                    } | {
+                        data: {
+                            columns: string[];
+                            rows: string[];
+                        };
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
         };
     };
     "lookups.conditions.index": {
@@ -5090,6 +5584,123 @@ export interface operations {
                         data: {
                             slug: string;
                             name: unknown;
+                        }[];
+                    };
+                };
+            };
+        };
+    };
+    "optional-features.index": {
+        parameters: {
+            query?: {
+                /** @description Pagination */
+                per_page?: number;
+                page?: number;
+                /** @description Sorting */
+                sort_by?: "name" | "level_requirement" | "resource_cost" | "created_at" | "updated_at";
+                sort_direction?: "asc" | "desc";
+                /** @description Full-text search query */
+                q?: string;
+                /**
+                 * @description Meilisearch filter expression. Supports all operators by data type: Integer (=,!=,>,>=,<,<=,TO), String (=,!=), Boolean (=,!=,IS NULL,EXISTS), Array (IN,NOT IN,IS EMPTY). See docs/MEILISEARCH-FILTER-OPERATORS.md for details.
+                 * @example feature_type = eldritch_invocation AND level_requirement <= 5
+                 */
+                filter?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated set of `OptionalFeatureResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["OptionalFeatureResource"][];
+                        links: {
+                            first: string | null;
+                            last: string | null;
+                            prev: string | null;
+                            next: string | null;
+                        };
+                        meta: {
+                            current_page: number;
+                            from: number | null;
+                            last_page: number;
+                            /** @description Generated paginator links. */
+                            links: {
+                                url: string | null;
+                                label: string;
+                                active: boolean;
+                            }[];
+                            /** @description Base path for paginator generated URLs. */
+                            path: string | null;
+                            /** @description Number of items shown per page. */
+                            per_page: number;
+                            /** @description Number of the last item in the slice. */
+                            to: number | null;
+                            /** @description Total number of items being paginated. */
+                            total: number;
+                        };
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "optional-features.show": {
+        parameters: {
+            query?: {
+                "include[]"?: string[];
+            };
+            header?: never;
+            path: {
+                /** @description The optional feature slug */
+                optionalFeature: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `OptionalFeatureResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["OptionalFeatureResource"];
+                    };
+                };
+            };
+            404: components["responses"]["ModelNotFoundException"];
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "lookups.optional-feature-types.index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: {
+                            value: string;
+                            label: string;
+                            default_class: null | ("Warlock" | "Monk" | "Fighter" | "Sorcerer" | "Artificer");
+                            default_subclass: null | ("Way of the Four Elements" | "Battle Master" | "Rune Knight" | "Arcane Archer");
                         }[];
                     };
                 };
