@@ -1,76 +1,198 @@
-# BLOCKED: Classes Proficiency Filters - Backend Data Missing
+# BLOCKED: Classes Proficiency Filters - Backend Denormalization Needed
 
 **Date:** 2025-11-25
-**Status:** ❌ **BLOCKED** - Backend data not available
+**Updated:** 2025-11-26
+**Status:** ⚠️ **BLOCKED** - Backend denormalization needed (data EXISTS, just not indexed)
 **Priority:** TIER 6 MEDIUM
 **Task:** Add 5 proficiency filters to Classes page for multiclass planning
+**Estimated Backend Effort:** ~4 hours (revised down from 9-14 hours)
 
 ---
 
 ## Executive Summary
 
-**All 5 proficiency filters are BLOCKED due to missing backend data.** The `classes` table in the backend database lacks the required columns for proficiency data (`max_spell_level`, `armor_proficiencies`, `weapon_proficiencies`, `tool_proficiencies`, `skill_proficiencies`).
+**UPDATE (2025-11-26):** The proficiency data **already exists** in the `proficiencies` relationship! The blocker is now much simpler:
 
-**This is a backend data architecture issue that must be resolved before frontend implementation can proceed.**
+1. ✅ **Data exists** - Full proficiency data in `classes.proficiencies[]` relationship
+2. ❌ **Not filterable** - Meilisearch can't query nested relationships efficiently
+3. 🔧 **Solution** - Denormalize to flat JSON columns + add to Meilisearch index
+
+**Only `max_spell_level` needs manual data entry (13 values).**
 
 ---
 
-## Investigation Results
+## Current State (2025-11-26)
 
-### Backend Database Schema
+### ✅ Data Already Exists!
 
-**Current `classes` table columns:**
-```sql
-- id
-- slug
-- name
-- parent_class_id
-- hit_die
-- description
-- primary_ability
-- spellcasting_ability_id
-```
+The `proficiencies` relationship on classes contains **complete proficiency data**:
 
-**Missing columns (required for filters):**
-```sql
-- max_spell_level (INT) - 0, 4, 5, or 9
-- armor_proficiencies (JSON/TEXT) - ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"]
-- weapon_proficiencies (JSON/TEXT) - ["Simple Weapons", "Martial Weapons"]
-- tool_proficiencies (JSON/TEXT) - ["Thieves' Tools", etc.]
-- skill_proficiencies (JSON/TEXT) - Array of skill names/IDs
-- saving_throw_proficiencies (JSON/TEXT) - Array of ability score codes
-```
-
-### API Response Verification
-
-**Tested endpoints:**
-- `GET /api/v1/classes` - All proficiency fields return `null`
-- `GET /api/v1/classes/barbarian` - All proficiency fields return `null`
-- `GET /api/v1/classes?filter=max_spell_level=9` - Returns results but all values are `null`
-
-**Sample response:**
+**Example: GET /api/v1/classes/barbarian → proficiencies[]**
 ```json
+[
+  { "proficiency_type": "armor", "proficiency_name": "Light Armor" },
+  { "proficiency_type": "armor", "proficiency_name": "Medium Armor" },
+  { "proficiency_type": "armor", "proficiency_name": "Shields" },
+  { "proficiency_type": "weapon", "proficiency_name": "Simple Weapons" },
+  { "proficiency_type": "weapon", "proficiency_name": "Martial Weapons" },
+  { "proficiency_type": "saving_throw", "proficiency_name": "Strength" },
+  { "proficiency_type": "saving_throw", "proficiency_name": "Constitution" },
+  { "proficiency_type": "skill", "proficiency_name": "Animal Handling", "is_choice": true },
+  { "proficiency_type": "skill", "proficiency_name": "Athletics", "is_choice": true },
+  // ... more skills
+]
+```
+
+**Example: GET /api/v1/classes/wizard → proficiencies[]**
+```json
+[
+  { "proficiency_type": "weapon", "proficiency_name": "Daggers" },
+  { "proficiency_type": "weapon", "proficiency_name": "Darts" },
+  { "proficiency_type": "weapon", "proficiency_name": "Slings" },
+  { "proficiency_type": "weapon", "proficiency_name": "Quarterstaffs" },
+  { "proficiency_type": "weapon", "proficiency_name": "Light Crossbows" },
+  { "proficiency_type": "saving_throw", "proficiency_name": "Intelligence" },
+  { "proficiency_type": "saving_throw", "proficiency_name": "Wisdom" },
+  { "proficiency_type": "skill", "proficiency_name": "Arcana", "is_choice": true },
+  // ... more skills
+]
+```
+
+### ❌ Why It's Still Blocked
+
+**Meilisearch cannot efficiently filter on nested relationship data.** The proficiencies are in a separate table joined via relationship, not flat columns on the `classes` table.
+
+To enable filtering like `?filter=armor_proficiencies IN ["Heavy Armor"]`, we need **denormalized columns** on the classes table that Meilisearch can index.
+
+---
+
+## Revised Solution (Much Simpler!)
+
+### What Backend Needs To Do
+
+#### Step 1: Add Denormalized Columns (~30 min)
+
+```php
+// Migration: add_proficiency_columns_to_classes.php
+Schema::table('classes', function (Blueprint $table) {
+    $table->json('armor_proficiency_names')->nullable();
+    $table->json('weapon_proficiency_names')->nullable();
+    $table->json('saving_throw_names')->nullable();
+    $table->json('skill_proficiency_names')->nullable();
+    $table->tinyInteger('max_spell_level')->nullable(); // Only this needs manual data
+});
+```
+
+#### Step 2: Populate From Existing Relationship (~1 hour)
+
+Create an artisan command or seeder that extracts from existing data:
+
+```php
+// Command: PopulateClassProficiencyColumns.php
+CharacterClass::with('proficiencies')->each(function ($class) {
+    $profs = $class->proficiencies;
+
+    $class->update([
+        'armor_proficiency_names' => $profs
+            ->where('proficiency_type', 'armor')
+            ->pluck('proficiency_name')
+            ->values()
+            ->toArray(),
+
+        'weapon_proficiency_names' => $profs
+            ->where('proficiency_type', 'weapon')
+            ->pluck('proficiency_name')
+            ->values()
+            ->toArray(),
+
+        'saving_throw_names' => $profs
+            ->where('proficiency_type', 'saving_throw')
+            ->pluck('proficiency_name')
+            ->values()
+            ->toArray(),
+
+        'skill_proficiency_names' => $profs
+            ->where('proficiency_type', 'skill')
+            ->pluck('proficiency_name')
+            ->values()
+            ->toArray(),
+    ]);
+});
+```
+
+#### Step 3: Manually Set max_spell_level (~30 min)
+
+Only 13 base classes need this value:
+
+| Class | max_spell_level | Type |
+|-------|-----------------|------|
+| Barbarian | 0 | Non-Caster |
+| Fighter | 0 | Non-Caster |
+| Monk | 0 | Non-Caster |
+| Rogue | 0 | Non-Caster |
+| Paladin | 5 | Half Caster |
+| Ranger | 5 | Half Caster |
+| Artificer | 5 | Half Caster |
+| Bard | 9 | Full Caster |
+| Cleric | 9 | Full Caster |
+| Druid | 9 | Full Caster |
+| Sorcerer | 9 | Full Caster |
+| Warlock | 9 | Full Caster |
+| Wizard | 9 | Full Caster |
+
+**Note:** Subclasses like Eldritch Knight (4) and Arcane Trickster (4) inherit from parent or can be set explicitly.
+
+#### Step 4: Update Meilisearch Index (~30 min)
+
+```php
+// CharacterClass.php - toSearchableArray()
+public function toSearchableArray()
 {
-  "name": "Barbarian",
-  "armor_proficiencies": null,
-  "weapon_proficiencies": null,
-  "tool_proficiencies": null,
-  "skill_proficiencies": null,
-  "max_spell_level": null
+    return [
+        // ... existing fields ...
+        'armor_proficiency_names' => $this->armor_proficiency_names,
+        'weapon_proficiency_names' => $this->weapon_proficiency_names,
+        'saving_throw_names' => $this->saving_throw_names,
+        'skill_proficiency_names' => $this->skill_proficiency_names,
+        'max_spell_level' => $this->max_spell_level,
+    ];
 }
+
+// filterableAttributes config
+'filterableAttributes' => [
+    // ... existing ...
+    'armor_proficiency_names',
+    'weapon_proficiency_names',
+    'saving_throw_names',
+    'skill_proficiency_names',
+    'max_spell_level',
+]
 ```
 
-### Database Query Verification
+#### Step 5: Re-index (~10 min)
 
-**Direct database check:**
 ```bash
-cd /Users/dfox/Development/dnd/importer
-docker compose exec php php artisan tinker --execute="..."
+php artisan scout:flush "App\Models\CharacterClass"
+php artisan scout:import "App\Models\CharacterClass"
 ```
 
-**Result:** `SQLSTATE[42S22]: Column not found: 1054 Unknown column 'max_spell_level'`
+---
 
-**Conclusion:** The database schema does not include these columns at all.
+## Revised Effort Estimate
+
+| Task | Time | Notes |
+|------|------|-------|
+| Migration | 30 min | Add 5 columns |
+| Extraction command | 1 hour | Populate from existing relationship |
+| max_spell_level data | 30 min | 13 manual values |
+| Meilisearch config | 30 min | Update model + config |
+| Re-index | 10 min | Flush + import |
+| Testing | 1 hour | Verify API responses |
+| **Total** | **~4 hours** | Down from 9-14 hours! |
+
+---
+
+## Original Investigation (Historical)
 
 ---
 
