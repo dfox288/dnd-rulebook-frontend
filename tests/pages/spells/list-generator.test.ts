@@ -4,7 +4,7 @@ import { join } from 'path'
 
 describe('Spell List Generator Page', () => {
   const pageContent = readFileSync(
-    join(process.cwd(), 'app/pages/spells/list-generator.vue'),
+    join(process.cwd(), 'app/pages/tools/spell-list.vue'),
     'utf-8'
   )
 
