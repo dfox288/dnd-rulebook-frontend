@@ -1,30 +1,54 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { Background, Skill } from '~/types'
+import { useBackgroundFiltersStore } from '~/stores/backgroundFilters'
 
 const route = useRoute()
 
-// Filter collapse state
-const filtersOpen = ref(false)
+// Use filter store instead of local refs
+const store = useBackgroundFiltersStore()
+const {
+  searchQuery,
+  sortBy,
+  sortDirection,
+  selectedSources,
+  selectedSkills,
+  selectedToolTypes,
+  languageChoiceFilter,
+  filtersOpen
+} = storeToRefs(store)
 
-// Sorting state
-const sortBy = ref<string>((route.query.sort_by as string) || 'name')
-const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
-const sortValue = useSortValue(sortBy, sortDirection)
+// URL sync composable
+const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
 
-// Source filter (using composable) - filtered to only PHB, ERLW, WGTE
-const { selectedSources, sourceOptions, getSourceName, clearSources } = useSourceFilter({
-  transform: (data) => data.filter(s => ['PHB', 'ERLW', 'WGTE'].includes(s.code))
+// On mount: URL params override persisted state
+onMounted(() => {
+  if (hasUrlParams.value) {
+    store.setFromUrlQuery(route.query)
+  }
 })
 
-// Entity-specific filter state
-const selectedSkills = ref<string[]>(
-  route.query.skill ? (Array.isArray(route.query.skill) ? route.query.skill : [route.query.skill]) as string[] : []
+// Sync store changes to URL (debounced)
+let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
+watch(
+  () => store.toUrlQuery,
+  (query) => {
+    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
+    urlSyncTimeout = setTimeout(() => {
+      syncToUrl(query)
+    }, 300)
+  },
+  { deep: true }
 )
-const selectedToolTypes = ref<string[]>(
-  route.query.tool_type ? (Array.isArray(route.query.tool_type) ? route.query.tool_type : [route.query.tool_type]) as string[] : []
-)
-const languageChoiceFilter = ref<string | null>((route.query.grants_language_choice as string) || null)
+
+// Sort value computed (combines sortBy + sortDirection)
+const sortValue = useSortValue(sortBy, sortDirection)
+
+// Source filter options (still need the composable for options)
+const { sourceOptions, getSourceName } = useSourceFilter({
+  transform: (data) => data.filter(s => ['PHB', 'ERLW', 'WGTE'].includes(s.code))
+})
 
 // Fetch reference data
 const { data: skills } = useReferenceData<Skill>('/skills')
@@ -51,7 +75,7 @@ const sortOptions = [
   { label: 'Name (Z-A)', value: 'name:desc' }
 ]
 
-// Query builder for filters
+// Query builder for filters (uses store refs)
 const { queryParams: filterParams } = useMeilisearchFilters([
   { ref: selectedSources, field: 'source_codes', type: 'in' },
   { ref: selectedSkills, field: 'skill_proficiencies', type: 'in' },
@@ -68,16 +92,14 @@ const queryParams = computed(() => ({
 
 // Use entity list composable
 const {
-  searchQuery,
+  searchQuery: entityListSearchQuery,
   currentPage,
   data,
   meta,
   totalResults,
   loading,
   error,
-  refresh,
-  clearFilters: clearBaseFilters,
-  hasActiveFilters
+  refresh
 } = useEntityList({
   endpoint: '/backgrounds',
   cacheKey: 'backgrounds-list',
@@ -88,28 +110,36 @@ const {
   }
 })
 
+// Sync entity list's searchQuery with store's searchQuery
+watch(entityListSearchQuery, (newVal) => {
+  if (searchQuery.value !== newVal) {
+    searchQuery.value = newVal
+  }
+})
+
+watch(searchQuery, (newVal) => {
+  if (entityListSearchQuery.value !== newVal) {
+    entityListSearchQuery.value = newVal
+  }
+})
+
 const backgrounds = computed(() => data.value as Background[])
 
-// Clear all filters
+// Clear all filters - uses store action + URL clear
 const clearFilters = () => {
-  clearBaseFilters()
-  clearSources()
-  selectedSkills.value = []
-  selectedToolTypes.value = []
-  languageChoiceFilter.value = null
+  store.clearAll()
+  clearUrl()
 }
 
 // Helper functions for filter chips
 const getSkillName = (code: string) => skills.value?.find(s => s.code === code)?.name || code
 const getToolTypeName = (value: string) => toolTypeOptions.find(t => t.value === value)?.label || value
 
-// Active filter count
-const activeFilterCount = useFilterCount(
-  selectedSources,
-  selectedSkills,
-  selectedToolTypes,
-  languageChoiceFilter
-)
+// Active filter count (use store getter)
+const activeFilterCount = computed(() => store.activeFilterCount)
+
+// Has active filters (use store getter)
+const hasActiveFilters = computed(() => store.hasActiveFilters)
 
 const perPage = 24
 </script>
