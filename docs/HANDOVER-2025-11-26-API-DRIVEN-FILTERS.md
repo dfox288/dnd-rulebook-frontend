@@ -169,17 +169,21 @@ Some tests in `races-filters.test.ts` and `items-filters.test.ts` have partial f
 ## For Next Session
 
 ### Running Tests (IMPORTANT)
-**Exclude Playwright e2e tests** - they crash the container:
-```bash
-# ✅ Correct - excludes e2e tests
-docker compose exec nuxt npm run test -- --exclude='**/e2e/**'
+**⚠️ KNOWN ISSUE:** Tests cause extreme CPU usage (500-700%) in Docker.
 
-# ❌ Don't do this - Playwright makes the container OOM
-docker compose exec nuxt npm run test
+**Workaround - exclude e2e tests:**
+```bash
+# Use this until CPU issue is resolved
+docker compose exec nuxt npm run test -- --exclude='**/e2e/**'
 ```
 
+**TODO for next session:**
+- Investigate vitest CPU spike (tried `singleFork`, `fileParallelism: false` - didn't help)
+- May be Nuxt test environment setup cost, not parallelism
+- Consider running tests outside Docker
+
 ### Current Test Status
-After fixes: **1313 tests passed, 0 failed** (excluding e2e)
+When run with `--exclude='**/e2e/**'`: **1313 tests passed, 0 failed**
 
 ### Remaining Test Fixes (if needed)
 - `races-filters.test.ts` - Search chip tests
