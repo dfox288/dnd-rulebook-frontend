@@ -201,13 +201,34 @@ const accordionItems = computed(() => {
       />
 
       <!-- Header -->
-      <UiDetailPageHeader
-        :title="entity.name"
-        :badges="[
-          { label: entity.is_base_class ? 'Base Class' : 'Subclass', color: (entity.is_base_class ? 'error' : 'warning') as BadgeColor, variant: 'subtle' as BadgeVariant, size: 'lg' as BadgeSize },
-          ...(entity.spellcasting_ability ? [{ label: `✨ ${entity.spellcasting_ability.name}`, color: 'primary' as BadgeColor, variant: 'soft' as BadgeVariant, size: 'sm' as BadgeSize }] : [])
-        ]"
-      />
+      <div class="space-y-2">
+        <UiDetailPageHeader
+          :title="entity.name"
+          :badges="[
+            ...(entity.is_base_class ? [{ label: 'Base Class', color: 'error' as BadgeColor, variant: 'subtle' as BadgeVariant, size: 'lg' as BadgeSize }] : []),
+            ...(entity.spellcasting_ability ? [{ label: `✨ ${entity.spellcasting_ability.name}`, color: 'primary' as BadgeColor, variant: 'soft' as BadgeVariant, size: 'sm' as BadgeSize }] : []),
+            ...(!entity.is_base_class && parentClass?.spellcasting_ability && !entity.spellcasting_ability ? [{ label: `✨ ${parentClass.spellcasting_ability.name}`, color: 'primary' as BadgeColor, variant: 'soft' as BadgeVariant, size: 'sm' as BadgeSize }] : [])
+          ]"
+        />
+
+        <!-- Subclass Parent Link Badge -->
+        <div
+          v-if="isSubclass && parentClass"
+          class="flex items-center gap-2"
+        >
+          <NuxtLink
+            :to="`/classes/${parentClass.slug}`"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning-100 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 hover:bg-warning-200 dark:hover:bg-warning-800/50 transition-colors text-sm font-medium"
+          >
+            <span>Subclass of</span>
+            <span class="font-semibold">{{ parentClass.name }}</span>
+            <UIcon
+              name="i-heroicons-arrow-right"
+              class="w-4 h-4"
+            />
+          </NuxtLink>
+        </div>
+      </div>
 
       <!-- Quick Stats (2/3) + Image (1/3) Side-by-Side -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
