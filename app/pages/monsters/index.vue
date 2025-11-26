@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Monster, Size } from '~/types'
+import type { Monster, Size, MonsterType, ArmorType, Alignment } from '~/types'
 
 const route = useRoute()
 
@@ -62,6 +62,10 @@ const hpRangeOptions = [
 
 // Fetch reference data for filters
 const { data: sizes } = useReferenceData<Size>('/sizes')
+const { data: armorTypes } = useReferenceData<ArmorType>('/armor-types')
+const { data: monsterTypes } = useReferenceData<MonsterType>('/monster-types')
+const { data: alignments } = useReferenceData<Alignment>('/alignments')
+
 
 // Movement type options for multiselect
 const movementTypeOptions = [
@@ -115,53 +119,27 @@ const sizeOptions = computed(() =>
   sizes.value?.map(s => ({ label: s.name, value: String(s.id) })) || []
 )
 
-// Alignment options (from API analysis - common D&D alignments)
-const alignmentOptions = [
-  { label: 'Lawful Good', value: 'Lawful Good' },
-  { label: 'Neutral Good', value: 'Neutral Good' },
-  { label: 'Chaotic Good', value: 'Chaotic Good' },
-  { label: 'Lawful Neutral', value: 'Lawful Neutral' },
-  { label: 'Neutral', value: 'Neutral' },
-  { label: 'Chaotic Neutral', value: 'Chaotic Neutral' },
-  { label: 'Lawful Evil', value: 'Lawful Evil' },
-  { label: 'Neutral Evil', value: 'Neutral Evil' },
-  { label: 'Chaotic Evil', value: 'Chaotic Evil' },
-  { label: 'Unaligned', value: 'Unaligned' },
-  { label: 'Any Alignment', value: 'Any alignment' }
-]
+// Alignment options from reference data
+const alignmentOptions = computed(() =>
+  alignments.value?.map(a => ({ label: a.name, value: a.name })) || []
+)
 
-// Type options
-const typeOptions = [
-  { label: 'All Types', value: null },
-  { label: 'Aberration', value: 'aberration' },
-  { label: 'Beast', value: 'beast' },
-  { label: 'Celestial', value: 'celestial' },
-  { label: 'Construct', value: 'construct' },
-  { label: 'Dragon', value: 'dragon' },
-  { label: 'Elemental', value: 'elemental' },
-  { label: 'Fey', value: 'fey' },
-  { label: 'Fiend', value: 'fiend' },
-  { label: 'Giant', value: 'giant' },
-  { label: 'Humanoid', value: 'humanoid' },
-  { label: 'Monstrosity', value: 'monstrosity' },
-  { label: 'Ooze', value: 'ooze' },
-  { label: 'Plant', value: 'plant' },
-  { label: 'Undead', value: 'undead' }
-]
+// Type options from API
+const typeOptions = computed(() => {
+  const options: Array<{ label: string, value: string | null }> = [{ label: 'All Types', value: null }]
+  if (monsterTypes.value) {
+    options.push(...monsterTypes.value.map(mt => ({
+      label: mt.name,
+      value: mt.slug
+    })))
+  }
+  return options
+})
 
-// Armor Type options (from API analysis - common armor types)
-const armorTypeOptions = [
-  { label: 'Natural Armor', value: 'natural armor' },
-  { label: 'Plate Armor', value: 'plate armor' },
-  { label: 'Leather Armor', value: 'leather armor' },
-  { label: 'Studded Leather Armor', value: 'studded leather armor' },
-  { label: 'Hide Armor', value: 'hide armor' },
-  { label: 'Chain Mail', value: 'chain mail' },
-  { label: 'Scale Mail', value: 'scale mail' },
-  { label: 'Half Plate Armor', value: 'half plate armor' },
-  { label: 'Breastplate', value: 'breastplate' },
-  { label: 'Unarmored Defense', value: 'Unarmored Defense' }
-]
+// Armor Type options from reference data
+const armorTypeOptions = computed(() =>
+  armorTypes.value?.map(at => ({ label: at.name, value: at.name })) || []
+)
 
 // Sort options
 const sortOptions = [
@@ -341,7 +319,7 @@ const clearCRFilter = () => {
 }
 
 const getTypeLabel = (type: string) => {
-  return typeOptions.find(o => o.value === type)?.label || type
+  return typeOptions.value.find(o => o.value === type)?.label || type
 }
 
 // Helper functions for size filter chips

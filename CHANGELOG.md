@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Items Rarity Filter (2025-11-26)** - Now fetches from API instead of hardcoded
+  - Uses `useReferenceData<Rarity>('/rarities')`
+  - Consumes `/api/v1/lookups/rarities` endpoint (already existed)
+  - Added `Rarity` type export to `~/types/index.ts`
 - **Filter Chip Standardization (2025-11-25)** - Comprehensive chip consistency across all 7 entity pages
   - Standardized ordering: Source → Entity-specific → Boolean toggles → Search (always last)
   - Standardized colors: neutral (source/search), entity color (entity-specific), primary (boolean)

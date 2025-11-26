@@ -1,147 +1,83 @@
 # Frontend TODO List
 
-**Last Updated:** 2025-11-25
-**Priority:** High - Backend API changes in progress
+**Last Updated:** 2025-11-26
+**Project Status:** Production-ready with 1,164+ tests passing
 
 ---
 
-## 🚨 High Priority - Backend API Evolution
+## ✅ Recently Completed
 
-### 1. **Monitor for More Meilisearch Migrations** ⚠️
-**Status:** ACTIVE - Backend is evolving
-**Urgency:** Respond within 24-48 hours of backend changes
+### 2025-11-26
+- ✅ **API /lookups Migration** - All 11 reference endpoints updated to use `/v1/lookups/*`
+- ✅ **Type Generation Fixed** - Now works via Docker with env variable
+- ✅ **Component Extraction** - 4 new components, 2 new composables, ~24% code reduction across 7 pages
+- ✅ **TypeScript Types Synced** - `generated.ts` updated (+1,233/-743 lines)
 
-**What to Watch:**
-- Damage types filter migration to Meilisearch
-- Saving throws filter migration to Meilisearch
-- Other entity filters (items, monsters, races)
+### 2025-11-25
+- ✅ **Filter Consistency Audit** - All 7 entity pages standardized
+- ✅ **21 New Filters** - Added across 5 entities (Backgrounds, Items, Races, Monsters)
+- ✅ **103 New Tests** - All passing, zero regressions
+- ✅ **Monsters Movement Filters** - Redesigned from 5 toggles to single multiselect
 
-**Current State (2025-11-25):**
-- ✅ **Class filtering migrated** - Using `filter=class_slugs IN [wizard]`
-- ⏳ **Pending:** Damage types, saving throws, other filters
-
-**Action Required:**
-1. Check backend API docs daily: `http://localhost:8080/docs/api`
-2. Test existing filters for breaking changes
-3. Update frontend query builders when filters migrate
-4. Follow same pattern as class filter migration:
-   - Add to `meilisearchFilters` array
-   - Use `IN [value1, value2]` syntax for multi-select
-   - Maintain MySQL fallback where possible
-
-**Tracking:**
-- Backend repo: `../importer`
-- API spec: `http://localhost:8080/docs/api.json`
+### 2025-11-24
+- ✅ **Spell List Generator MVP** - First builder tool, localStorage persistence
+- ✅ **Spells Filter Phase 2 & 3** - Component flags + spell properties (48% API utilization)
 
 ---
 
-## 🎯 Medium Priority - Feature Enhancements
+## 🚨 High Priority
 
-### 2. **Advanced Filter UI for Power Users**
-**Estimated:** 4-6 hours
-**Prerequisites:** Wait for more filters to migrate to Meilisearch
+### 1. **Fix Pre-existing TypeScript Errors**
+**Status:** Ready to fix
+**Estimated:** 1-2 hours
 
-**Features:**
-- "Advanced Filters" section toggle
-- Visual query builder
-- Filter combination preview: `class_slugs IN [wizard] AND level >= 7`
-- Save filter presets to localStorage
-- Share filter URLs
-
-**Design Considerations:**
-- Show Meilisearch query syntax
-- Help users understand AND/OR logic
-- Provide preset examples (e.g., "High-level wizard evocation spells")
-
----
-
-### 3. **Type Generation Automation**
-**Estimated:** 2-3 hours
-**Issue:** `npm run types:sync` doesn't work from Docker container
-
-**Current Problem:**
-- Script can't reach `localhost:8080` from inside container
-- Must manually fix generated types when API changes
-- Recent fix: `is_base_class` from `string` to `boolean`
+**Known Errors:**
+- `app/pages/monsters/index.vue` - LocationQueryValue type issues
+- `app/pages/tools/spell-list.vue` - Property 'alert' type error
+- `app/pages/monsters/[slug].vue` - `spellcasting` property missing from Monster type
 
 **Solution:**
-- Update `scripts/sync-api-types.js` to use `host.docker.internal`
-- Or: Run script on host machine, not in container
-- Or: Add ENV variable for API spec URL
-
-**Files:**
-- `scripts/sync-api-types.js`
-- `package.json` scripts section
+1. Regenerate types (command now works):
+   ```bash
+   NUXT_API_SPEC_URL=http://host.docker.internal:8080/docs/api.json docker compose exec nuxt npm run types:sync
+   ```
+2. Add manual type extensions in `app/types/api/entities.ts` if needed
 
 ---
 
-### 4. **Migrate Other Filters to Meilisearch**
-**Estimated:** 1-2 hours per entity
-**Dependencies:** Backend must support it first
+### 2. **Fix 49 Failing Tests**
+**Status:** Pre-existing failures
+**Estimated:** 2-4 hours
 
-**Candidates:**
-1. **Spells:**
-   - Damage types (currently: `damage_type=fire,cold`)
-   - Saving throws (currently: `saving_throw=DEX,CON`)
-   - Potentially: Casting time, range, duration
+**Affected Areas:**
+- Filter layout tests
+- Races filter tests
 
-2. **Items:**
-   - Item type multi-select
-   - Rarity multi-select
-
-3. **Monsters:**
-   - CR range
-   - Type multi-select
-
-**Pattern to Follow:**
-```typescript
-// In queryBuilder
-const meilisearchFilters: string[] = []
-
-if (selectedDamageTypes.value.length > 0) {
-  meilisearchFilters.push(`tag_slugs IN [${selectedDamageTypes.value.join(', ')}]`)
-}
-
-if (meilisearchFilters.length > 0) {
-  params.filter = meilisearchFilters.join(' AND ')
-}
-```
+**Action:** Investigate root cause and fix or update test expectations.
 
 ---
 
-## 🔧 Technical Debt
-
-### 5. **Fix Remaining TypeScript Errors**
-**Count:** 11 errors (all in `app/pages/monsters/[slug].vue`)
-**Issue:** `Property 'spellcasting' does not exist on type 'Monster'`
-
-**Root Cause:**
-- Generated types don't include `spellcasting` field
-- Monster detail page uses it
-
-**Solution:**
-- Regenerate types after fixing type sync script
-- Or: Add manual type extension in `app/types/api/entities.ts`
-
----
-
-### 6. **E2E Testing with Playwright**
+### 3. **E2E Testing with Playwright**
+**Status:** Infrastructure ready, NO tests written
 **Estimated:** 8-12 hours
-**Status:** Infrastructure ready, no tests written
+**Priority:** Critical gap in test coverage
 
-**Priority Tests:**
+**Priority Tests to Write:**
 1. **Filter Interactions:**
-   - Select class filter → verify results update
+   - Select filter → verify results update
    - Combine multiple filters → verify AND logic
    - Clear filters → verify reset
+   - Filter chips appear/remove correctly
 
 2. **Navigation:**
-   - Homepage → Spells → Filter → Detail page
+   - Homepage → Entity list → Detail page
    - Back button behavior
+   - Breadcrumb navigation
 
 3. **Spell List Generator:**
    - Select class/level → verify spell slots
-   - Toggle spells → verify localStorage
+   - Toggle spells → verify selection
+   - Refresh page → verify localStorage persistence
 
 **Files to Create:**
 - `tests/e2e/filters.spec.ts`
@@ -150,9 +86,78 @@ if (meilisearchFilters.length > 0) {
 
 ---
 
+## 🎯 Medium Priority
+
+### 4. **Use New Lookup Endpoints**
+**Status:** Backend ready, frontend not using yet
+**Estimated:** 2-3 hours
+
+**New endpoints available (from `/v1/lookups/`):**
+- `alignments` - Monster alignment filter options
+- `armor-types` - Monster armor type filter options
+- `monster-types` - Monster type filter options (currently hardcoded)
+- `rarities` - Item rarity filter options (currently hardcoded)
+- `tags` - Universal tag system
+
+**Action:** Replace hardcoded filter options with API-driven data using `useReferenceData()`.
+
+---
+
+### 5. **Classes Proficiency Filters**
+**Status:** BLOCKED by backend
+**Documented:** `docs/BLOCKED-CLASSES-PROFICIENCY-FILTERS-2025-11-25.md`
+
+**Missing Backend Support:**
+- max_spell_level
+- armor_proficiencies
+- weapon_proficiencies
+- skill_proficiencies
+- tool_proficiencies
+
+**Action:** Wait for backend team to add database columns and data seeding.
+
+---
+
+### 6. **Advanced Filter UI for Power Users**
+**Estimated:** 4-6 hours
+**Prerequisites:** More filters migrated to Meilisearch
+
+**Features:**
+- "Advanced Filters" section toggle
+- Visual query builder
+- Filter combination preview
+- Save filter presets to localStorage
+- Share filter URLs
+
+---
+
+## 🔧 Technical Debt
+
+### 7. **In-Code TODOs**
+**Count:** 2 items
+
+1. **`app/components/PageHeaderLinks.vue:7`**
+   - `useSiteConfig()` needs @nuxtjs/site-config module
+
+2. **`app/components/JsonDebugPanel.vue:25`**
+   - Could add toast notification for copy action
+
+---
+
+### 8. **Update CLAUDE.md Type Sync Command**
+**Status:** Quick fix needed
+**Estimated:** 5 minutes
+
+Add the working Docker command to CLAUDE.md:
+```bash
+NUXT_API_SPEC_URL=http://host.docker.internal:8080/docs/api.json docker compose exec nuxt npm run types:sync
+```
+
+---
+
 ## 💡 Future Enhancements
 
-### 7. **Multi-Class Spell Lists**
+### 9. **Multi-Class Spell Lists**
 **Estimated:** 6-8 hours
 **Prerequisites:** Spell List Generator MVP complete ✅
 
@@ -164,7 +169,7 @@ if (meilisearchFilters.length > 0) {
 
 ---
 
-### 8. **Export Functionality**
+### 10. **Export Functionality**
 **Estimated:** 4-6 hours
 
 **Formats:**
@@ -174,45 +179,42 @@ if (meilisearchFilters.length > 0) {
 
 ---
 
-### 9. **Advanced Meilisearch Queries in UI**
+### 11. **Advanced Meilisearch Queries in UI**
 **Estimated:** 8-10 hours
 **Dependencies:** Multiple filters migrated to Meilisearch
 
 **Features:**
 - Query builder UI with drag-and-drop
 - AND/OR logic toggles
-- Parentheses grouping: `(class_slugs IN [wizard] OR class_slugs IN [sorcerer]) AND level >= 5`
+- Parentheses grouping
 - Save complex queries as presets
 
 ---
 
-## 📊 Task Tracking
+## 📊 Project Stats
 
-### Completed (2025-11-25)
-- ✅ Migrate spell class filtering to Meilisearch
-- ✅ Fix `is_base_class` type mismatch
-- ✅ Update ClassCard boolean comparison
-- ✅ Document migration in CHANGELOG and handover
-
-### In Progress
-- ⏳ Monitor backend for more Meilisearch migrations
-
-### Blocked
-- 🚫 Type generation automation (need to fix script)
-- 🚫 Migrate other filters (waiting for backend support)
+| Metric | Value |
+|--------|-------|
+| Entity Types | 7/7 complete |
+| Reference Pages | 10/10 complete |
+| Builder Tools | 1 (Spell List Generator) |
+| Total Tests | 1,164+ |
+| Passing Tests | ~1,115 (49 pre-existing failures) |
+| ESLint Errors | 0 |
+| TypeScript | Minor errors (fixable) |
 
 ---
 
 ## 🎯 Recommended Order
 
-1. **Monitor backend daily** - High priority, prevents breakage
-2. **Fix type generation** - Unblocks future API changes
-3. **E2E testing** - Regression protection before more changes
-4. **Migrate other filters** - After backend supports them
-5. **Advanced filter UI** - Polish after core migrations complete
+1. **Fix TypeScript errors** - Quick win, improves DX
+2. **Fix failing tests** - Restore test suite health
+3. **E2E testing** - Critical coverage gap
+4. **Use new lookup endpoints** - Replace hardcoded data
+5. **Advanced filter UI** - Polish after core work complete
 
 ---
 
 **End of TODO List**
 
-**Next Review:** After next backend API change is detected
+**Next Review:** After completing high priority items

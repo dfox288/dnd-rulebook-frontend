@@ -142,3 +142,34 @@ export interface Monster extends Omit<MonsterFromAPI, 'sources'> {
 export type ClassCounterResource = components['schemas']['ClassCounterResource']
 export type EntityConditionResource = components['schemas']['EntityConditionResource']
 export type EntityPrerequisiteResource = components['schemas']['EntityPrerequisiteResource']
+
+/**
+ * Lookup/Reference types for filter dropdowns
+ *
+ * These are simple slug/name pairs returned by /api/v1/lookups/* endpoints.
+ * Used in filter components to provide dynamic, API-driven options.
+ */
+
+/** Alignment lookup from /api/v1/lookups/alignments */
+export interface Alignment {
+  slug: string
+  name: string
+}
+
+/** Armor type lookup from /api/v1/lookups/armor-types */
+export interface ArmorType {
+  slug: string
+  name: string
+}
+
+/** Monster type lookup from /api/v1/lookups/monster-types */
+export interface MonsterType {
+  slug: string
+  name: string
+}
+
+/** Rarity lookup from /api/v1/lookups/rarities */
+export interface Rarity {
+  slug: string
+  name: string
+}

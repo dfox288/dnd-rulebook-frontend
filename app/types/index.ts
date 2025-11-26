@@ -12,7 +12,7 @@
 import type { components } from './api/generated'
 
 export type { Source, EntitySource, AbilityScore, Modifier, Tag } from './api/common'
-export type { Spell, Item, Race, CharacterClass, Background, Feat, Monster } from './api/entities'
+export type { Spell, Item, Race, CharacterClass, Background, Feat, Monster, Rarity, ArmorType, MonsterType, Alignment } from './api/entities'
 export type Condition = components['schemas']['ConditionResource']
 export type DamageType = components['schemas']['DamageTypeResource']
 export type ItemType = components['schemas']['ItemTypeResource']

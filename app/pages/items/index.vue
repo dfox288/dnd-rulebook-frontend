@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Item, ItemType, DamageType } from '~/types'
+import type { Item, ItemType, DamageType, Rarity } from '~/types'
 
 const route = useRoute()
 
@@ -116,16 +116,8 @@ const { data: itemProperties } = useReferenceData<{
   description: string
 }>('/item-properties')
 
-// Rarity options from D&D rules
-const rarityOptions = [
-  { label: 'All Rarities', value: null },
-  { label: 'Common', value: 'common' },
-  { label: 'Uncommon', value: 'uncommon' },
-  { label: 'Rare', value: 'rare' },
-  { label: 'Very Rare', value: 'very rare' },
-  { label: 'Legendary', value: 'legendary' },
-  { label: 'Artifact', value: 'artifact' }
-]
+// Fetch rarities for filter options
+const { data: rarities } = useReferenceData<Rarity>('/rarities')
 
 // Magic filter options
 const magicOptions = [
@@ -146,6 +138,18 @@ const typeOptions = computed(() => {
   return options
 })
 
+// Rarity filter options
+const rarityOptions = computed(() => {
+  const options: Array<{ label: string, value: string | null }> = [{ label: 'All Rarities', value: null }]
+  if (rarities.value) {
+    options.push(...rarities.value.map(r => ({
+      label: r.name.charAt(0).toUpperCase() + r.name.slice(1),
+      value: r.name
+    })))
+  }
+  return options
+})
+
 // Damage type filter options
 const damageTypeOptions = computed(() => {
   if (!damageTypes.value) return []
@@ -154,7 +158,6 @@ const damageTypeOptions = computed(() => {
     value: dt.code
   }))
 })
-
 
 // Item property filter options (weapon/armor properties like Finesse, Versatile, etc.)
 const propertyOptions = computed(() => {
@@ -172,7 +175,6 @@ const sortOptions = [
   { label: 'Rarity (Common→Legendary)', value: 'rarity:asc' },
   { label: 'Rarity (Legendary→Common)', value: 'rarity:desc' }
 ]
-
 
 // Query builder for custom filters (hybrid: composable + manual for special cases)
 const queryBuilder = computed(() => {
