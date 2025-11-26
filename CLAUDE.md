@@ -12,7 +12,8 @@ Nuxt 4.x frontend for D&D 5e Compendium. Consumes REST API from `../importer` (L
 
 **Essential Docs:**
 - `docs/PROJECT-STATUS.md` - Metrics and current status
-- `docs/CURRENT_STATUS.md` - Detailed feature status
+- `docs/TODO.md` - Active tasks
+- `docs/LATEST-HANDOVER.md` - Latest session handover
 - `docs/proposals/` - API enhancement proposals
 
 ---
