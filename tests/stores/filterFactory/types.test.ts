@@ -1,6 +1,6 @@
 // tests/stores/filterFactory/types.test.ts
 import { describe, it, expect } from 'vitest'
-import type { FilterFieldDefinition, FilterFieldType } from '~/stores/filterFactory/types'
+import type { FilterFieldDefinition } from '~/stores/filterFactory/types'
 
 describe('FilterFieldDefinition types', () => {
   it('enforces correct field type discriminants', () => {

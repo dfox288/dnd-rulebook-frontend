@@ -130,12 +130,12 @@ describe('createEntityFilterStore', () => {
     it('counts array lengths and single values', () => {
       const useStore = createEntityFilterStore(testConfig)
       const store = useStore()
-      store.selectedSources = ['PHB', 'XGE']  // 2
-      store.selectedLevels = ['1', '2', '3']   // 3
-      store.selectedSchool = 5                  // 1
-      store.concentrationFilter = '1'           // 1
-      store.selectedSize = 'M'                  // 1
-      store.selectedHitDice = [6, 8]           // 2
+      store.selectedSources = ['PHB', 'XGE'] // 2
+      store.selectedLevels = ['1', '2', '3'] // 3
+      store.selectedSchool = 5 // 1
+      store.concentrationFilter = '1' // 1
+      store.selectedSize = 'M' // 1
+      store.selectedHitDice = [6, 8] // 2
 
       expect(store.activeFilterCount).toBe(10)
     })

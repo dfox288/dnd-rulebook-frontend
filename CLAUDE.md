@@ -18,6 +18,15 @@ Nuxt 4.x frontend for D&D 5e Compendium. Consumes REST API from `../importer` (L
 
 ---
 
+## AI Context (llms.txt)
+
+**Fetch these before starting work:**
+
+- **Nuxt 4** `https://nuxt.com/llms.txt` or `llms-full.txt` (~1M+ tokens)
+- **Nuxt UI 4** `https://ui.nuxt.com/llms.txt` or `llms-full.txt` (~1M+ tokens)
+- *Vue 3** `https://vuejs.org/llms.txt`
+- **Vite** `https://vite.dev/llms.txt`
+
 ## Quick Reference
 
 ```bash
