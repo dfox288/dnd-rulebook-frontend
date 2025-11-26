@@ -29,11 +29,17 @@ const imagePath = computed(() => {
 })
 
 /**
- * Get base class features (non-optional) for the progression table
+ * Get computed hit points data (works for both base and subclasses)
  */
-const baseClassFeatures = computed(() => {
-  if (!entity.value?.features) return []
-  return entity.value.features.filter(f => !f.is_optional)
+const hitPointsData = computed(() => {
+  return entity.value?.computed?.hit_points ?? null
+})
+
+/**
+ * Get computed progression table (works for both base and subclasses)
+ */
+const progressionTableData = computed(() => {
+  return entity.value?.computed?.progression_table ?? null
 })
 
 /**
@@ -55,61 +61,38 @@ const parentClassImagePath = computed(() => {
 })
 
 /**
- * Get base class features for progression table (from parent for subclasses)
- */
-const progressionFeatures = computed(() => {
-  if (isSubclass.value && parentClass.value?.features) {
-    return parentClass.value.features.filter((f: { is_optional?: boolean }) => !f.is_optional)
-  }
-  return baseClassFeatures.value
-})
-
-/**
- * Get counters for progression table (from parent for subclasses)
- */
-const progressionCounters = computed(() => {
-  if (isSubclass.value && parentClass.value?.counters) {
-    return parentClass.value.counters
-  }
-  return entity.value?.counters || []
-})
-
-/**
  * Build accordion items with icons
- * For subclasses, includes inherited content from parent class
+ * For subclasses, uses inherited_data from backend
  */
 const accordionItems = computed(() => {
   if (!entity.value) return []
 
   const items = []
+  const isBase = entity.value.is_base_class
 
-  // For base classes: show own content
-  // For subclasses: show inherited content from parent
-
-  const counters = entity.value.is_base_class
+  // For subclasses, use inherited_data; for base classes, use entity directly
+  const counters = isBase
     ? entity.value.counters
-    : parentClass.value?.counters
+    : entity.value.inherited_data?.counters
 
-  const traits = entity.value.is_base_class
+  const traits = isBase
     ? entity.value.traits
-    : parentClass.value?.traits
+    : entity.value.inherited_data?.traits
 
-  const levelProgression = entity.value.is_base_class
+  const levelProgression = isBase
     ? entity.value.level_progression
-    : parentClass.value?.level_progression
+    : entity.value.inherited_data?.level_progression
 
-  const equipment = entity.value.is_base_class
+  const equipment = isBase
     ? entity.value.equipment
-    : parentClass.value?.equipment
+    : entity.value.inherited_data?.equipment
 
-  const proficiencies = entity.value.is_base_class
+  const proficiencies = isBase
     ? entity.value.proficiencies
-    : parentClass.value?.proficiencies
+    : entity.value.inherited_data?.proficiencies
 
-  // Base class features (for subclasses, show parent's features here)
-  const baseFeatures = entity.value.is_base_class
-    ? entity.value.features
-    : parentClass.value?.features
+  // Features are always from the entity itself (subclasses have their own features)
+  const features = entity.value.features
 
   const inheritedLabel = isSubclass.value && parentClass.value
     ? ` (Inherited from ${parentClass.value.name})`
@@ -160,13 +143,10 @@ const accordionItems = computed(() => {
     })
   }
 
-  // For base classes: show Features section
-  // For subclasses: show Base Class Features (parent's features)
-  if (baseFeatures && baseFeatures.length > 0) {
+  // Features section - base class shows all, subclass shows own features
+  if (features && features.length > 0) {
     items.push({
-      label: isSubclass.value
-        ? `Base Class Features (${baseFeatures.length})${inheritedLabel}`
-        : `Features (${baseFeatures.length})`,
+      label: `Features (${features.length})`,
       slot: 'features',
       defaultOpen: false,
       icon: 'i-heroicons-star'
@@ -187,21 +167,20 @@ const accordionItems = computed(() => {
 })
 
 /**
- * Get data for accordion slots (handles inheritance)
+ * Get data for accordion slots (handles inheritance via inherited_data)
  */
 const accordionData = computed(() => {
   if (!entity.value) return {}
 
   const isBase = entity.value.is_base_class
-  const parent = parentClass.value
 
   return {
-    counters: isBase ? entity.value.counters : parent?.counters,
-    traits: isBase ? entity.value.traits : parent?.traits,
-    levelProgression: isBase ? entity.value.level_progression : parent?.level_progression,
-    equipment: isBase ? entity.value.equipment : parent?.equipment,
-    proficiencies: isBase ? entity.value.proficiencies : parent?.proficiencies,
-    features: isBase ? entity.value.features : parent?.features
+    counters: isBase ? entity.value.counters : entity.value.inherited_data?.counters,
+    traits: isBase ? entity.value.traits : entity.value.inherited_data?.traits,
+    levelProgression: isBase ? entity.value.level_progression : entity.value.inherited_data?.level_progression,
+    equipment: isBase ? entity.value.equipment : entity.value.inherited_data?.equipment,
+    proficiencies: isBase ? entity.value.proficiencies : entity.value.inherited_data?.proficiencies,
+    features: entity.value.features
   }
 })
 </script>
@@ -331,9 +310,9 @@ const accordionData = computed(() => {
         </div>
       </div>
 
-      <!-- Class Progression Table (base class or inherited) -->
+      <!-- Class Progression Table (from computed data) -->
       <div
-        v-if="progressionFeatures.length > 0"
+        v-if="progressionTableData"
         class="space-y-2"
       >
         <div
@@ -356,8 +335,7 @@ const accordionData = computed(() => {
           </UBadge>
         </div>
         <UiClassProgressionTable
-          :features="progressionFeatures"
-          :counters="progressionCounters"
+          :progression-table="progressionTableData"
         />
       </div>
 
@@ -367,38 +345,11 @@ const accordionData = computed(() => {
         :description="entity.description"
       />
 
-      <!-- Hit Points Card (for base class or inherited) -->
-      <div
-        v-if="entity.is_base_class && entity.hit_die"
-      >
-        <UiClassHitPointsCard
-          :hit-die="Number(entity.hit_die)"
-          :class-name="entity.name"
-        />
-      </div>
-
-      <!-- Inherited Hit Points Card (for subclasses) -->
-      <div
-        v-else-if="isSubclass && parentClass?.hit_die"
-        class="space-y-2"
-      >
-        <div class="flex items-center gap-2">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Hit Points
-          </h3>
-          <UBadge
-            color="neutral"
-            variant="subtle"
-            size="xs"
-          >
-            Inherited from {{ parentClass.name }}
-          </UBadge>
-        </div>
-        <UiClassHitPointsCard
-          :hit-die="Number(parentClass.hit_die)"
-          :class-name="parentClass.name"
-        />
-      </div>
+      <!-- Hit Points Card (from computed data) -->
+      <UiClassHitPointsCard
+        v-if="hitPointsData"
+        :hit-points="hitPointsData"
+      />
 
       <!-- Subclass Features (Primary Content for Subclasses) -->
       <div
