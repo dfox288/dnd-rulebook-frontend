@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Filter Store Factory Pattern (2025-11-26)** - Refactored 7 Pinia filter stores to use factory pattern
+  - New `createEntityFilterStore()` factory reduces ~1,385 lines to ~280 lines (80% reduction)
+  - Declarative field definitions instead of manual getters/actions
+  - Adding a new filter now requires 1 line instead of 5+ places
+  - Consistent behavior guaranteed across all entity stores
+  - All existing store tests pass without modification
+  - New files: `app/stores/filterFactory/` directory
+
 - **Class Detail Page Backend Data Refactoring (2025-11-26)** - Frontend now uses pre-computed backend data
   - Hit points calculated server-side (removed frontend calculation logic)
   - Progression table with dynamic columns from backend API
