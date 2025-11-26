@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Subclass Detail Page Enhancements (2025-11-26)** - Subclasses now show inherited parent class data
+  - **Hierarchical Breadcrumb** - Shows `Classes > Rogue > Assassin` navigation
+  - **"Subclass of X" Badge** - Interactive badge linking to parent class
+  - **Dual Image Display** - Subclass image with parent class thumbnail overlay
+  - **Inherited Hit Points Card** - Shows parent class HP with "Inherited from X" label
+  - **Subclass Features Section** - Prominent display of subclass-specific features
+  - **Inherited Progression Table** - Full 20-level table from parent class
+  - **Inherited Accordion Sections** - Proficiencies, equipment, traits from parent
+  - New component: `UiClassParentImageOverlay` with 4 tests
+
 - **Class Detail Page Enhancements (2025-11-26)** - Major improvements to class pages
   - **Class Progression Table** - Shows all 20 levels with features and counters (e.g., Sneak Attack dice)
   - **Hit Points Card** - Displays HP calculations (hit die, 1st level HP, HP per level with average)
