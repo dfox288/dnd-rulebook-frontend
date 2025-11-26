@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Class Detail Page Backend Data Refactoring (2025-11-26)** - Frontend now uses pre-computed backend data
+  - Hit points calculated server-side (removed frontend calculation logic)
+  - Progression table with dynamic columns from backend API
+  - Subclass inheritance resolved by API via `inherited_data` field
+  - Removed ~150 lines of frontend calculation code
+  - Components now render backend-provided data directly
+
 ### Added
 
 - **Filter Persistence with Pinia + IndexedDB (2025-11-26)** - User filter selections now persist across browser sessions
