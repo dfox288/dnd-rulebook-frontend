@@ -209,17 +209,27 @@ import { useSpellFiltersStore } from '~/stores/spellFilters'
 const store = useSpellFiltersStore()
 const { searchQuery, selectedLevels } = storeToRefs(store)
 
-// URL sync
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-onMounted(() => {
-  if (hasUrlParams.value) store.setFromUrlQuery(route.query)
-})
-
-watch(() => store.toUrlQuery, (query) => syncToUrl(query), { deep: true })
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 ```
 
 **Available stores:** `useSpellFiltersStore`, `useItemFiltersStore`, `useMonsterFiltersStore`, `useClassFiltersStore`, `useRaceFiltersStore`, `useBackgroundFiltersStore`, `useFeatFiltersStore`
+
+### Page Filter Setup (URL Sync)
+
+The `usePageFilterSetup` composable handles all URL synchronization for filter pages:
+
+```typescript
+// Side-effect pattern - auto-syncs on call (like useHead)
+const { clearFilters } = usePageFilterSetup(store)
+
+// Handles:
+// 1. onMounted: URL params → store (if URL has params)
+// 2. watch: store changes → URL (debounced 300ms)
+// 3. clearFilters(): resets store AND clears URL
+```
+
+**Interface requirement:** Store must implement `toUrlQuery`, `setFromUrlQuery()`, `clearAll()`
 
 ### Component Auto-Import
 
