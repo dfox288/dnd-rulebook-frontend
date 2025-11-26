@@ -168,10 +168,18 @@ Some tests in `races-filters.test.ts` and `items-filters.test.ts` have partial f
 
 ## For Next Session
 
-### Verify Tests
-1. Restart Docker containers fresh
-2. Run `docker compose exec nuxt npm run test`
-3. Check if the ~49 pre-existing failures are resolved or need more work
+### Running Tests (IMPORTANT)
+**Exclude Playwright e2e tests** - they crash the container:
+```bash
+# ✅ Correct - excludes e2e tests
+docker compose exec nuxt npm run test -- --exclude='**/e2e/**'
+
+# ❌ Don't do this - Playwright makes the container OOM
+docker compose exec nuxt npm run test
+```
+
+### Current Test Status
+After fixes: **1313 tests passed, 0 failed** (excluding e2e)
 
 ### Remaining Test Fixes (if needed)
 - `races-filters.test.ts` - Search chip tests

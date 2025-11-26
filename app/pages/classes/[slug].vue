@@ -76,66 +76,104 @@ const progressionCounters = computed(() => {
 
 /**
  * Build accordion items with icons
+ * For subclasses, includes inherited content from parent class
  */
 const accordionItems = computed(() => {
   if (!entity.value) return []
 
   const items = []
 
-  if (entity.value.counters && entity.value.counters.length > 0) {
+  // For base classes: show own content
+  // For subclasses: show inherited content from parent
+
+  const counters = entity.value.is_base_class
+    ? entity.value.counters
+    : parentClass.value?.counters
+
+  const traits = entity.value.is_base_class
+    ? entity.value.traits
+    : parentClass.value?.traits
+
+  const levelProgression = entity.value.is_base_class
+    ? entity.value.level_progression
+    : parentClass.value?.level_progression
+
+  const equipment = entity.value.is_base_class
+    ? entity.value.equipment
+    : parentClass.value?.equipment
+
+  const proficiencies = entity.value.is_base_class
+    ? entity.value.proficiencies
+    : parentClass.value?.proficiencies
+
+  // Base class features (for subclasses, show parent's features here)
+  const baseFeatures = entity.value.is_base_class
+    ? entity.value.features
+    : parentClass.value?.features
+
+  const inheritedLabel = isSubclass.value && parentClass.value
+    ? ` (Inherited from ${parentClass.value.name})`
+    : ''
+
+  if (counters && counters.length > 0) {
     items.push({
-      label: 'Class Counters',
+      label: `Class Counters${inheritedLabel}`,
       slot: 'counters',
       defaultOpen: false,
       icon: 'i-heroicons-calculator'
     })
   }
 
-  if (entity.value.traits && entity.value.traits.length > 0) {
+  if (traits && traits.length > 0) {
     items.push({
-      label: `Class Traits (${entity.value.traits.length})`,
+      label: `Class Traits (${traits.length})${inheritedLabel}`,
       slot: 'traits',
       defaultOpen: false,
       icon: 'i-heroicons-shield-check'
     })
   }
 
-  if (entity.value.level_progression && entity.value.level_progression.length > 0) {
+  if (levelProgression && levelProgression.length > 0) {
     items.push({
-      label: 'Spell Slot Progression',
+      label: `Spell Slot Progression${inheritedLabel}`,
       slot: 'level-progression',
       defaultOpen: false,
       icon: 'i-heroicons-sparkles'
     })
   }
 
-  if (entity.value.equipment && entity.value.equipment.length > 0) {
+  if (equipment && equipment.length > 0) {
     items.push({
-      label: 'Starting Equipment & Proficiencies',
+      label: `Starting Equipment${inheritedLabel}`,
       slot: 'equipment',
       defaultOpen: false,
       icon: 'i-heroicons-shopping-bag'
     })
   }
 
-  if (entity.value.proficiencies && entity.value.proficiencies.length > 0) {
+  if (proficiencies && proficiencies.length > 0) {
     items.push({
-      label: `Proficiencies (${entity.value.proficiencies.length})`,
+      label: `Proficiencies (${proficiencies.length})${inheritedLabel}`,
       slot: 'proficiencies',
       defaultOpen: false,
       icon: 'i-heroicons-academic-cap'
     })
   }
 
-  if (entity.value.features && entity.value.features.length > 0) {
+  // For base classes: show Features section
+  // For subclasses: show Base Class Features (parent's features)
+  if (baseFeatures && baseFeatures.length > 0) {
     items.push({
-      label: `Features (${entity.value.features.length})`,
+      label: isSubclass.value
+        ? `Base Class Features (${baseFeatures.length})${inheritedLabel}`
+        : `Features (${baseFeatures.length})`,
       slot: 'features',
       defaultOpen: false,
       icon: 'i-heroicons-star'
     })
   }
 
+  // Source is always from the current entity
   if (entity.value.sources && entity.value.sources.length > 0) {
     items.push({
       label: 'Source',
@@ -146,6 +184,25 @@ const accordionItems = computed(() => {
   }
 
   return items
+})
+
+/**
+ * Get data for accordion slots (handles inheritance)
+ */
+const accordionData = computed(() => {
+  if (!entity.value) return {}
+
+  const isBase = entity.value.is_base_class
+  const parent = parentClass.value
+
+  return {
+    counters: isBase ? entity.value.counters : parent?.counters,
+    traits: isBase ? entity.value.traits : parent?.traits,
+    levelProgression: isBase ? entity.value.level_progression : parent?.level_progression,
+    equipment: isBase ? entity.value.equipment : parent?.equipment,
+    proficiencies: isBase ? entity.value.proficiencies : parent?.proficiencies,
+    features: isBase ? entity.value.features : parent?.features
+  }
 })
 </script>
 
@@ -387,62 +444,62 @@ const accordionItems = computed(() => {
       >
         <!-- Counters Slot -->
         <template
-          v-if="entity.counters && entity.counters.length > 0"
+          v-if="accordionData.counters && accordionData.counters.length > 0"
           #counters
         >
-          <UiAccordionClassCounters :counters="entity.counters" />
+          <UiAccordionClassCounters :counters="accordionData.counters" />
         </template>
 
         <!-- Traits Slot -->
         <template
-          v-if="entity.traits && entity.traits.length > 0"
+          v-if="accordionData.traits && accordionData.traits.length > 0"
           #traits
         >
           <UiAccordionTraitsList
-            :traits="entity.traits"
+            :traits="accordionData.traits"
             border-color="primary-500"
           />
         </template>
 
         <!-- Level Progression Slot -->
         <template
-          v-if="entity.level_progression && entity.level_progression.length > 0"
+          v-if="accordionData.levelProgression && accordionData.levelProgression.length > 0"
           #level-progression
         >
-          <UiAccordionLevelProgression :level-progression="entity.level_progression" />
+          <UiAccordionLevelProgression :level-progression="accordionData.levelProgression" />
         </template>
 
         <!-- Equipment Slot -->
         <template
-          v-if="entity.equipment && entity.equipment.length > 0"
+          v-if="accordionData.equipment && accordionData.equipment.length > 0"
           #equipment
         >
           <UiAccordionEquipmentList
-            :equipment="entity.equipment"
+            :equipment="accordionData.equipment"
             type="class"
           />
         </template>
 
         <!-- Proficiencies Slot -->
         <template
-          v-if="entity.proficiencies && entity.proficiencies.length > 0"
+          v-if="accordionData.proficiencies && accordionData.proficiencies.length > 0"
           #proficiencies
         >
-          <UiAccordionBulletList :items="entity.proficiencies" />
+          <UiAccordionBulletList :items="accordionData.proficiencies" />
         </template>
 
         <!-- Features Slot -->
         <template
-          v-if="entity.features && entity.features.length > 0"
+          v-if="accordionData.features && accordionData.features.length > 0"
           #features
         >
           <UiAccordionTraitsList
-            :traits="entity.features"
+            :traits="accordionData.features"
             :show-level="true"
           />
         </template>
 
-        <!-- Source Slot -->
+        <!-- Source Slot (always from current entity) -->
         <template
           v-if="entity.sources && entity.sources.length > 0"
           #source
