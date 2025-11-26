@@ -826,9 +826,7 @@ docker compose exec nuxt sh
    - Test detail page loading
    - Test filter interactions
 
-2. **Backend: Add Size Filter**
-   - Add `size` query parameter to `/api/v1/races`
-   - Frontend UI is already ready for this feature
+2. ~~**Backend: Add Size Filter**~~ ✅ **DONE** - Size filter working on races page!
 
 3. **Fix Test Manifest Errors** (Optional - Cosmetic)
    - 9 uncaught errors during test runs (Nuxt manifest loading)
