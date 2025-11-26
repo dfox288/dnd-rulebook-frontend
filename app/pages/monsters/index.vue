@@ -1,48 +1,58 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDebounceFn } from '@vueuse/core'
 import type { Monster, Size, MonsterType, ArmorType, Alignment } from '~/types'
+import { useMonsterFiltersStore } from '~/stores/monsterFilters'
 
 const route = useRoute()
 
-// Sorting state
-const sortBy = ref<string>((route.query.sort_by as string) || 'name')
-const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
+// Initialize store and URL sync
+const store = useMonsterFiltersStore()
+const { updateUrl, clearUrl } = useFilterUrlSync()
+
+// Convert store state to refs
+const {
+  searchQuery,
+  sortBy,
+  sortDirection,
+  selectedSources,
+  selectedCRs,
+  selectedType,
+  isLegendary,
+  selectedSizes,
+  selectedAlignments,
+  selectedMovementTypes,
+  selectedArmorTypes,
+  canHover,
+  hasLairActions,
+  hasReactions,
+  isSpellcaster,
+  hasMagicResistance,
+  selectedACRange,
+  selectedHPRange,
+  filtersOpen
+} = storeToRefs(store)
+
+// Load URL params on mount
+onMounted(() => {
+  if (Object.keys(route.query).length > 0) {
+    store.setFromUrlQuery(route.query)
+  }
+})
+
+// Watch store and sync to URL (debounced)
+const debouncedUrlSync = useDebounceFn(() => {
+  updateUrl(store.toUrlQuery)
+}, 300)
+
+watch(() => store.toUrlQuery, debouncedUrlSync, { deep: true })
+
+// Derived values
 const sortValue = useSortValue(sortBy, sortDirection)
+const { sourceOptions, getSourceName } = useSourceFilter()
 
-// Source filter (using composable)
-const { selectedSources, sourceOptions, getSourceName, clearSources } = useSourceFilter()
-
-// Custom filter state
-// Note: UiFilterMultiSelect works with strings, so we store as strings and convert to numbers for filtering
-const selectedCRs = ref<string[]>(
-  route.query.cr ? (Array.isArray(route.query.cr) ? route.query.cr.map(String) : [String(route.query.cr)]) : []
-)
-const selectedType = ref(route.query.type ? String(route.query.type) : null)
-const isLegendary = ref<string | null>((route.query.is_legendary as string) || null)
-const selectedSizes = ref<string[]>(
-  route.query.size_id ? (Array.isArray(route.query.size_id) ? route.query.size_id.map(String) : [String(route.query.size_id)]) : []
-)
-const selectedAlignments = ref<string[]>(
-  route.query.alignment ? (Array.isArray(route.query.alignment) ? route.query.alignment : [route.query.alignment]) : []
-)
-
-// Movement types multiselect (replaces individual toggles)
-const selectedMovementTypes = ref<string[]>(
-  route.query.movement ? (Array.isArray(route.query.movement) ? route.query.movement : [route.query.movement]) : []
-)
-
-// New filters (6 additional filters)
-const selectedArmorTypes = ref<string[]>(
-  route.query.armor_type ? (Array.isArray(route.query.armor_type) ? route.query.armor_type : [route.query.armor_type]) : []
-)
-const canHover = ref<string | null>((route.query.can_hover as string) || null)
-const hasLairActions = ref<string | null>((route.query.has_lair_actions as string) || null)
-const hasReactions = ref<string | null>((route.query.has_reactions as string) || null)
-const isSpellcaster = ref<string | null>((route.query.is_spellcaster as string) || null)
-const hasMagicResistance = ref<string | null>((route.query.has_magic_resistance as string) || null)
-
-// AC filter
-const selectedACRange = ref<string | null>(null)
+// AC filter options
 const acRangeOptions = [
   { label: 'All AC', value: null },
   { label: 'Low (10-14)', value: '10-14' },
@@ -50,8 +60,7 @@ const acRangeOptions = [
   { label: 'High (18+)', value: '18-25' }
 ]
 
-// HP filter
-const selectedHPRange = ref<string | null>(null)
+// HP filter options
 const hpRangeOptions = [
   { label: 'All HP', value: null },
   { label: 'Low (1-50)', value: '1-50' },
@@ -255,20 +264,18 @@ const queryBuilder = computed(() => {
 
 // Use entity list composable
 const {
-  searchQuery,
   currentPage,
   data,
   meta,
   totalResults,
   loading,
   error,
-  refresh,
-  clearFilters: clearBaseFilters,
-  hasActiveFilters
+  refresh
 } = useEntityList({
   endpoint: '/monsters',
   cacheKey: 'monsters-list',
   queryBuilder,
+  searchQuery, // Pass store's searchQuery
   seo: {
     title: 'Monsters - D&D 5e Compendium',
     description: 'Browse D&D 5e monsters with stats, abilities, and lore. Filter by Challenge Rating and creature type.'
@@ -279,21 +286,9 @@ const monsters = computed(() => data.value as Monster[])
 
 // Clear all filters
 const clearFilters = () => {
-  clearBaseFilters()
-  clearSources()
-  selectedCRs.value = []
-  selectedType.value = null
-  isLegendary.value = null
-  selectedSizes.value = []
-  selectedAlignments.value = []
-  selectedMovementTypes.value = []
-  selectedACRange.value = null
-  selectedHPRange.value = null
-  selectedArmorTypes.value = []
-  hasLairActions.value = null
-  hasReactions.value = null
-  isSpellcaster.value = null
-  hasMagicResistance.value = null
+  store.clearAll()
+  clearUrl()
+  currentPage.value = 1
 }
 
 // Helper functions for filter chips
@@ -384,26 +379,9 @@ const clearMovementTypesFilter = () => {
   selectedMovementTypes.value = []
 }
 
-// Filter collapse state
-const filtersOpen = ref(false)
-
-// Active filter count for badge
-const activeFilterCount = useFilterCount(
-  selectedCRs,
-  selectedType,
-  isLegendary,
-  selectedSizes,
-  selectedAlignments,
-  selectedMovementTypes,
-  selectedACRange,
-  selectedHPRange,
-  selectedArmorTypes,
-  hasLairActions,
-  hasReactions,
-  isSpellcaster,
-  hasMagicResistance,
-  selectedSources
-)
+// Use getters from store
+const activeFilterCount = computed(() => store.activeFilterCount)
+const hasActiveFilters = computed(() => store.hasActiveFilters)
 
 const perPage = 24
 </script>

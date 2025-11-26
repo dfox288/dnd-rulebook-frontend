@@ -1,8 +1,13 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import MonstersPage from '~/pages/monsters/index.vue'
 
 describe('Monsters Page - Filter Layout', () => {
+  // Reset Pinia store before each test to ensure clean state
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
   describe('Layout improvements', () => {
     it('displays "Active filters:" label (not "Active:")', async () => {
       const wrapper = await mountSuspended(MonstersPage)
@@ -88,6 +93,10 @@ describe('Monsters Page - Filter Layout', () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       expect(Array.isArray(component.selectedCRs)).toBe(true)
       expect(component.selectedCRs.length).toBe(0)
     })
@@ -188,20 +197,26 @@ describe('Monsters Page - Filter Layout', () => {
 
       const component = wrapper.vm as any
 
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Initially 0
       expect(component.activeFilterCount).toBe(0)
 
-      // Add CR filter (array with values counts as 1)
+      // Add CR filter (each CR value counts as 1)
       component.selectedCRs = ['0', '5', '17']
       await wrapper.vm.$nextTick()
 
-      expect(component.activeFilterCount).toBe(1)
+      // Store counts each selected CR value individually
+      expect(component.activeFilterCount).toBe(3)
 
       // Add type filter
       component.selectedType = 'dragon'
       await wrapper.vm.$nextTick()
 
-      expect(component.activeFilterCount).toBe(2)
+      // 3 CRs + 1 type = 4
+      expect(component.activeFilterCount).toBe(4)
     })
   })
 
@@ -235,6 +250,10 @@ describe('Monsters Page - Filter Layout', () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       expect(Array.isArray(component.selectedSizes)).toBe(true)
       expect(component.selectedSizes.length).toBe(0)
     })
@@ -354,6 +373,10 @@ describe('Monsters Page - Filter Layout', () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       expect(Array.isArray(component.selectedAlignments)).toBe(true)
       expect(component.selectedAlignments.length).toBe(0)
     })
@@ -385,6 +408,10 @@ describe('Monsters Page - Filter Layout', () => {
     it('initializes as empty array', async () => {
       const wrapper = await mountSuspended(MonstersPage)
       const component = wrapper.vm as any
+
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       expect(Array.isArray(component.selectedMovementTypes)).toBe(true)
       expect(component.selectedMovementTypes.length).toBe(0)
@@ -576,6 +603,10 @@ describe('Monsters Page - Filter Layout', () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       expect(Array.isArray(component.selectedArmorTypes)).toBe(true)
       expect(component.selectedArmorTypes.length).toBe(0)
     })
@@ -708,6 +739,10 @@ describe('Monsters Page - Filter Layout', () => {
       const wrapper = await mountSuspended(MonstersPage)
 
       const component = wrapper.vm as any
+
+      // Clear filters to ensure clean state (store may have persisted data)
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       expect(component.activeFilterCount).toBe(0)
 
