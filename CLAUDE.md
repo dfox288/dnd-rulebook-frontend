@@ -505,12 +505,67 @@ describe('Page Tests', () => {
 ```bash
 npm run dev         # Dev server
 npm run build       # Production build
-npm run test        # Vitest tests
+npm run test        # Vitest tests (full suite ~125s)
 npm run test:watch  # Watch mode
 npm run test:e2e    # Playwright E2E
 npm run typecheck   # TypeScript check
 npm run lint        # ESLint
 npm run lint:fix    # Auto-fix
+```
+
+---
+
+## 🎯 Domain-Specific Test Suites
+
+**Use domain-specific tests for faster feedback during feature development.**
+
+| Command | Domain | Files | Runtime | When to Use |
+|---------|--------|-------|---------|-------------|
+| `npm run test:spells` | Spells | 9 | ~14s | Working on spells page, filters, SpellCard |
+| `npm run test:items` | Items | 7 | ~12s | Working on items page, filters, ItemCard |
+| `npm run test:races` | Races | 5 | ~10s | Working on races page, filters, RaceCard |
+| `npm run test:classes` | Classes | 6 | ~12s | Working on classes page, filters, ClassCard |
+| `npm run test:backgrounds` | Backgrounds | 5 | ~10s | Working on backgrounds page, filters |
+| `npm run test:feats` | Feats | 4 | ~8s | Working on feats page, filters, FeatCard |
+| `npm run test:monsters` | Monsters | 6 | ~12s | Working on monsters page, filters |
+| `npm run test:reference` | Reference | 7 | ~10s | Working on reference entity cards (conditions, skills, etc.) |
+| `npm run test:ui` | UI Components | 48 | ~52s | Working on shared UI components (accordion, filter, list) |
+| `npm run test:core` | Core | 15 | ~18s | Working on composables, utils, server API |
+| `npm run test` | **Full Suite** | 116 | ~125s | CI, pre-commit, verifying no regressions |
+
+**Example Workflow:**
+```bash
+# Working on spells filters? Run only spells tests
+docker compose exec nuxt npm run test:spells
+
+# Made a change to a shared composable? Run core tests
+docker compose exec nuxt npm run test:core
+
+# Ready to commit? Run full suite
+docker compose exec nuxt npm run test
+```
+
+**Test File Organization:**
+```
+tests/
+├── components/
+│   ├── spell/              # → test:spells
+│   ├── item/               # → test:items
+│   ├── race/               # → test:races
+│   ├── class/              # → test:classes
+│   ├── background/         # → test:backgrounds
+│   ├── feat/               # → test:feats
+│   ├── monster/            # → test:monsters
+│   ├── ability-score/      # → test:reference
+│   ├── condition/          # → test:reference
+│   └── ui/                 # → test:ui
+├── pages/
+│   ├── spells/             # → test:spells
+│   ├── items/              # → test:items
+│   └── ...                 # Each entity has its own subdir
+├── stores/                 # → test:{entity} (included in entity tests)
+├── composables/            # → test:core
+└── utils/                  # → test:core
 ```
 
 ---
