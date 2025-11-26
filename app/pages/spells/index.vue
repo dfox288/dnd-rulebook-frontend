@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore } from '~/types'
 import { useSpellFiltersStore } from '~/stores/spellFilters'
-
-const route = useRoute()
 
 // Use filter store instead of local refs
 const store = useSpellFiltersStore()
@@ -27,28 +25,8 @@ const {
   filtersOpen
 } = storeToRefs(store)
 
-// URL sync composable
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-// On mount: URL params override persisted state
-onMounted(() => {
-  if (hasUrlParams.value) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Sync store changes to URL (debounced)
-let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
-watch(
-  () => store.toUrlQuery,
-  (query) => {
-    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
-    urlSyncTimeout = setTimeout(() => {
-      syncToUrl(query)
-    }, 300)
-  },
-  { deep: true }
-)
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 
 // Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
@@ -60,7 +38,7 @@ const { sourceOptions, getSourceName } = useSourceFilter()
 const { data: spellSchools } = useReferenceData<SpellSchool>('/spell-schools')
 const { data: classes } = useReferenceData<CharacterClass>('/classes', {
   pages: 2,
-  transform: (data) => data.filter(c => c.is_base_class === true)
+  transform: data => data.filter(c => c.is_base_class === true)
 })
 const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
@@ -120,8 +98,8 @@ const sortOptions = [
 
 // Query builder for filters (uses store refs)
 const { queryParams: filterParams } = useMeilisearchFilters([
-  { ref: selectedLevels, field: 'level', type: 'in', transform: (levels) => levels.map(Number) },
-  { ref: selectedSchool, field: 'school_code', transform: (id) => spellSchools.value?.find(s => s.id === id)?.code || null },
+  { ref: selectedLevels, field: 'level', type: 'in', transform: levels => levels.map(Number) },
+  { ref: selectedSchool, field: 'school_code', transform: id => spellSchools.value?.find(s => s.id === id)?.code || null },
   { ref: selectedClass, field: 'class_slugs', type: 'in' },
   { ref: concentrationFilter, field: 'concentration', type: 'boolean' },
   { ref: ritualFilter, field: 'ritual', type: 'boolean' },
@@ -161,12 +139,6 @@ const {
 })
 
 const spells = computed(() => spellsData.value as Spell[])
-
-// Clear all filters - uses store action + URL clear
-const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
-}
 
 // Helper functions
 const getSchoolName = (id: number) => spellSchools.value?.find(s => s.id === id)?.name || 'Unknown'

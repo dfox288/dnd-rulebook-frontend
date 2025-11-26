@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Page Filter Setup Composable (2025-11-26)** - Extracted URL sync boilerplate from 7 entity list pages
+  - New `usePageFilterSetup(store)` composable handles: URL→store sync on mount, debounced store→URL sync, clearFilters
+  - Removed ~140 lines of duplicated code across pages (20 lines each × 7 pages)
+  - API: `const { clearFilters } = usePageFilterSetup(store)` - side-effect pattern like `useHead()`
+  - Standardized monsters page from `useDebounceFn` to internal setTimeout (consistent with others)
+  - New test suite with 7 tests covering mount sync, debounce, and clearFilters
+
 - **Filter Store Factory Pattern (2025-11-26)** - Refactored 7 Pinia filter stores to use factory pattern
   - New `createEntityFilterStore()` factory reduces ~1,385 lines to ~280 lines (80% reduction)
   - Declarative field definitions instead of manual getters/actions

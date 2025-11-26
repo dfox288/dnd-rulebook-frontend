@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Item, ItemType, DamageType, Rarity } from '~/types'
 import { useItemFiltersStore } from '~/stores/itemFilters'
-
-const route = useRoute()
 
 // Use filter store instead of local refs
 const store = useItemFiltersStore()
@@ -31,28 +29,8 @@ const {
   filtersOpen
 } = storeToRefs(store)
 
-// URL sync composable
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-// On mount: URL params override persisted state
-onMounted(() => {
-  if (hasUrlParams.value) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Sync store changes to URL (debounced)
-let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
-watch(
-  () => store.toUrlQuery,
-  (query) => {
-    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
-    urlSyncTimeout = setTimeout(() => {
-      syncToUrl(query)
-    }, 300)
-  },
-  { deep: true }
-)
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 
 // Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
@@ -199,7 +177,7 @@ const queryBuilder = computed(() => {
       ref: selectedType,
       field: 'type_code',
       // Transform ID to code for Meilisearch
-      transform: (id) => itemTypes.value?.find(t => t.id === id)?.code || null
+      transform: id => itemTypes.value?.find(t => t.id === id)?.code || null
     },
     { ref: selectedRarity, field: 'rarity' },
     { ref: selectedMagic, field: 'is_magic', type: 'boolean' },
@@ -211,7 +189,7 @@ const queryBuilder = computed(() => {
       field: 'damage_type',
       type: 'in',
       // Transform damage type codes to names for Meilisearch
-      transform: (code) => damageTypes.value?.find(dt => dt.code === code)?.name || null
+      transform: code => damageTypes.value?.find(dt => dt.code === code)?.name || null
     },
     { ref: selectedSources, field: 'source_codes', type: 'in' },
     { ref: selectedProperties, field: 'property_codes', type: 'in' },
@@ -310,12 +288,6 @@ const {
 
 // Type the data array
 const items = computed(() => data.value as Item[])
-
-// Clear all filters - uses store action + URL clear
-const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
-}
 
 // Get type name by ID for filter chips
 const getTypeName = (typeId: number) => {

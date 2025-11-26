@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { CharacterClass } from '~/types'
 import { useClassFiltersStore } from '~/stores/classFilters'
-
-const route = useRoute()
 
 // Use filter store instead of local refs
 const store = useClassFiltersStore()
@@ -21,28 +19,8 @@ const {
   filtersOpen
 } = storeToRefs(store)
 
-// URL sync composable
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-// On mount: URL params override persisted state
-onMounted(() => {
-  if (hasUrlParams.value) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Sync store changes to URL (debounced)
-let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
-watch(
-  () => store.toUrlQuery,
-  (query) => {
-    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
-    urlSyncTimeout = setTimeout(() => {
-      syncToUrl(query)
-    }, 300)
-  },
-  { deep: true }
-)
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 
 // Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
@@ -52,7 +30,7 @@ const { sourceOptions, getSourceName } = useSourceFilter()
 
 // Fetch base classes for parent filter
 const { data: baseClasses } = useReferenceData<CharacterClass>('/classes', {
-  transform: (data) => data.filter(c => c.is_base_class === true)
+  transform: data => data.filter(c => c.is_base_class === true)
 })
 
 // Filter options
@@ -73,7 +51,7 @@ const spellcastingAbilityOptions = [
 const parentClassOptions = computed(() => {
   const options = [{ label: 'All Classes', value: null }]
   if (baseClasses.value) {
-    baseClasses.value.forEach(cls => {
+    baseClasses.value.forEach((cls) => {
       options.push({ label: cls.name, value: cls.name })
     })
   }
@@ -124,12 +102,6 @@ const {
 })
 
 const classes = computed(() => data.value as CharacterClass[])
-
-// Clear all filters - uses store action + URL clear
-const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
-}
 
 // Active filter count (use store getter)
 const activeFilterCount = computed(() => store.activeFilterCount)

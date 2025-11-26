@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Background, Skill } from '~/types'
 import { useBackgroundFiltersStore } from '~/stores/backgroundFilters'
-
-const route = useRoute()
 
 // Use filter store instead of local refs
 const store = useBackgroundFiltersStore()
@@ -19,35 +17,15 @@ const {
   filtersOpen
 } = storeToRefs(store)
 
-// URL sync composable
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-// On mount: URL params override persisted state
-onMounted(() => {
-  if (hasUrlParams.value) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Sync store changes to URL (debounced)
-let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
-watch(
-  () => store.toUrlQuery,
-  (query) => {
-    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
-    urlSyncTimeout = setTimeout(() => {
-      syncToUrl(query)
-    }, 300)
-  },
-  { deep: true }
-)
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 
 // Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
 
 // Source filter options (still need the composable for options)
 const { sourceOptions, getSourceName } = useSourceFilter({
-  transform: (data) => data.filter(s => ['PHB', 'ERLW', 'WGTE'].includes(s.code))
+  transform: data => data.filter(s => ['PHB', 'ERLW', 'WGTE'].includes(s.code))
 })
 
 // Fetch reference data
@@ -124,12 +102,6 @@ watch(searchQuery, (newVal) => {
 })
 
 const backgrounds = computed(() => data.value as Background[])
-
-// Clear all filters - uses store action + URL clear
-const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
-}
 
 // Helper functions for filter chips
 const getSkillName = (code: string) => skills.value?.find(s => s.code === code)?.name || code

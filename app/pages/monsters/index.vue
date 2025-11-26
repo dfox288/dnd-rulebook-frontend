@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDebounceFn } from '@vueuse/core'
 import type { Monster, Size, MonsterType, ArmorType, Alignment } from '~/types'
 import { useMonsterFiltersStore } from '~/stores/monsterFilters'
 
-const route = useRoute()
-
 // Initialize store and URL sync
 const store = useMonsterFiltersStore()
-const { syncToUrl, clearUrl } = useFilterUrlSync()
+const { clearFilters: clearStoreFilters } = usePageFilterSetup(store)
 
 // Convert store state to refs
 const {
@@ -33,20 +30,6 @@ const {
   selectedHPRange,
   filtersOpen
 } = storeToRefs(store)
-
-// Load URL params on mount
-onMounted(() => {
-  if (Object.keys(route.query).length > 0) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Watch store and sync to URL (debounced)
-const debouncedUrlSync = useDebounceFn(() => {
-  syncToUrl(store.toUrlQuery)
-}, 300)
-
-watch(() => store.toUrlQuery, debouncedUrlSync, { deep: true })
 
 // Derived values
 const sortValue = useSortValue(sortBy, sortDirection)
@@ -74,7 +57,6 @@ const { data: sizes } = useReferenceData<Size>('/sizes')
 const { data: armorTypes } = useReferenceData<ArmorType>('/armor-types')
 const { data: monsterTypes } = useReferenceData<MonsterType>('/monster-types')
 const { data: alignments } = useReferenceData<Alignment>('/alignments')
-
 
 // Movement type options for multiselect
 const movementTypeOptions = [
@@ -165,7 +147,7 @@ const { queryParams: filterParams } = useMeilisearchFilters([
     ref: selectedCRs,
     field: 'challenge_rating',
     type: 'in',
-    transform: (crs) => crs.map(Number)
+    transform: crs => crs.map(Number)
   },
   { ref: selectedType, field: 'type' },
   // FIX: Changed from 'is_legendary' to 'has_legendary_actions' (correct Meilisearch field)
@@ -175,7 +157,7 @@ const { queryParams: filterParams } = useMeilisearchFilters([
     ref: selectedSizes,
     field: 'size_code',
     type: 'in',
-    transform: (sizeIds) => sizeIds.map((id: string) => {
+    transform: sizeIds => sizeIds.map((id: string) => {
       const size = sizes.value?.find(s => String(s.id) === id)
       return size?.code || null
     }).filter((code): code is string => code !== null)
@@ -234,7 +216,7 @@ const queryBuilder = computed(() => {
 
   // Add movement types filter (uses IS NOT NULL for each selected type)
   if (selectedMovementTypes.value.length > 0) {
-    const movementFilters = selectedMovementTypes.value.map(type => {
+    const movementFilters = selectedMovementTypes.value.map((type) => {
       const fieldMap: Record<string, string> = {
         fly: 'speed_fly',
         swim: 'speed_swim',
@@ -284,10 +266,9 @@ const {
 
 const monsters = computed(() => data.value as Monster[])
 
-// Clear all filters
+// Clear all filters (wraps composable + resets page)
 const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
+  clearStoreFilters()
   currentPage.value = 1
 }
 

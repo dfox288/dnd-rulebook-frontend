@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Race, Size, AbilityScore } from '~/types'
 import { useRaceFiltersStore } from '~/stores/raceFilters'
-
-const route = useRoute()
 
 // Use filter store instead of local refs
 const store = useRaceFiltersStore()
@@ -22,28 +20,8 @@ const {
   filtersOpen
 } = storeToRefs(store)
 
-// URL sync composable
-const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
-
-// On mount: URL params override persisted state
-onMounted(() => {
-  if (hasUrlParams.value) {
-    store.setFromUrlQuery(route.query)
-  }
-})
-
-// Sync store changes to URL (debounced)
-let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
-watch(
-  () => store.toUrlQuery,
-  (query) => {
-    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
-    urlSyncTimeout = setTimeout(() => {
-      syncToUrl(query)
-    }, 300)
-  },
-  { deep: true }
-)
+// URL sync setup (handles mount + debounced store→URL sync)
+const { clearFilters } = usePageFilterSetup(store)
 
 // Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
@@ -54,7 +32,7 @@ const { sourceOptions, getSourceName } = useSourceFilter()
 // Fetch reference data
 const { data: sizes } = useReferenceData<Size>('/sizes', { cacheKey: 'sizes-for-races' })
 const { data: baseRaces } = useReferenceData<Race>('/races', {
-  transform: (data) => data.filter(r => !r.parent_race)
+  transform: data => data.filter(r => !r.parent_race)
 })
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
 
@@ -97,7 +75,7 @@ const sortOptions = [
 // Build ability bonus filter
 const abilityBonusFilter = computed(() => {
   if (selectedAbilityBonuses.value.length === 0) return null
-  const conditions = selectedAbilityBonuses.value.map(ability => {
+  const conditions = selectedAbilityBonuses.value.map((ability) => {
     const field = `ability_${ability.toLowerCase()}_bonus`
     return `${field} > 0`
   })
@@ -167,12 +145,6 @@ const {
 })
 
 const races = computed(() => data.value as Race[])
-
-// Clear all filters - uses store action + URL clear
-const clearFilters = () => {
-  store.clearAll()
-  clearUrl()
-}
 
 // Helper functions
 const getSpeedRangeLabel = (value: string | null) => {
