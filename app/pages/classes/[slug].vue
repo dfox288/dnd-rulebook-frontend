@@ -343,6 +343,25 @@ const accordionItems = computed(() => {
         />
       </div>
 
+      <!-- Subclass Features (Primary Content for Subclasses) -->
+      <div
+        v-if="isSubclass && entity.features && entity.features.length > 0"
+        class="space-y-4"
+      >
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <UIcon
+            name="i-heroicons-sparkles"
+            class="w-5 h-5 text-class-500"
+          />
+          {{ entity.name }} Features ({{ entity.features.length }})
+        </h3>
+        <UiAccordionTraitsList
+          :traits="entity.features"
+          :show-level="true"
+          border-color="class-500"
+        />
+      </div>
+
       <!-- Subclasses (Card Grid) -->
       <div
         v-if="entity.is_base_class && entity.subclasses && entity.subclasses.length > 0"
