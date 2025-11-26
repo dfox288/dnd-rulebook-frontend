@@ -1,31 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SpellCard from '~/components/spell/SpellCard.vue'
-import type { Spell } from '~/types'
 import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
+import { createMockSpell } from '../../helpers/mockFactories'
 
 describe('SpellCard', () => {
-  const mockSpell: Spell = {
-    id: 1,
-    name: 'Fireball',
-    slug: 'fireball',
-    level: 3,
-    school: {
-      id: 5,
-      code: 'EV',
-      name: 'Evocation'
-    },
-    casting_time: '1 action',
-    range: '150 feet',
-    description: 'A bright streak flashes from your pointing finger to a point you choose within range and then blossoms with a low roar into an explosion of flame.',
-    is_ritual: false,
-    needs_concentration: false,
-    sources: [
-      { code: 'PHB', name: 'Player\'s Handbook', pages: '241' }
-    ]
-  }
+  const mockSpell = createMockSpell()
 
   // Shared card behavior tests (using helpers)
   testCardLinkBehavior(

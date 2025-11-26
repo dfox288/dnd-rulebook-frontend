@@ -1,48 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { Monster } from '~/types'
 import MonsterCard from '~/components/monster/MonsterCard.vue'
 import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling } from '../../helpers/cardBehavior'
 import { testSourceFooter } from '../../helpers/sourceBehavior'
+import { createMockMonster } from '../../helpers/mockFactories'
 
 describe('MonsterCard', () => {
-  const mockMonster: Monster = {
-    id: 1,
-    slug: 'ancient-red-dragon',
-    name: 'Ancient Red Dragon',
-    size: { id: 6, code: 'G', name: 'Gargantuan' },
-    type: 'dragon',
-    alignment: 'Chaotic Evil',
-    armor_class: 22,
-    armor_type: 'natural armor',
-    hit_points_average: 546,
-    hit_dice: '28d20+252',
-    speed_walk: 40,
-    speed_fly: 80,
-    speed_swim: null,
-    speed_burrow: null,
-    speed_climb: 40,
-    can_hover: false,
-    strength: 30,
-    dexterity: 10,
-    constitution: 29,
-    intelligence: 18,
-    wisdom: 15,
-    charisma: 23,
-    challenge_rating: '24',
-    experience_points: 62000,
-    description: 'The most covetous of the true dragons, red dragons tirelessly seek to increase their treasure hoards.',
-    traits: [],
-    actions: [],
-    legendary_actions: [
-      { id: 1, name: 'Detect', description: 'The dragon makes a check.' }
-    ],
-    modifiers: [],
-    conditions: [],
-    sources: [
-      { id: 1, code: 'MM', name: 'Monster Manual', pages: 'p. 97' }
-    ]
-  }
+  const mockMonster = createMockMonster()
 
   // Shared behavior tests
   const mountCard = () => mountSuspended(MonsterCard, { props: { monster: mockMonster } })

@@ -1,30 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ItemCard from '~/components/item/ItemCard.vue'
-import type { Item } from '~/types'
 import { testCardLinkBehavior, testCardHoverEffects, testCardBorderStyling, testBackgroundImageBehavior } from '../../helpers/cardBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 import { testSourceFooter, testOptionalSourceFooter } from '../../helpers/sourceBehavior'
+import { createMockItem } from '../../helpers/mockFactories'
 
 describe('ItemCard', () => {
-  const mockItem: Item = {
-    id: 1,
-    name: 'Longsword',
-    slug: 'longsword',
-    rarity: 'common',
-    item_type: {
-      id: 5,
-      name: 'Martial Weapon'
-    },
-    is_magic: false,
-    requires_attunement: false,
-    cost_cp: 1500,
-    weight: 3,
-    description: 'A versatile martial weapon used by warriors across the realms.',
-    sources: [
-      { code: 'PHB', name: 'Player\'s Handbook', pages: '149' }
-    ]
-  }
+  const mockItem = createMockItem()
 
   // Shared card behavior tests (using helpers)
   testCardLinkBehavior(
