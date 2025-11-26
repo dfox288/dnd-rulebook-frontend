@@ -51,13 +51,15 @@ docker compose exec nuxt npm run types:sync # Sync API types from backend
 
 ```
 1. Check skills           → Use Superpower skills (NOT superpowers-laravel)
-2. Write tests FIRST      → Watch them fail (TDD mandatory)
-3. Write minimal code     → Make tests pass
-4. Refactor while green   → Clean up
-5. Run test suite         → Smallest relevant suite
-6. Run npm run lint:fix   → Fix linting
-7. Update CHANGELOG.md    → If user-facing
-8. Commit + Push          → Clear message with Claude footer
+2. Update docs/TODO.md    → Mark task "in progress"
+3. Write tests FIRST      → Watch them fail (TDD mandatory)
+4. Write minimal code     → Make tests pass
+5. Refactor while green   → Clean up
+6. Run test suite         → Smallest relevant suite
+7. Run npm run lint:fix   → Fix linting
+8. Update CHANGELOG.md    → If user-facing
+9. Commit + Push          → Clear message with Claude footer
+10. Update docs/TODO.md   → Mark complete
 ```
 
 ### For Filter Changes (Additional)

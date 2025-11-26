@@ -5,7 +5,6 @@
 - **[PROJECT-STATUS.md](PROJECT-STATUS.md)** - Current metrics, milestones, project state
 - **[TODO.md](TODO.md)** - Active tasks and priorities
 - **[LATEST-HANDOVER.md](LATEST-HANDOVER.md)** - Most recent session handover
-- **[CURRENT_STATUS.md](CURRENT_STATUS.md)** - Detailed feature status
 
 ## Reference Documentation
 
