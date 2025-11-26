@@ -31,6 +31,14 @@ interface Props {
 defineProps<Props>()
 
 /**
+ * Get background image path for subclass (uses class images)
+ */
+const { getImagePath } = useEntityImage()
+const getBackgroundImage = (slug: string): string => {
+  return getImagePath('classes', slug, 256)
+}
+
+/**
  * Get source abbreviation for display
  */
 const getSourceAbbreviation = (subclass: Subclass): string | null => {
@@ -54,14 +62,21 @@ const getFeatureCountText = (subclass: Subclass): string => {
       v-for="subclass in subclasses"
       :key="subclass.id"
       :to="`${basePath}/${subclass.slug}`"
-      class="group"
+      class="block h-full group"
     >
       <UCard
-        class="h-full transition-all duration-200 group-hover:ring-2 group-hover:ring-primary-500 group-hover:shadow-lg"
+        class="relative overflow-hidden h-full transition-all duration-200 border-2 border-class-300 dark:border-class-700 hover:border-class-500 hover:shadow-lg"
       >
-        <div class="space-y-3">
+        <!-- Background Image Layer -->
+        <div
+          class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300 group-hover:opacity-30 group-hover:scale-110 group-hover:rotate-3"
+          :style="{ backgroundImage: `url(${getBackgroundImage(subclass.slug)})` }"
+        />
+
+        <!-- Content Layer -->
+        <div class="relative z-10 space-y-3">
           <!-- Subclass Name -->
-          <h4 class="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+          <h4 class="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-class-600 dark:group-hover:text-class-400 transition-colors">
             {{ subclass.name }}
           </h4>
 
@@ -69,7 +84,7 @@ const getFeatureCountText = (subclass: Subclass): string => {
           <div class="flex items-center gap-2 flex-wrap text-sm">
             <UBadge
               v-if="getSourceAbbreviation(subclass)"
-              color="neutral"
+              color="class"
               variant="subtle"
               size="xs"
             >
@@ -83,7 +98,7 @@ const getFeatureCountText = (subclass: Subclass): string => {
         </div>
 
         <template #footer>
-          <div class="flex items-center justify-end text-sm text-primary-600 dark:text-primary-400">
+          <div class="relative z-10 flex items-center justify-end text-sm text-class-600 dark:text-class-400">
             <span class="group-hover:underline">View Details</span>
             <UIcon
               name="i-heroicons-arrow-right"
