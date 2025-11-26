@@ -1,5 +1,36 @@
-import { vi } from 'vitest'
+import { vi, afterEach, beforeEach } from 'vitest'
+import { config, enableAutoUnmount, flushPromises } from '@vue/test-utils'
 import 'vitest-canvas-mock'
+
+// =============================================================================
+// GLOBAL TEST CLEANUP - CRITICAL FOR CPU/MEMORY MANAGEMENT
+// =============================================================================
+// Without proper cleanup, each mountSuspended() call accumulates in memory.
+// With 900+ mounts across the test suite, this causes severe memory pressure
+// in Docker, leading to CPU spikes and potential machine crashes.
+// =============================================================================
+
+// Enable automatic unmounting of Vue components after each test
+// This is the KEY fix - Vue Test Utils will track and unmount all components
+enableAutoUnmount(afterEach)
+
+// Additional cleanup after each test - but NOT DOM manipulation
+// (enableAutoUnmount handles component cleanup; we just clear mocks)
+afterEach(async () => {
+  // Flush any pending promises/microtasks
+  await flushPromises()
+
+  // Clear mock function call history to prevent memory accumulation
+  vi.clearAllMocks()
+
+  // Clear any timers that tests may have created
+  vi.clearAllTimers()
+})
+
+// Reset mocks before each test to ensure clean state
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 
 // Mock Nuxt's manifest composables to prevent appManifest errors
 // These errors occur when Nuxt tries to check prerendered routes and route rules during page mounting

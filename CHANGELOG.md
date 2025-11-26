@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Test Suite CPU Spike Fix (2025-11-26)** - Resolved severe Docker CPU spikes during Vitest runs
+  - Added `enableAutoUnmount(afterEach)` for automatic Vue component cleanup (was leaking 900+ components)
+  - Excluded E2E tests (`**/*.spec.ts`, `**/e2e/**`) from Vitest - they require Playwright
+  - Removed WebGL/Three.js animation tests (CPU-intensive, animation is stable)
+  - Limited parallel test workers to 2 (`maxForks: 2`) to prevent memory explosion
+  - Added Docker resource limits (4 CPU / 6GB RAM) as safety net
+  - Tests now run in ~120s with CPU below 200% (was spiking to 400%+ and crashing)
+
 ### Added
 
 - **Subclass Detail Page Enhancements (2025-11-26)** - Subclasses now show inherited parent class data

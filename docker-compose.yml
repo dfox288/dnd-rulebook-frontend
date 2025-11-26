@@ -25,6 +25,21 @@ services:
       - NUXT_PUBLIC_API_DOCS_URL=${NUXT_PUBLIC_API_DOCS_URL:-http://host.docker.internal:8080/docs/api.json}
     networks:
       - dnd-network
+    # =========================================================================
+    # RESOURCE LIMITS - Prevents test suite from crashing the host machine
+    # =========================================================================
+    # Without limits, Vitest can consume all available memory causing swap
+    # thrashing and CPU spikes. These limits ensure graceful failure instead
+    # of system-wide impact.
+    # =========================================================================
+    deploy:
+      resources:
+        limits:
+          cpus: '4'        # Max 4 CPU cores (adjust based on your machine)
+          memory: 6G       # Max 6GB RAM (enough for tests + dev server)
+        reservations:
+          cpus: '1'        # Guarantee at least 1 core
+          memory: 2G       # Guarantee at least 2GB RAM
 
   # Nginx reverse proxy
   nginx:
