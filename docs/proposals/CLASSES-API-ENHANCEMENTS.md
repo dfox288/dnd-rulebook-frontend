@@ -1,35 +1,37 @@
 # Classes API Enhancement Proposals
 
 **Date:** 2025-11-26
-**Status:** Proposal
+**Updated:** 2025-11-26
+**Status:** ✅ CRITICAL ISSUES RESOLVED
 **API Endpoint:** `/api/v1/classes`
-**Overall Assessment:** 🟡 NEEDS IMPROVEMENT - Critical data issues for some base classes
+**Overall Assessment:** 🟢 PASS - Production-ready with optional enhancements remaining
 
 ---
 
 ## Executive Summary
 
-The Classes API has excellent structure for most classes but contains **critical data gaps** for Cleric and Paladin base classes. The subclass system and feature progression are well-designed, but several base classes are missing essential D&D 5e data.
+The Classes API is now **production-ready** after critical fixes for Cleric and Paladin base classes. The subclass system and feature progression are well-designed.
 
 ### Current Strengths
-- Excellent subclass nesting with `parent_class_id` relationships
-- Comprehensive feature system with level progression
-- Good proficiency modeling with skill choices
-- Counter system for tracking class resources (Ki, Superiority Dice, etc.)
-- Computed progression tables with spell slots for casters
+- ✅ Excellent subclass nesting with `parent_class_id` relationships
+- ✅ Comprehensive feature system with level progression
+- ✅ Good proficiency modeling with skill choices
+- ✅ Counter system for tracking class resources (Ki, Superiority Dice, etc.)
+- ✅ Computed progression tables with spell slots for casters
+- ✅ **Cleric and Paladin now have complete base class data**
 
-### Critical Issues Found
-- **Cleric**: `hit_die: 0`, missing `spellcasting_ability`, empty `proficiencies`
-- **Paladin**: `hit_die: 0`, missing `spellcasting_ability`, empty `proficiencies`
-- Some classes missing `description` content
+### Resolved Issues ✅
+- ~~**Cleric**: `hit_die: 0`, missing `spellcasting_ability`, empty `proficiencies`~~ **FIXED**
+- ~~**Paladin**: `hit_die: 0`, missing `spellcasting_ability`, empty `proficiencies`~~ **FIXED**
+- ~~Some classes missing `description` content~~ **FIXED**
 
 ---
 
-## 🔴 Critical Issues (High Priority)
+## ✅ RESOLVED: Critical Issues (Previously High Priority)
 
-### 1. Cleric Base Class Missing Data
+### 1. Cleric Base Class Missing Data - **FIXED 2025-11-26**
 
-**Current State:**
+**Previous State (BROKEN):**
 ```json
 {
   "name": "Cleric",
@@ -42,35 +44,28 @@ The Classes API has excellent structure for most classes but contains **critical
 }
 ```
 
-**Expected (PHB p.56-58):**
+**Current State (FIXED):**
 ```json
 {
   "name": "Cleric",
   "hit_die": 8,
   "spellcasting_ability": { "code": "WIS", "name": "Wisdom" },
-  "proficiencies": [
-    { "type": "armor", "name": "Light Armor" },
-    { "type": "armor", "name": "Medium Armor" },
-    { "type": "armor", "name": "Shields" },
-    { "type": "weapon", "name": "Simple Weapons" },
-    { "type": "saving_throw", "name": "Wisdom" },
-    { "type": "saving_throw", "name": "Charisma" },
-    { "type": "skill", "choices": ["History", "Insight", "Medicine", "Persuasion", "Religion"], "count": 2 }
-  ]
+  "description_length": 765,
+  "features_count": 25,
+  "proficiencies_count": 11,
+  "traits_count": 4,
+  "level_progression_count": 20,
+  "counters_count": 3
 }
 ```
 
-**D&D Impact:**
-- Cannot display correct HP calculation (should be d8)
-- Cannot show spellcasting ability (Wisdom)
-- Cannot display starting proficiencies
-- Breaks character builder functionality
+**Verification (PHB p.56-58):** ✅ All data now matches PHB reference.
 
 ---
 
-### 2. Paladin Base Class Missing Data
+### 2. Paladin Base Class Missing Data - **FIXED 2025-11-26**
 
-**Current State:**
+**Previous State (BROKEN):**
 ```json
 {
   "name": "Paladin",
@@ -80,61 +75,59 @@ The Classes API has excellent structure for most classes but contains **critical
 }
 ```
 
-**Expected (PHB p.82-85):**
+**Current State (FIXED):**
 ```json
 {
   "name": "Paladin",
   "hit_die": 10,
   "spellcasting_ability": { "code": "CHA", "name": "Charisma" },
-  "proficiencies": [
-    { "type": "armor", "name": "All Armor" },
-    { "type": "armor", "name": "Shields" },
-    { "type": "weapon", "name": "Simple Weapons" },
-    { "type": "weapon", "name": "Martial Weapons" },
-    { "type": "saving_throw", "name": "Wisdom" },
-    { "type": "saving_throw", "name": "Charisma" },
-    { "type": "skill", "choices": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"], "count": 2 }
-  ]
+  "description_length": 1264,
+  "features_count": 30,
+  "proficiencies_count": 14,
+  "traits_count": 4,
+  "level_progression_count": 19,
+  "counters_count": 22
 }
 ```
 
-**D&D Impact:**
-- Paladin is a half-caster starting at level 2 (PHB p.84)
-- Hit die d10 is essential for tank role
-- Charisma is used for both spellcasting AND class features (Aura of Protection)
+**Verification (PHB p.82-85):** ✅ All data now matches PHB reference including:
+- Armor: All armor, shields
+- Weapons: Simple weapons, martial weapons
+- Saving Throws: Wisdom, Charisma
+- Skill choices: 6 options, pick 2
 
 ---
 
 ## Logical Correctness Analysis
 
-### Hit Die Verification (PHB Reference)
+### Hit Die Verification (PHB Reference) - ALL FIXED ✅
 
 | Class | API Value | Expected | Status |
 |-------|-----------|----------|--------|
 | Artificer | 8 | d8 | ✅ Correct |
 | Barbarian | 12 | d12 | ✅ Correct |
 | Bard | 8 | d8 | ✅ Correct |
-| **Cleric** | **0** | **d8** | ❌ **CRITICAL** |
+| **Cleric** | **8** | **d8** | ✅ **FIXED** |
 | Druid | 8 | d8 | ✅ Correct |
 | Fighter | 10 | d10 | ✅ Correct |
 | Monk | 8 | d8 | ✅ Correct |
-| **Paladin** | **0** | **d10** | ❌ **CRITICAL** |
+| **Paladin** | **10** | **d10** | ✅ **FIXED** |
 | Ranger | 10 | d10 | ✅ Correct |
 | Rogue | 8 | d8 | ✅ Correct |
 | Sorcerer | 6 | d6 | ✅ Correct |
 | Warlock | 8 | d8 | ✅ Correct |
 | Wizard | 6 | d6 | ✅ Correct |
 
-### Spellcasting Ability Verification
+### Spellcasting Ability Verification - ALL FIXED ✅
 
 | Class | API Value | Expected | Status |
 |-------|-----------|----------|--------|
 | Artificer | INT | Intelligence | ✅ Correct |
-| Bard | - | Charisma | ⚠️ Check |
-| **Cleric** | **null** | **Wisdom** | ❌ **CRITICAL** |
-| Druid | - | Wisdom | ⚠️ Check |
-| **Paladin** | **null** | **Charisma** | ❌ **CRITICAL** |
-| Ranger | - | Wisdom | ⚠️ Check |
+| Bard | CHA | Charisma | ✅ Correct |
+| **Cleric** | **WIS** | **Wisdom** | ✅ **FIXED** |
+| Druid | WIS | Wisdom | ✅ Correct |
+| **Paladin** | **CHA** | **Charisma** | ✅ **FIXED** |
+| Ranger | WIS | Wisdom | ✅ Correct |
 | Sorcerer | CHA | Charisma | ✅ Correct |
 | Warlock | CHA | Charisma | ✅ Correct |
 | Wizard | INT | Intelligence | ✅ Correct |
@@ -383,9 +376,9 @@ Different classes cast spells differently.
 
 | Enhancement | Effort | Impact | Priority |
 |-------------|--------|--------|----------|
-| Fix Cleric hit_die/spellcasting | Low | Critical | 🔴 High |
-| Fix Paladin hit_die/spellcasting | Low | Critical | 🔴 High |
-| Add missing proficiencies | Medium | High | 🔴 High |
+| ~~Fix Cleric hit_die/spellcasting~~ | ~~Low~~ | ~~Critical~~ | ✅ **DONE** |
+| ~~Fix Paladin hit_die/spellcasting~~ | ~~Low~~ | ~~Critical~~ | ✅ **DONE** |
+| ~~Add missing proficiencies~~ | ~~Medium~~ | ~~High~~ | ✅ **DONE** |
 | Add multiclass_requirements | Medium | Medium | 🟡 Medium |
 | Add spellcasting_type | Low | Medium | 🟡 Medium |
 | Add starting_equipment | Medium | Medium | 🟡 Medium |
@@ -397,21 +390,26 @@ Different classes cast spells differently.
 
 ## Verification Checklist
 
-The following was verified against official D&D 5e sources:
+The following was verified against official D&D 5e sources on **2025-11-26**:
 
-**Correct:**
+**All Base Classes Now Correct ✅:**
 - [x] Barbarian: d12, STR/CON saves, correct proficiencies
 - [x] Fighter: d10, STR/CON saves, all armor/weapons
 - [x] Wizard: d6, INT/WIS saves, INT spellcasting
 - [x] Warlock: d8, WIS/CHA saves, CHA spellcasting
 - [x] Rogue: d8, DEX/INT saves, Thieves' Tools
 - [x] Monk: d8, STR/DEX saves, no armor proficiency
+- [x] **Cleric: d8, WIS/CHA saves, WIS spellcasting** ✅ FIXED
+- [x] **Paladin: d10, WIS/CHA saves, CHA spellcasting** ✅ FIXED
 
-**Issues Found:**
-- [ ] Cleric: Should be d8, WIS/CHA saves, WIS spellcasting
-- [ ] Paladin: Should be d10, WIS/CHA saves, CHA spellcasting
-- [ ] Several classes missing `description`
-- [ ] Equipment data incomplete
+**Issues Resolved:**
+- [x] ~~Cleric: Should be d8, WIS/CHA saves, WIS spellcasting~~ **FIXED**
+- [x] ~~Paladin: Should be d10, WIS/CHA saves, CHA spellcasting~~ **FIXED**
+- [x] ~~Several classes missing `description`~~ **FIXED**
+
+**Remaining (Low Priority):**
+- [ ] Equipment data incomplete for some classes
+- [ ] Subclass hit_die:0 issue (workaround: use inherited_data)
 
 ---
 
@@ -420,11 +418,17 @@ The following was verified against official D&D 5e sources:
 - Frontend class pages: `app/pages/classes/`
 - Class filter store: `app/stores/classFilters.ts`
 - Backend API: `/Users/dfox/Development/dnd/importer`
+- Resolution details: `docs/proposals/COMPLETED-cleric-paladin-base-class-data.md`
+- Full verification: `docs/proposals/API-VERIFICATION-REPORT-classes-2025-11-26.md`
 
 ---
 
 ## Summary
 
-The Classes API is **well-architected** with excellent subclass relationships and feature modeling. However, the **Cleric and Paladin base classes have critical data gaps** that must be fixed for the API to be production-ready. These are likely import/seed data issues rather than structural problems.
+The Classes API is now **production-ready**. The critical Cleric and Paladin data issues have been resolved.
 
-Once the critical issues are resolved, the medium-priority enhancements would significantly improve the API's utility for character builders and reference applications.
+**Root Cause:** Import file ordering issue where DMG files (subclass-only) were imported before PHB files (full base class data).
+
+**Fix Applied:** `ClassImporter::mergeSupplementData()` now imports base class relationships when existing class is missing them.
+
+The remaining enhancements (multiclass requirements, spellcasting type, starting equipment) would improve the API's utility for character builders but are not blockers for production use.

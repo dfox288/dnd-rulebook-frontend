@@ -249,19 +249,29 @@ PHB presents base race traits separately from subrace traits. Darkvision, Fey An
 
 ---
 
-### 2. Add `is_subrace` Boolean Flag
+### 2. ~~Add `is_subrace` Boolean Flag~~ ✅ IMPLEMENTED
 
-**Current State:** Must check `parent_race_id` to determine if subrace.
+**Status:** ✅ Implemented 2025-11-26
 
-**Proposed Enhancement:**
+**Current State (NOW WORKING):**
 ```json
 {
-  "is_base_race": true,
-  "is_subrace": false
+  "is_subrace": false  // for base races like Aarakocra
+}
+// or
+{
+  "is_subrace": true   // for subraces like Aarakocra (DMG)
 }
 ```
 
-**Benefit:** Simplifies frontend filtering and display logic.
+**Verified Examples:**
+| Race | is_subrace | parent_race |
+|------|------------|-------------|
+| Aarakocra | `false` | null |
+| Aarakocra (DMG) | `true` | Aarakocra |
+| Aasimar | `false` | null |
+
+**Benefit:** Simplifies frontend filtering and display logic. ✅
 
 ---
 
@@ -393,7 +403,7 @@ PHB presents base race traits separately from subrace traits. Darkvision, Fey An
 | Enhancement | Effort | Impact | Priority |
 |-------------|--------|--------|----------|
 | Populate base race data | Medium | High | 🟡 Medium |
-| Add `is_subrace` flag | Low | Medium | 🟡 Medium |
+| ~~Add `is_subrace` flag~~ | ~~Low~~ | ~~Medium~~ | ✅ **DONE** |
 | Add `darkvision_range` | Low | Medium | 🟡 Medium |
 | Add `fly_speed`/`swim_speed` | Low | Medium | 🟡 Medium |
 | Standardize subrace names | Medium | Medium | 🟡 Medium |

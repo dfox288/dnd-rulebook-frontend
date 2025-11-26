@@ -276,9 +276,9 @@ The Monsters API is **production-ready** with comprehensive stat block modeling 
 
 ---
 
-### 2. Add `proficiency_bonus` Field
+### 2. ~~Add `proficiency_bonus` Field~~ ✅ IMPLEMENTED
 
-**D&D Context:** Proficiency bonus is calculated from CR but useful to have directly.
+**Status:** ✅ Implemented 2025-11-26
 
 **CR to Proficiency Bonus:**
 | CR | Prof Bonus |
@@ -292,13 +292,19 @@ The Monsters API is **production-ready** with comprehensive stat block modeling 
 | 25-28 | +8 |
 | 29+ | +9 |
 
-**Proposed Enhancement:**
+**Current State (NOW WORKING):**
 ```json
 {
   "challenge_rating": "17",
   "proficiency_bonus": 6
 }
 ```
+
+**Verified Examples:**
+| Monster | CR | proficiency_bonus |
+|---------|----|--------------------|
+| Aarakocra | 1/4 | 2 |
+| Ancient Red Dragon | 24 | 7 |
 
 ---
 
@@ -350,19 +356,24 @@ The Monsters API is **production-ready** with comprehensive stat block modeling 
 
 ---
 
-### 6. Add `is_legendary` Boolean
+### 6. ~~Add `is_legendary` Boolean~~ ✅ IMPLEMENTED
 
-**Current State:** Must check if `legendary_actions` array is non-empty.
+**Status:** ✅ Implemented 2025-11-26
 
-**Proposed Enhancement:**
+**Current State (NOW WORKING):**
 ```json
 {
-  "is_legendary": true,
-  "legendary_action_count": 3
+  "is_legendary": true
 }
 ```
 
-**Benefit:** Quick filtering for legendary creatures.
+**Verified Examples:**
+| Monster | is_legendary |
+|---------|--------------|
+| Aarakocra | `false` |
+| Ancient Red Dragon | `true` |
+
+**Benefit:** Quick filtering for legendary creatures. ✅
 
 ---
 
@@ -434,11 +445,11 @@ The Monsters API is **production-ready** with comprehensive stat block modeling 
 | Enhancement | Effort | Impact | Priority |
 |-------------|--------|--------|----------|
 | Separate lair_actions array | Medium | Medium | 🟡 Medium |
-| Add proficiency_bonus | Low | High | 🟡 Medium |
+| ~~Add proficiency_bonus~~ | ~~Low~~ | ~~High~~ | ✅ **DONE** |
 | Add senses structured | Medium | High | 🟡 Medium |
 | Add languages array | Medium | Medium | 🟡 Medium |
 | Populate sources array | Low | Medium | 🟡 Medium |
-| Add is_legendary boolean | Low | Medium | 🟡 Medium |
+| ~~Add is_legendary boolean~~ | ~~Low~~ | ~~Medium~~ | ✅ **DONE** |
 | Add ability_modifiers | Low | Low | 🟢 Low |
 | Add cr_numeric | Low | Medium | 🟢 Low |
 | Add creature_subtypes | Medium | Low | 🟢 Low |

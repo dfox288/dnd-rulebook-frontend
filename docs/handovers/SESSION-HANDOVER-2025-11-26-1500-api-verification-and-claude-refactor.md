@@ -1,147 +1,159 @@
-# Session Handover: API Verification & CLAUDE.md Refactoring
+# Session Handover: Page Filter Setup Composable
 
 **Date:** 2025-11-26
-**Session Focus:** Comprehensive D&D 5e API verification and documentation restructuring
-**Status:** ✅ Complete
+**Status:** ✅ Complete - Committed to main
+**Commit:** `cd0f5fc`
 
 ---
 
-## Summary
+## What Was Accomplished
 
-This session accomplished two major goals:
+Extracted URL synchronization boilerplate from 7 entity list pages into a reusable composable.
 
-1. **API Verification:** Verified all 7 major entity API endpoints against D&D 5e rules, generating detailed enhancement proposals
-2. **CLAUDE.md Refactoring:** Restructured the frontend CLAUDE.md to follow backend patterns, reducing from ~670 lines to ~375 lines while improving maintainability
+### Commit
 
----
-
-## What Was Completed
-
-### 1. API Verification (7 Entities)
-
-Created comprehensive enhancement proposals for each entity:
-
-| Entity | Status | Proposal File |
-|--------|--------|---------------|
-| Spells | 🟢 PASS | `docs/proposals/SPELLS-API-ENHANCEMENTS.md` |
-| Classes | 🟡 NEEDS FIX | `docs/proposals/CLASSES-API-ENHANCEMENTS.md` |
-| Items | 🟢 PASS | `docs/proposals/ITEMS-API-ENHANCEMENTS.md` |
-| Races | 🟢 PASS | `docs/proposals/RACES-API-ENHANCEMENTS.md` |
-| Backgrounds | 🟢 PASS | `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` |
-| Feats | 🟢 PASS | `docs/proposals/FEATS-API-ENHANCEMENTS.md` |
-| Monsters | 🟢 PASS | `docs/proposals/MONSTERS-API-ENHANCEMENTS.md` |
-
-**Critical Issue Found:**
-- **Cleric** and **Paladin** classes have `hit_die: 0` and missing `spellcasting_ability` in the backend
-- This is a backend data issue, not an API design problem
-
-### 2. CLAUDE.md Restructuring
-
-**Changes made:**
-- Reduced from ~670 lines to ~375 lines
-- Added `docs/PROJECT-STATUS.md` as single source of truth for metrics
-- Added numbered "Development Cycle" checklist (matching backend pattern)
-- Added "Quick Reference" section at top with test suite table
-- Added workflow variants (For Filter Changes, For New Entity Pages, etc.)
-- Added Meilisearch filter syntax documentation
-- Added Detail Page Pattern (was missing)
-- Removed inline stats that go stale
-- Consolidated scattered workflow into structured sections
-
-**New structure:**
 ```
-1. Overview + Essential Docs
-2. Quick Reference (commands + test suite table)
-3. Development Cycle (numbered steps + variants)
-4. Standards (TDD, commits)
-5. Patterns (List, Detail, Filters, Stores, Colors)
-6. API Reference (Meilisearch syntax, endpoints)
-7. Project Structure
-8. Docker Setup
-9. Testing with Pinia
-10. Success Checklist
-11. Resources
+cd0f5fc refactor(composables): Extract URL sync to usePageFilterSetup
 ```
 
-### 3. PROJECT-STATUS.md Created
+### Files Created
 
-New metrics file at `docs/PROJECT-STATUS.md` containing:
-- Quick stats (118 test files, ~1,450 test cases, 81 components, etc.)
-- Entity coverage matrix
-- Test suite performance table
-- API backend stats
-- Known issues
-- Recent milestones
+| File | Purpose |
+|------|---------|
+| `app/composables/usePageFilterSetup.ts` | The composable - handles mount sync, debounced store→URL, clearFilters |
+| `tests/composables/usePageFilterSetup.test.ts` | 7 tests covering all functionality |
+| `docs/plans/2025-11-26-page-filter-setup-composable.md` | Design document |
 
----
+### Files Modified
 
-## Files Changed
+All 7 entity list pages refactored:
+- `app/pages/spells/index.vue`
+- `app/pages/items/index.vue`
+- `app/pages/monsters/index.vue`
+- `app/pages/classes/index.vue`
+- `app/pages/races/index.vue`
+- `app/pages/backgrounds/index.vue`
+- `app/pages/feats/index.vue`
 
-| File | Action | Description |
-|------|--------|-------------|
-| `CLAUDE.md` | Modified | Complete restructure, ~45% reduction |
-| `docs/PROJECT-STATUS.md` | Created | New metrics file |
-| `docs/proposals/SPELLS-API-ENHANCEMENTS.md` | Created | 294 lines |
-| `docs/proposals/CLASSES-API-ENHANCEMENTS.md` | Created | 360 lines |
-| `docs/proposals/ITEMS-API-ENHANCEMENTS.md` | Created | 340 lines |
-| `docs/proposals/RACES-API-ENHANCEMENTS.md` | Created | 380 lines |
-| `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` | Created | 340 lines |
-| `docs/proposals/FEATS-API-ENHANCEMENTS.md` | Created | 340 lines |
-| `docs/proposals/MONSTERS-API-ENHANCEMENTS.md` | Created | 420 lines |
+### Code Reduction
 
----
+| Before (per page) | After (per page) |
+|-------------------|------------------|
+| ~20 lines of URL sync boilerplate | 1 line: `const { clearFilters } = usePageFilterSetup(store)` |
 
-## Key Decisions Made
-
-1. **Metrics in separate file:** PROJECT-STATUS.md is now the single source of truth for stats, preventing CLAUDE.md from going stale
-
-2. **Backend pattern adoption:** Adopted the backend's numbered development cycle and "Working On → Suite" table format
-
-3. **Keep frontend-specific sections:** NuxtUI Color System, Filter Composables, Pinia Stores patterns were kept due to their complexity and project-specific nature
-
-4. **Proposal format:** Each API proposal follows the same structure: Executive Summary → Logical Correctness → Structural Soundness → Feature Completeness → Recommendations → Priority Matrix
+**Total:** ~140 lines removed across 7 pages
 
 ---
 
-## Pending Work
+## API Design
 
-1. **Docs organization:** Use `/organize-docs` slash command to clean up the docs folder structure (move handovers to subdirectory, create symlink)
+```typescript
+// Side-effect pattern (like useHead)
+const { clearFilters } = usePageFilterSetup(store)
 
-2. **Backend fixes needed:** Cleric/Paladin data issues should be reported to backend team
+// The composable auto-handles:
+// 1. onMounted: URL params → store (if URL has params)
+// 2. watch: store changes → URL (debounced 300ms)
+// 3. Returns clearFilters() which resets store AND URL
+```
+
+### FilterStore Interface
+
+```typescript
+interface FilterStore {
+  toUrlQuery: Record<string, string | string[]>
+  setFromUrlQuery: (query: LocationQuery) => void
+  clearAll: () => void
+}
+```
 
 ---
 
-## Next Session Recommendations
+## Test Results
 
-1. Run `/organize-docs` to clean up documentation folder structure
-2. Consider implementing some of the API enhancement proposals (backend work)
-3. The proposals can serve as specification documents for backend improvements
+- **1,573 tests passing** (7 new tests added)
+- All existing page tests pass without modification
+- TypeScript compiles cleanly
+- Lint passes (pre-existing errors in unrelated files)
 
 ---
 
-## Commands Used
+## Remaining Refactoring Opportunities
+
+From the session audit, these opportunities remain:
+
+| Priority | Opportunity | Lines Saved | Effort |
+|----------|-------------|-------------|--------|
+| ~~1~~ | ~~Pinia Store Factory~~ | ~~850~~ | ~~Done~~ |
+| ~~2~~ | ~~Page Filter Setup Composable~~ | ~~140~~ | ~~Done~~ |
+| **3** | **Generic Entity Card Component** | ~1,160 | 6-8 hrs |
+| 4 | Utility Extraction (isEmpty, etc.) | ~150 | 2 hrs |
+| 5 | Test Helper Library | ~1,900 | 3-4 hrs |
+
+### Entity Card Analysis (Priority 3)
+
+7 entity cards share significant structure:
+- SpellCard, ItemCard, MonsterCard, ClassCard, RaceCard, BackgroundCard, FeatCard
+- Common: NuxtLink wrapper, image handling, title/subtitle, badges, info rows
+- Estimated 57% reduction if consolidated to a generic component
+
+---
+
+## Unstaged Changes
+
+Note: There are other unstaged changes in the working directory from earlier work:
+
+```
+app/components/ui/filter/UiFilterChip.vue
+app/composables/useEntityList.ts
+app/composables/useMeilisearchFilters.ts
+app/types/api/generated.ts
+docs/proposals/API-VERIFICATION-REPORT.md
+docs/proposals/API-VERIFICATION-REPORT-classes-2025-11-26.md
+docs/proposals/COMPLETED-cleric-paladin-base-class-data.md
+playwright.config.ts
+vitest.config.ts
+tests/* (various test file updates)
+```
+
+These may need to be reviewed and committed separately or stashed.
+
+---
+
+## Known Issues
+
+| Issue | Severity | Tracking |
+|-------|----------|----------|
+| Cleric/Paladin `hit_die: 0` in backend | 🔴 High | `docs/proposals/CLASSES-API-ENHANCEMENTS.md` |
+| Sage background missing languages array | 🟡 Medium | `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` |
+
+---
+
+## Commands Reference
 
 ```bash
-# API verification
-/dnd-api-verify spells
-/dnd-api-verify classes
-/dnd-api-verify items
-/dnd-api-verify races
-/dnd-api-verify backgrounds
-/dnd-api-verify feats
-/dnd-api-verify monsters
+# Run full test suite
+docker compose exec nuxt npm run test
 
-# Metrics gathering
-find tests -name "*.test.ts" | wc -l  # 118 test files
-grep -rh "it(" tests | wc -l          # ~1,450 test cases
+# Run specific domain tests
+docker compose exec nuxt npm run test:spells
+docker compose exec nuxt npm run test:items
+# etc.
+
+# Run composable tests only
+docker compose exec nuxt npm run test -- tests/composables/
+
+# Lint with auto-fix
+docker compose exec nuxt npm run lint:fix
 ```
 
 ---
 
-## Test Status
+## Architecture Notes
 
-No code changes were made to the application - only documentation. All existing tests remain passing.
+The `usePageFilterSetup` composable uses the **side-effect pattern**:
+- Unlike composables that just return computed values, this one sets up watchers and lifecycle hooks automatically when called
+- Similar to Vue's built-in `useHead()` or VueUse's `useEventListener()`
+- The store's `toUrlQuery` getter is watched reactively, triggering URL updates on any filter change
 
----
-
-**Next Agent:** Start by running `/organize-docs` to clean up the docs folder, then review `docs/proposals/` if backend improvements are planned.
+Testing lifecycle hooks in composables requires mounting them in a component context. The test file demonstrates the `withSetup()` helper pattern for this.

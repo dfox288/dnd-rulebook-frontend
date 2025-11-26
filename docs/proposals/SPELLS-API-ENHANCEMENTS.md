@@ -98,24 +98,24 @@ Spell targeting and area types directly affect tactical combat decisions. A wiza
 
 ---
 
-### 3. Add Structured Casting Time Fields
+### 3. ~~Add Structured Casting Time Fields~~ ✅ IMPLEMENTED
 
-**Current State:**
-```json
-{
-  "casting_time": "1 action"
-}
-```
+**Status:** ✅ Implemented 2025-11-26
 
-**Proposed Enhancement:**
+**Current State (NOW WORKING):**
 ```json
 {
   "casting_time": "1 action",
-  "casting_time_type": "action",
-  "casting_time_value": 1,
-  "casting_time_unit": "action"
+  "casting_time_type": "action"
 }
 ```
+
+**Verified Examples:**
+| Spell | casting_time | casting_time_type |
+|-------|--------------|-------------------|
+| Fireball | "1 action" | `action` |
+| Healing Word | "1 bonus action" | `bonus_action` |
+| Shield | "1 reaction" | `reaction` |
 
 **Casting Time Types:**
 | Type | Examples |
@@ -130,11 +130,11 @@ Spell targeting and area types directly affect tactical combat decisions. A wiza
 **D&D Context:**
 Action economy is crucial in D&D combat. Players often want "all bonus action spells" or "reaction spells for defense."
 
-**Use Cases Enabled:**
-- Filter: "Show all reaction spells"
-- Filter: "Show all bonus action spells"
-- UI: Display casting time badges by category
-- Character building: Balance action types in spell selection
+**Use Cases NOW ENABLED:**
+- Filter: "Show all reaction spells" ✅
+- Filter: "Show all bonus action spells" ✅
+- UI: Display casting time badges by category ✅
+- Character building: Balance action types in spell selection ✅
 
 ---
 
@@ -265,7 +265,7 @@ Displays trigger conditions on spell cards without parsing description.
 |-------------|--------|--------|----------|
 | Material cost/consumed fields | Medium | High | Medium |
 | Area of effect structure | Medium | Medium | Medium |
-| Casting time structure | Low | Medium | Medium |
+| ~~Casting time structure~~ | ~~Low~~ | ~~Medium~~ | ✅ **DONE** |
 | Searchable options in meta | Low | Low | Low |
 | Minimal response mode | Medium | Medium | Low |
 | Flattened damage_types | Low | Low | Low |

@@ -22,8 +22,11 @@ The Backgrounds API is **production-ready** with exceptional handling of persona
 - 35 backgrounds covering PHB and SCAG
 
 ### Minor Issues Found
-- Some backgrounds missing `languages` array entries (data in description only)
+- ~~Some backgrounds missing `languages` array entries (data in description only)~~ **FIXED**
 - Tool proficiency choices could use better structure
+
+### Recently Fixed ✅
+- **Languages array now populated** - Sage and Acolyte now have `{ "is_choice": true, "quantity": 2 }` in languages array
 
 ---
 
@@ -40,14 +43,14 @@ The Backgrounds API is **production-ready** with exceptional handling of persona
 | Soldier | Athletics, Intimidation | 140 | ✅ Correct |
 | Outlander | Athletics, Survival | 136 | ✅ Correct |
 
-### Tool/Language Proficiency Verification
+### Tool/Language Proficiency Verification - UPDATED 2025-11-26
 
 | Background | Tools/Languages | PHB | API Status |
 |------------|-----------------|-----|------------|
-| Acolyte | 2 languages | 127 | ⚠️ In description only |
+| Acolyte | 2 languages | 127 | ✅ **FIXED** - `is_choice: true, quantity: 2` |
 | Criminal | Gaming set, Thieves' tools | 129 | ✅ Correct |
 | Noble | Gaming set, 1 language | 135 | ✅ Correct |
-| Sage | 2 languages | 137 | ⚠️ Empty array |
+| Sage | 2 languages | 137 | ✅ **FIXED** - `is_choice: true, quantity: 2` |
 | Soldier | Gaming set, Vehicles (land) | 140 | ✅ Correct |
 | Outlander | Musical instrument, 1 language | 136 | ✅ Correct |
 
@@ -368,7 +371,7 @@ Description says: "Languages: Two of your choice"
 
 | Enhancement | Effort | Impact | Priority |
 |-------------|--------|--------|----------|
-| Fix missing language entries | Low | High | 🔴 High |
+| ~~Fix missing language entries~~ | ~~Low~~ | ~~High~~ | ✅ **DONE** |
 | Improve tool proficiency structure | Medium | Medium | 🟡 Medium |
 | Add `feature_name` field | Low | Medium | 🟡 Medium |
 | Add `starting_gold` field | Low | Medium | 🟡 Medium |

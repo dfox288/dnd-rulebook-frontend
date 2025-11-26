@@ -197,24 +197,27 @@ The Items API is **production-ready** with excellent data modeling for weapons, 
 
 ## Medium Priority Enhancements
 
-### 1. Add `/item-types` Reference Endpoint
+### 1. ~~Add `/item-types` Reference Endpoint~~ ✅ EXISTS
 
-**Current State:** Returns 404
+**Status:** ✅ Already exists at `/api/v1/lookups/item-types`
 
-**Proposed Enhancement:**
-```
-GET /api/v1/item-types
+**Endpoint:** `GET /api/v1/lookups/item-types`
 
+**Response (16 item types):**
+```json
 {
   "data": [
-    { "id": 1, "code": "M", "name": "Melee Weapon", "description": "..." },
-    { "id": 2, "code": "R", "name": "Ranged Weapon", "description": "..." },
+    { "id": 1, "code": "A", "name": "Ammunition", "description": "Arrows, bolts, sling bullets, and other projectiles" },
+    { "id": 2, "code": "M", "name": "Melee Weapon", "description": "Weapons used for close combat" },
+    { "id": 3, "code": "R", "name": "Ranged Weapon", "description": "Weapons used for ranged combat" },
     ...
   ]
 }
 ```
 
-**Benefit:** Frontend can build filter dropdowns without hardcoding values.
+**Note:** The endpoint is under `/lookups/` prefix, not root `/api/v1/`.
+
+**Benefit:** Frontend can build filter dropdowns without hardcoding values. ✅
 
 ---
 
@@ -255,18 +258,36 @@ GET /api/v1/item-types
 
 ---
 
-### 4. Add `item_type_code` Filter
+### 4. ~~Fix `type_code` Filter~~ ✅ RESOLVED
 
-**Current State:** Filter by `item_type_code` returns no results.
+**Status:** ✅ Fixed 2025-11-26 - Was stale Meilisearch index
 
-**Proposed Enhancement:**
+**Field Name:** `type_code`
+
+**Now Working:**
+```bash
+curl "http://localhost:8080/api/v1/items?filter=type_code=M&per_page=5"
+# Response: { "meta": { "total": 482 }, "data": [5 items] } ✅
+
+curl "http://localhost:8080/api/v1/items?filter=type_code=R&per_page=5"
+# Response: { "meta": { "total": 138 }, "data": [5 items] } ✅
+
+curl "http://localhost:8080/api/v1/items?filter=type_code=LA&per_page=3"
+# Response: { "meta": { "total": 115 }, "data": [3 items] } ✅
 ```
-GET /api/v1/items?filter=item_type_code=M
-```
 
-**Expected Result:** All melee weapons
+**Item Type Codes (from `/api/v1/lookups/item-types`):**
+| Code | Name |
+|------|------|
+| M | Melee Weapon |
+| R | Ranged Weapon |
+| LA | Light Armor |
+| MA | Medium Armor |
+| HA | Heavy Armor |
+| A | Ammunition |
+| ... | (16 total) |
 
-**Benefit:** Essential for equipment shop views and category filtering.
+**Benefit:** Equipment shop views and category filtering now enabled. ✅
 
 ---
 
@@ -349,10 +370,10 @@ GET /api/v1/items?filter=item_type_code=M
 
 | Enhancement | Effort | Impact | Priority |
 |-------------|--------|--------|----------|
-| Add `/item-types` endpoint | Low | High | 🟡 Medium |
+| ~~Add `/item-types` endpoint~~ | ~~Low~~ | ~~High~~ | ✅ **EXISTS** at `/lookups/item-types` |
 | Add `proficiency_category` | Medium | High | 🟡 Medium |
 | Add `price_gp` computed field | Low | Medium | 🟡 Medium |
-| Fix `item_type_code` filter | Low | High | 🟡 Medium |
+| ~~Fix `type_code` filter~~ | ~~Low~~ | ~~High~~ | ✅ **DONE** - was stale index |
 | Add `weight_lb` numeric | Low | Low | 🟢 Low |
 | Add `magic_bonus` field | Medium | Medium | 🟢 Low |
 | Add `attunement_requirements` | Medium | Low | 🟢 Low |
