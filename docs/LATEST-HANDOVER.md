@@ -1,1 +1,1 @@
-handovers/SESSION-HANDOVER-2025-11-26-1500-api-verification-and-claude-refactor.md
+handovers/SESSION-HANDOVER-2025-11-26-2100-classes-detail-page-audit.md

@@ -1,159 +1,126 @@
-# Session Handover: Page Filter Setup Composable
+# Session Handover: Classes Detail Page Audit & Proposals
 
 **Date:** 2025-11-26
-**Status:** ✅ Complete - Committed to main
-**Commit:** `cd0f5fc`
+**Status:** ✅ Complete - Proposals ready for review
+**Branch:** `main`
 
 ---
 
 ## What Was Accomplished
 
-Extracted URL synchronization boilerplate from 7 entity list pages into a reusable composable.
+Conducted comprehensive D&D 5e API verification audit of the Classes detail page, identifying data issues, layout problems, and creating detailed improvement proposals for both backend and frontend.
 
-### Commit
-
-```
-cd0f5fc refactor(composables): Extract URL sync to usePageFilterSetup
-```
-
-### Files Created
+### Documents Created
 
 | File | Purpose |
 |------|---------|
-| `app/composables/usePageFilterSetup.ts` | The composable - handles mount sync, debounced store→URL, clearFilters |
-| `tests/composables/usePageFilterSetup.test.ts` | 7 tests covering all functionality |
-| `docs/plans/2025-11-26-page-filter-setup-composable.md` | Design document |
-
-### Files Modified
-
-All 7 entity list pages refactored:
-- `app/pages/spells/index.vue`
-- `app/pages/items/index.vue`
-- `app/pages/monsters/index.vue`
-- `app/pages/classes/index.vue`
-- `app/pages/races/index.vue`
-- `app/pages/backgrounds/index.vue`
-- `app/pages/feats/index.vue`
-
-### Code Reduction
-
-| Before (per page) | After (per page) |
-|-------------------|------------------|
-| ~20 lines of URL sync boilerplate | 1 line: `const { clearFilters } = usePageFilterSetup(store)` |
-
-**Total:** ~140 lines removed across 7 pages
+| `docs/proposals/CLASSES-DETAIL-PAGE-BACKEND-FIXES.md` | Backend data fixes and schema changes |
+| `docs/proposals/CLASSES-DETAIL-PAGE-FRONTEND-IMPROVEMENTS.md` | Frontend UI/UX improvements |
 
 ---
 
-## API Design
+## Key Findings
 
-```typescript
-// Side-effect pattern (like useHead)
-const { clearFilters } = usePageFilterSetup(store)
+### Critical Issues (Backend)
 
-// The composable auto-handles:
-// 1. onMounted: URL params → store (if URL has params)
-// 2. watch: store changes → URL (debounced 300ms)
-// 3. Returns clearFilters() which resets store AND URL
+1. **`hit_die: 0` Bug** - Some subclasses (Death Domain, Oathbreaker) return 0 instead of inheriting parent's hit die
+2. **Placeholder Descriptions** - All subclasses show "Subclass of X" instead of actual flavor text
+
+### High Priority Issues
+
+1. **Choice options as separate features** - Fighting Style options inflate feature count (Champion shows 13 instead of 6)
+2. **Multiclass rules mixed with core features** - Optional rules shown as primary features
+3. **Progression table cluttered** - Level 1 Fighter shows 11 items instead of 2
+
+### Clarification from Backend Team
+
+**Arcane Recovery column** (shows "1" for all levels) is **NOT a bug**:
+- XML source has counter with value "1"
+- D&D rules: Arcane Recovery uses formula ceil(level/2) for spell slot levels recovered
+- **Recommendation**: Remove column entirely (matches PHB table which has no Arcane Recovery column)
+
+---
+
+## Proposal Summaries
+
+### Backend Proposal
+
+**Critical (2 issues)**:
+- Fix `hit_die: 0` inheritance
+- Populate subclass descriptions from first feature
+
+**High Priority (4 issues)**:
+- Add `is_choice_option` flag to features
+- Add `is_optional_rule` flag for multiclass rules
+- Clean up progression table feature list
+- Accurate feature counts
+
+**New Appendix B**: Canonical PHB column definitions for all 12 classes - reference for which columns should exist in progression tables.
+
+### Frontend Proposal
+
+**Immediate Fixes (no backend needed)**:
+- Handle `hit_die: 0` gracefully (use parent's)
+- Filter multiclass from progression display
+- Collapse fighting style options
+- Extract subclass description from first feature
+- Fix HP description for subclasses
+
+**Layout Improvements**:
+- Enhanced Quick Stats card
+- Features grouped by level
+- Improved subclass cards with entry level
+- Consolidated counter display
+- Mobile-responsive progression table
+
+---
+
+## Appendix B Highlights (PHB Column Reference)
+
+| Class | Canonical Columns |
+|-------|-------------------|
+| Fighter | Level, Prof, Features only (NO action_surge, indomitable) |
+| Wizard | Level, Prof, Features, Cantrips, Spell Slots (NO arcane_recovery) |
+| Monk | Level, Prof, Martial Arts, Ki, Unarmored Movement, Features |
+| Barbarian | Level, Prof, Features, Rages, Rage Damage |
+| Rogue | Level, Prof, Sneak Attack, Features |
+
+**Key insight**: PHB tables only have columns for resources with discrete scaling values. Formula-based features (Arcane Recovery, Lay on Hands) belong in feature descriptions.
+
+---
+
+## Next Steps
+
+### For Backend Team
+1. Review `CLASSES-DETAIL-PAGE-BACKEND-FIXES.md`
+2. Decide on Arcane Recovery column (recommend: remove)
+3. Prioritize `hit_die: 0` fix (quick win)
+4. Consider Appendix B for progression table cleanup
+
+### For Frontend Team
+1. Review `CLASSES-DETAIL-PAGE-FRONTEND-IMPROVEMENTS.md`
+2. Implement Phase 1 (immediate fixes) - can start now
+3. Phase 2 (layout) after Phase 1 verification
+4. Phase 3 after backend ships flags
+
+---
+
+## Files Changed This Session
+
 ```
-
-### FilterStore Interface
-
-```typescript
-interface FilterStore {
-  toUrlQuery: Record<string, string | string[]>
-  setFromUrlQuery: (query: LocationQuery) => void
-  clearAll: () => void
-}
-```
-
----
-
-## Test Results
-
-- **1,573 tests passing** (7 new tests added)
-- All existing page tests pass without modification
-- TypeScript compiles cleanly
-- Lint passes (pre-existing errors in unrelated files)
-
----
-
-## Remaining Refactoring Opportunities
-
-From the session audit, these opportunities remain:
-
-| Priority | Opportunity | Lines Saved | Effort |
-|----------|-------------|-------------|--------|
-| ~~1~~ | ~~Pinia Store Factory~~ | ~~850~~ | ~~Done~~ |
-| ~~2~~ | ~~Page Filter Setup Composable~~ | ~~140~~ | ~~Done~~ |
-| **3** | **Generic Entity Card Component** | ~1,160 | 6-8 hrs |
-| 4 | Utility Extraction (isEmpty, etc.) | ~150 | 2 hrs |
-| 5 | Test Helper Library | ~1,900 | 3-4 hrs |
-
-### Entity Card Analysis (Priority 3)
-
-7 entity cards share significant structure:
-- SpellCard, ItemCard, MonsterCard, ClassCard, RaceCard, BackgroundCard, FeatCard
-- Common: NuxtLink wrapper, image handling, title/subtitle, badges, info rows
-- Estimated 57% reduction if consolidated to a generic component
-
----
-
-## Unstaged Changes
-
-Note: There are other unstaged changes in the working directory from earlier work:
-
-```
-app/components/ui/filter/UiFilterChip.vue
-app/composables/useEntityList.ts
-app/composables/useMeilisearchFilters.ts
-app/types/api/generated.ts
-docs/proposals/API-VERIFICATION-REPORT.md
-docs/proposals/API-VERIFICATION-REPORT-classes-2025-11-26.md
-docs/proposals/COMPLETED-cleric-paladin-base-class-data.md
-playwright.config.ts
-vitest.config.ts
-tests/* (various test file updates)
-```
-
-These may need to be reviewed and committed separately or stashed.
-
----
-
-## Known Issues
-
-| Issue | Severity | Tracking |
-|-------|----------|----------|
-| Cleric/Paladin `hit_die: 0` in backend | 🔴 High | `docs/proposals/CLASSES-API-ENHANCEMENTS.md` |
-| Sage background missing languages array | 🟡 Medium | `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` |
-
----
-
-## Commands Reference
-
-```bash
-# Run full test suite
-docker compose exec nuxt npm run test
-
-# Run specific domain tests
-docker compose exec nuxt npm run test:spells
-docker compose exec nuxt npm run test:items
-# etc.
-
-# Run composable tests only
-docker compose exec nuxt npm run test -- tests/composables/
-
-# Lint with auto-fix
-docker compose exec nuxt npm run lint:fix
+docs/proposals/CLASSES-DETAIL-PAGE-BACKEND-FIXES.md   (created + updated)
+docs/proposals/CLASSES-DETAIL-PAGE-FRONTEND-IMPROVEMENTS.md (created)
 ```
 
 ---
 
-## Architecture Notes
+## Test Status
 
-The `usePageFilterSetup` composable uses the **side-effect pattern**:
-- Unlike composables that just return computed values, this one sets up watchers and lifecycle hooks automatically when called
-- Similar to Vue's built-in `useHead()` or VueUse's `useEventListener()`
-- The store's `toUrlQuery` getter is watched reactively, triggering URL updates on any filter change
+N/A - Documentation only session
 
-Testing lifecycle hooks in composables requires mounting them in a component context. The test file demonstrates the `withSetup()` helper pattern for this.
+---
+
+## Related Documents
+
+- `docs/proposals/CLASSES-API-ENHANCEMENTS.md` - Earlier API enhancement proposal
+- `docs/proposals/API-VERIFICATION-REPORT-classes-2025-11-26.md` - Previous audit work

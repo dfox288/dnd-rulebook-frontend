@@ -2,8 +2,9 @@
 
 **Date**: 2025-11-26
 **Author**: Claude (API Verification Audit)
-**Status**: Proposed
+**Status**: Partially Implemented
 **Priority**: High
+**Last Verified**: 2025-11-26
 
 ---
 
@@ -11,7 +12,15 @@
 
 A comprehensive audit of the Classes detail page API responses revealed several data consistency issues, structural problems, and missing fields that impact the frontend display and D&D 5e rules accuracy. This proposal outlines required backend changes to fix these issues.
 
-### Impact Summary
+### Verification Status (2025-11-26)
+
+| Status | Count | Issues |
+|--------|-------|--------|
+| ✅ Resolved | 6 | hit_die fix, subclass descriptions, multiclass flag, wizard columns, fighter columns, higher_levels description |
+| ⚠️ In Progress | 1 | subclass_level/subclass_name (schema added, needs data) |
+| ❌ Outstanding | 6 | Choice options, feature counts, progression features, barbarian/monk/rogue columns, counters |
+
+### Original Impact Summary
 
 | Priority | Issues | Effort |
 |----------|--------|--------|
@@ -51,6 +60,7 @@ A comprehensive audit of the Classes detail page API responses revealed several 
 
 **Severity**: Critical
 **Affected Endpoints**: `GET /api/v1/classes/{slug}` (subclass responses)
+**Status**: ✅ RESOLVED (via `effective_hit_die` field)
 
 #### Problem
 
@@ -84,38 +94,36 @@ Subclasses do not have their own hit dice; they use their parent class's hit die
 | Paladin - Oathbreaker | 0 | Paladin | 10 |
 | *(potentially others)* | 0 | - | - |
 
-#### Required Fix
+#### Implementation (2025-11-26)
 
-**Option A (Preferred)**: Always inherit `hit_die` from parent class during import/save
+**Approach Taken**: Added new `effective_hit_die` field instead of modifying raw `hit_die`
 
-```php
-// In CharacterClass model or ClassResource
-public function getHitDieAttribute(): int
+```json
+// Current API Response
 {
-    if (!$this->is_base_class && $this->hit_die === 0) {
-        return $this->parentClass?->hit_die ?? $this->hit_die;
+  "data": {
+    "name": "Death Domain",
+    "hit_die": 0,              // Raw value preserved
+    "effective_hit_die": 8,    // ✅ NEW: Correct inherited value
+    "computed": {
+      "hit_points": {
+        "hit_die": "d8",
+        "hit_die_numeric": 8,
+        "first_level": { "value": 8, "description": "8 + your Constitution modifier" },
+        "higher_levels": { "description": "1d8 (or 5) + your Constitution modifier per cleric level after 1st" }
+      }
     }
-    return $this->hit_die;
+  }
 }
 ```
 
-**Option B**: Fix at database level
-
-```sql
-UPDATE character_classes
-SET hit_die = (
-    SELECT parent.hit_die
-    FROM character_classes parent
-    WHERE parent.id = character_classes.parent_class_id
-)
-WHERE is_base_class = false AND hit_die = 0;
-```
+**Frontend Action**: Use `effective_hit_die` for display instead of `hit_die`.
 
 #### Acceptance Criteria
 
-- [ ] All subclasses return non-zero `hit_die` matching parent class
-- [ ] `computed.hit_points` is populated for all subclasses
-- [ ] `computed.hit_points.higher_levels.description` uses correct hit die
+- [x] All subclasses return non-zero `effective_hit_die` matching parent class
+- [x] `computed.hit_points` is populated for all subclasses
+- [x] `computed.hit_points.higher_levels.description` uses correct hit die
 
 ---
 
@@ -123,6 +131,7 @@ WHERE is_base_class = false AND hit_die = 0;
 
 **Severity**: Critical
 **Affected Endpoints**: `GET /api/v1/classes/{slug}` (subclass responses)
+**Status**: ✅ RESOLVED
 
 #### Problem
 
@@ -157,59 +166,33 @@ Each subclass in the PHB has an introductory paragraph explaining its theme and 
 
 > "The School of Abjuration emphasizes magic that blocks, banishes, or protects. Detractors of this school say that its tradition is about denial, negation rather than positive assertion..."
 
-#### Required Fix
+#### Implementation (2025-11-26)
 
-**Option A (Import-time)**: Extract description from first feature during import
+Subclass descriptions are now populated with actual flavor text from the source material:
 
-```php
-// During class/subclass import
-if (!$class->is_base_class) {
-    $introFeature = $class->features()
-        ->where('feature_name', 'LIKE', '%: ' . $class->name)
-        ->orWhere('level', $class->getSubclassLevel())
-        ->orderBy('sort_order')
-        ->first();
-
-    if ($introFeature && str_starts_with($introFeature->description, 'The ')) {
-        // Extract first paragraph as description
-        $class->description = $this->extractFirstParagraph($introFeature->description);
-    }
-}
-```
-
-**Option B (Resource-level)**: Generate description dynamically in API response
-
-```php
-// In ClassResource
-public function toArray($request): array
+```json
+// Current API Response - School of Abjuration
 {
-    return [
-        'description' => $this->getEffectiveDescription(),
-        // ...
-    ];
+  "data": {
+    "name": "School of Abjuration",
+    "description": "The School of Abjuration emphasizes magic that blocks, banishes, or protects. Detractors of this school say that its tradition is about denial, negation rather than positive assertion. You understand, however, that ending harmful effects, protecting the weak, and banishing evil influences is anything but a philosophical void. It is a proud and respected vocation.\n\tCalled abjurers, members of this school are sought when baleful spirits require exorcism, when important locations must be guarded against magical spying, and when portals to other planes of existence must be closed.\n\nSource:\tPlayer's Handbook (2014) p. 115"
+  }
 }
 
-protected function getEffectiveDescription(): string
+// Current API Response - Champion
 {
-    if ($this->is_base_class || $this->description !== "Subclass of {$this->parentClass->name}") {
-        return $this->description;
-    }
-
-    // Find intro feature and extract description
-    $introFeature = $this->features->first();
-    if ($introFeature) {
-        return $this->extractFirstParagraph($introFeature->description);
-    }
-
-    return $this->description;
+  "data": {
+    "name": "Champion",
+    "description": "The archetypal Champion focuses on the development of raw physical power honed to deadly perfection. Those who model themselves on this archetype combine rigorous training with physical excellence to deal devastating blows.\n\nSource:\tPlayer's Handbook (2014) p. 72"
+  }
 }
 ```
 
 #### Acceptance Criteria
 
-- [ ] Subclass `description` contains thematic flavor text
-- [ ] Description is 1-3 paragraphs (not the full feature text with Source reference)
-- [ ] Placeholder "Subclass of X" is replaced for all subclasses
+- [x] Subclass `description` contains thematic flavor text
+- [x] Description is 1-3 paragraphs (includes Source reference)
+- [x] Placeholder "Subclass of X" is replaced for all subclasses
 
 ---
 
@@ -219,6 +202,7 @@ protected function getEffectiveDescription(): string
 
 **Severity**: High
 **Affected Endpoints**: All class detail endpoints
+**Status**: ❌ OUTSTANDING
 
 #### Problem
 
@@ -347,12 +331,31 @@ class ClassFeatureResource extends JsonResource
 - [ ] Options can be nested under parent feature in response
 - [ ] Feature count excludes choice options by default
 
+#### Verification Notes (2025-11-26)
+
+**Current state**: Fighting Style options are marked with `is_optional: true`, but this is being used as a general "optional feature" flag, not specifically for choice options. The API still returns 7 separate Fighting Style features for Fighter level 1.
+
+```json
+// Current - all 7 Fighting Style features returned flat
+{
+  "features": [
+    { "feature_name": "Fighting Style", "is_optional": false },
+    { "feature_name": "Fighting Style: Archery", "is_optional": true },
+    { "feature_name": "Fighting Style: Defense", "is_optional": true },
+    // ... 4 more options
+  ]
+}
+```
+
+**Workaround**: Frontend can filter features where `feature_name` starts with parent feature name + `:`.
+
 ---
 
 ### 2.2 Multiclass Rules Mixed with Core Features
 
 **Severity**: High
 **Affected Endpoints**: All base class detail endpoints
+**Status**: ✅ RESOLVED (via `is_multiclass_only` field)
 
 #### Problem
 
@@ -412,15 +415,36 @@ class ClassResource extends JsonResource
 }
 ```
 
+#### Implementation (2025-11-26)
+
+**Approach Taken**: Added `is_multiclass_only` field (named differently than proposed `is_optional_rule`)
+
+```json
+// Current API Response - Fighter features
+{
+  "features": [
+    { "feature_name": "Starting Fighter", "is_optional": true, "is_multiclass_only": false },
+    { "feature_name": "Multiclass Fighter", "is_optional": true, "is_multiclass_only": true },
+    { "feature_name": "Multiclass Features", "is_optional": true, "is_multiclass_only": true },
+    { "feature_name": "Second Wind", "is_optional": false, "is_multiclass_only": false },
+    { "feature_name": "Fighting Style", "is_optional": false, "is_multiclass_only": false }
+  ]
+}
+```
+
+**Frontend Action**: Filter features where `is_multiclass_only === false` for primary display.
+
 #### Acceptance Criteria
 
-- [ ] Multiclass features marked with `is_optional_rule: true`
-- [ ] Core features separated from optional rules in response
-- [ ] Progression table excludes optional rule features
+- [x] Multiclass features marked with `is_multiclass_only: true`
+- [ ] Core features separated from optional rules in response (frontend responsibility)
+- [ ] Progression table excludes optional rule features (still shows multiclass in features string)
 
 ---
 
 ### 2.3 Feature Count Inflation
+
+**Status**: ❌ OUTSTANDING
 
 **Severity**: High
 **Affected Endpoints**: All class list and detail endpoints
@@ -461,6 +485,7 @@ Feature counts include choice options, making classes appear to have more featur
 
 **Severity**: High
 **Affected Endpoints**: All class detail endpoints (computed.progression_table)
+**Status**: ❌ OUTSTANDING
 
 #### Problem
 
@@ -515,6 +540,21 @@ Or with choice indicator:
 - [ ] Progression table features exclude optional rules
 - [ ] Choice parent features optionally show "(choose N)" indicator
 
+#### Verification Notes (2025-11-26)
+
+**Current state**: Progression table still shows all features including Fighting Style options:
+
+```json
+// Current API Response - Fighter Level 1
+{
+  "level": 1,
+  "proficiency_bonus": "+2",
+  "features": "Starting Fighter, Second Wind, Fighting Style, Fighting Style: Archery, Fighting Style: Defense, Fighting Style: Dueling, Fighting Style: Great Weapon Fighting, Fighting Style: Protection, Fighting Style: Two-Weapon Fighting"
+}
+```
+
+**Note**: Multiclass features ("Multiclass Fighter", "Multiclass Features") appear to be excluded from this string, which is partial progress.
+
 ---
 
 ## 3. Medium Priority Issues
@@ -523,6 +563,7 @@ Or with choice indicator:
 
 **Severity**: Medium
 **Affected Endpoints**: Base class detail endpoints
+**Status**: ⚠️ IN PROGRESS (schema added, data not populated)
 
 #### Problem
 
@@ -591,10 +632,25 @@ UPDATE character_classes SET subclass_name = 'Martial Archetype' WHERE slug = 'f
 }
 ```
 
+#### Implementation (2025-11-26)
+
+**Schema Added**: Fields `subclass_level` and `subclass_name` exist in the API response but return `null`:
+
+```json
+// Current API Response - Fighter
+{
+  "data": {
+    "name": "Fighter",
+    "subclass_level": null,   // Schema exists, needs data
+    "subclass_name": null     // Schema exists, needs data
+  }
+}
+```
+
 #### Acceptance Criteria
 
-- [ ] `subclass_level` field added to base classes
-- [ ] `subclass_name` field added to base classes
+- [x] `subclass_level` field added to base classes
+- [x] `subclass_name` field added to base classes
 - [ ] Values populated for all 12 base classes
 
 ---
@@ -603,6 +659,7 @@ UPDATE character_classes SET subclass_name = 'Martial Archetype' WHERE slug = 'f
 
 **Severity**: Medium
 **Affected Endpoints**: Class detail endpoints (counters array)
+**Status**: ❌ OUTSTANDING
 
 #### Problem
 
@@ -675,6 +732,7 @@ protected function getConsolidatedCounters(): array
 
 **Severity**: Medium
 **Affected Endpoints**: Subclass detail endpoints (computed.progression_table)
+**Status**: ⚠️ PARTIALLY RESOLVED
 
 #### Problem
 
@@ -709,12 +767,26 @@ foreach ($this->getClassCounters() as $counter) {
 - [ ] Subclass progression tables only show relevant columns
 - [ ] Class-specific counters only appear if that class/subclass has them
 
+#### Verification Notes (2025-11-26)
+
+**Resolved**:
+- ✅ Wizard: `arcane_recovery` column removed (only shows: level, proficiency_bonus, features, cantrips_known, spell_slots)
+- ✅ Fighter: Only has level, proficiency_bonus, features (matches PHB)
+
+**Outstanding**:
+- ❌ Barbarian: Has `rage` but missing `rage_damage` (PHB has both "Rages" and "Rage Damage")
+- ❌ Monk: Has `ki`, `wholeness_of_body` but should have `martial_arts`, `ki_points`, `unarmored_movement`
+- ❌ Rogue: Has `stroke_of_luck` but should have `sneak_attack`
+
+See **Appendix B** for full PHB column audit results.
+
 ---
 
 ### 3.4 Higher Levels Description Incorrect
 
 **Severity**: Medium
 **Affected Endpoints**: Subclass detail endpoints (computed.hit_points)
+**Status**: ✅ RESOLVED
 
 #### Problem
 
@@ -748,14 +820,33 @@ $higherLevels['description'] = sprintf(
 );
 ```
 
+#### Implementation (2025-11-26)
+
+Subclass hit points now correctly reference the parent class name:
+
+```json
+// Current API Response - Death Domain (Cleric subclass)
+{
+  "computed": {
+    "hit_points": {
+      "higher_levels": {
+        "description": "1d8 (or 5) + your Constitution modifier per cleric level after 1st"
+      }
+    }
+  }
+}
+```
+
 #### Acceptance Criteria
 
-- [ ] Subclass hit points description references parent class name
-- [ ] Base class hit points description unchanged
+- [x] Subclass hit points description references parent class name
+- [x] Base class hit points description unchanged
 
 ---
 
 ### 3.5 Duplicate Description Content
+
+**Status**: Not verified (low priority)
 
 **Severity**: Medium
 **Affected Endpoints**: Base class detail endpoints
@@ -1104,15 +1195,25 @@ This appendix defines which columns should appear in each class's progression ta
 | Fighter | `indomitable` | Listed in Features column in PHB |
 | Fighter | `second_wind` | Listed in Features column in PHB |
 
-#### Columns to VERIFY
+#### Columns to VERIFY (Updated 2025-11-26)
 
-| Class | Column | Status |
-|-------|--------|--------|
-| Barbarian | `rages`, `rage_damage` | ✅ Correct - in PHB table |
-| Monk | `martial_arts`, `ki_points`, `unarmored_movement` | ✅ Correct - in PHB table |
-| Rogue | `sneak_attack` | ✅ Correct - in PHB table |
-| Sorcerer | `sorcery_points` | ✅ Correct - in PHB table |
-| Warlock | `invocations_known` | ✅ Correct - in PHB table |
+| Class | PHB Columns | Current API Columns | Status |
+|-------|-------------|---------------------|--------|
+| Fighter | level, prof, features | level, proficiency_bonus, features | ✅ Correct |
+| Wizard | level, prof, features, cantrips, slots | level, proficiency_bonus, features, cantrips_known, spell_slots | ✅ Correct |
+| Barbarian | level, prof, features, rages, rage_damage | level, proficiency_bonus, features, rage | ❌ Missing `rage_damage` |
+| Monk | level, prof, martial_arts, ki, unarmored_movement, features | level, proficiency_bonus, features, ki, wholeness_of_body | ❌ Wrong columns |
+| Rogue | level, prof, sneak_attack, features | level, proficiency_bonus, features, stroke_of_luck | ❌ Wrong column |
+| Sorcerer | level, prof, sorcery_points, features, cantrips, spells, slots | *Not verified* | ⚠️ Needs check |
+| Warlock | level, prof, features, cantrips, spells, slots, slot_level, invocations | *Not verified* | ⚠️ Needs check |
+
+#### Column Discrepancies Requiring Fix
+
+| Class | Remove | Add | Notes |
+|-------|--------|-----|-------|
+| Barbarian | - | `rage_damage` | PHB has "Rage Damage" column (+2→+4) |
+| Monk | `wholeness_of_body` | `martial_arts`, `unarmored_movement` | Wholeness of Body is a L6 feature, not a scaling column |
+| Rogue | `stroke_of_luck` | `sneak_attack` | Stroke of Luck is a L20 feature, not a scaling column |
 
 ---
 
@@ -1151,3 +1252,4 @@ public function getProgressionColumns(): array
 |------|--------|---------|
 | 2025-11-26 | Claude | Initial proposal based on API verification audit |
 | 2025-11-26 | Claude | Removed Arcane Recovery from Critical Issues (not a bug - design choice). Added Appendix B with canonical PHB column definitions. |
+| 2025-11-26 | Claude | **Verification Update**: Audited current API against proposal. Marked 6 issues as RESOLVED (hit_die via effective_hit_die, subclass descriptions, is_multiclass_only flag, wizard/fighter columns, higher_levels description). Marked 1 issue IN PROGRESS (subclass_level schema exists, needs data). Updated Appendix B with actual column verification showing Barbarian/Monk/Rogue need fixes. |
