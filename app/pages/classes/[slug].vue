@@ -274,12 +274,35 @@ const accordionItems = computed(() => {
         </div>
       </div>
 
-      <!-- Class Progression Table -->
-      <UiClassProgressionTable
-        v-if="entity.is_base_class && baseClassFeatures.length > 0"
-        :features="baseClassFeatures"
-        :counters="entity.counters || []"
-      />
+      <!-- Class Progression Table (base class or inherited) -->
+      <div
+        v-if="progressionFeatures.length > 0"
+        class="space-y-2"
+      >
+        <div
+          v-if="isSubclass && parentClass"
+          class="flex items-center gap-2"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <UIcon
+              name="i-heroicons-table-cells"
+              class="w-5 h-5 text-gray-400"
+            />
+            Class Progression
+          </h3>
+          <UBadge
+            color="neutral"
+            variant="subtle"
+            size="xs"
+          >
+            Inherited from {{ parentClass.name }}
+          </UBadge>
+        </div>
+        <UiClassProgressionTable
+          :features="progressionFeatures"
+          :counters="progressionCounters"
+        />
+      </div>
 
       <!-- Description -->
       <UiDetailDescriptionCard
@@ -287,12 +310,38 @@ const accordionItems = computed(() => {
         :description="entity.description"
       />
 
-      <!-- Hit Points Card -->
-      <UiClassHitPointsCard
-        v-if="entity.hit_die && entity.is_base_class"
-        :hit-die="Number(entity.hit_die)"
-        :class-name="entity.name"
-      />
+      <!-- Hit Points Card (for base class or inherited) -->
+      <div
+        v-if="entity.is_base_class && entity.hit_die"
+      >
+        <UiClassHitPointsCard
+          :hit-die="Number(entity.hit_die)"
+          :class-name="entity.name"
+        />
+      </div>
+
+      <!-- Inherited Hit Points Card (for subclasses) -->
+      <div
+        v-else-if="isSubclass && parentClass?.hit_die"
+        class="space-y-2"
+      >
+        <div class="flex items-center gap-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Hit Points
+          </h3>
+          <UBadge
+            color="neutral"
+            variant="subtle"
+            size="xs"
+          >
+            Inherited from {{ parentClass.name }}
+          </UBadge>
+        </div>
+        <UiClassHitPointsCard
+          :hit-die="Number(parentClass.hit_die)"
+          :class-name="parentClass.name"
+        />
+      </div>
 
       <!-- Subclasses (Card Grid) -->
       <div
