@@ -1,29 +1,53 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { Feat, AbilityScore } from '~/types'
+import { useFeatFiltersStore } from '~/stores/featFilters'
 
 const route = useRoute()
 
-// Filter collapse state
-const filtersOpen = ref(false)
+// Use filter store instead of local refs
+const store = useFeatFiltersStore()
+const {
+  searchQuery,
+  sortBy,
+  sortDirection,
+  selectedSources,
+  hasPrerequisites,
+  grantsProficiencies,
+  selectedImprovedAbilities,
+  selectedPrerequisiteTypes,
+  filtersOpen
+} = storeToRefs(store)
 
-// Sorting state
-const sortBy = ref<string>((route.query.sort_by as string) || 'name')
-const sortDirection = ref<'asc' | 'desc'>((route.query.sort_direction as 'asc' | 'desc') || 'asc')
+// URL sync composable
+const { hasUrlParams, syncToUrl, clearUrl } = useFilterUrlSync()
+
+// On mount: URL params override persisted state
+onMounted(() => {
+  if (hasUrlParams.value) {
+    store.setFromUrlQuery(route.query)
+  }
+})
+
+// Sync store changes to URL (debounced)
+let urlSyncTimeout: ReturnType<typeof setTimeout> | null = null
+watch(
+  () => store.toUrlQuery,
+  (query) => {
+    if (urlSyncTimeout) clearTimeout(urlSyncTimeout)
+    urlSyncTimeout = setTimeout(() => {
+      syncToUrl(query)
+    }, 300)
+  },
+  { deep: true }
+)
+
+// Sort value computed (combines sortBy + sortDirection)
 const sortValue = useSortValue(sortBy, sortDirection)
 
-// Source filter (using composable)
-const { selectedSources, sourceOptions, getSourceName, clearSources } = useSourceFilter()
-
-// Entity-specific filter state
-const hasPrerequisites = ref<string | null>((route.query.has_prerequisites as string) || null)
-const grantsProficiencies = ref<string | null>((route.query.grants_proficiencies as string) || null)
-const selectedImprovedAbilities = ref<string[]>(
-  route.query.improved_ability ? (Array.isArray(route.query.improved_ability) ? route.query.improved_ability : [route.query.improved_ability]) as string[] : []
-)
-const selectedPrerequisiteTypes = ref<string[]>(
-  route.query.prerequisite_type ? (Array.isArray(route.query.prerequisite_type) ? route.query.prerequisite_type : [route.query.prerequisite_type]) as string[] : []
-)
+// Source filter options (still need the composable for options)
+const { sourceOptions, getSourceName } = useSourceFilter()
 
 // Fetch reference data
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
@@ -48,7 +72,7 @@ const sortOptions = [
   { label: 'Name (Z-A)', value: 'name:desc' }
 ]
 
-// Query builder for filters
+// Query builder for filters (uses store refs)
 const { queryParams: filterParams } = useMeilisearchFilters([
   { ref: hasPrerequisites, field: 'has_prerequisites', type: 'boolean' },
   { ref: grantsProficiencies, field: 'grants_proficiencies', type: 'boolean' },
@@ -65,20 +89,18 @@ const queryParams = computed(() => ({
 
 // Use entity list composable
 const {
-  searchQuery,
   currentPage,
   data,
   meta,
   totalResults,
   loading,
   error,
-  refresh,
-  clearFilters: clearBaseFilters,
-  hasActiveFilters
+  refresh
 } = useEntityList({
   endpoint: '/feats',
   cacheKey: 'feats-list',
   queryBuilder: queryParams,
+  searchQuery, // Pass store's searchQuery
   seo: {
     title: 'Feats - D&D 5e Compendium',
     description: 'Browse all D&D 5e feats and character abilities with advanced filtering.'
@@ -87,14 +109,10 @@ const {
 
 const feats = computed(() => data.value as Feat[])
 
-// Clear all filters
+// Clear all filters - uses store action + URL clear
 const clearFilters = () => {
-  clearBaseFilters()
-  clearSources()
-  hasPrerequisites.value = null
-  grantsProficiencies.value = null
-  selectedImprovedAbilities.value = []
-  selectedPrerequisiteTypes.value = []
+  store.clearAll()
+  clearUrl()
 }
 
 // Helper functions
@@ -107,14 +125,11 @@ const getPrerequisiteTypeLabel = (type: string) => {
   return prerequisiteTypeOptions.find(opt => opt.value === type)?.label || type
 }
 
-// Active filter count
-const activeFilterCount = useFilterCount(
-  hasPrerequisites,
-  grantsProficiencies,
-  selectedImprovedAbilities,
-  selectedPrerequisiteTypes,
-  selectedSources
-)
+// Active filter count (use store getter)
+const activeFilterCount = computed(() => store.activeFilterCount)
+
+// Has active filters (use store getter)
+const hasActiveFilters = computed(() => store.hasActiveFilters)
 
 const perPage = 24
 </script>

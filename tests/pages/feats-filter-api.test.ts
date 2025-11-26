@@ -1,12 +1,22 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import FeatsPage from '~/pages/feats/index.vue'
 
 describe('Feats Page - API Filter Integration', () => {
+  // Reset Pinia store before each test to ensure clean state
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   describe('has_prerequisites filter', () => {
     it('generates correct filter for has_prerequisites = true', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter
       component.hasPrerequisites = '1'
@@ -21,6 +31,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.hasPrerequisites = '0'
       await wrapper.vm.$nextTick()
@@ -33,6 +47,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('does not include filter when null', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter to null
       component.hasPrerequisites = null
@@ -49,6 +67,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.grantsProficiencies = '1'
       await wrapper.vm.$nextTick()
@@ -61,6 +83,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('generates correct filter for grants_proficiencies = false', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter
       component.grantsProficiencies = '0'
@@ -77,6 +103,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.selectedImprovedAbilities = ['STR']
       await wrapper.vm.$nextTick()
@@ -90,6 +120,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.selectedImprovedAbilities = ['STR', 'DEX']
       await wrapper.vm.$nextTick()
@@ -102,6 +136,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('does not include filter when empty array', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter to empty
       component.selectedImprovedAbilities = []
@@ -118,6 +156,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.selectedPrerequisiteTypes = ['Race']
       await wrapper.vm.$nextTick()
@@ -130,6 +172,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('generates correct filter for multiple types', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter
       component.selectedPrerequisiteTypes = ['Race', 'AbilityScore']
@@ -146,6 +192,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set filter
       component.selectedSources = ['PHB']
       await wrapper.vm.$nextTick()
@@ -158,6 +208,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('generates correct filter for multiple sources', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set filter
       component.selectedSources = ['PHB', 'XGTE']
@@ -174,6 +228,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set multiple filters
       component.hasPrerequisites = '1'
       component.selectedImprovedAbilities = ['STR']
@@ -188,6 +246,10 @@ describe('Feats Page - API Filter Integration', () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
 
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
+
       // Set multiple filters
       component.selectedImprovedAbilities = ['STR', 'DEX']
       component.selectedSources = ['PHB']
@@ -201,6 +263,10 @@ describe('Feats Page - API Filter Integration', () => {
     it('combines all filter types', async () => {
       const wrapper = await mountSuspended(FeatsPage)
       const component = wrapper.vm as any
+
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
+      await wrapper.vm.$nextTick()
 
       // Set all filters
       component.hasPrerequisites = '1'
