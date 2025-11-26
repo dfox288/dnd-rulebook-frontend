@@ -66,7 +66,7 @@ const showBadge = computed(() => {
         <span
           v-if="showBadge"
           data-testid="filter-badge"
-          class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-primary-500 rounded-full"
+          class="px-2 py-0.5 text-xs font-bold text-white bg-primary-500 rounded-full"
         >
           {{ badgeCount }}
         </span>
