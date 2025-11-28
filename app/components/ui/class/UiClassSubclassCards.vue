@@ -1,9 +1,7 @@
 <script setup lang="ts">
-interface Feature {
-  id: number
-  level: number
-  feature_name: string
-}
+import type { components } from '~/types/api/generated'
+
+type ClassFeatureResource = components['schemas']['ClassFeatureResource']
 
 interface Source {
   id?: number
@@ -19,7 +17,7 @@ interface Subclass {
   slug: string
   name: string
   description?: string
-  features?: Feature[]
+  features?: ClassFeatureResource[]
   sources?: Source[]
 }
 
@@ -29,6 +27,9 @@ interface Props {
 }
 
 defineProps<Props>()
+
+// Use centralized feature filtering composable
+const { countDisplayFeatures } = useFeatureFiltering()
 
 /**
  * Get background image path for subclass (uses class images)
@@ -48,40 +49,11 @@ const getSourceAbbreviation = (subclass: Subclass): string | null => {
 }
 
 /**
- * Patterns that indicate choice options (not primary features).
- * These should be excluded from feature counts.
- */
-const CHOICE_OPTION_PATTERNS = [
-  /^Fighting Style: /,
-  /^Bear \(/,
-  /^Eagle \(/,
-  /^Wolf \(/,
-  /^Elk \(/,
-  /^Tiger \(/,
-  /^Aspect of the Bear/,
-  /^Aspect of the Eagle/,
-  /^Aspect of the Wolf/,
-  /^Aspect of the Elk/,
-  /^Aspect of the Tiger/
-]
-
-/**
- * Check if a feature is a choice option (not a primary feature)
- */
-const isChoiceOption = (featureName: string): boolean => {
-  return CHOICE_OPTION_PATTERNS.some(pattern => pattern.test(featureName))
-}
-
-/**
- * Get meaningful feature count (excludes choice options)
+ * Get meaningful feature count (excludes choice options, multiclass, starting features)
  */
 const getFeatureCount = (subclass: Subclass): number => {
   if (!subclass.features) return 0
-
-  return subclass.features.filter((f) => {
-    const name = f.feature_name || ''
-    return !isChoiceOption(name)
-  }).length
+  return countDisplayFeatures(subclass.features)
 }
 
 /**

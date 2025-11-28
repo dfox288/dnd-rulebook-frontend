@@ -12,47 +12,14 @@ const props = withDefaults(defineProps<Props>(), {
   showLevel: true
 })
 
-/**
- * Patterns that indicate choice options (not primary features).
- * These should be excluded from feature display.
- * Based on patterns from UiClassSubclassCards.
- */
-const CHOICE_OPTION_PATTERNS = [
-  /^Fighting Style: /,
-  /^Bear \(/,
-  /^Eagle \(/,
-  /^Wolf \(/,
-  /^Elk \(/,
-  /^Tiger \(/,
-  /^Aspect of the Bear/,
-  /^Aspect of the Eagle/,
-  /^Aspect of the Wolf/,
-  /^Aspect of the Elk/,
-  /^Aspect of the Tiger/
-]
+// Use centralized feature filtering composable
+const { filterDisplayFeatures } = useFeatureFiltering()
 
 /**
- * Check if a feature is a choice option (not a primary feature)
- */
-const isChoiceOption = (featureName: string): boolean => {
-  return CHOICE_OPTION_PATTERNS.some(pattern => pattern.test(featureName))
-}
-
-/**
- * Filter out choice options from features
- */
-const filterChoiceOptions = (features: ClassFeatureResource[]): ClassFeatureResource[] => {
-  return features.filter((f) => {
-    const name = f.feature_name || ''
-    return !isChoiceOption(name)
-  })
-}
-
-/**
- * Group features by level, filtering out choice options
+ * Group features by level, filtering out choice options, multiclass, and starting features
  */
 const featuresByLevel = computed(() => {
-  const filtered = filterChoiceOptions(props.features)
+  const filtered = filterDisplayFeatures(props.features)
   const grouped = new Map<number, ClassFeatureResource[]>()
 
   filtered.forEach((feature) => {

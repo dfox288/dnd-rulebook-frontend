@@ -7,6 +7,9 @@ interface Props {
 
 defineProps<Props>()
 
+// Use centralized feature filtering composable
+const { filterProgressionFeatureString } = useFeatureFiltering()
+
 // ASI (Ability Score Improvement) levels
 const ASI_LEVELS = [4, 8, 12, 16, 19]
 
@@ -43,45 +46,11 @@ const hasSubclassFeature = (featuresString: string): boolean => {
 
 /**
  * Filter progression table features to remove clutter.
- * Removes:
- * - Multiclass features (Multiclass X, Multiclass Features)
- * - Starting class features (Starting X)
- * - Fighting Style options (Fighting Style: X) - keeps parent "Fighting Style"
- * - Totem Warrior animal options (Bear/Eagle/Wolf (Path of the Totem Warrior))
+ * Uses centralized filtering logic from composable.
+ * Passes empty array since progression table doesn't have full feature data.
  */
 const filterProgressionFeatures = (featuresString: string): string => {
-  if (!featuresString || featuresString === '—') return featuresString
-
-  let features = featuresString.split(', ')
-
-  // Filter multiclass features
-  features = features.filter(f => !f.toLowerCase().includes('multiclass'))
-
-  // Filter Starting class features
-  features = features.filter(f => !f.startsWith('Starting '))
-
-  // Collapse Fighting Style options (keep parent "Fighting Style", remove "Fighting Style: X")
-  const fightingStyleOptions = features.filter(f => f.startsWith('Fighting Style:'))
-  if (fightingStyleOptions.length > 0) {
-    features = features.filter(f => !f.startsWith('Fighting Style:'))
-    // Ensure "Fighting Style" parent is present
-    if (!features.includes('Fighting Style')) {
-      features.push('Fighting Style')
-    }
-  }
-
-  // Filter Totem Warrior animal options (Bear, Eagle, Wolf, Elk, Tiger)
-  const totemAnimals = ['Bear', 'Eagle', 'Wolf', 'Elk', 'Tiger']
-  features = features.filter(f =>
-    !totemAnimals.some(animal => f.startsWith(`${animal} (`))
-  )
-
-  // Filter Aspect of the Beast options
-  features = features.filter(f =>
-    !totemAnimals.some(animal => f.startsWith(`Aspect of the ${animal}`))
-  )
-
-  return features.join(', ') || '—'
+  return filterProgressionFeatureString(featuresString, [])
 }
 </script>
 

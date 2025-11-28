@@ -3,17 +3,31 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import UiClassSubclassCards from '~/components/ui/class/UiClassSubclassCards.vue'
 
 describe('UiClassSubclassCards', () => {
+  // Helper to create feature with all API flags
+  const createFeature = (overrides = {}) => ({
+    id: 1,
+    level: 3,
+    feature_name: 'Test Feature',
+    description: 'Test description',
+    is_optional: false,
+    is_multiclass_only: false,
+    is_choice_option: false,
+    parent_feature_id: null,
+    sort_order: 0,
+    ...overrides
+  })
+
   const createSubclass = (overrides = {}) => ({
     id: 1,
     slug: 'champion',
     name: 'Champion',
     description: 'The archetypal Champion focuses on raw physical power.',
     features: [
-      { id: 1, level: 3, feature_name: 'Improved Critical' },
-      { id: 2, level: 7, feature_name: 'Remarkable Athlete' },
-      { id: 3, level: 10, feature_name: 'Additional Fighting Style' },
-      { id: 4, level: 15, feature_name: 'Superior Critical' },
-      { id: 5, level: 18, feature_name: 'Survivor' }
+      createFeature({ id: 1, level: 3, feature_name: 'Improved Critical' }),
+      createFeature({ id: 2, level: 7, feature_name: 'Remarkable Athlete' }),
+      createFeature({ id: 3, level: 10, feature_name: 'Additional Fighting Style' }),
+      createFeature({ id: 4, level: 15, feature_name: 'Superior Critical' }),
+      createFeature({ id: 5, level: 18, feature_name: 'Survivor' })
     ],
     sources: [{ code: 'PHB', name: 'Player\'s Handbook', abbreviation: 'PHB' }],
     ...overrides
@@ -42,22 +56,22 @@ describe('UiClassSubclassCards', () => {
   })
 
   describe('feature count filtering', () => {
-    it('shows accurate feature count excluding choice options', async () => {
+    it('shows accurate feature count excluding choice options using API flag', async () => {
       // Champion has 5 real features + 6 fighting style options = 11 total
       // But should show "5 features" not "11 features"
       const championWithChoices = createSubclass({
         features: [
-          { id: 1, level: 3, feature_name: 'Improved Critical' },
-          { id: 2, level: 7, feature_name: 'Remarkable Athlete' },
-          { id: 3, level: 10, feature_name: 'Additional Fighting Style' },
-          { id: 4, level: 10, feature_name: 'Fighting Style: Archery' },
-          { id: 5, level: 10, feature_name: 'Fighting Style: Defense' },
-          { id: 6, level: 10, feature_name: 'Fighting Style: Dueling' },
-          { id: 7, level: 10, feature_name: 'Fighting Style: Great Weapon Fighting' },
-          { id: 8, level: 10, feature_name: 'Fighting Style: Protection' },
-          { id: 9, level: 10, feature_name: 'Fighting Style: Two-Weapon Fighting' },
-          { id: 10, level: 15, feature_name: 'Superior Critical' },
-          { id: 11, level: 18, feature_name: 'Survivor' }
+          createFeature({ id: 1, level: 3, feature_name: 'Improved Critical', is_choice_option: false }),
+          createFeature({ id: 2, level: 7, feature_name: 'Remarkable Athlete', is_choice_option: false }),
+          createFeature({ id: 3, level: 10, feature_name: 'Additional Fighting Style', is_choice_option: false }),
+          createFeature({ id: 4, level: 10, feature_name: 'Fighting Style: Archery', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 5, level: 10, feature_name: 'Fighting Style: Defense', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 6, level: 10, feature_name: 'Fighting Style: Dueling', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 7, level: 10, feature_name: 'Fighting Style: Great Weapon Fighting', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 8, level: 10, feature_name: 'Fighting Style: Protection', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 9, level: 10, feature_name: 'Fighting Style: Two-Weapon Fighting', is_choice_option: true, parent_feature_id: 3 }),
+          createFeature({ id: 10, level: 15, feature_name: 'Superior Critical', is_choice_option: false }),
+          createFeature({ id: 11, level: 18, feature_name: 'Survivor', is_choice_option: false })
         ]
       })
 
@@ -73,22 +87,23 @@ describe('UiClassSubclassCards', () => {
       expect(wrapper.text()).not.toContain('11 features')
     })
 
-    it('filters out Totem Warrior animal options from count', async () => {
+    it('filters out Totem Warrior animal options using pattern fallback', async () => {
+      // Totem options don't have is_choice_option flag yet (backend bug), so we use pattern fallback
       const totemWarrior = createSubclass({
         name: 'Path of the Totem Warrior',
         slug: 'path-of-the-totem-warrior',
         features: [
-          { id: 1, level: 3, feature_name: 'Spirit Seeker' },
-          { id: 2, level: 3, feature_name: 'Totem Spirit' },
-          { id: 3, level: 3, feature_name: 'Bear (Path of the Totem Warrior)' },
-          { id: 4, level: 3, feature_name: 'Eagle (Path of the Totem Warrior)' },
-          { id: 5, level: 3, feature_name: 'Wolf (Path of the Totem Warrior)' },
-          { id: 6, level: 6, feature_name: 'Aspect of the Beast' },
-          { id: 7, level: 6, feature_name: 'Aspect of the Bear' },
-          { id: 8, level: 6, feature_name: 'Aspect of the Eagle' },
-          { id: 9, level: 6, feature_name: 'Aspect of the Wolf' },
-          { id: 10, level: 10, feature_name: 'Spirit Walker' },
-          { id: 11, level: 14, feature_name: 'Totemic Attunement' }
+          createFeature({ id: 1, level: 3, feature_name: 'Spirit Seeker', is_choice_option: false }),
+          createFeature({ id: 2, level: 3, feature_name: 'Totem Spirit', is_choice_option: false }),
+          createFeature({ id: 3, level: 3, feature_name: 'Bear (Path of the Totem Warrior)', is_choice_option: false }),
+          createFeature({ id: 4, level: 3, feature_name: 'Eagle (Path of the Totem Warrior)', is_choice_option: false }),
+          createFeature({ id: 5, level: 3, feature_name: 'Wolf (Path of the Totem Warrior)', is_choice_option: false }),
+          createFeature({ id: 6, level: 6, feature_name: 'Aspect of the Beast', is_choice_option: false }),
+          createFeature({ id: 7, level: 6, feature_name: 'Aspect of the Bear', is_choice_option: false }),
+          createFeature({ id: 8, level: 6, feature_name: 'Aspect of the Eagle', is_choice_option: false }),
+          createFeature({ id: 9, level: 6, feature_name: 'Aspect of the Wolf', is_choice_option: false }),
+          createFeature({ id: 10, level: 10, feature_name: 'Spirit Walker', is_choice_option: false }),
+          createFeature({ id: 11, level: 14, feature_name: 'Totemic Attunement', is_choice_option: false })
         ]
       })
 
@@ -107,7 +122,7 @@ describe('UiClassSubclassCards', () => {
 
     it('shows singular "feature" for single feature', async () => {
       const singleFeature = createSubclass({
-        features: [{ id: 1, level: 3, feature_name: 'Single Feature' }]
+        features: [createFeature({ id: 1, level: 3, feature_name: 'Single Feature' })]
       })
 
       const wrapper = await mountSuspended(UiClassSubclassCards, {
@@ -166,9 +181,9 @@ describe('UiClassSubclassCards', () => {
         name: 'School of Abjuration',
         slug: 'school-of-abjuration',
         features: [
-          { id: 1, level: 2, feature_name: 'Abjuration Savant' },
-          { id: 2, level: 2, feature_name: 'Arcane Ward' },
-          { id: 3, level: 6, feature_name: 'Projected Ward' }
+          createFeature({ id: 1, level: 2, feature_name: 'Abjuration Savant' }),
+          createFeature({ id: 2, level: 2, feature_name: 'Arcane Ward' }),
+          createFeature({ id: 3, level: 6, feature_name: 'Projected Ward' })
         ]
       })
 

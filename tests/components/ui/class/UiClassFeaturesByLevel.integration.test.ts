@@ -7,26 +7,40 @@ import UiClassFeaturesByLevel from '~/components/ui/class/UiClassFeaturesByLevel
  * even if not visible in collapsed accordion state.
  */
 describe('UiClassFeaturesByLevel - Integration', () => {
+  // Helper to create feature with all API flags
+  const createFeature = (overrides = {}) => ({
+    id: 1,
+    level: 1,
+    feature_name: 'Test Feature',
+    description: 'Test description',
+    is_optional: false,
+    is_multiclass_only: false,
+    is_choice_option: false,
+    parent_feature_id: null,
+    sort_order: 0,
+    ...overrides
+  })
+
   it('properly structures feature data for accordion slots', async () => {
     const features = [
-      {
+      createFeature({
         id: 1,
         level: 1,
         feature_name: 'Rage',
         description: 'In battle, you fight with primal ferocity.'
-      },
-      {
+      }),
+      createFeature({
         id: 2,
         level: 1,
         feature_name: 'Unarmored Defense',
         description: 'Your AC equals 10 + DEX + CON.'
-      },
-      {
+      }),
+      createFeature({
         id: 3,
         level: 2,
         feature_name: 'Reckless Attack',
         description: 'Gain advantage at the cost of giving advantage to enemies.'
-      }
+      })
     ]
 
     const wrapper = await mountSuspended(UiClassFeaturesByLevel, {
@@ -54,12 +68,12 @@ describe('UiClassFeaturesByLevel - Integration', () => {
     expect(accordionItems[1].slot).toBe('level-2')
   })
 
-  it('filters choice options from internal data structure', async () => {
+  it('filters choice options from internal data structure using API flags', async () => {
     const features = [
-      { id: 1, level: 1, feature_name: 'Fighting Style', description: 'Choose a style' },
-      { id: 2, level: 1, feature_name: 'Fighting Style: Archery', description: 'Choice 1' },
-      { id: 3, level: 1, feature_name: 'Fighting Style: Defense', description: 'Choice 2' },
-      { id: 4, level: 2, feature_name: 'Action Surge', description: 'Surge!' }
+      createFeature({ id: 1, level: 1, feature_name: 'Fighting Style', description: 'Choose a style', is_choice_option: false }),
+      createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Archery', description: 'Choice 1', is_choice_option: true, parent_feature_id: 1 }),
+      createFeature({ id: 3, level: 1, feature_name: 'Fighting Style: Defense', description: 'Choice 2', is_choice_option: true, parent_feature_id: 1 }),
+      createFeature({ id: 4, level: 2, feature_name: 'Action Surge', description: 'Surge!', is_choice_option: false })
     ]
 
     const wrapper = await mountSuspended(UiClassFeaturesByLevel, {

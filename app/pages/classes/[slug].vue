@@ -37,10 +37,15 @@ const hitPointsData = computed(() => {
 
 /**
  * Get effective hit die value.
- * Uses computed.hit_points.hit_die_numeric which correctly inherits from parent class
- * for subclasses that have hit_die: 0 in the raw data.
+ * Backend now correctly populates hit_die for subclasses (no longer 0).
+ * Falls back to computed.hit_points.hit_die_numeric for compatibility.
  */
 const effectiveHitDie = computed(() => {
+  // Direct hit_die field (now fixed in backend for subclasses)
+  if (entity.value?.hit_die && entity.value.hit_die > 0) {
+    return entity.value.hit_die
+  }
+  // Fallback to computed value for older API responses
   return entity.value?.computed?.hit_points?.hit_die_numeric ?? null
 })
 
@@ -114,32 +119,15 @@ const subclassName = computed(() => {
   return subclassPatterns[entity.value.slug] || 'Subclass'
 })
 
-/**
- * Patterns that indicate choice options (not primary features).
- */
-const CHOICE_OPTION_PATTERNS = [
-  /^Fighting Style: /,
-  /^Bear \(/,
-  /^Eagle \(/,
-  /^Wolf \(/,
-  /^Elk \(/,
-  /^Tiger \(/,
-  /^Aspect of the Bear/,
-  /^Aspect of the Eagle/,
-  /^Aspect of the Wolf/,
-  /^Aspect of the Elk/,
-  /^Aspect of the Tiger/
-]
+// Use centralized feature filtering composable
+const { countDisplayFeatures } = useFeatureFiltering()
 
 /**
- * Get meaningful feature count (excludes choice options).
+ * Get meaningful feature count (excludes choice options, multiclass, starting features).
  */
 const featureCount = computed(() => {
   const features = entity.value?.features ?? []
-  return features.filter((f) => {
-    const name = f.feature_name || ''
-    return !CHOICE_OPTION_PATTERNS.some(pattern => pattern.test(name))
-  }).length
+  return countDisplayFeatures(features)
 })
 
 /**

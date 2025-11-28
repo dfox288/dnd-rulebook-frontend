@@ -8,6 +8,11 @@ describe('UiClassFeaturesByLevel', () => {
     level: 1,
     feature_name: 'Test Feature',
     description: 'Test description',
+    is_optional: false,
+    is_multiclass_only: false,
+    is_choice_option: false,
+    parent_feature_id: null,
+    sort_order: 0,
     ...overrides
   })
 
@@ -89,13 +94,13 @@ describe('UiClassFeaturesByLevel', () => {
   })
 
   describe('choice option filtering', () => {
-    it('filters out Fighting Style choice options from display', async () => {
+    it('filters out Fighting Style choice options using API flag', async () => {
       const features = [
-        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style' }),
-        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Archery' }),
-        createFeature({ id: 3, level: 1, feature_name: 'Fighting Style: Defense' }),
-        createFeature({ id: 4, level: 1, feature_name: 'Fighting Style: Dueling' }),
-        createFeature({ id: 5, level: 2, feature_name: 'Second Wind' })
+        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style', is_choice_option: false }),
+        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Archery', is_choice_option: true, parent_feature_id: 1 }),
+        createFeature({ id: 3, level: 1, feature_name: 'Fighting Style: Defense', is_choice_option: true, parent_feature_id: 1 }),
+        createFeature({ id: 4, level: 1, feature_name: 'Fighting Style: Dueling', is_choice_option: true, parent_feature_id: 1 }),
+        createFeature({ id: 5, level: 2, feature_name: 'Second Wind', is_choice_option: false })
       ]
 
       const wrapper = await mountSuspended(UiClassFeaturesByLevel, {
@@ -114,16 +119,17 @@ describe('UiClassFeaturesByLevel', () => {
       expect(html).not.toContain('Fighting Style: Dueling')
     })
 
-    it('filters out Totem Warrior animal choice options', async () => {
+    it('filters out Totem Warrior animal options using pattern fallback', async () => {
+      // Totem options don't have is_choice_option flag yet (backend bug), so we use pattern fallback
       const features = [
-        createFeature({ id: 1, level: 3, feature_name: 'Totem Spirit' }),
-        createFeature({ id: 2, level: 3, feature_name: 'Bear (Path of the Totem Warrior)' }),
-        createFeature({ id: 3, level: 3, feature_name: 'Eagle (Path of the Totem Warrior)' }),
-        createFeature({ id: 4, level: 3, feature_name: 'Wolf (Path of the Totem Warrior)' }),
-        createFeature({ id: 5, level: 6, feature_name: 'Aspect of the Beast' }),
-        createFeature({ id: 6, level: 6, feature_name: 'Aspect of the Bear' }),
-        createFeature({ id: 7, level: 6, feature_name: 'Aspect of the Eagle' }),
-        createFeature({ id: 8, level: 6, feature_name: 'Aspect of the Wolf' })
+        createFeature({ id: 1, level: 3, feature_name: 'Totem Spirit', is_choice_option: false }),
+        createFeature({ id: 2, level: 3, feature_name: 'Bear (Path of the Totem Warrior)', is_choice_option: false }),
+        createFeature({ id: 3, level: 3, feature_name: 'Eagle (Path of the Totem Warrior)', is_choice_option: false }),
+        createFeature({ id: 4, level: 3, feature_name: 'Wolf (Path of the Totem Warrior)', is_choice_option: false }),
+        createFeature({ id: 5, level: 6, feature_name: 'Aspect of the Beast', is_choice_option: false }),
+        createFeature({ id: 6, level: 6, feature_name: 'Aspect of the Bear', is_choice_option: false }),
+        createFeature({ id: 7, level: 6, feature_name: 'Aspect of the Eagle', is_choice_option: false }),
+        createFeature({ id: 8, level: 6, feature_name: 'Aspect of the Wolf', is_choice_option: false })
       ]
 
       const wrapper = await mountSuspended(UiClassFeaturesByLevel, {
@@ -147,10 +153,10 @@ describe('UiClassFeaturesByLevel', () => {
 
     it('updates feature count to exclude choice options', async () => {
       const features = [
-        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style' }),
-        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Archery' }),
-        createFeature({ id: 3, level: 1, feature_name: 'Fighting Style: Defense' }),
-        createFeature({ id: 4, level: 1, feature_name: 'Second Wind' })
+        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style', is_choice_option: false }),
+        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Archery', is_choice_option: true, parent_feature_id: 1 }),
+        createFeature({ id: 3, level: 1, feature_name: 'Fighting Style: Defense', is_choice_option: true, parent_feature_id: 1 }),
+        createFeature({ id: 4, level: 1, feature_name: 'Second Wind', is_choice_option: false })
       ]
 
       const wrapper = await mountSuspended(UiClassFeaturesByLevel, {
@@ -177,9 +183,9 @@ describe('UiClassFeaturesByLevel', () => {
     it('hides levels with no features after filtering', async () => {
       // All features at level 1 are choice options - level should be hidden
       const features = [
-        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style: Archery' }),
-        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Defense' }),
-        createFeature({ id: 3, level: 2, feature_name: 'Action Surge' })
+        createFeature({ id: 1, level: 1, feature_name: 'Fighting Style: Archery', is_choice_option: true, parent_feature_id: 100 }),
+        createFeature({ id: 2, level: 1, feature_name: 'Fighting Style: Defense', is_choice_option: true, parent_feature_id: 100 }),
+        createFeature({ id: 3, level: 2, feature_name: 'Action Surge', is_choice_option: false })
       ]
 
       const wrapper = await mountSuspended(UiClassFeaturesByLevel, {
