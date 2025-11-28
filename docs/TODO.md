@@ -16,9 +16,10 @@ _Tasks currently being worked on_
 
 _Prioritized tasks ready to start_
 
+- [ ] Request backend to flag Totem options with `is_choice_option`
+- [ ] Apply timeline pattern to Race detail page
 - [ ] Character Builder feature (pending backend API)
 - [ ] E2E test expansion (Playwright)
-- [ ] Storybook component documentation
 
 ---
 
@@ -26,6 +27,7 @@ _Prioritized tasks ready to start_
 
 _Future tasks, not yet prioritized_
 
+- [ ] Storybook component documentation
 - [ ] Performance optimization (lazy loading, virtual scrolling)
 - [ ] PWA support
 - [ ] Offline mode with cached data
@@ -38,10 +40,14 @@ _Future tasks, not yet prioritized_
 
 _Recently completed tasks (move to CHANGELOG.md after release)_
 
-- [x] Classes Detail Page Phase 1 & 2 implementation (+25 tests)
+- [x] Phase 3: API flag-based filtering (`is_choice_option`, `is_multiclass_only`)
+- [x] Timeline UI for class features (replaces double accordion)
+- [x] `useFeatureFiltering` composable (centralizes filtering logic)
+- [x] Accordion header icons with `#leading` slot
+- [x] Subclass `hit_die` now uses direct field (backend fix confirmed)
+- [x] Classes Detail Page Phase 1 & 2 implementation
 - [x] Filter persistence with IndexedDB (7 Pinia stores)
 - [x] Domain-specific test suites
-- [x] Class/Subclass detail page enhancements
 - [x] API verification proposals (7 entities)
 - [x] Documentation reorganization
 

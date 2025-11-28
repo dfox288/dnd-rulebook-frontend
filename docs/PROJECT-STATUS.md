@@ -1,6 +1,6 @@
 # Project Status
 
-**D&D 5e Compendium Frontend** | **Last Updated:** 2025-11-26
+**D&D 5e Compendium Frontend** | **Last Updated:** 2025-11-28
 
 ---
 
@@ -8,11 +8,11 @@
 
 | Metric | Count |
 |--------|-------|
-| Test Files | 120 |
-| Test Cases | ~1,588 |
-| Components | 81 |
+| Test Files | 123 |
+| Test Cases | ~1,646 |
+| Components | 82 |
 | Pages | 31 |
-| Composables | 16 |
+| Composables | 17 |
 | Pinia Stores | 8 |
 | Test Helpers | 8 |
 
@@ -51,19 +51,19 @@
 
 ## Test Suite Performance
 
-| Suite | Files | Runtime | Command |
-|-------|-------|---------|---------|
-| Spells | 9 | ~14s | `npm run test:spells` |
-| Items | 7 | ~12s | `npm run test:items` |
-| Monsters | 6 | ~12s | `npm run test:monsters` |
-| Classes | 6 | ~12s | `npm run test:classes` |
-| Races | 5 | ~10s | `npm run test:races` |
-| Backgrounds | 5 | ~10s | `npm run test:backgrounds` |
-| Feats | 4 | ~8s | `npm run test:feats` |
-| Reference | 7 | ~10s | `npm run test:reference` |
-| UI | 48 | ~52s | `npm run test:ui` |
-| Core | 15 | ~18s | `npm run test:core` |
-| **Full Suite** | 118 | ~125s | `npm run test` |
+| Suite | Files | Tests | Runtime | Command |
+|-------|-------|-------|---------|---------|
+| Spells | 9 | ~180 | ~14s | `npm run test:spells` |
+| Items | 7 | ~140 | ~12s | `npm run test:items` |
+| Monsters | 6 | ~120 | ~12s | `npm run test:monsters` |
+| Classes | 12 | ~142 | ~19s | `npm run test:classes` |
+| Races | 5 | ~100 | ~10s | `npm run test:races` |
+| Backgrounds | 5 | ~90 | ~10s | `npm run test:backgrounds` |
+| Feats | 4 | ~80 | ~8s | `npm run test:feats` |
+| Reference | 7 | ~70 | ~10s | `npm run test:reference` |
+| UI | 48 | ~500 | ~52s | `npm run test:ui` |
+| Core | 15 | ~150 | ~18s | `npm run test:core` |
+| **Full Suite** | 123 | ~1,646 | ~142s | `npm run test` |
 
 ---
 
@@ -87,13 +87,22 @@
 
 | Issue | Severity | Tracking |
 |-------|----------|----------|
-| Cleric/Paladin `hit_die: 0` in backend | 🔴 High | `docs/proposals/CLASSES-API-ENHANCEMENTS.md` |
+| Totem options missing `is_choice_option` flag | 🟡 Medium | Pattern fallback in place |
 | Sage background missing languages array | 🟡 Medium | `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` |
+
+### Resolved Issues
+| Issue | Resolution |
+|-------|------------|
+| ~~Subclass `hit_die: 0`~~ | ✅ Backend fixed, using direct field |
+| ~~Feature filtering hardcoded~~ | ✅ Now uses API flags |
 
 ---
 
 ## Recent Milestones
 
+- **2025-11-28:** Phase 3 API flag-based filtering (+31 tests, `useFeatureFiltering` composable)
+- **2025-11-28:** Timeline UI for class features (replaces double accordion)
+- **2025-11-28:** Accordion headers with leading icons
 - **2025-11-26:** Classes Detail Page Phase 1 & 2 (+25 tests, hit die fix, feature grouping)
 - **2025-11-26:** Test Helper Library (22% reduction in store tests, mock factories)
 - **2025-11-26:** Page Filter Setup Composable (removed ~140 lines duplication)
@@ -125,10 +134,14 @@
 ```
 docs/
 ├── PROJECT-STATUS.md        # This file (metrics)
+├── TODO.md                  # Active tasks
+├── LATEST-HANDOVER.md       # Most recent session
 ├── CURRENT_STATUS.md        # Detailed feature status
 ├── proposals/               # API enhancement proposals
 │   ├── SPELLS-API-ENHANCEMENTS.md
 │   ├── CLASSES-API-ENHANCEMENTS.md
+│   ├── CLASSES-DETAIL-PAGE-FRONTEND-IMPROVEMENTS.md
+│   ├── FEATURES-DISPLAY-MOCKUPS.md
 │   ├── ITEMS-API-ENHANCEMENTS.md
 │   ├── RACES-API-ENHANCEMENTS.md
 │   ├── BACKGROUNDS-API-ENHANCEMENTS.md
