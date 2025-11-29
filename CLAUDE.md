@@ -16,6 +16,42 @@ Nuxt 4.x frontend for D&D 5e Compendium. Consumes REST API from `../importer` (L
 - `docs/LATEST-HANDOVER.md` - Latest session handover
 - `docs/proposals/` - API enhancement proposals
 
+**Cross-Project Issues:** [dnd-rulebook-project](https://github.com/dfox288/dnd-rulebook-project/issues)
+
+---
+
+## Cross-Project Coordination
+
+Use GitHub Issues in `dfox288/dnd-rulebook-project` for bugs, API issues, and cross-cutting concerns.
+
+### Check Your Inbox (do this at session start)
+
+```bash
+gh issue list --repo dfox288/dnd-rulebook-project --label "frontend" --state open
+```
+
+### Create an Issue
+
+```bash
+# When you discover an API problem or cross-cutting bug
+gh issue create --repo dfox288/dnd-rulebook-project \
+  --title "Brief description" \
+  --label "backend,bug,from:frontend" \
+  --body "Details here"
+```
+
+### Labels to Use
+
+- **Assignee:** `frontend`, `backend`, `both`
+- **Type:** `bug`, `feature`, `api-contract`, `data-issue`, `performance`
+- **Source:** `from:frontend`, `from:backend`, `from:manual-testing`
+
+### Close When Fixed
+
+```bash
+gh issue close 42 --repo dfox288/dnd-rulebook-project --comment "Fixed in PR #123"
+```
+
 ---
 
 ## AI Context (llms.txt)
