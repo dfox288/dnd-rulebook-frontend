@@ -57,9 +57,12 @@ const abilityScoreIncreases = computed(() => {
       class="space-y-8"
     >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink
-        to="/races"
-        label="Back to Races"
+      <UiDetailBreadcrumb
+        list-path="/races"
+        list-label="Races"
+        :current-label="race.name"
+        :parent-path="race.parent_race ? `/races/${race.parent_race.slug}` : undefined"
+        :parent-label="race.parent_race?.name"
       />
 
       <!-- Header -->

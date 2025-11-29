@@ -65,9 +65,10 @@ const quickStatsForDisplay = computed(() => {
       class="space-y-8"
     >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink
-        to="/feats"
-        label="Back to Feats"
+      <UiDetailBreadcrumb
+        list-path="/feats"
+        list-label="Feats"
+        :current-label="entity.name"
       />
 
       <!-- Header - UPDATED -->

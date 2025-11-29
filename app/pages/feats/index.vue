@@ -108,6 +108,13 @@ const perPage = 24
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Breadcrumb -->
+    <UiDetailBreadcrumb
+      list-path="/feats"
+      list-label="Feats"
+      class="mb-6"
+    />
+
     <UiListPageHeader
       title="Feats"
       :total="totalResults"

@@ -105,9 +105,10 @@ const statsForDisplay = computed(() => {
       class="space-y-8"
     >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink
-        to="/backgrounds"
-        label="Back to Backgrounds"
+      <UiDetailBreadcrumb
+        list-path="/backgrounds"
+        list-label="Backgrounds"
+        :current-label="entity.name"
       />
 
       <!-- Header -->

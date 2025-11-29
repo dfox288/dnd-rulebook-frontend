@@ -68,9 +68,10 @@ const imagePath = computed(() => {
       class="space-y-8"
     >
       <!-- Breadcrumb -->
-      <UiBackLink
-        to="/spells"
-        label="Back to Spells"
+      <UiDetailBreadcrumb
+        list-path="/spells"
+        list-label="Spells"
+        :current-label="spell.name"
       />
 
       <!-- Header (title + badges) -->

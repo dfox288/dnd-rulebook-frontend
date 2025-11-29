@@ -84,9 +84,10 @@ const imagePath = computed(() => {
       class="space-y-8"
     >
       <!-- Breadcrumb Navigation -->
-      <UiBackLink
-        to="/items"
-        label="Back to Items"
+      <UiDetailBreadcrumb
+        list-path="/items"
+        list-label="Items"
+        :current-label="item.name"
       />
 
       <!-- Header -->

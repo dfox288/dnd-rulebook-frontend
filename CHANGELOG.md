@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Unified Breadcrumb Navigation (2025-11-29)** - Consistent breadcrumb navigation across all pages
+  - New `UiDetailBreadcrumb` component for consistent navigation
+  - Detail pages: `Home → Entity Type → Current Entity`
+  - List pages: `Home → Entity Type`
+  - Hierarchical support for classes/subclasses and races/subraces: `Home → Classes → Fighter → Battle Master`
+  - Replaces inconsistent `UiBackLink` usage with proper breadcrumb trail
+  - Accessible with `aria-label="Breadcrumb"` and `aria-current="page"`
+  - 18 new tests covering all breadcrumb scenarios
+  - Updated 7 detail pages + 7 list pages for consistency
+
 - **Comprehensive D&D 5e Rules Audit (2025-11-29)** - Full audit of all 13 base classes against official source material
   - Audited all classes against PHB, DMG, XGE, TCE, SCAG, EGtW, FToD, VRGtR
   - Created detailed backend ticket with 6 critical, 4 high, and 6 medium priority issues
