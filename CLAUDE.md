@@ -12,11 +12,10 @@ Nuxt 4.x frontend for D&D 5e Compendium. Consumes REST API from `../importer` (L
 
 **Essential Docs:**
 - `docs/PROJECT-STATUS.md` - Metrics and current status
-- `docs/TODO.md` - Active tasks
 - `docs/LATEST-HANDOVER.md` - Latest session handover
 - `docs/proposals/` - API enhancement proposals
 
-**Cross-Project Issues:** [dnd-rulebook-project](https://github.com/dfox288/dnd-rulebook-project/issues)
+**Tasks & Issues:** [GitHub Issues](https://github.com/dfox288/dnd-rulebook-project/issues) (shared with backend)
 
 ---
 
@@ -96,7 +95,7 @@ docker compose exec nuxt npm run types:sync # Sync API types from backend
 
 ```
 1. Check skills           → Use Superpower skills (NOT superpowers-laravel)
-2. Update docs/TODO.md    → Mark task "in progress"
+2. Check GitHub Issues    → /issue:inbox for assigned tasks
 3. Write tests FIRST      → Watch them fail (TDD mandatory)
 4. Write minimal code     → Make tests pass
 5. Refactor while green   → Clean up
@@ -104,7 +103,7 @@ docker compose exec nuxt npm run types:sync # Sync API types from backend
 7. Run npm run lint:fix   → Fix linting
 8. Update CHANGELOG.md    → If user-facing
 9. Commit + Push          → Clear message with Claude footer
-10. Update docs/TODO.md   → Mark complete
+10. Close GitHub Issue    → /issue:close N with resolution comment
 ```
 
 ### For Filter Changes (Additional)
@@ -371,10 +370,9 @@ tests/
 
 docs/
 ├── PROJECT-STATUS.md   # Metrics (single source of truth)
-├── CURRENT_STATUS.md   # Detailed status
 ├── proposals/          # API enhancement proposals
-├── HANDOVER-*.md       # Session handovers
-└── BLOCKED-*.md        # Blocked work
+├── handovers/          # Session handovers
+└── reference/          # Stable documentation
 ```
 
 ---
