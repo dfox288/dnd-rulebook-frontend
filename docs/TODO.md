@@ -16,7 +16,6 @@ _Tasks currently being worked on_
 
 _Prioritized tasks ready to start_
 
-- [ ] Fix Overview/Journey test failures (component mocking)
 - [ ] Request backend to flag Totem options with `is_choice_option`
 - [ ] Apply 3-view pattern to Race detail page
 - [ ] Character Builder feature (pending backend API)
@@ -41,6 +40,7 @@ _Future tasks, not yet prioritized_
 
 _Recently completed tasks (move to CHANGELOG.md after release)_
 
+- [x] Fix Overview/Journey test failures (127 detail tests now passing)
 - [x] Class detail page 3-view architecture (Overview, Journey, Reference)
 - [x] `useClassDetail` composable for shared data fetching
 - [x] 12 new class components (DetailHeader, ViewNavigation, + overview/journey)
