@@ -1,4 +1,4 @@
-import type { CharacterClass, CounterFromAPI } from '~/types/api/entities'
+import type { CharacterClass, CounterFromAPI, OptionalFeatureResource } from '~/types/api/entities'
 import type { components } from '~/types/api/generated'
 
 type ClassFeatureResource = components['schemas']['ClassFeatureResource']
@@ -118,6 +118,48 @@ export function useClassDetail(slug: Ref<string>) {
     }
     return entity.value?.traits ?? []
   })
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Optional Features (Invocations, Infusions, Disciplines, etc.)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const optionalFeatures = computed<OptionalFeatureResource[]>(() => {
+    // For subclasses, check both own and inherited optional features
+    if (isSubclass.value) {
+      const ownFeatures = (entity.value as any)?.optional_features ?? []
+      // Note: inherited_data may include optional_features in future API versions
+      return ownFeatures
+    }
+    return (entity.value as any)?.optional_features ?? []
+  })
+
+  const hasOptionalFeatures = computed(() => optionalFeatures.value.length > 0)
+
+  const optionalFeaturesByType = computed(() => {
+    const grouped = new Map<string, OptionalFeatureResource[]>()
+    for (const feature of optionalFeatures.value) {
+      const type = feature.feature_type_label
+      if (!grouped.has(type)) grouped.set(type, [])
+      grouped.get(type)!.push(feature)
+    }
+    return grouped
+  })
+
+  /**
+   * Get options available at or before a specific level
+   */
+  function getOptionsAvailableAtLevel(level: number): OptionalFeatureResource[] {
+    return optionalFeatures.value.filter(f =>
+      f.level_requirement === null || f.level_requirement <= level
+    )
+  }
+
+  /**
+   * Get options that unlock exactly at a specific level
+   */
+  function getOptionsUnlockingAtLevel(level: number): OptionalFeatureResource[] {
+    return optionalFeatures.value.filter(f => f.level_requirement === level)
+  }
 
   // ─────────────────────────────────────────────────────────────────────────────
   // Subclasses (only for base classes)
@@ -248,6 +290,13 @@ export function useClassDetail(slug: Ref<string>) {
     // Equipment & Traits
     equipment,
     traits,
+
+    // Optional Features
+    optionalFeatures,
+    hasOptionalFeatures,
+    optionalFeaturesByType,
+    getOptionsAvailableAtLevel,
+    getOptionsUnlockingAtLevel,
 
     // Subclasses
     subclasses,
