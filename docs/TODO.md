@@ -16,10 +16,49 @@ _Tasks currently being worked on_
 
 _Prioritized tasks ready to start_
 
-- [ ] Request backend to flag Totem options with `is_choice_option`
 - [ ] Apply 3-view pattern to Race detail page
 - [ ] Character Builder feature (pending backend API)
 - [ ] E2E test expansion (Playwright)
+
+---
+
+## Backend Requests (for ../importer)
+
+_Comprehensive D&D 5e rules audit completed 2025-11-29. Critical issues found._
+
+### 🔴 Critical (Game-Breaking) - Phase 1
+
+- [ ] **Rogue: Sneak Attack stuck at 9d6** for levels 10-20 (should scale to 10d6 at L19)
+- [ ] **Warlock: Zero Eldritch Invocations** - feature exists but no options to choose
+- [ ] **Wizard: Arcane Recovery at L6** - should be Level 1 per PHB p.115
+- [ ] **Monk: Four Elements missing 8 base disciplines** - subclass unplayable at L3
+- [ ] **Artificer: No Infusions available** - core L2 feature non-functional
+- [ ] **Rogue: Thief has "Spell Thief"** - Arcane Trickster feature contaminating Thief
+
+### 🟠 High Priority - Phase 2
+
+- [ ] Monk: Tool proficiency linked to "Net" weapon (data corruption)
+- [ ] Fighter: Eldritch Knight missing spell slot columns in progression table
+- [ ] Artificer: Battle Smith missing Steel Defender stat block
+- [ ] Barbarian: L20 rage should show "Unlimited" not "6"
+
+### 🟡 Missing Subclasses - Phase 3
+
+- [ ] Fighter: Echo Knight (EGtW)
+- [ ] Ranger: Drakewarden (FToD)
+- [ ] Warlock: The Undead (VRGtR)
+- [ ] Warlock: Pact of the Talisman (TCE)
+- [ ] Wizard: Chronurgy Magic (EGtW)
+- [ ] Wizard: Graviturgy Magic (EGtW)
+
+### ✅ Previously Resolved
+
+- [x] Totem options removed from feature list
+- [x] Champion L10 Fighting Styles simplified
+- [x] `archetype` field populated for all base classes
+- [x] Barbarian/Monk/Rogue progression columns fixed
+
+**Full audit report**: `docs/proposals/CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md`
 
 ---
 

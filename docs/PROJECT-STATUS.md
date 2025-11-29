@@ -85,21 +85,36 @@
 
 ## Known Issues
 
+### Critical (Backend - Game-Breaking)
+| Issue | Class | Tracking |
+|-------|-------|----------|
+| Sneak Attack stuck at 9d6 (L10-20) | Rogue | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+| Zero Eldritch Invocations available | Warlock | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+| Arcane Recovery at L6 (should be L1) | Wizard | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+| 8 base disciplines missing | Monk | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+| No Infusions available | Artificer | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+
+### Medium
 | Issue | Severity | Tracking |
 |-------|----------|----------|
-| Totem options missing `is_choice_option` flag | 🟡 Medium | Pattern fallback in place |
-| Sage background missing languages array | 🟡 Medium | `docs/proposals/BACKGROUNDS-API-ENHANCEMENTS.md` |
+| Missing subclasses (Echo Knight, Drakewarden, etc.) | 🟡 Medium | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+| Sage background missing languages array | 🟡 Medium | `BACKGROUNDS-API-ENHANCEMENTS.md` |
 
 ### Resolved Issues
 | Issue | Resolution |
 |-------|------------|
 | ~~Subclass `hit_die: 0`~~ | ✅ Backend fixed, using direct field |
 | ~~Feature filtering hardcoded~~ | ✅ Now uses API flags |
+| ~~Totem options missing flag~~ | ✅ Backend removed individual options (cleaner) |
+| ~~Missing `archetype` field~~ | ✅ Backend added field for all classes |
+| ~~Progression columns wrong~~ | ✅ Barbarian/Monk/Rogue fixed |
 
 ---
 
 ## Recent Milestones
 
+- **2025-11-29:** Comprehensive D&D 5e rules audit of all 13 classes (6 critical issues found)
+- **2025-11-29:** Frontend updated to use new `archetype` field from API
 - **2025-11-29:** Class detail page 3-view architecture (Overview/Journey/Reference)
 - **2025-11-29:** `useClassDetail` composable for shared class data fetching
 - **2025-11-29:** 12 new class components (overview + journey views)
@@ -141,9 +156,11 @@ docs/
 ├── LATEST-HANDOVER.md       # Most recent session
 ├── CURRENT_STATUS.md        # Detailed feature status
 ├── proposals/               # API enhancement proposals
+│   ├── CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md  # ⚠️ Critical issues
 │   ├── SPELLS-API-ENHANCEMENTS.md
 │   ├── CLASSES-API-ENHANCEMENTS.md
 │   ├── CLASSES-DETAIL-PAGE-FRONTEND-IMPROVEMENTS.md
+│   ├── CLASSES-DETAIL-PAGE-BACKEND-FIXES.md       # Superseded by audit
 │   ├── FEATURES-DISPLAY-MOCKUPS.md
 │   ├── ITEMS-API-ENHANCEMENTS.md
 │   ├── RACES-API-ENHANCEMENTS.md

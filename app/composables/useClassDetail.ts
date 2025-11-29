@@ -128,10 +128,15 @@ export function useClassDetail(slug: Ref<string>) {
   const subclassLevel = computed(() => entity.value?.subclass_level ?? null)
 
   const subclassName = computed(() => {
+    // Use archetype field from API (preferred)
+    if (entity.value?.archetype) {
+      return entity.value.archetype
+    }
+    // Legacy: check subclass_name for backward compatibility
     if (entity.value?.subclass_name) {
       return entity.value.subclass_name
     }
-    // Fallback patterns
+    // Fallback patterns (defensive - should no longer be needed)
     const patterns: Record<string, string> = {
       barbarian: 'Primal Path',
       bard: 'Bard College',

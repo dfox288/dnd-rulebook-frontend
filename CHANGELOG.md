@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Comprehensive D&D 5e Rules Audit (2025-11-29)** - Full audit of all 13 base classes against official source material
+  - Audited all classes against PHB, DMG, XGE, TCE, SCAG, EGtW, FToD, VRGtR
+  - Created detailed backend ticket with 6 critical, 4 high, and 6 medium priority issues
+  - Identified pattern: choice-based content (Invocations, Infusions, Disciplines) missing from import
+  - Report: `docs/proposals/CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md`
+
 - **Class Detail Page 3-View Architecture (2025-11-29)** - Complete redesign of class detail pages with modular view system
   - **Overview View** (`/classes/[slug]`) - Combat basics grid, spellcasting summary, class resources, subclass gallery
   - **Journey View** (`/classes/[slug]/journey`) - Level 1-20 timeline with milestones (subclass, ASI, capstone)
