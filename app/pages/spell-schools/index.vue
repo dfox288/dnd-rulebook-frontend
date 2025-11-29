@@ -62,38 +62,28 @@ const spellSchools = computed(() => data.value as SpellSchool[])
       </UInput>
     </div>
 
-    <UiListSkeletonCards v-if="loading" />
-
-    <UiListErrorState
-      v-else-if="error"
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Spell Schools"
-      @retry="refresh"
-    />
-
-    <UiListEmptyState
-      v-else-if="spellSchools.length === 0"
-      entity-name="spell schools"
+      :empty="spellSchools.length === 0"
+      :meta="{ from: 1, to: totalResults, total: totalResults, current_page: 1, last_page: 1, per_page: totalResults }"
+      :total="totalResults"
+      entity-name="spell school"
+      entity-name-plural="Spell Schools"
       :has-filters="hasActiveFilters"
+      :current-page="1"
+      :per-page="totalResults"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <div v-else>
-      <UiListResultsCount
-        :from="1"
-        :to="totalResults"
-        :total="totalResults"
-        entity-name="spell school"
-      />
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    >
+      <template #grid>
         <SpellSchoolCard
           v-for="spellSchool in spellSchools"
           :key="spellSchool.id"
           :spell-school="spellSchool"
         />
-      </div>
-    </div>
+      </template>
+    </UiListStates>
 
     <UiBackLink />
     <JsonDebugPanel

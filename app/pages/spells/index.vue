@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { SpellSchool, Spell, CharacterClass, DamageType, AbilityScore } from '~/types'
 import { useSpellFiltersStore } from '~/stores/spellFilters'
+import { SPELL_LEVEL_OPTIONS, SPELL_TAG_OPTIONS } from '~/config/filterOptions'
 
 // Use filter store instead of local refs
 const store = useSpellFiltersStore()
@@ -44,23 +45,8 @@ const { data: damageTypes } = useReferenceData<DamageType>('/damage-types')
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
 
 // Filter options
-const levelOptions = [
-  { label: 'Cantrip', value: '0' },
-  { label: '1st Level', value: '1' },
-  { label: '2nd Level', value: '2' },
-  { label: '3rd Level', value: '3' },
-  { label: '4th Level', value: '4' },
-  { label: '5th Level', value: '5' },
-  { label: '6th Level', value: '6' },
-  { label: '7th Level', value: '7' },
-  { label: '8th Level', value: '8' },
-  { label: '9th Level', value: '9' }
-]
-
-const tagOptions = [
-  { label: 'Ritual Caster', value: 'ritual-caster' },
-  { label: 'Touch Spells', value: 'touch-spells' }
-]
+const levelOptions = SPELL_LEVEL_OPTIONS
+const tagOptions = SPELL_TAG_OPTIONS
 
 const schoolOptions = computed(() => {
   const options: Array<{ label: string, value: number | null }> = [{ label: 'All Schools', value: null }]

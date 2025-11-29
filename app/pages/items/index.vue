@@ -3,6 +3,16 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Item, ItemType, DamageType, Rarity } from '~/types'
 import { useItemFiltersStore } from '~/stores/itemFilters'
+import {
+  DAMAGE_DICE_OPTIONS,
+  VERSATILE_DAMAGE_OPTIONS,
+  RECHARGE_TIMING_OPTIONS,
+  STRENGTH_REQ_OPTIONS,
+  MAGIC_FILTER_OPTIONS,
+  ITEM_RANGE_OPTIONS,
+  COST_RANGE_OPTIONS,
+  ITEM_AC_RANGE_OPTIONS
+} from '~/config/filterOptions'
 
 // Use filter store instead of local refs
 const store = useItemFiltersStore()
@@ -38,58 +48,14 @@ const sortValue = useSortValue(sortBy, sortDirection)
 // Source filter options (still need the composable for options)
 const { sourceOptions, getSourceName } = useSourceFilter()
 
-// Cost filter
-const costRangeOptions = [
-  { label: 'All Prices', value: null },
-  { label: 'Under 1 gp', value: 'under-100' },
-  { label: '1-10 gp', value: '100-1000' },
-  { label: '10-100 gp', value: '1000-10000' },
-  { label: '100-1000 gp', value: '10000-100000' },
-  { label: '1000+ gp', value: 'over-100000' }
-]
-
-// AC filter
-const acRangeOptions = [
-  { label: 'All AC', value: null },
-  { label: 'Light (11-14)', value: '11-14' },
-  { label: 'Medium (15-16)', value: '15-16' },
-  { label: 'Heavy (17+)', value: '17-21' }
-]
-
-// Weapon/Armor shopping filter options
-const strengthReqOptions = [
-  { label: 'Any', value: null },
-  { label: 'STR 13+', value: '13' },
-  { label: 'STR 15+', value: '15' }
-]
-
-const damageDiceOptions = [
-  { label: '1d4', value: '1d4' },
-  { label: '1d6', value: '1d6' },
-  { label: '1d8', value: '1d8' },
-  { label: '1d10', value: '1d10' },
-  { label: '1d12', value: '1d12' },
-  { label: '2d6', value: '2d6' }
-]
-
-const versatileDamageOptions = [
-  { label: '1d8', value: '1d8' },
-  { label: '1d10', value: '1d10' },
-  { label: '1d12', value: '1d12' }
-]
-
-const rangeOptions = [
-  { label: 'Any', value: null },
-  { label: 'Short (<30ft)', value: 'under-30' },
-  { label: 'Medium (30-80ft)', value: '30-80' },
-  { label: 'Long (80-150ft)', value: '80-150' },
-  { label: 'Very Long (>150ft)', value: 'over-150' }
-]
-
-const rechargeTimingOptions = [
-  { label: 'Dawn', value: 'dawn' },
-  { label: 'Dusk', value: 'dusk' }
-]
+// Filter options from centralized config
+const costRangeOptions = COST_RANGE_OPTIONS
+const acRangeOptions = ITEM_AC_RANGE_OPTIONS
+const strengthReqOptions = STRENGTH_REQ_OPTIONS
+const damageDiceOptions = DAMAGE_DICE_OPTIONS
+const versatileDamageOptions = VERSATILE_DAMAGE_OPTIONS
+const rangeOptions = ITEM_RANGE_OPTIONS
+const rechargeTimingOptions = RECHARGE_TIMING_OPTIONS
 
 // Fetch item types for filter options (using composable)
 const { data: itemTypes } = useReferenceData<ItemType>('/item-types')
@@ -109,12 +75,8 @@ const { data: itemProperties } = useReferenceData<{
 // Fetch rarities for filter options
 const { data: rarities } = useReferenceData<Rarity>('/rarities')
 
-// Magic filter options
-const magicOptions = [
-  { label: 'All Items', value: null },
-  { label: 'Magic Items', value: 'true' },
-  { label: 'Non-Magic Items', value: 'false' }
-]
+// Magic filter options from centralized config
+const magicOptions = MAGIC_FILTER_OPTIONS
 
 // Item type filter options
 const typeOptions = computed(() => {

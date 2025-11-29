@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Monster, Size, MonsterType, ArmorType, Alignment } from '~/types'
 import { useMonsterFiltersStore } from '~/stores/monsterFilters'
+import { CR_OPTIONS, MOVEMENT_TYPE_OPTIONS, MONSTER_AC_RANGE_OPTIONS, MONSTER_HP_RANGE_OPTIONS } from '~/config/filterOptions'
 
 // Initialize store and URL sync
 const store = useMonsterFiltersStore()
@@ -35,22 +36,9 @@ const {
 const sortValue = useSortValue(sortBy, sortDirection)
 const { sourceOptions, getSourceName } = useSourceFilter()
 
-// AC filter options
-const acRangeOptions = [
-  { label: 'All AC', value: null },
-  { label: 'Low (10-14)', value: '10-14' },
-  { label: 'Medium (15-17)', value: '15-17' },
-  { label: 'High (18+)', value: '18-25' }
-]
-
-// HP filter options
-const hpRangeOptions = [
-  { label: 'All HP', value: null },
-  { label: 'Low (1-50)', value: '1-50' },
-  { label: 'Medium (51-150)', value: '51-150' },
-  { label: 'High (151-300)', value: '151-300' },
-  { label: 'Very High (301+)', value: '301-600' }
-]
+// Filter options from centralized config
+const acRangeOptions = MONSTER_AC_RANGE_OPTIONS
+const hpRangeOptions = MONSTER_HP_RANGE_OPTIONS
 
 // Fetch reference data for filters
 const { data: sizes } = useReferenceData<Size>('/sizes')
@@ -58,52 +46,9 @@ const { data: armorTypes } = useReferenceData<ArmorType>('/armor-types')
 const { data: monsterTypes } = useReferenceData<MonsterType>('/monster-types')
 const { data: alignments } = useReferenceData<Alignment>('/alignments')
 
-// Movement type options for multiselect
-const movementTypeOptions = [
-  { label: 'Fly', value: 'fly' },
-  { label: 'Swim', value: 'swim' },
-  { label: 'Burrow', value: 'burrow' },
-  { label: 'Climb', value: 'climb' },
-  { label: 'Hover', value: 'hover' }
-]
-
-// CR multiselect options (common D&D 5e CR values)
-const crOptions = [
-  { label: 'CR 0', value: '0' },
-  { label: 'CR 1/8', value: '0.125' },
-  { label: 'CR 1/4', value: '0.25' },
-  { label: 'CR 1/2', value: '0.5' },
-  { label: 'CR 1', value: '1' },
-  { label: 'CR 2', value: '2' },
-  { label: 'CR 3', value: '3' },
-  { label: 'CR 4', value: '4' },
-  { label: 'CR 5', value: '5' },
-  { label: 'CR 6', value: '6' },
-  { label: 'CR 7', value: '7' },
-  { label: 'CR 8', value: '8' },
-  { label: 'CR 9', value: '9' },
-  { label: 'CR 10', value: '10' },
-  { label: 'CR 11', value: '11' },
-  { label: 'CR 12', value: '12' },
-  { label: 'CR 13', value: '13' },
-  { label: 'CR 14', value: '14' },
-  { label: 'CR 15', value: '15' },
-  { label: 'CR 16', value: '16' },
-  { label: 'CR 17', value: '17' },
-  { label: 'CR 18', value: '18' },
-  { label: 'CR 19', value: '19' },
-  { label: 'CR 20', value: '20' },
-  { label: 'CR 21', value: '21' },
-  { label: 'CR 22', value: '22' },
-  { label: 'CR 23', value: '23' },
-  { label: 'CR 24', value: '24' },
-  { label: 'CR 25', value: '25' },
-  { label: 'CR 26', value: '26' },
-  { label: 'CR 27', value: '27' },
-  { label: 'CR 28', value: '28' },
-  { label: 'CR 29', value: '29' },
-  { label: 'CR 30', value: '30' }
-]
+// Filter options from centralized config
+const movementTypeOptions = MOVEMENT_TYPE_OPTIONS
+const crOptions = CR_OPTIONS
 
 // Size options from reference data
 const sizeOptions = computed(() =>

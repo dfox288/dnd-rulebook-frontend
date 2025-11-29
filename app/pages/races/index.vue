@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Race, Size, AbilityScore } from '~/types'
 import { useRaceFiltersStore } from '~/stores/raceFilters'
+import { SPEED_RANGE_OPTIONS } from '~/config/filterOptions'
 
 // Use filter store instead of local refs
 const store = useRaceFiltersStore()
@@ -36,13 +37,8 @@ const { data: baseRaces } = useReferenceData<Race>('/races', {
 })
 const { data: abilityScores } = useReferenceData<AbilityScore>('/ability-scores')
 
-// Filter options
-const speedRangeOptions = [
-  { label: 'All Speeds', value: null },
-  { label: 'Slow (≤25 ft)', value: 'slow' },
-  { label: '30 ft', value: '30' },
-  { label: 'Fast (≥35 ft)', value: 'fast' }
-]
+// Filter options from centralized config
+const speedRangeOptions = SPEED_RANGE_OPTIONS
 
 const sizeOptions = computed(() => {
   const options: Array<{ label: string, value: string }> = [{ label: 'All Sizes', value: '' }]

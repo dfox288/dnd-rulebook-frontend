@@ -64,44 +64,28 @@ const sources = computed(() => data.value as Source[])
       </UInput>
     </div>
 
-    <!-- Loading State -->
-    <UiListSkeletonCards v-if="loading" />
-
-    <!-- Error State -->
-    <UiListErrorState
-      v-else-if="error"
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Source Books"
-      @retry="refresh"
-    />
-
-    <!-- Empty State -->
-    <UiListEmptyState
-      v-else-if="sources.length === 0"
-      entity-name="source books"
+      :empty="sources.length === 0"
+      :meta="{ from: 1, to: totalResults, total: totalResults, current_page: 1, last_page: 1, per_page: totalResults }"
+      :total="totalResults"
+      entity-name="source book"
+      entity-name-plural="Source Books"
       :has-filters="hasActiveFilters"
+      :current-page="1"
+      :per-page="totalResults"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <!-- Results -->
-    <div v-else>
-      <!-- Results count -->
-      <UiListResultsCount
-        :from="1"
-        :to="totalResults"
-        :total="totalResults"
-        entity-name="source book"
-      />
-
-      <!-- Sources Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    >
+      <template #grid>
         <SourceCard
           v-for="source in sources"
           :key="source.id"
           :source="source"
         />
-      </div>
-    </div>
+      </template>
+    </UiListStates>
 
     <!-- Back to Home -->
     <UiBackLink />

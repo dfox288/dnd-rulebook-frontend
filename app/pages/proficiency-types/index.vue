@@ -62,38 +62,28 @@ const proficiencyTypes = computed(() => data.value as ProficiencyType[])
       </UInput>
     </div>
 
-    <UiListSkeletonCards v-if="loading" />
-
-    <UiListErrorState
-      v-else-if="error"
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Proficiency Types"
-      @retry="refresh"
-    />
-
-    <UiListEmptyState
-      v-else-if="proficiencyTypes.length === 0"
-      entity-name="proficiency types"
+      :empty="proficiencyTypes.length === 0"
+      :meta="{ from: 1, to: totalResults, total: totalResults, current_page: 1, last_page: 1, per_page: totalResults }"
+      :total="totalResults"
+      entity-name="proficiency type"
+      entity-name-plural="Proficiency Types"
       :has-filters="hasActiveFilters"
+      :current-page="1"
+      :per-page="totalResults"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <div v-else>
-      <UiListResultsCount
-        :from="1"
-        :to="totalResults"
-        :total="totalResults"
-        entity-name="proficiency type"
-      />
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    >
+      <template #grid>
         <ProficiencyTypeCard
           v-for="proficiencyType in proficiencyTypes"
           :key="proficiencyType.id"
           :proficiency-type="proficiencyType"
         />
-      </div>
-    </div>
+      </template>
+    </UiListStates>
 
     <UiBackLink />
     <JsonDebugPanel

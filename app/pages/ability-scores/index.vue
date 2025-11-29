@@ -64,44 +64,28 @@ const abilityScores = computed(() => data.value as AbilityScore[])
       </UInput>
     </div>
 
-    <!-- Loading State -->
-    <UiListSkeletonCards v-if="loading" />
-
-    <!-- Error State -->
-    <UiListErrorState
-      v-else-if="error"
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Ability Scores"
-      @retry="refresh"
-    />
-
-    <!-- Empty State -->
-    <UiListEmptyState
-      v-else-if="abilityScores.length === 0"
-      entity-name="ability scores"
+      :empty="abilityScores.length === 0"
+      :meta="{ from: 1, to: totalResults, total: totalResults, current_page: 1, last_page: 1, per_page: totalResults }"
+      :total="totalResults"
+      entity-name="ability score"
+      entity-name-plural="Ability Scores"
       :has-filters="hasActiveFilters"
+      :current-page="1"
+      :per-page="totalResults"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <!-- Results -->
-    <div v-else>
-      <!-- Results count -->
-      <UiListResultsCount
-        :from="1"
-        :to="totalResults"
-        :total="totalResults"
-        entity-name="ability score"
-      />
-
-      <!-- Ability Scores Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    >
+      <template #grid>
         <AbilityScoreCard
           v-for="abilityScore in abilityScores"
           :key="abilityScore.id"
           :ability-score="abilityScore"
         />
-      </div>
-    </div>
+      </template>
+    </UiListStates>
 
     <!-- Back to Home -->
     <UiBackLink />

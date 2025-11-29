@@ -64,44 +64,28 @@ const languages = computed(() => data.value as Language[])
       </UInput>
     </div>
 
-    <!-- Loading State -->
-    <UiListSkeletonCards v-if="loading" />
-
-    <!-- Error State -->
-    <UiListErrorState
-      v-else-if="error"
+    <UiListStates
+      :loading="loading"
       :error="error"
-      entity-name="Languages"
-      @retry="refresh"
-    />
-
-    <!-- Empty State -->
-    <UiListEmptyState
-      v-else-if="languages.length === 0"
-      entity-name="languages"
+      :empty="languages.length === 0"
+      :meta="{ from: 1, to: totalResults, total: totalResults, current_page: 1, last_page: 1, per_page: totalResults }"
+      :total="totalResults"
+      entity-name="language"
+      entity-name-plural="Languages"
       :has-filters="hasActiveFilters"
+      :current-page="1"
+      :per-page="totalResults"
+      @retry="refresh"
       @clear-filters="clearFilters"
-    />
-
-    <!-- Results -->
-    <div v-else>
-      <!-- Results count -->
-      <UiListResultsCount
-        :from="1"
-        :to="totalResults"
-        :total="totalResults"
-        entity-name="language"
-      />
-
-      <!-- Languages Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    >
+      <template #grid>
         <LanguageCard
           v-for="language in languages"
           :key="language.id"
           :language="language"
         />
-      </div>
-    </div>
+      </template>
+    </UiListStates>
 
     <!-- Back to Home -->
     <UiBackLink />
