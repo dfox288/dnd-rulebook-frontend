@@ -120,7 +120,7 @@ describe('UiAccordionTraitsList', () => {
         id: 1,
         name: 'Test Trait',
         description: 'A trait with tables',
-        random_tables: [
+        data_tables: [
           {
             id: 1,
             table_name: 'Test Table',
@@ -157,7 +157,7 @@ describe('UiAccordionTraitsList', () => {
         id: 1,
         name: 'Test Trait',
         description: 'A trait without tables',
-        random_tables: []
+        data_tables: []
       }
     ]
 
