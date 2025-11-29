@@ -25,6 +25,9 @@ export interface UseEntityListConfig {
   /** Computed callback that builds custom query params */
   queryBuilder: ComputedRef<Record<string, unknown>>
 
+  /** External searchQuery ref from store (if provided, will be used instead of internal ref) */
+  searchQuery?: Ref<string>
+
   /** Items per page (default: 24) */
   perPage?: number
 
@@ -101,12 +104,18 @@ export function useEntityList(config: UseEntityListConfig): UseEntityListReturn 
   // Initialize from route query params (if enabled)
   const shouldInitFromRoute = config.initialRoute !== false
 
-  // Base state - managed by composable
-  const searchQuery = ref(
+  // Use external searchQuery if provided, otherwise create internal one
+  const searchQuery = config.searchQuery ?? ref(
     shouldInitFromRoute && route.query.q
       ? (route.query.q as string)
       : ''
   )
+
+  // If external searchQuery provided and route has q param, sync it on mount
+  if (config.searchQuery && shouldInitFromRoute && route.query.q) {
+    config.searchQuery.value = route.query.q as string
+  }
+
   const currentPage = ref(
     shouldInitFromRoute && route.query.page
       ? Number(route.query.page)
