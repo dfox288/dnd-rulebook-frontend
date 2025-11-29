@@ -33,7 +33,7 @@ describe('Feats Page - Filter Layout', () => {
       await wrapper.vm.$nextTick()
 
       // Check "Active filters:" label (not old "Active:" label)
-      let activeFiltersSection = wrapper.find('.flex.flex-wrap.items-center')
+      const activeFiltersSection = wrapper.find('.flex.flex-wrap.items-center')
       expect(activeFiltersSection.exists()).toBe(true)
       expect(activeFiltersSection.text()).toContain('Active filters:')
       expect(activeFiltersSection.text()).not.toContain('Active:')
@@ -42,7 +42,7 @@ describe('Feats Page - Filter Layout', () => {
       const activeFiltersRow = wrapper.find('.flex.flex-wrap.items-center.justify-between')
       expect(activeFiltersRow.exists()).toBe(true)
       const buttons = activeFiltersRow.findAll('button')
-      let clearButton = buttons.find(btn => btn.text().includes('Clear filters'))
+      const clearButton = buttons.find(btn => btn.text().includes('Clear filters'))
       expect(clearButton).toBeDefined()
       expect(clearButton!.text()).toContain('Clear filters')
 
@@ -58,7 +58,7 @@ describe('Feats Page - Filter Layout', () => {
       expect(justifyEndSection.exists()).toBe(false)
 
       // Clear button should disappear (no active filters)
-      let clearButtons = wrapper.findAll('button').filter(btn => btn.text().includes('Clear filters'))
+      const clearButtons = wrapper.findAll('button').filter(btn => btn.text().includes('Clear filters'))
       expect(clearButtons.length).toBe(0)
     })
   })
@@ -74,7 +74,7 @@ describe('Feats Page - Filter Layout', () => {
       await wrapper.vm.$nextTick()
 
       // Check prerequisite chip
-      let prereqChips = wrapper.findAll('button').filter(btn =>
+      const prereqChips = wrapper.findAll('button').filter(btn =>
         btn.text().includes('Has Prerequisites') && btn.text().includes('✕')
       )
       expect(prereqChips.length).toBeGreaterThan(0)

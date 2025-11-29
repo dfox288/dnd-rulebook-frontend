@@ -67,7 +67,7 @@ describe('Classes Page - Filter Layout', () => {
       await wrapper.vm.$nextTick()
 
       // Check Base Class chip
-      let baseClassChip = wrapper.find('[data-testid="is-base-class-filter-chip"]')
+      const baseClassChip = wrapper.find('[data-testid="is-base-class-filter-chip"]')
       expect(baseClassChip.exists()).toBe(true)
       expect(baseClassChip.text()).toContain('Base Class')
       expect(baseClassChip.text()).toContain('Yes')

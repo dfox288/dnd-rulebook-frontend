@@ -146,8 +146,7 @@ describe('Items Page - Filter Layout', () => {
       expect(chips.length).toBeGreaterThan(0)
     })
 
-    // TODO: Fix this test - chip click event handling changed with Pinia store migration
-    it.skip('clicking chip clears that specific filter', async () => {
+    it('clicking chip clears that specific filter', async () => {
       const wrapper = await mountSuspended(ItemsPage)
 
       const component = wrapper.vm as any
@@ -158,9 +157,9 @@ describe('Items Page - Filter Layout', () => {
       component.selectedRarity = 'rare'
       await wrapper.vm.$nextTick()
 
-      // Find the rarity chip - look for the specific chip with "Rare" text
+      // Find the rarity chip - format is "Rarity: rare" with ✕
       const chip = wrapper.findAll('button').find(btn =>
-        btn.text().includes('Rare') && !btn.text().includes('Rarities')
+        btn.text().includes('Rarity:') && btn.text().includes('rare') && btn.text().includes('✕')
       )
       expect(chip).toBeDefined()
 
