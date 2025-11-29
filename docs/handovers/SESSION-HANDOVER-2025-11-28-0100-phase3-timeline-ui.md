@@ -1,176 +1,165 @@
-# Session Handover: Class Detail Page 3-View Architecture
+# Session Handover: Classes API Comprehensive D&D 5e Rules Audit
 
 **Date:** 2025-11-29
-**Status:** ✅ Complete - 3-view architecture implemented, 20 files changed, 4,119 lines added
+**Status:** Complete - Audit finished, backend ticket created
 **Branch:** `main`
 
 ---
 
 ## What Was Accomplished
 
-Complete redesign of the Classes detail page from a single monolithic page to a modular 3-view architecture. Each view serves different user needs (quick reference, level progression, complete lookup).
+Conducted a comprehensive D&D 5e rules accuracy audit of all 13 base classes and their subclasses. Each class was audited by a specialized subagent against official source material (PHB, DMG, XGE, TCE, SCAG, EGtW, FToD, VRGtR).
 
-### Architecture Overview
+### Session Activities
 
-| View | Route | Purpose | User Need |
-|------|-------|---------|-----------|
-| **Overview** | `/classes/[slug]` | Combat stats, spellcasting, resources | Quick reference during play |
-| **Journey** | `/classes/[slug]/journey` | Level 1-20 timeline with milestones | Character planning |
-| **Reference** | `/classes/[slug]/reference` | Full progression table, all features | Deep rule lookup |
-
-### New Components Created
-
-**Shared Components:**
-- `ClassDetailHeader.vue` - Breadcrumb, badges, image display
-- `ClassViewNavigation.vue` - Tab navigation between 3 views
-
-**Overview Components (5):**
-- `CombatBasicsGrid.vue` - HP, saves, armor, weapons grid
-- `SpellcastingCard.vue` - Spellcasting summary for casters
-- `ResourcesCard.vue` - Ki, Rage, etc. with progression
-- `FeaturesPreview.vue` - Key features with link to Journey
-
-**Journey Components (5):**
-- `Timeline.vue` - Level 1-20 vertical timeline
-- `LevelNode.vue` - Individual level marker
-- `MilestoneBadge.vue` - Subclass, ASI, Capstone markers
-- `SpellSlotIndicator.vue` - Spell slot display
-- `ParentToggle.vue` - Toggle parent class features for subclasses
-
-### New Composable
-
-`useClassDetail.ts` - Shared data fetching for all 3 views:
-- Single API call, shared across views
-- Computed helpers: `isSubclass`, `isCaster`, `hitPoints`, etc.
-- Correctly handles counter data structure from API
+1. **Reviewed existing backend proposals** - Confirmed previously reported issues were resolved
+2. **Verified API changes** - Confirmed `archetype`, `is_choice_option`, progression columns all working
+3. **Updated frontend** - Modified `useClassDetail.ts` to use new `archetype` field
+4. **Launched 13 parallel audit agents** - One per base class for thorough verification
+5. **Compiled findings** - Created comprehensive backend ticket with prioritized fixes
+6. **Updated documentation** - TODO.md, PROJECT-STATUS.md, handover
 
 ---
 
-## Key Technical Decision: Counter Data Structure
+## Audit Results Summary
 
-**Problem:** Generated TypeScript types didn't match actual API response.
+### Class Scores
 
-```typescript
-// Generated types expected:
-{ counter_name: string, level: number, counter_value: number }
+| Class | Score | Status |
+|-------|-------|--------|
+| Cleric | 10/10 | Perfect |
+| Paladin | 10/10 | Perfect |
+| Barbarian | 9.5/10 | Excellent |
+| Bard | 9.5/10 | Excellent |
+| Druid | 9.5/10 | Excellent |
+| Ranger | 8.5/10 | Very Good |
+| Sorcerer | 8.5/10 | Very Good |
+| Wizard | 7.5/10 | Needs Fix |
+| Artificer | 7.5/10 | Needs Fix |
+| Fighter | 7/10 | Needs Fix |
+| Monk | 6.5/10 | Needs Fix |
+| Warlock | 6/10 | Broken |
+| Rogue | 5/10 | Broken |
 
-// API actually returns:
-{ name: string, reset_timing: string, progression: Array<{ level: number, value: number }> }
+### Critical Issues Discovered
+
+| Issue | Class | Impact |
+|-------|-------|--------|
+| Sneak Attack stuck at 9d6 (L10-20) | Rogue | High-level rogues underpowered |
+| Zero Eldritch Invocations | Warlock | Class non-functional |
+| Arcane Recovery at L6 (should be L1) | Wizard | 5 levels without core feature |
+| 8 base disciplines missing | Monk (Four Elements) | Subclass unplayable at L3 |
+| No Infusions available | Artificer | Core L2 feature broken |
+| Thief has Spell Thief feature | Rogue (Thief) | Data contamination |
+
+### Missing Subclasses
+
+- Fighter: Echo Knight (EGtW)
+- Ranger: Drakewarden (FToD)
+- Warlock: The Undead (VRGtR), Pact of the Talisman (TCE)
+- Wizard: Chronurgy Magic, Graviturgy Magic (EGtW)
+
+---
+
+## Files Changed
+
+### New Files
+```
+docs/proposals/CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md  (comprehensive backend ticket)
 ```
 
-**Solution:** Created `CounterFromAPI` interface in components that need it, with proper field access. This is a known pattern in the codebase where generated types lag behind API changes.
+### Modified Files
+```
+app/composables/useClassDetail.ts                        (use archetype field)
+docs/TODO.md                                             (prioritized backend requests)
+docs/LATEST-HANDOVER.md                                  (this file)
+docs/PROJECT-STATUS.md                                   (audit findings)
+docs/proposals/CLASSES-DETAIL-PAGE-BACKEND-FIXES.md      (marked superseded)
+```
+
+---
+
+## Frontend Code Change
+
+Updated `useClassDetail.ts` to use the new `archetype` field:
+
+```typescript
+const subclassName = computed(() => {
+  // Use archetype field from API (preferred)
+  if (entity.value?.archetype) {
+    return entity.value.archetype
+  }
+  // Legacy fallback chain...
+})
+```
+
+---
+
+## Backend Ticket Created
+
+**File:** `docs/proposals/CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md`
+
+Includes:
+- 6 Critical issues with PHB references and fix requirements
+- 4 High priority issues
+- 6 Missing subclasses with expected features
+- Pattern analysis (choice-based content import bug)
+- SQL verification queries
+- 4-phase implementation priority
 
 ---
 
 ## Test Status
 
-| File | Tests | Status |
-|------|-------|--------|
-| `overview.test.ts` | 28 | ✅ Passing |
-| `journey.test.ts` | 38 | ✅ Passing |
-| `reference.test.ts` | 61 | ✅ Passing |
-| **Total** | **127** | ✅ All passing |
-
-**Test Pattern Used:** Mock `vue-router` at module level, use conditional assertions for loaded data, focus on structure verification rather than deep component testing.
-
----
-
-## Files Changed (20 total)
-
-### New Files
-```
-app/composables/useClassDetail.ts                     (130 lines)
-app/components/class/DetailHeader.vue                 (85 lines)
-app/components/class/ViewNavigation.vue               (60 lines)
-app/components/class/overview/CombatBasicsGrid.vue    (145 lines)
-app/components/class/overview/FeaturesPreview.vue     (95 lines)
-app/components/class/overview/ResourcesCard.vue       (134 lines)
-app/components/class/overview/SpellcastingCard.vue    (160 lines)
-app/components/class/journey/Timeline.vue             (180 lines)
-app/components/class/journey/LevelNode.vue            (120 lines)
-app/components/class/journey/MilestoneBadge.vue       (65 lines)
-app/components/class/journey/SpellSlotIndicator.vue   (70 lines)
-app/components/class/journey/ParentToggle.vue         (45 lines)
-app/pages/classes/[slug]/index.vue                    (200 lines)
-app/pages/classes/[slug]/journey.vue                  (305 lines)
-app/pages/classes/[slug]/reference.vue                (284 lines)
-docs/plans/2025-11-28-class-detail-page-redesign.md   (design doc)
-tests/pages/classes/detail/overview.test.ts           (initial tests)
-tests/pages/classes/detail/journey.test.ts            (initial tests)
-tests/pages/classes/detail/reference.test.ts          (61 assertions)
-```
-
-### Deleted Files
-```
-app/pages/classes/[slug].vue   (replaced by route folder)
-```
-
----
-
-## Design Document
-
-Comprehensive design plan saved at:
-`docs/plans/2025-11-28-class-detail-page-redesign.md`
-
-Includes:
-- User persona analysis (casual player, optimizer, DM)
-- View-by-view feature breakdown
-- Component architecture diagrams
-- API data mapping
-- Implementation phases
-
----
-
-## Verification Commands
-
 ```bash
-# Classes tests only
+# All classes tests passing
 docker compose exec nuxt npm run test:classes
-
-# Full suite
-docker compose exec nuxt npm run test
-
-# View in browser
-open http://localhost:3000/classes/fighter
-open http://localhost:3000/classes/fighter/journey
-open http://localhost:3000/classes/fighter/reference
-open http://localhost:3000/classes/champion  # Subclass example
-```
-
----
-
-## Commits This Session
-
-```
-4fc74f1 fix(tests): Fix Overview and Journey view tests
-c4fce15 docs: Update handover and project docs for 3-view architecture
-2ea3643 feat(classes): Redesign detail page with 3-view architecture
+# 269 tests passing (15 files)
 ```
 
 ---
 
 ## Next Session Priorities
 
-1. **Subclass Journey refinement** - Parent feature interleaving could be smoother
-2. **Mobile responsiveness** - Timeline may need horizontal scrolling on small screens
-3. **Apply pattern to Races** - Similar 3-view architecture could benefit races
-4. **Request backend Totem flags** - `is_choice_option` for Totem Warrior options
+### Backend Team
+1. Fix Rogue Sneak Attack progression (critical)
+2. Add Eldritch Invocations to Warlock (critical)
+3. Move Wizard Arcane Recovery to L1 (critical)
+4. Add Four Elements base disciplines (critical)
+5. Add Artificer Infusions (critical)
+
+### Frontend Team
+1. Apply 3-view pattern to Race detail page
+2. Consider displaying invocations/infusions once backend fixes them
+3. Mobile responsiveness for Timeline component
 
 ---
 
-## Known Issues
+## Key Insight
 
-| Issue | Severity | Notes |
-|-------|----------|-------|
-| Counter types mismatch | 🟢 Low | Workaround in place (`CounterFromAPI` interface) |
-| Totem options not flagged | 🟡 Medium | Pattern fallback still active, needs backend flag |
+**Pattern Identified:** The critical issues share a common root cause - **choice-based content** (Invocations, Infusions, Elemental Disciplines) is completely missing from the API. This suggests the import process has a bug handling features with many selectable options stored in relationship tables. Fixing this underlying issue could resolve multiple problems at once.
 
 ---
 
-## What Works Well
+## Verification Commands
 
-- **Clean separation** - Each view has single responsibility
-- **Shared data layer** - `useClassDetail` prevents duplicate API calls
-- **Progressive disclosure** - Overview → Journey → Reference flow
-- **Milestone markers** - Visual indicators for important levels
-- **Subclass support** - Parent feature toggle, inherited data display
+```bash
+# Run classes tests
+docker compose exec nuxt npm run test:classes
+
+# Check specific class API
+curl -s "http://localhost:8080/api/v1/classes/rogue" | jq '.data.computed.progression_table.rows[] | {level, sneak_attack}'
+
+# Check Warlock invocations
+curl -s "http://localhost:8080/api/v1/classes/warlock" | jq '[.data.features[] | select(.feature_name == "Eldritch Invocations")]'
+```
+
+---
+
+## Documentation Updated
+
+- [x] `docs/TODO.md` - Added prioritized backend requests (Phase 1-3)
+- [x] `docs/PROJECT-STATUS.md` - Added audit milestone and known issues
+- [x] `docs/LATEST-HANDOVER.md` - This file
+- [x] `docs/proposals/CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` - Full audit report
+- [x] `docs/proposals/CLASSES-DETAIL-PAGE-BACKEND-FIXES.md` - Marked as superseded
