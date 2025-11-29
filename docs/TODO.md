@@ -8,7 +8,7 @@ Active tasks and priorities for this project.
 
 _Tasks currently being worked on_
 
-- [ ] Fix remaining TypeScript errors (~28) - see LATEST-HANDOVER.md for details
+_(none)_
 
 ---
 
@@ -79,6 +79,15 @@ _Future tasks, not yet prioritized_
 
 _Recently completed tasks (move to CHANGELOG.md after release)_
 
+- [x] **Fix all 28 TypeScript errors** (zero remaining)
+  - Extended CharacterClass type (hit_die, is_base_class, counters, archetype)
+  - Extended CounterFromAPI type for grouped counter structure
+  - Fixed transform function return type in useMeilisearchFilters
+  - Fixed skill.code → skill.slug in backgrounds page
+  - Changed hit dice filter from number[] to string[]
+  - Fixed Source type imports in SourceCard component
+  - Added v-if guards for optional Source fields
+  - Extracted alert handler to script in spell-list tool
 - [x] Reference page breadcrumbs (10 pages)
 - [x] Filter factory generic typing (root cause of most TS errors)
 - [x] Type extensions: Monster.spellcasting, Source.edition

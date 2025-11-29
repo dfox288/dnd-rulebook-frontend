@@ -36,7 +36,7 @@ const skillOptions = computed(() => {
   if (!skills.value) return []
   return skills.value.map(skill => ({
     label: skill.name,
-    value: skill.code
+    value: skill.slug
   }))
 })
 
@@ -91,7 +91,7 @@ const {
 const backgrounds = computed(() => data.value as Background[])
 
 // Helper functions for filter chips
-const getSkillName = (code: string) => skills.value?.find(s => s.code === code)?.name || code
+const getSkillName = (slug: string) => skills.value?.find(s => s.slug === slug)?.name || slug
 const getToolTypeName = (value: string) => toolTypeOptions.find(t => t.value === value)?.label || value
 
 // Active filter count (use store getter)

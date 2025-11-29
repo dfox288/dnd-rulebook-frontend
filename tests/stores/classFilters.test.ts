@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe } from 'vitest'
 import { useClassFiltersStore } from '~/stores/classFilters'
 import { usePiniaSetup } from '../helpers/storeSetup'
 import {
@@ -101,7 +101,7 @@ describe('useClassFiltersStore', () => {
       expectedState: {
         isBaseClass: '1',
         isSpellcaster: '0',
-        selectedHitDice: [6, 8],
+        selectedHitDice: ['6', '8'],
         selectedSpellcastingAbility: 'INT',
         selectedParentClass: 'Fighter',
         selectedSources: ['PHB'],
@@ -112,17 +112,17 @@ describe('useClassFiltersStore', () => {
     {
       name: 'array vs string query params (single value)',
       query: { hit_die: '6' },
-      expectedState: { selectedHitDice: [6] }
+      expectedState: { selectedHitDice: ['6'] }
     },
     {
       name: 'array vs string query params (multiple values)',
       query: { hit_die: ['6', '8'] },
-      expectedState: { selectedHitDice: [6, 8] }
+      expectedState: { selectedHitDice: ['6', '8'] }
     },
     {
-      name: 'converts hit_die strings to numbers',
+      name: 'preserves hit_die as strings',
       query: { hit_die: ['6', '8', '10'] },
-      expectedState: { selectedHitDice: [6, 8, 10] }
+      expectedState: { selectedHitDice: ['6', '8', '10'] }
     }
   ])
 
@@ -158,9 +158,9 @@ describe('useClassFiltersStore', () => {
       expectedQuery: { sort_by: 'hit_die' }
     },
     {
-      name: 'converts hit_die numbers to strings',
+      name: 'outputs hit_die as strings in URL',
       setup: (store) => {
-        store.selectedHitDice = [6, 8, 10]
+        store.selectedHitDice = ['6', '8', '10']
       },
       expectedQuery: {
         hit_die: ['6', '8', '10']

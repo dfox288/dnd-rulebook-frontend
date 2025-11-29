@@ -192,7 +192,7 @@ export function createMockMonster(overrides: Partial<Monster> = {}): Monster {
  * @example
  * const characterClass = createMockClass()
  * const fighter = createMockClass({ name: 'Fighter', slug: 'fighter', hit_die: 10, spellcasting_ability: null })
- * const subclass = createMockClass({ is_base_class: '0', parent_class_id: 1 })
+ * const subclass = createMockClass({ is_base_class: false, parent_class_id: 1 })
  */
 export function createMockClass(overrides: Partial<CharacterClass> = {}): CharacterClass {
   return {
@@ -200,7 +200,7 @@ export function createMockClass(overrides: Partial<CharacterClass> = {}): Charac
     name: 'Wizard',
     slug: 'wizard',
     hit_die: 6,
-    is_base_class: '1',
+    is_base_class: true,
     parent_class_id: null,
     primary_ability: {
       id: 4,

@@ -79,9 +79,38 @@ export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'
  */
 type CharacterClassFromAPI = components['schemas']['ClassResource']
 
-export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources'> {
+/**
+ * Counter resource for class features (Ki, Rage, etc.)
+ * Extended from API since OpenAPI spec has `unknown[]`
+ */
+export interface CounterFromAPI {
+  name: string
+  reset_timing: 'Short Rest' | 'Long Rest' | 'Does Not Reset'
+  progression: Array<{
+    level: number
+    value: number
+  }>
+}
+
+export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources' | 'hit_die' | 'counters' | 'is_base_class' | 'subclass_level'> {
   // Override with our custom types that have better structure
   sources?: EntitySource[]
+
+  // Override hit_die as number (OpenAPI says string but API returns number)
+  hit_die?: number
+
+  // Override is_base_class as boolean (OpenAPI says string but API returns boolean)
+  is_base_class?: boolean
+
+  // Override subclass_level as number (OpenAPI says string but API returns number)
+  subclass_level?: number | null
+
+  // Override counters with proper type (OpenAPI has unknown[])
+  counters?: CounterFromAPI[]
+
+  // Add archetype field (missing from OpenAPI spec)
+  archetype?: string
+
   // All other fields inherited from CharacterClassFromAPI
 }
 

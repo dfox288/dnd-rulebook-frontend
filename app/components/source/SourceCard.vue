@@ -1,12 +1,5 @@
 <script setup lang="ts">
-interface Source {
-  id: number
-  code: string
-  name: string
-  publisher: string
-  publication_year: number
-  edition: string
-}
+import type { Source } from '~/types'
 
 interface Props {
   source: Source
@@ -43,6 +36,7 @@ const backgroundImageUrl = computed(() =>
           {{ source.code }}
         </UBadge>
         <UBadge
+          v-if="source.edition"
           color="source"
           variant="soft"
           size="xs"
@@ -65,7 +59,10 @@ const backgroundImageUrl = computed(() =>
           />
           <span>{{ source.publisher }}</span>
         </div>
-        <div class="flex items-center gap-1">
+        <div
+          v-if="source.publication_year"
+          class="flex items-center gap-1"
+        >
           <UIcon
             name="i-heroicons-calendar"
             class="w-4 h-4"

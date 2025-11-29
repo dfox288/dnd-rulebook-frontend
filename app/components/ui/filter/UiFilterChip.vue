@@ -22,11 +22,11 @@
  * ```
  */
 
-type ChipColor =
-  | 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'neutral'
-  | 'spell' | 'item' | 'race' | 'class' | 'background' | 'feat' | 'monster'
-  | 'ability' | 'condition' | 'damage' | 'itemtype' | 'language'
-  | 'proficiency' | 'size' | 'skill' | 'school' | 'source'
+type ChipColor
+  = | 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'neutral'
+    | 'spell' | 'item' | 'race' | 'class' | 'background' | 'feat' | 'monster'
+    | 'ability' | 'condition' | 'damage' | 'itemtype' | 'language'
+    | 'proficiency' | 'size' | 'skill' | 'school' | 'source'
 
 interface Props {
   /** Chip color (entity semantic color or 'neutral', 'primary') */

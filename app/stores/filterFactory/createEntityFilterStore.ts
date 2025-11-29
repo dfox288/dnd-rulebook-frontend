@@ -152,7 +152,6 @@ export function createEntityFilterStore<T extends BaseFilterState = BaseFilterSt
       }
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     persist: {
       key: config.storageKey,
       storage: idbStorage,

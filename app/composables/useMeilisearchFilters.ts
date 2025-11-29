@@ -22,8 +22,9 @@ export interface FilterConfig {
   min?: Ref<number | null>
   max?: Ref<number | null>
 
-  /** For 'equals' with lookup: transform value before filtering */
-  transform?: (value: any) => string | number | null
+  /** For 'equals' with lookup: transform value before filtering.
+   * For 'in' type: receives array and should return transformed array. */
+  transform?: (value: any) => string | number | null | (string | number | null)[]
 }
 
 export interface UseMeilisearchFiltersReturn {

@@ -25,7 +25,7 @@ const { getImagePath } = useEntityImage()
     <div class="flex flex-col items-center gap-1">
       <div class="relative w-20 h-20 rounded-lg overflow-hidden border-2 border-class-300 dark:border-class-600 shadow-md transition-all group-hover:border-class-500 group-hover:shadow-lg group-hover:scale-105">
         <NuxtImg
-          :src="getImagePath('classes', parentSlug, 128)"
+          :src="getImagePath('classes', parentSlug, 256) ?? undefined"
           :alt="`${parentName} class illustration`"
           class="w-full h-full object-cover"
           loading="lazy"

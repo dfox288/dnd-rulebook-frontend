@@ -157,10 +157,10 @@ const { queryParams: filterParams } = useMeilisearchFilters([
     ref: selectedSizes,
     field: 'size_code',
     type: 'in',
-    transform: sizeIds => sizeIds.map((id: string) => {
+    transform: (sizeIds: string[]) => sizeIds.map((id: string) => {
       const size = sizes.value?.find(s => String(s.id) === id)
       return size?.code || null
-    }).filter((code): code is string => code !== null)
+    }).filter((code: string | null): code is string => code !== null)
   },
   // Alignment multiselect filter - values with spaces are auto-quoted by composable
   {

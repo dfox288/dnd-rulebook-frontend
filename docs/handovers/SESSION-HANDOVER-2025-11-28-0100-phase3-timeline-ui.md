@@ -1,201 +1,187 @@
-# Session Handover: Breadcrumbs & TypeScript Fixes
+# Session Handover: TypeScript Error Cleanup Complete
 
 **Date:** 2025-11-29
-**Status:** Complete - Partial TypeScript fixes, breadcrumbs added
+**Status:** Complete - All 28 TypeScript errors fixed, 1801 tests passing
 **Branch:** `main`
 
 ---
 
 ## What Was Accomplished
 
-This session addressed two areas:
-
-1. **Reference Page Breadcrumbs** - Added breadcrumb navigation to all 10 reference/lookup pages
-2. **TypeScript & Lint Error Reduction** - Fixed root cause of most TypeScript errors (filter factory typing)
+This session completed the TypeScript error cleanup from the previous session, reducing errors from 28 to 0.
 
 ---
 
 ## Changes Summary
 
-### 1. Reference Page Breadcrumbs
+### 1. Extended CharacterClass Type (`app/types/api/entities.ts`)
 
-Added `UiDetailBreadcrumb` component to all 10 reference entity list pages for consistent navigation:
-
-| Page | Path | Label |
-|------|------|-------|
-| Ability Scores | `/ability-scores` | "Ability Scores" |
-| Conditions | `/conditions` | "Conditions" |
-| Damage Types | `/damage-types` | "Damage Types" |
-| Item Types | `/item-types` | "Item Types" |
-| Languages | `/languages` | "Languages" |
-| Proficiency Types | `/proficiency-types` | "Proficiency Types" |
-| Creature Sizes | `/sizes` | "Creature Sizes" |
-| Skills | `/skills` | "Skills" |
-| Source Books | `/sources` | "Source Books" |
-| Spell Schools | `/spell-schools` | "Spell Schools" |
-
-### 2. TypeScript Error Fixes
-
-**Root Cause Fixed:** The `createEntityFilterStore` factory function was returning stores with `Record<string, unknown>` types, causing ~80% of TypeScript errors to cascade.
-
-**Solution:** Added generics to the factory function:
+The OpenAPI-generated types were missing several fields that the API actually returns:
 
 ```typescript
-// Before: Lost type information
-export function createEntityFilterStore(config: EntityFilterStoreConfig)
+// Before: Missing fields, wrong types
+export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources'> { ... }
 
-// After: Preserves state type
-export function createEntityFilterStore<T extends BaseFilterState>(config: EntityFilterStoreConfig)
+// After: Proper type overrides
+export interface CharacterClass extends Omit<CharacterClassFromAPI,
+  'sources' | 'hit_die' | 'counters' | 'is_base_class' | 'subclass_level'
+> {
+  hit_die?: number                    // OpenAPI says string, API returns number
+  is_base_class?: boolean             // OpenAPI says string, API returns boolean
+  subclass_level?: number | null      // OpenAPI says string, API returns number
+  counters?: CounterFromAPI[]         // OpenAPI has unknown[]
+  archetype?: string                  // Missing from OpenAPI spec
+}
 ```
 
-**Updated all 7 filter stores** to use explicit state types:
-- `useSpellFiltersStore<SpellFiltersState>`
-- `useMonsterFiltersStore<MonsterFiltersState>`
-- `useItemFiltersStore<ItemFiltersState>`
-- `useClassFiltersStore<ClassFiltersState>`
-- `useRaceFiltersStore<RaceFiltersState>`
-- `useBackgroundFiltersStore<BackgroundFiltersState>`
-- `useFeatFiltersStore<FeatFiltersState>`
+Also added `CounterFromAPI` interface for the grouped counter structure:
 
-**Additional type fixes:**
-- `Monster.spellcasting` - Added spellcasting interface (not in OpenAPI spec)
-- `Source.edition` - Added optional edition field (not in OpenAPI spec)
-- `UiFilterChip` - Changed color prop from `string` to proper union type
-- `pinia-persistence.client.ts` - Fixed `$pinia` typing with explicit cast
+```typescript
+export interface CounterFromAPI {
+  name: string
+  reset_timing: 'Short Rest' | 'Long Rest' | 'Does Not Reset'
+  progression: Array<{ level: number; value: number }>
+}
+```
 
-### 3. Error Reduction Progress
+### 2. Fixed useClassDetail.ts
 
-| Stage | TypeScript Errors |
-|-------|-------------------|
-| Starting | ~83+ errors |
-| After factory fix | 40 errors |
-| After type extensions | 28 errors |
+- Added generic type to apiFetch call
+- Cast inherited counters through `unknown` to handle spec mismatch
+- Removed legacy `subclass_name` fallback (archetype is now the correct field)
+
+### 3. Fixed Component Type Issues
+
+| Component | Issue | Fix |
+|-----------|-------|-----|
+| `ClassCard.vue` | Boolean comparison with string | Simplified to `=== true` |
+| `SpellcastingCard.vue` | `slots` implicitly any[] | Added explicit `string[]` type |
+| `UiClassParentImageOverlay.vue` | null vs undefined + invalid size | Used `?? undefined`, fixed size to 256 |
+| `UiClassSubclassCards.vue` | Color union type | Added `BadgeColor` type, changed `neutral` → `secondary` |
+| `SourceCard.vue` | Local Source type conflict | Import from `~/types`, add v-if guards |
+
+### 4. Fixed Page Type Issues
+
+| Page | Issue | Fix |
+|------|-------|-----|
+| `backgrounds/index.vue` | `skill.code` doesn't exist | Changed to `skill.slug` |
+| `classes/index.vue` | `number[]` vs `string[]` for hit dice | Changed store and options to strings |
+| `monsters/index.vue` | Transform returns array, type expects single | Extended transform type signature |
+| `sources/index.vue` | Source type mismatch | SourceCard now imports shared type |
+| `tools/spell-list.vue` | `alert` not recognized in template | Moved to handleSpellToggle function |
+
+### 5. Fixed useMeilisearchFilters Transform Type
+
+```typescript
+// Before: Only single value return
+transform?: (value: any) => string | number | null
+
+// After: Array return for 'in' type filters
+transform?: (value: any) => string | number | null | (string | number | null)[]
+```
+
+### 6. Updated Test Mocks
+
+Changed `is_base_class` from `'1'`/`'0'` (strings) to `true`/`false` (booleans) in:
+- `tests/components/class/ClassCard.test.ts`
+- `tests/helpers/mockFactories.ts`
+- `tests/stores/classFilters.test.ts`
+
+Changed `selectedHitDice` expectations from `number[]` to `string[]`:
+- `tests/stores/classFilters.test.ts`
 
 ---
 
 ## Files Changed
 
-### Modified Files
-```
-# Reference page breadcrumbs (10 files)
-app/pages/ability-scores/index.vue
-app/pages/conditions/index.vue
-app/pages/damage-types/index.vue
-app/pages/item-types/index.vue
-app/pages/languages/index.vue
-app/pages/proficiency-types/index.vue
-app/pages/sizes/index.vue
-app/pages/skills/index.vue
-app/pages/sources/index.vue
-app/pages/spell-schools/index.vue
+### Type Definitions
+- `app/types/api/entities.ts` - Extended CharacterClass, added CounterFromAPI
+- `app/composables/useMeilisearchFilters.ts` - Fixed transform signature
 
-# Filter factory and stores (8 files)
-app/stores/filterFactory/createEntityFilterStore.ts
-app/stores/spellFilters.ts
-app/stores/monsterFilters.ts
-app/stores/itemFilters.ts
-app/stores/classFilters.ts
-app/stores/raceFilters.ts
-app/stores/backgroundFilters.ts
-app/stores/featFilters.ts
+### Composables
+- `app/composables/useClassDetail.ts` - Added type generics, fixed counter casting
 
-# Type fixes (4 files)
-app/types/api/entities.ts
-app/types/api/common.ts
-app/components/ui/filter/UiFilterChip.vue
-app/plugins/pinia-persistence.client.ts
-```
+### Components
+- `app/components/class/ClassCard.vue` - Simplified boolean check
+- `app/components/class/overview/SpellcastingCard.vue` - Added explicit type
+- `app/components/ui/class/UiClassParentImageOverlay.vue` - Fixed null handling
+- `app/components/ui/class/UiClassSubclassCards.vue` - Fixed color type
+- `app/components/source/SourceCard.vue` - Import shared type, add v-if guards
 
----
+### Pages
+- `app/pages/backgrounds/index.vue` - skill.code → skill.slug
+- `app/pages/classes/index.vue` - hit dice string[], typed options array
+- `app/pages/monsters/index.vue` - Added explicit types to transform
+- `app/pages/sources/index.vue` - (no change needed, using shared type)
+- `app/pages/tools/spell-list.vue` - Extracted alert to function
 
-## Remaining TypeScript Errors (~28)
+### Stores
+- `app/stores/classFilters.ts` - selectedHitDice: string[], type: 'stringArray'
 
-These errors require individual attention in future sessions:
-
-### Class-Related (useClassDetail.ts)
-- `archetype` property doesn't exist on `CharacterClass` type
-- `subclass_name` property doesn't exist (should be `subclasses`)
-- Comparison operators with wrong types (`string > number`)
-
-### Component Typing
-- `ClassCard.vue` - Type comparison issues
-- `SpellcastingCard.vue` - Implicit `any[]` type
-- `UiClassSubclassCards.vue` - Color type and null assignment
-
-### Page-Specific
-- `backgrounds/index.vue` - Missing `code` property on skill type
-- `classes/index.vue` - `number[]` vs `string[]` for hit dice
-- `monsters/index.vue` - Implicit `any` parameter
-- `tools/spell-list.vue` - Alert and boolean comparison issues
+### Tests
+- `tests/components/class/ClassCard.test.ts` - is_base_class to boolean
+- `tests/helpers/mockFactories.ts` - is_base_class to boolean
+- `tests/stores/classFilters.test.ts` - String arrays for hit dice
 
 ---
 
 ## Test Status
 
 ```bash
-# Reference tests passing
-docker compose exec nuxt npm run test:reference
-# 63 passed (7 files)
+# TypeScript
+npm run typecheck  # ✓ 0 errors
 
-# Lint errors are pre-existing in test files
-# (unused imports, @typescript-eslint/no-explicit-any)
+# Tests
+npm run test       # ✓ 1801 passed, 1 skipped
+                   # (1 pre-existing environment cleanup warning)
+
+# Class-specific tests
+npm run test:classes  # ✓ 269 passed
 ```
+
+---
+
+## Key Insights
+
+### OpenAPI Spec Drift
+
+The backend API returns different types than what the OpenAPI spec documents:
+
+| Field | OpenAPI Spec | Actual API |
+|-------|--------------|------------|
+| `hit_die` | string | number |
+| `is_base_class` | string | boolean |
+| `subclass_level` | string | number |
+| `counters` | `unknown[]` | `{ name, reset_timing, progression[] }[]` |
+| `archetype` | (missing) | string |
+
+**Solution:** Extended types in `app/types/api/entities.ts` to override generated types. This pattern should be used for any API fields that drift from the spec.
+
+### Transform Function for 'in' Filters
+
+The `useMeilisearchFilters` composable's transform function needed to support array returns for `type: 'in'` filters. The original type signature assumed single value transforms.
 
 ---
 
 ## Next Session Priorities
 
-### TypeScript Cleanup (Continue)
-1. Fix `useClassDetail.ts` property mismatches
-2. Fix class component type issues
-3. Fix page-specific type errors
-4. Address remaining lint errors in test files
-
-### Feature Work
-1. Apply 3-view pattern to Race detail page
-2. Mobile responsiveness for Timeline component
-
-### Backend
-1. Fix Rogue Sneak Attack progression (critical)
-2. Add Eldritch Invocations to Warlock (critical)
-
----
-
-## Key Insight
-
-The filter factory generic fix demonstrates a common TypeScript pattern issue:
-
-**Problem:** Dynamic store factories that build state from config objects lose type information because TypeScript can't infer the shape of the resulting state.
-
-**Solution:** Use generics to let consumers specify the exact state type:
-
-```typescript
-// Consumer specifies the state type explicitly
-export const useSpellFiltersStore = createEntityFilterStore<SpellFiltersState>({...})
-
-// Factory preserves the type through the store
-export function createEntityFilterStore<T extends BaseFilterState>(config) {
-  return defineStore(config.name, {
-    state: (): T => ({...})  // T is preserved
-  })
-}
-```
-
-This pattern is applicable anywhere you have factory functions that produce typed objects from configuration.
+1. **Apply 3-view pattern to Race detail page** (similar to Class detail)
+2. **Mobile responsiveness for Timeline component** (if not already addressed)
+3. **Backend work** - Fix critical class issues (Rogue Sneak Attack, Warlock Invocations)
 
 ---
 
 ## Verification Commands
 
 ```bash
-# Run reference tests
-docker compose exec nuxt npm run test:reference
-
-# Check TypeScript errors
+# Verify TypeScript
 docker compose exec nuxt npm run typecheck
 
-# Check lint errors
-docker compose exec nuxt npm run lint
+# Run all tests
+docker compose exec nuxt npm run test
+
+# Run class tests specifically
+docker compose exec nuxt npm run test:classes
 
 # Dev server
 docker compose exec nuxt npm run dev

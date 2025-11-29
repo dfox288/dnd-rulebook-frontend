@@ -35,10 +35,10 @@ const { data: baseClasses } = useReferenceData<CharacterClass>('/classes', {
 
 // Filter options
 const hitDieOptions = [
-  { label: 'd6', value: 6 },
-  { label: 'd8', value: 8 },
-  { label: 'd10', value: 10 },
-  { label: 'd12', value: 12 }
+  { label: 'd6', value: '6' },
+  { label: 'd8', value: '8' },
+  { label: 'd10', value: '10' },
+  { label: 'd12', value: '12' }
 ]
 
 const spellcastingAbilityOptions = [
@@ -49,7 +49,7 @@ const spellcastingAbilityOptions = [
 ]
 
 const parentClassOptions = computed(() => {
-  const options = [{ label: 'All Classes', value: null }]
+  const options: { label: string, value: string | null }[] = [{ label: 'All Classes', value: null }]
   if (baseClasses.value) {
     baseClasses.value.forEach((cls) => {
       options.push({ label: cls.name, value: cls.name })

@@ -187,6 +187,16 @@ watchDebounced(
   { debounce: 500 }
 )
 
+/**
+ * Handle spell toggle with max limit check
+ */
+const handleSpellToggle = (spellId: number) => {
+  const success = toggleSpell(spellId)
+  if (!success && !selectedSpells.value.has(spellId)) {
+    alert(`You've reached the maximum of ${maxSpells.value} spells for this class and level.`)
+  }
+}
+
 // Get selected spell objects
 const selectedSpellsList = computed(() => {
   if (!spells.value) return []
@@ -346,12 +356,7 @@ const handleClearAll = () => {
                   <UCheckbox
                     :model-value="selectedSpells.has(spell.id)"
                     :disabled="!selectedSpells.has(spell.id) && selectionCount >= maxSpells"
-                    @update:model-value="() => {
-                      const success = toggleSpell(spell.id)
-                      if (!success && !selectedSpells.has(spell.id)) {
-                        alert(`You've reached the maximum of ${maxSpells} spells for this class and level.`)
-                      }
-                    }"
+                    @update:model-value="() => handleSpellToggle(spell.id)"
                   />
                   <div class="flex-1">
                     <div class="font-medium">

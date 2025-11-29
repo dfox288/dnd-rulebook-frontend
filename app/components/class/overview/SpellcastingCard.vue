@@ -66,7 +66,7 @@ const spellSlotsSummary = computed(() => {
   const level1 = props.levelProgression.find(lp => lp.level === 1)
   if (!level1) return null
 
-  const slots = []
+  const slots: string[] = []
   const slotFields: (keyof LevelProgression)[] = [
     'spell_slots_1st',
     'spell_slots_2nd',

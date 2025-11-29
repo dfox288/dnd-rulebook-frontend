@@ -1,8 +1,7 @@
-import type { CharacterClass } from '~/types/api/entities'
+import type { CharacterClass, CounterFromAPI } from '~/types/api/entities'
 import type { components } from '~/types/api/generated'
 
 type ClassFeatureResource = components['schemas']['ClassFeatureResource']
-type ClassCounterResource = components['schemas']['ClassCounterResource']
 
 /**
  * Composable for class detail pages.
@@ -31,7 +30,7 @@ export function useClassDetail(slug: Ref<string>) {
   const { data: response, pending, error, refresh } = useAsyncData(
     `class-detail-${slug.value}`,
     async () => {
-      const result = await apiFetch(`/classes/${slug.value}`)
+      const result = await apiFetch<{ data: CharacterClass }>(`/classes/${slug.value}`)
       return result?.data || null
     },
     { watch: [slug] }
@@ -58,11 +57,12 @@ export function useClassDetail(slug: Ref<string>) {
   // Counters (Ki, Rage, Sorcery Points, etc.)
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const counters = computed<ClassCounterResource[]>(() => {
+  const counters = computed<CounterFromAPI[]>(() => {
     if (isSubclass.value) {
       // Subclass may have own counters + inherited
+      // Note: inherited_data.counters type in OpenAPI spec is out of sync with actual API response
       const ownCounters = entity.value?.counters ?? []
-      const inheritedCounters = inheritedData.value?.counters ?? []
+      const inheritedCounters = (inheritedData.value?.counters as unknown as CounterFromAPI[]) ?? []
       // Combine, avoiding duplicates by name
       const seen = new Set<string>()
       return [...ownCounters, ...inheritedCounters].filter((c) => {
@@ -132,11 +132,7 @@ export function useClassDetail(slug: Ref<string>) {
     if (entity.value?.archetype) {
       return entity.value.archetype
     }
-    // Legacy: check subclass_name for backward compatibility
-    if (entity.value?.subclass_name) {
-      return entity.value.subclass_name
-    }
-    // Fallback patterns (defensive - should no longer be needed)
+    // Fallback patterns (defensive - should rarely be needed)
     const patterns: Record<string, string> = {
       barbarian: 'Primal Path',
       bard: 'Bard College',

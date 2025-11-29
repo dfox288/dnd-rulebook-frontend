@@ -35,7 +35,7 @@ const { countDisplayFeatures } = useFeatureFiltering()
  * Get background image path for subclass (uses class images)
  */
 const { getImagePath } = useEntityImage()
-const getBackgroundImage = (slug: string): string => {
+const getBackgroundImage = (slug: string): string | null => {
   return getImagePath('classes', slug, 256)
 }
 
@@ -130,13 +130,15 @@ const getSourceCategory = (subclass: Subclass): 'core' | 'expansion' | 'setting'
 /**
  * Get badge color based on source category
  */
-const getSourceBadgeColor = (subclass: Subclass): string => {
+type BadgeColor = 'success' | 'info' | 'warning' | 'secondary'
+
+const getSourceBadgeColor = (subclass: Subclass): BadgeColor => {
   const category = getSourceCategory(subclass)
   switch (category) {
     case 'core': return 'success'
     case 'expansion': return 'info'
     case 'setting': return 'warning'
-    default: return 'neutral'
+    default: return 'secondary'
   }
 }
 </script>
