@@ -70,7 +70,6 @@ const queryParams = computed(() => ({
 
 // Use entity list composable
 const {
-  searchQuery: entityListSearchQuery,
   currentPage,
   data,
   meta,
@@ -82,22 +81,10 @@ const {
   endpoint: '/backgrounds',
   cacheKey: 'backgrounds-list',
   queryBuilder: queryParams,
+  searchQuery,
   seo: {
     title: 'Backgrounds - D&D 5e Compendium',
     description: 'Browse all D&D 5e character backgrounds.'
-  }
-})
-
-// Sync entity list's searchQuery with store's searchQuery
-watch(entityListSearchQuery, (newVal) => {
-  if (searchQuery.value !== newVal) {
-    searchQuery.value = newVal
-  }
-})
-
-watch(searchQuery, (newVal) => {
-  if (entityListSearchQuery.value !== newVal) {
-    entityListSearchQuery.value = newVal
   }
 })
 
