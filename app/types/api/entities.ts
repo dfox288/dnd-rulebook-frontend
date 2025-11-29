@@ -233,3 +233,9 @@ export interface Rarity {
   slug: string
   name: string
 }
+
+/**
+ * Optional Feature resource for class customization options
+ * (Eldritch Invocations, Infusions, Elemental Disciplines, etc.)
+ */
+export type OptionalFeatureResource = components['schemas']['OptionalFeatureResource']
