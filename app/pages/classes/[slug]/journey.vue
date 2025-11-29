@@ -20,7 +20,7 @@ interface TimelineLevel {
   parentFeatures?: ClassFeatureResource[]
   spellSlots?: Record<string, number>
   cantripsKnown?: number
-  resourceValue?: string // Changed from number - now parsed from progression string
+  resourceValue?: number | string  // Can be "Unlimited" at level 20
   resourceName?: string
   isMilestone: boolean
   milestoneType?: 'subclass' | 'asi' | 'spell_tier' | 'capstone'
@@ -160,33 +160,24 @@ function isNewSpellTierLevel(level: number): boolean {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Parse progression string into array of values by level
- * Format: "2, 3, 3, 4, 4, 5, ..." where index+1 = level
- */
-function parseProgressionToArray(progression: string): string[] {
-  if (!progression) return []
-  return progression.split(',').map(v => v.trim())
-}
-
-/**
  * Get counter value at a specific level
- * New format: progression is a string "2, 3, 3, 4, ..." where each position = level
+ * API returns: { name, reset_timing, progression: [{level, value}] }
  */
-function getCounterValueAtLevel(level: number): { value: string, name: string } | undefined {
+function getCounterValueAtLevel(level: number): { value: number | string, name: string } | undefined {
   if (!counters.value || counters.value.length === 0) return undefined
 
   // Get the first counter (primary resource like Ki, Rage, etc.)
   const firstCounter = counters.value[0]
   if (!firstCounter?.progression) return undefined
 
-  // Parse progression string - index 0 = level 1, index 1 = level 2, etc.
-  const values = parseProgressionToArray(firstCounter.progression)
-  const valueAtLevel = values[level - 1]
+  // Find the progression entry for this level or the most recent one before it
+  const sorted = [...firstCounter.progression].sort((a, b) => a.level - b.level)
+  const applicableEntry = sorted.filter(p => p.level <= level).pop()
 
-  if (!valueAtLevel) return undefined
+  if (!applicableEntry) return undefined
 
   return {
-    value: valueAtLevel,
+    value: applicableEntry.value,
     name: firstCounter.name
   }
 }

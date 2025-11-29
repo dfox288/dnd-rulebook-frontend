@@ -81,13 +81,16 @@ type CharacterClassFromAPI = components['schemas']['ClassResource']
 
 /**
  * Counter resource for class features (Ki, Rage, etc.)
- * Matches GroupedCounterResource from OpenAPI spec.
- * Note: progression is now a string (e.g., "2, 3, 3, 4, 4, 4, 5, 5, 6, 6, Unlimited")
+ * Note: OpenAPI spec shows progression as string, but actual API returns array.
+ * We use the actual API format here.
  */
 export interface CounterFromAPI {
   name: string
   reset_timing: 'Short Rest' | 'Long Rest' | 'Does Not Reset'
-  progression: string
+  progression: Array<{
+    level: number
+    value: number | string  // Can be "Unlimited" at level 20
+  }>
 }
 
 export interface CharacterClass extends Omit<CharacterClassFromAPI, 'sources' | 'hit_die' | 'counters' | 'is_base_class' | 'subclass_level'> {

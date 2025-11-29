@@ -71,7 +71,8 @@
       "Bash(app/pages/monsters/[slug].vue )",
       "Bash(app/pages/tools/spell-list.vue)",
       "Bash(\"app/pages/monsters/[slug].vue\" )",
-      "Bash(sort:*)"
+      "Bash(sort:*)",
+      "Bash(NUXT_API_SPEC_URL=http://host.docker.internal:8080/docs/api.json docker compose exec:*)"
     ],
     "deny": [],
     "ask": []

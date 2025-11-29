@@ -6,41 +6,28 @@ interface Props {
   counters: CounterFromAPI[]
 }
 
-interface ParsedCounter {
+interface DisplayCounter {
   name: string
   reset_timing: string
   progressions: Array<{
     level: number
-    value: string
+    value: string | number
   }>
 }
 
 const props = defineProps<Props>()
 
 /**
- * Parse progression string into level-value pairs
- * Format: "2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, Unlimited"
- * Each position corresponds to level 1, 2, 3, etc.
+ * Process counters for display
+ * API returns: { name, reset_timing, progression: [{level, value}] }
  */
-function parseProgression(progression: string): Array<{ level: number, value: string }> {
-  if (!progression) return []
-  const values = progression.split(',').map(v => v.trim())
-  return values.map((value, index) => ({
-    level: index + 1,
-    value
-  }))
-}
-
-/**
- * Process counters for display - new GroupedCounterResource format
- */
-const groupedCounters = computed<ParsedCounter[]>(() => {
+const groupedCounters = computed<DisplayCounter[]>(() => {
   if (!props.counters) return []
 
   return props.counters.map(counter => ({
     name: counter.name,
     reset_timing: counter.reset_timing,
-    progressions: parseProgression(counter.progression)
+    progressions: counter.progression?.sort((a, b) => a.level - b.level) || []
   }))
 })
 </script>

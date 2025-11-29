@@ -8,31 +8,20 @@ interface Props {
 const props = defineProps<Props>()
 
 /**
- * Parse progression string to extract first and last values
- * Format: "2, 3, 3, 4, 4, 5, ..., Unlimited"
- */
-function parseProgressionRange(progression: string): { first: string, last: string } | null {
-  if (!progression) return null
-  const values = progression.split(',').map(v => v.trim()).filter(v => v)
-  if (values.length === 0) return null
-  const first = values[0]
-  const last = values[values.length - 1]
-  if (!first || !last) return null
-  return { first, last }
-}
-
-/**
- * Process counters for display - new GroupedCounterResource format
+ * Process counters for display
+ * API returns: { name, reset_timing, progression: [{level, value}] }
  */
 const processedCounters = computed(() => {
   return props.counters.map((counter) => {
-    const range = parseProgressionRange(counter.progression)
+    const sorted = [...(counter.progression || [])].sort((a, b) => a.level - b.level)
+    const first = sorted[0]
+    const last = sorted[sorted.length - 1]
 
     return {
       name: counter.name,
       resetTiming: counter.reset_timing || 'Unknown',
-      startValue: range?.first,
-      maxValue: range?.last
+      startValue: first?.value,
+      maxValue: last?.value
     }
   })
 })
@@ -63,9 +52,9 @@ function getCounterIcon(name: string): string {
 /**
  * Get value summary (start -> max)
  */
-function getValueSummary(startValue?: string, maxValue?: string): string | null {
-  if (!startValue) return null
-  if (!maxValue || startValue === maxValue) return startValue
+function getValueSummary(startValue?: number | string, maxValue?: number | string): string | null {
+  if (startValue === undefined || startValue === null) return null
+  if (maxValue === undefined || maxValue === null || startValue === maxValue) return String(startValue)
 
   return `${startValue} → ${maxValue}`
 }
