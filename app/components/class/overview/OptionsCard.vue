@@ -10,7 +10,10 @@ const hasOptionalFeatures = computed(() => props.optionalFeaturesByType.size > 0
 </script>
 
 <template>
-  <div v-if="hasOptionalFeatures" class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
+  <div
+    v-if="hasOptionalFeatures"
+    class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6"
+  >
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
         Class Options
@@ -20,7 +23,10 @@ const hasOptionalFeatures = computed(() => props.optionalFeaturesByType.size > 0
         class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1"
       >
         View All
-        <UIcon name="i-heroicons-arrow-right" class="w-4 h-4" />
+        <UIcon
+          name="i-heroicons-arrow-right"
+          class="w-4 h-4"
+        />
       </NuxtLink>
     </div>
 

@@ -20,7 +20,7 @@ const groupedOptions = computed(() => {
   // Create a map of prerequisite -> options
   const groups = new Map<string, OptionalFeatureResource[]>()
 
-  props.options.forEach(option => {
+  props.options.forEach((option) => {
     const key = option.prerequisite_text || '_no_prerequisites'
     if (!groups.has(key)) {
       groups.set(key, [])
@@ -52,7 +52,10 @@ const groupedOptions = computed(() => {
   >
     <summary class="px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 select-none flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <UIcon name="i-heroicons-chevron-right" class="w-5 h-5 transition-transform [[open]_&]:rotate-90" />
+        <UIcon
+          name="i-heroicons-chevron-right"
+          class="w-5 h-5 transition-transform [[open]_&]:rotate-90"
+        />
         <span class="font-semibold text-gray-900 dark:text-gray-100">Available Options</span>
         <UBadge variant="subtle">
           {{ options.length }}
