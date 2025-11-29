@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **All 28 TypeScript Errors Resolved (2025-11-29)** - Complete type cleanup, zero errors remaining
+  - Extended `CharacterClass` type to match actual API responses (hit_die: number, is_base_class: boolean, subclass_level: number, counters: CounterFromAPI[], archetype: string)
+  - Added `CounterFromAPI` interface for grouped counter structure (`{name, reset_timing, progression[]}`)
+  - Fixed component type issues: ClassCard boolean comparison, SpellcastingCard slots array, UiClassSubclassCards color type
+  - Fixed page type issues: backgrounds skill.slug, classes hit dice as strings, monsters transform signature, spell-list alert handler
+  - Extended `useMeilisearchFilters` transform signature to support array returns for 'in' type filters
+  - Updated test mocks to use correct boolean/string types
+  - All 1801 tests passing
+
 - **List Page Search Not Working (2025-11-29)** - Critical fix for search functionality
   - `useEntityList` composable now accepts external `searchQuery` ref from stores
   - Previously created internal ref that was never connected to the search input
