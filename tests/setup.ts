@@ -113,21 +113,33 @@ const createMockApiResponse = (url) => {
     // Race detail
     if (url.includes('/races/')) {
       const slug = url.split('/').pop()
-      return Promise.resolve({
-        data: {
-          id: 1,
-          name: slug.charAt(0).toUpperCase() + slug.slice(1),
-          slug,
-          description: `Description of ${slug} race`,
-          conditions: [
-            {
-              name: 'Darkvision',
-              effect_type: 'Sense',
-              description: 'You can see in dim light'
-            }
-          ]
-        }
-      })
+
+      // Base race data
+      const raceData = {
+        id: 1,
+        name: slug.charAt(0).toUpperCase() + slug.slice(1),
+        slug,
+        speed: 30,
+        description: `Description of ${slug} race`,
+        conditions: [
+          {
+            name: 'Darkvision',
+            effect_type: 'Sense',
+            description: 'You can see in dim light'
+          }
+        ]
+      }
+
+      // Add special movement speeds for specific races (Issue #26)
+      if (slug === 'aarakocra-dmg') {
+        raceData.speed = 25
+        raceData.fly_speed = 50
+      }
+      if (slug === 'triton-legacy') {
+        raceData.swim_speed = 30
+      }
+
+      return Promise.resolve({ data: raceData })
     }
   }
 

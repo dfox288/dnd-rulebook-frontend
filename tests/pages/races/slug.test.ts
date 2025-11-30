@@ -87,6 +87,54 @@ describe('Races [slug] Page - Conditions Component Integration', () => {
   })
 })
 
+describe('Races [slug] Page - Special Movement Speeds (Issue #26)', () => {
+  it('should display fly speed in quick stats when race has fly_speed', async () => {
+    // Aarakocra (DMG) has fly_speed: 50
+    const wrapper = await mountSuspended(RacesSlugPage, {
+      route: '/races/aarakocra-dmg'
+    })
+
+    // Look for fly speed display
+    const text = wrapper.text()
+    expect(text).toContain('Fly')
+    expect(text).toContain('50')
+  })
+
+  it('should display swim speed in quick stats when race has swim_speed', async () => {
+    // Triton has swim_speed: 30
+    const wrapper = await mountSuspended(RacesSlugPage, {
+      route: '/races/triton-legacy'
+    })
+
+    // Look for swim speed display
+    const text = wrapper.text()
+    expect(text).toContain('Swim')
+    expect(text).toContain('30')
+  })
+
+  it('should not display fly speed stat when race has no fly_speed', async () => {
+    // Standard elf has no fly speed
+    const wrapper = await mountSuspended(RacesSlugPage, {
+      route: '/races/elf'
+    })
+
+    const text = wrapper.text()
+    // Should not have "Fly Speed" or similar
+    expect(text.toLowerCase()).not.toContain('fly speed')
+  })
+
+  it('should not display swim speed stat when race has no swim_speed', async () => {
+    // Standard elf has no swim speed
+    const wrapper = await mountSuspended(RacesSlugPage, {
+      route: '/races/elf'
+    })
+
+    const text = wrapper.text()
+    // Should not have "Swim Speed" or similar
+    expect(text.toLowerCase()).not.toContain('swim speed')
+  })
+})
+
 describe('Races [slug] Page - Accordion Structure', () => {
   it('should have single UAccordion with type="multiple"', async () => {
     const wrapper = await mountSuspended(RacesSlugPage, {

@@ -465,4 +465,101 @@ describe('RaceCard', () => {
     expect(wrapper.text()).toContain('Human')
     expect(wrapper.text()).toContain('30 ft')
   })
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Special Movement Speed Tests (Issue #26)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  describe('special movement speeds', () => {
+    it('displays fly speed when provided', async () => {
+      const flyingRace = {
+        ...mockRace,
+        name: 'Aarakocra',
+        slug: 'aarakocra',
+        speed: 25,
+        fly_speed: 50
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: flyingRace }
+      })
+
+      const text = wrapper.text()
+      expect(text).toContain('25 ft')
+      expect(text).toContain('fly 50 ft')
+    })
+
+    it('displays swim speed when provided', async () => {
+      const swimmingRace = {
+        ...mockRace,
+        name: 'Triton',
+        slug: 'triton',
+        speed: 30,
+        swim_speed: 30
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: swimmingRace }
+      })
+
+      const text = wrapper.text()
+      expect(text).toContain('30 ft')
+      expect(text).toContain('swim 30 ft')
+    })
+
+    it('displays both fly and swim speeds when both provided', async () => {
+      const multiSpeedRace = {
+        ...mockRace,
+        name: 'Custom Race',
+        slug: 'custom-race',
+        speed: 30,
+        fly_speed: 60,
+        swim_speed: 40
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: multiSpeedRace }
+      })
+
+      const text = wrapper.text()
+      expect(text).toContain('30 ft')
+      expect(text).toContain('fly 60 ft')
+      expect(text).toContain('swim 40 ft')
+    })
+
+    it('does not show fly speed when null', async () => {
+      const noFlyRace = {
+        ...mockRace,
+        fly_speed: null
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: noFlyRace }
+      })
+
+      expect(wrapper.text()).not.toContain('fly')
+    })
+
+    it('does not show swim speed when null', async () => {
+      const noSwimRace = {
+        ...mockRace,
+        swim_speed: null
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: noSwimRace }
+      })
+
+      expect(wrapper.text()).not.toContain('swim')
+    })
+
+    it('does not show fly/swim when undefined (backward compatible)', async () => {
+      // Ensure existing data without new fields still works
+      const legacyRace = {
+        ...mockRace
+        // fly_speed and swim_speed not present
+      }
+      const wrapper = await mountSuspended(RaceCard, {
+        props: { race: legacyRace }
+      })
+
+      expect(wrapper.text()).not.toContain('fly')
+      expect(wrapper.text()).not.toContain('swim')
+    })
+  })
 })

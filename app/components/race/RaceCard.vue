@@ -65,6 +65,31 @@ const truncatedDescription = computed(() => {
 })
 
 /**
+ * Format speed display including special movement types
+ * Shows base speed first, then fly/swim speeds if present
+ */
+const speedDisplay = computed(() => {
+  const speeds: string[] = []
+
+  // Always show base walk speed first
+  if (props.race.speed) {
+    speeds.push(`${props.race.speed} ft`)
+  }
+
+  // Add fly speed if present
+  if (props.race.fly_speed) {
+    speeds.push(`fly ${props.race.fly_speed} ft`)
+  }
+
+  // Add swim speed if present
+  if (props.race.swim_speed) {
+    speeds.push(`swim ${props.race.swim_speed} ft`)
+  }
+
+  return speeds
+})
+
+/**
  * Get background image path (256px variant)
  */
 const { getImagePath } = useEntityImage()
@@ -135,12 +160,15 @@ const backgroundImage = computed(() => {
 
           <!-- Quick Stats (with badges) -->
           <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
-            <div class="flex items-center gap-1">
+            <div
+              v-if="speedDisplay.length > 0"
+              class="flex items-center gap-1"
+            >
               <UIcon
                 name="i-heroicons-bolt"
                 class="w-4 h-4"
               />
-              <span>{{ race.speed }} ft</span>
+              <span>{{ speedDisplay.join(', ') }}</span>
             </div>
             <div
               v-if="abilityModifiers"
