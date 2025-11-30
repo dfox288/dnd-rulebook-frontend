@@ -40,7 +40,7 @@ export interface UseSpellDetailReturn {
   groupedClasses: ComputedRef<{ baseClasses: ClassResource[], subclasses: ClassResource[] }>
 
   /** Parsed area of effect into structured data */
-  parsedAreaOfEffect: ComputedRef<{ type: string, size: string } | null>
+  parsedAreaOfEffect: ComputedRef<{ type: string, size: number } | null>
 }
 
 /**
@@ -212,9 +212,9 @@ export function useSpellDetail(slug: Ref<string> | string): UseSpellDetailReturn
 
   /**
    * Parsed area of effect into structured data
-   * Examples: "20-foot radius" -> { type: "radius", size: "20" }
+   * Examples: "20-foot radius" -> { type: "radius", size: 20 }
    */
-  const parsedAreaOfEffect = computed((): { type: string, size: string } | null => {
+  const parsedAreaOfEffect = computed((): { type: string, size: number } | null => {
     const areaOfEffect = entity.value?.area_of_effect
     if (!areaOfEffect) return null
 
@@ -222,8 +222,11 @@ export function useSpellDetail(slug: Ref<string> | string): UseSpellDetailReturn
     const match = areaOfEffect.match(/^(\d+)-foot\s+(.+)$/i)
     if (!match) return null
 
+    const size = parseInt(match[1] ?? '0', 10)
+    if (isNaN(size)) return null
+
     return {
-      size: match[1] ?? '',
+      size,
       type: match[2] ?? ''
     }
   })

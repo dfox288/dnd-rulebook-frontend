@@ -383,37 +383,40 @@ describe('useSpellDetail - data organization logic', () => {
   })
 
   describe('parsedAreaOfEffect computation', () => {
-    function parseAreaOfEffect(areaOfEffect: string | null | undefined): { type: string, size: string } | null {
+    function parseAreaOfEffect(areaOfEffect: string | null | undefined): { type: string, size: number } | null {
       if (!areaOfEffect) return null
 
       // Parse patterns like "20-foot radius" or "30-foot cone"
       const match = areaOfEffect.match(/^(\d+)-foot\s+(.+)$/i)
       if (!match) return null
 
+      const size = parseInt(match[1] ?? '0', 10)
+      if (isNaN(size)) return null
+
       return {
-        size: match[1],
+        size,
         type: match[2]
       }
     }
 
     it('parses radius area of effect', () => {
       const result = parseAreaOfEffect('20-foot radius')
-      expect(result).toEqual({ size: '20', type: 'radius' })
+      expect(result).toEqual({ size: 20, type: 'radius' })
     })
 
     it('parses cone area of effect', () => {
       const result = parseAreaOfEffect('30-foot cone')
-      expect(result).toEqual({ size: '30', type: 'cone' })
+      expect(result).toEqual({ size: 30, type: 'cone' })
     })
 
     it('parses cube area of effect', () => {
       const result = parseAreaOfEffect('15-foot cube')
-      expect(result).toEqual({ size: '15', type: 'cube' })
+      expect(result).toEqual({ size: 15, type: 'cube' })
     })
 
     it('parses line area of effect', () => {
       const result = parseAreaOfEffect('100-foot line')
-      expect(result).toEqual({ size: '100', type: 'line' })
+      expect(result).toEqual({ size: 100, type: 'line' })
     })
 
     it('returns null for unparseable format', () => {
