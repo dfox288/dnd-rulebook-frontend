@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  *
  * Generated from: http://localhost:8080/docs/api.json
- * Generated at: 2025-11-30T20:34:55.318Z
+ * Generated at: 2025-11-30T20:51:11.744Z
  *
  * To regenerate: npm run types:sync
  */
@@ -4490,6 +4490,7 @@ export interface components {
             conditions?: components["schemas"]["EntityConditionResource"][];
             sources?: components["schemas"]["EntitySourceResource"][];
             tags?: components["schemas"]["TagResource"][];
+            /** @description Use entitySpellRecords for EntitySpell pivot records (includes spell choices) */
             spells?: components["schemas"]["EntitySpellResource"][];
             spell_choices?: components["schemas"]["SpellChoiceResource"][] | null;
         };
@@ -4691,11 +4692,23 @@ export interface components {
             reactions?: components["schemas"]["MonsterActionResource"][];
             legendary_actions?: components["schemas"]["MonsterLegendaryActionResource"][];
             lair_actions?: components["schemas"]["MonsterLegendaryActionResource"][];
-            spells?: components["schemas"]["EntitySpellResource"][];
+            spells?: components["schemas"]["MonsterSpellResource"][];
             modifiers?: components["schemas"]["ModifierResource"][];
             conditions?: components["schemas"]["EntityConditionResource"][];
             sources?: components["schemas"]["EntitySourceResource"][];
             tags?: components["schemas"]["TagResource"][];
+        };
+        /** MonsterSpellResource */
+        MonsterSpellResource: {
+            id: string;
+            name: string;
+            slug: string;
+            level: string;
+            school?: components["schemas"]["SpellSchoolResource"];
+            /** @description Usage metadata from pivot table (entity_spells) */
+            usage_limit: string;
+            level_requirement: string;
+            is_cantrip: string;
         };
         /** MonsterTraitResource */
         MonsterTraitResource: {
@@ -4812,6 +4825,7 @@ export interface components {
             proficiencies?: components["schemas"]["ProficiencyResource"][];
             languages?: components["schemas"]["EntityLanguageResource"][];
             conditions?: components["schemas"]["EntityConditionResource"][];
+            /** @description Use entitySpellRecords for EntitySpell pivot records (includes pivot data like level_requirement) */
             spells?: components["schemas"]["EntitySpellResource"][];
             senses?: components["schemas"]["EntitySenseResource"][];
             tags?: components["schemas"]["TagResource"][];
