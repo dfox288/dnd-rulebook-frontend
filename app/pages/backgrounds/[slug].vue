@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import type { Background } from '~/types/api/entities'
+/**
+ * Background Detail Page
+ *
+ * Redesigned layout featuring:
+ * - Quick Stats grid (skills with abilities, languages, tools, gold)
+ * - Feature hero section (signature background ability)
+ * - Description card
+ * - Suggested Characteristics (2x2 grid of rollable tables)
+ * - Collapsible accordions for equipment and sources
+ */
 
 const route = useRoute()
+const slug = computed(() => route.params.slug as string)
 
-// Fetch background data and setup SEO
-const { data: entity, loading, error } = useEntityDetail<Background>({
-  slug: route.params.slug as string,
-  endpoint: '/backgrounds',
-  cacheKey: 'background',
-  seo: {
-    titleTemplate: name => `${name} - D&D 5e Background`,
-    descriptionExtractor: (background: unknown) => {
-      const b = background as { description?: string }
-      return b.description?.substring(0, 160) || ''
-    },
-    fallbackTitle: 'Background - D&D 5e Compendium'
-  }
-})
+// Use the new background detail composable
+const {
+  entity,
+  pending,
+  error,
+  feature,
+  descriptionTrait,
+  dataTables,
+  skillsWithAbilities,
+  toolProficiencies,
+  languageDisplay,
+  startingGold,
+  equipment,
+  sources,
+  tags
+} = useBackgroundDetail(slug)
 
 /**
  * Get entity image path (512px variant)
@@ -28,78 +40,60 @@ const imagePath = computed(() => {
 })
 
 /**
- * Use composable to extract background stats
+ * Accordion items for collapsed sections
  */
-const {
-  skillProficiencies,
-  toolProficiencies,
-  languages,
-  equipmentCount,
-  startingGold
-} = useBackgroundStats(entity)
+const accordionItems = computed(() => {
+  const items = []
 
-/**
- * Build stats array for UiDetailQuickStatsCard
- */
-const statsForDisplay = computed(() => {
-  const stats = []
-
-  // Skills (always show if present)
-  if (skillProficiencies.value.length > 0) {
-    stats.push({
-      icon: 'i-heroicons-academic-cap',
-      label: 'Skill Proficiencies',
-      value: skillProficiencies.value.join(', ')
-    })
-  }
-
-  // Languages (show actual names)
-  if (languages.value.length > 0) {
-    stats.push({
-      icon: 'i-heroicons-language',
-      label: 'Languages',
-      value: languages.value.join(', ')
-    })
-  }
-
-  // Tool Proficiencies (show actual names)
-  if (toolProficiencies.value.length > 0) {
-    stats.push({
-      icon: 'i-heroicons-wrench',
-      label: 'Tool Proficiencies',
-      value: toolProficiencies.value.join(', ')
-    })
-  }
-
-  // Equipment + Gold combined
-  if (equipmentCount.value > 0 || startingGold.value) {
-    const parts = []
-    if (equipmentCount.value > 0) parts.push(`${equipmentCount.value} items`)
-    if (startingGold.value) parts.push(`${startingGold.value} gp`)
-
-    stats.push({
-      icon: 'i-heroicons-shopping-bag',
+  // Equipment (if available)
+  if (equipment.value && equipment.value.length > 0) {
+    items.push({
       label: 'Starting Equipment',
-      value: parts.join(' + ')
+      icon: 'i-heroicons-cube',
+      defaultOpen: false,
+      slot: 'equipment'
     })
   }
 
-  return stats
+  // Source (if available)
+  if (sources.value && sources.value.length > 0) {
+    items.push({
+      label: 'Source',
+      icon: 'i-heroicons-book-open',
+      defaultOpen: false,
+      slot: 'source'
+    })
+  }
+
+  // Tags (if available)
+  if (tags.value && tags.value.length > 0) {
+    items.push({
+      label: 'Tags',
+      icon: 'i-heroicons-tag',
+      defaultOpen: false,
+      slot: 'tags'
+    })
+  }
+
+  return items
 })
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Loading -->
     <UiDetailPageLoading
-      v-if="loading"
+      v-if="pending"
       entity-type="background"
     />
 
+    <!-- Error -->
     <UiDetailPageError
       v-else-if="error"
       entity-type="Background"
     />
 
+    <!-- Content -->
     <div
       v-else-if="entity"
       class="space-y-8"
@@ -123,9 +117,11 @@ const statsForDisplay = computed(() => {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Quick Stats - 2/3 width on large screens -->
         <div class="lg:col-span-2">
-          <UiDetailQuickStatsCard
-            :columns="2"
-            :stats="statsForDisplay"
+          <BackgroundQuickStats
+            :skills="skillsWithAbilities"
+            :language-display="languageDisplay"
+            :tool-proficiencies="toolProficiencies"
+            :starting-gold="startingGold"
           />
         </div>
 
@@ -139,105 +135,52 @@ const statsForDisplay = computed(() => {
         </div>
       </div>
 
-      <!-- Description (always visible, outside accordion) -->
+      <!-- Feature Hero Section -->
+      <BackgroundFeatureCard :feature="feature" />
+
+      <!-- Description -->
       <UiDetailDescriptionCard
-        v-if="entity.description"
-        :description="entity.description"
+        v-if="descriptionTrait?.description"
+        :description="descriptionTrait.description"
       />
 
-      <!-- Single Unified Accordion - ALL expandable sections -->
-      <UAccordion
-        :items="[
-          ...(entity.traits && entity.traits.length > 0 ? [{
-            label: 'Background Traits',
-            slot: 'traits',
-            defaultOpen: false
-          }] : []),
-          ...(entity.proficiencies && entity.proficiencies.length > 0 ? [{
-            label: 'Skill Proficiencies',
-            slot: 'proficiencies',
-            defaultOpen: false
-          }] : []),
-          ...(entity.languages && entity.languages.length > 0 ? [{
-            label: 'Languages',
-            slot: 'languages',
-            defaultOpen: false
-          }] : []),
-          ...(entity.equipment && entity.equipment.length > 0 ? [{
-            label: 'Starting Equipment',
-            slot: 'equipment',
-            defaultOpen: false
-          }] : []),
-          ...(entity.sources && entity.sources.length > 0 ? [{
-            label: 'Source',
-            slot: 'source',
-            defaultOpen: false
-          }] : []),
-          ...(entity.tags && entity.tags.length > 0 ? [{
-            label: 'Tags',
-            slot: 'tags',
-            defaultOpen: false
-          }] : [])
-        ]"
-        type="multiple"
-      >
-        <!-- Traits Slot -->
-        <template
-          v-if="entity.traits && entity.traits.length > 0"
-          #traits
-        >
-          <UiAccordionTraitsList
-            :traits="entity.traits"
-            :show-category="true"
+      <!-- Suggested Characteristics (2x2 grid of rollable tables) -->
+      <section v-if="dataTables.length > 0">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <UIcon
+            name="i-heroicons-user-circle"
+            class="w-6 h-6"
           />
-        </template>
+          Suggested Characteristics
+        </h2>
+        <BackgroundCharacteristicsGrid :data-tables="dataTables" />
+      </section>
 
-        <!-- Proficiencies Slot -->
-        <template
-          v-if="entity.proficiencies && entity.proficiencies.length > 0"
-          #proficiencies
+      <!-- Collapsed Accordions -->
+      <section v-if="accordionItems.length > 0">
+        <UAccordion
+          :items="accordionItems"
+          type="multiple"
         >
-          <UiAccordionBulletList :items="entity.proficiencies" />
-        </template>
+          <!-- Equipment Slot -->
+          <template #equipment>
+            <UiAccordionEquipmentList
+              :equipment="equipment"
+              type="background"
+            />
+          </template>
 
-        <!-- Languages Slot -->
-        <template
-          v-if="entity.languages && entity.languages.length > 0"
-          #languages
-        >
-          <UiAccordionBadgeList
-            :items="entity.languages"
-            color="neutral"
-          />
-        </template>
+          <!-- Source Slot -->
+          <template #source>
+            <UiSourceDisplay :sources="sources" />
+          </template>
 
-        <!-- Equipment Slot -->
-        <template
-          v-if="entity.equipment && entity.equipment.length > 0"
-          #equipment
-        >
-          <UiAccordionEquipmentList
-            :equipment="entity.equipment"
-            type="background"
-          />
-        </template>
-
-        <!-- Source Slot -->
-        <template
-          v-if="entity.sources && entity.sources.length > 0"
-          #source
-        >
-          <UiSourceDisplay :sources="entity.sources" />
-        </template>
-
-        <!-- Tags Slot -->
-        <template
-          v-if="entity.tags && entity.tags.length > 0"
-          #tags
-        >
-          <UiTagsDisplay :tags="entity.tags" />
-        </template>
-      </UAccordion>
+          <!-- Tags Slot -->
+          <template #tags>
+            <UiTagsDisplay :tags="tags" />
+          </template>
+        </UAccordion>
+      </section>
 
       <!-- Bottom Navigation -->
       <UiDetailPageBottomNav

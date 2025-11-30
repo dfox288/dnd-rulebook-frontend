@@ -2,132 +2,192 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import BackgroundsSlugPage from '~/pages/backgrounds/[slug].vue'
 
+/**
+ * Background Detail Page Tests
+ *
+ * Tests the redesigned background page layout (Issue #51):
+ * - Quick Stats with skills (ability codes), languages, tools, gold
+ * - Feature hero section
+ * - Description card
+ * - Suggested Characteristics (2x2 grid of rollable tables)
+ * - Accordion for equipment/source/tags
+ */
 describe('Backgrounds [slug] Page', () => {
-  it('should render single UAccordion with type="multiple"', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('page structure', () => {
+    it('renders the page without errors', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      expect(wrapper.exists()).toBe(true)
     })
 
-    // Find all UAccordion components
-    const accordions = wrapper.findAllComponents({ name: 'UAccordion' })
+    it('displays background name in header', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
 
-    // Should be exactly ONE accordion (not multiple UCards)
-    expect(accordions.length).toBe(1)
+      expect(wrapper.text()).toContain('Acolyte')
+    })
 
-    // Should have type="multiple"
-    expect(accordions[0].props('type')).toBe('multiple')
+    it('displays Background badge', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      expect(wrapper.text()).toContain('Background')
+    })
   })
 
-  it('should NOT render traits in standalone UCard outside accordion', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('quick stats section', () => {
+    it('renders BackgroundQuickStats component', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const quickStats = wrapper.findComponent({ name: 'BackgroundQuickStats' })
+      expect(quickStats.exists()).toBe(true)
     })
 
-    // Check that UAccordion component exists (traits are in accordion)
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    expect(accordion.exists()).toBe(true)
+    it('displays skill proficiencies with ability codes', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
 
-    // If "Background Traits" appears, it should be within the accordion items
-    const accordionProps = accordion.props()
-    const hasTraitsItem = accordionProps.items?.some((item: Record<string, unknown>) =>
-      item.label === 'Background Traits'
-    )
-    expect(hasTraitsItem).toBe(true)
+      const text = wrapper.text()
+      // Mock data has Investigation (INT) and Insight (WIS)
+      expect(text).toContain('Investigation')
+      expect(text).toContain('INT')
+      expect(text).toContain('Insight')
+      expect(text).toContain('WIS')
+    })
+
+    it('displays language information', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const text = wrapper.text()
+      // Mock data has is_choice: true, quantity: 2
+      expect(text).toContain('2 of your choice')
+    })
   })
 
-  it('should render traits in accordion slot with UiAccordionTraitsList', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('feature section', () => {
+    it('renders BackgroundFeatureCard component', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const featureCard = wrapper.findComponent({ name: 'BackgroundFeatureCard' })
+      expect(featureCard.exists()).toBe(true)
     })
 
-    // Check that accordion has traits slot defined in items
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    const items = accordion.props('items')
-    const hasTraitsSlot = items?.some((item: Record<string, unknown>) => item.slot === 'traits')
-    expect(hasTraitsSlot).toBe(true)
+    it('displays feature name', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
 
-    // Check that the traits slot exists in the component's slots
-    const html = wrapper.html()
-    // Accordion slots are rendered conditionally, but the template should have them
-    expect(html).toContain('Background Traits')
+      const text = wrapper.text()
+      // Mock data has Feature: Acolyte Expertise
+      expect(text).toContain('Feature')
+      expect(text).toContain('Expertise')
+    })
   })
 
-  it('should render proficiencies in accordion slot', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('characteristics section', () => {
+    it('renders BackgroundCharacteristicsGrid component', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const charGrid = wrapper.findComponent({ name: 'BackgroundCharacteristicsGrid' })
+      expect(charGrid.exists()).toBe(true)
     })
 
-    // Check that accordion has proficiencies slot defined in items
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    const items = accordion.props('items')
-    const hasProficienciesSlot = items?.some((item: Record<string, unknown>) => item.slot === 'proficiencies')
-    expect(hasProficienciesSlot).toBe(true)
+    it('displays Suggested Characteristics heading', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      expect(wrapper.text()).toContain('Suggested Characteristics')
+    })
+
+    it('displays characteristic tables', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const text = wrapper.text()
+      // Mock data has all 4 tables
+      expect(text).toContain('Personality Trait')
+      expect(text).toContain('Ideal')
+      expect(text).toContain('Bond')
+      expect(text).toContain('Flaw')
+    })
   })
 
-  it('should render languages in accordion slot', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('accordion sections', () => {
+    it('renders single UAccordion with type="multiple"', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const accordions = wrapper.findAllComponents({ name: 'UAccordion' })
+      expect(accordions.length).toBe(1)
+      expect(accordions[0].props('type')).toBe('multiple')
     })
 
-    // Check that accordion has languages slot defined in items
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    const items = accordion.props('items')
-    const hasLanguagesSlot = items?.some((item: Record<string, unknown>) => item.slot === 'languages')
-    expect(hasLanguagesSlot).toBe(true)
+    it('has equipment slot in accordion', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const accordion = wrapper.findComponent({ name: 'UAccordion' })
+      const items = accordion.props('items')
+      const hasEquipmentSlot = items?.some((item: Record<string, unknown>) => item.slot === 'equipment')
+      expect(hasEquipmentSlot).toBe(true)
+    })
+
+    it('has source slot in accordion', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      const accordion = wrapper.findComponent({ name: 'UAccordion' })
+      const items = accordion.props('items')
+      const hasSourceSlot = items?.some((item: Record<string, unknown>) => item.slot === 'source')
+      expect(hasSourceSlot).toBe(true)
+    })
   })
 
-  it('should render description outside accordion (always visible)', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('description section', () => {
+    it('renders description outside accordion (always visible)', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      // Description comes from descriptionTrait which is extracted from traits
+      const text = wrapper.text()
+      expect(text).toContain('You have spent your life')
     })
-
-    const html = wrapper.html()
-
-    // Description card should exist
-    expect(html).toContain('Description')
-
-    // Find the description section in HTML
-    const descriptionIndex = html.indexOf('Description')
-    const accordionIndex = html.indexOf('type="multiple"')
-
-    // Description should appear BEFORE accordion in the HTML
-    if (descriptionIndex > -1 && accordionIndex > -1) {
-      expect(descriptionIndex).toBeLessThan(accordionIndex)
-    }
   })
 
-  it('should have all expected sections in accordion items array', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+  describe('navigation', () => {
+    it('displays breadcrumb navigation', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
+
+      expect(wrapper.text()).toContain('Backgrounds')
     })
 
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    expect(accordion.exists()).toBe(true)
+    it('displays back navigation button', async () => {
+      const wrapper = await mountSuspended(BackgroundsSlugPage, {
+        route: '/backgrounds/acolyte'
+      })
 
-    const items = accordion.props('items')
-    expect(Array.isArray(items)).toBe(true)
-    expect(items.length).toBeGreaterThan(0)
-
-    // Should contain key sections
-    const slots = items.map((item: Record<string, unknown>) => item.slot)
-
-    // At minimum, should have traits (charlatan has traits)
-    expect(slots).toContain('traits')
-  })
-
-  it('should render image in dedicated section (not side-by-side with traits)', async () => {
-    const wrapper = await mountSuspended(BackgroundsSlugPage, {
-      route: '/backgrounds/charlatan'
+      expect(wrapper.text()).toContain('Back to Backgrounds')
     })
-
-    const html = wrapper.html()
-
-    // Check that image is NOT in a flex layout with traits
-    // (old pattern had lg:flex-row with image and traits side-by-side)
-    const hasOldSideBySideLayout = html.includes('lg:flex-row')
-      && html.includes('lg:w-2/3')
-      && html.includes('lg:w-1/3')
-
-    expect(hasOldSideBySideLayout).toBe(false)
   })
 })

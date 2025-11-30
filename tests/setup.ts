@@ -88,24 +88,102 @@ const createMockApiResponse = (url) => {
     // Background detail
     if (url.includes('/backgrounds/')) {
       const slug = url.split('/').pop()
+      const name = slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ')
       return Promise.resolve({
         data: {
           id: 1,
-          name: slug.charAt(0).toUpperCase() + slug.slice(1),
+          name,
           slug,
-          description: `Description of ${slug} background`,
           traits: [
             {
-              name: 'Background Trait',
-              category: 'Feature',
-              description: 'A trait for this background'
+              id: 1,
+              name: 'Description',
+              category: null,
+              description: `You have spent your life as a ${slug}. This background provides unique skills and experiences.`,
+              sort_order: 0,
+              data_tables: []
+            },
+            {
+              id: 2,
+              name: `Feature: ${name} Expertise`,
+              category: 'feature',
+              description: `As a ${slug}, you have a special ability that sets you apart. You can call upon your expertise to gain advantage in relevant situations.`,
+              sort_order: 1,
+              data_tables: []
+            },
+            {
+              id: 3,
+              name: 'Suggested Characteristics',
+              category: 'characteristics',
+              description: 'Use these tables to create your character personality.',
+              sort_order: 2,
+              data_tables: [
+                {
+                  id: 1,
+                  table_name: 'Personality Trait',
+                  dice_type: 'd8',
+                  table_type: 'random',
+                  description: null,
+                  entries: [
+                    { id: 1, roll_min: 1, roll_max: 1, result_text: 'I am always calm, no matter the situation.' },
+                    { id: 2, roll_min: 2, roll_max: 2, result_text: 'I love a good mystery or puzzle.' }
+                  ]
+                },
+                {
+                  id: 2,
+                  table_name: 'Ideal',
+                  dice_type: 'd6',
+                  table_type: 'random',
+                  description: null,
+                  entries: [
+                    { id: 3, roll_min: 1, roll_max: 1, result_text: 'Knowledge. Learning is the greatest pursuit. (Neutral)' },
+                    { id: 4, roll_min: 2, roll_max: 2, result_text: 'Justice. The guilty must be punished. (Lawful)' }
+                  ]
+                },
+                {
+                  id: 3,
+                  table_name: 'Bond',
+                  dice_type: 'd6',
+                  table_type: 'random',
+                  description: null,
+                  entries: [
+                    { id: 5, roll_min: 1, roll_max: 1, result_text: 'I have a mentor who taught me everything.' }
+                  ]
+                },
+                {
+                  id: 4,
+                  table_name: 'Flaw',
+                  dice_type: 'd6',
+                  table_type: 'random',
+                  description: null,
+                  entries: [
+                    { id: 6, roll_min: 1, roll_max: 1, result_text: 'I am easily distracted by shiny objects.' }
+                  ]
+                }
+              ]
             }
           ],
-          proficiencies: ['Deception', 'Sleight of Hand'],
-          languages: ['Common', 'Thieves\' Cant'],
-          equipment: ['Item 1', 'Item 2'],
-          sources: [{ name: 'Player\'s Handbook', page: '123' }],
-          tags: ['tag1', 'tag2']
+          proficiencies: [
+            {
+              id: 1,
+              proficiency_type: 'skill',
+              proficiency_name: 'Investigation',
+              skill: { id: 1, name: 'Investigation', slug: 'investigation', ability_score: { id: 4, code: 'INT', name: 'Intelligence' } }
+            },
+            {
+              id: 2,
+              proficiency_type: 'skill',
+              proficiency_name: 'Insight',
+              skill: { id: 2, name: 'Insight', slug: 'insight', ability_score: { id: 5, code: 'WIS', name: 'Wisdom' } }
+            }
+          ],
+          languages: [{ is_choice: true, quantity: 2 }],
+          equipment: [
+            { id: 1, item_id: 1, quantity: 1, item: { id: 1, name: 'Backpack', slug: 'backpack' } },
+            { id: 2, item_id: 201, quantity: 15, item: { id: 201, name: 'Gold (gp)', slug: 'gold-gp' } }
+          ],
+          sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '127' }],
+          tags: [{ id: 1, name: 'Scholar', slug: 'scholar' }]
         }
       })
     }
