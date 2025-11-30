@@ -20,7 +20,7 @@ interface TimelineLevel {
   parentFeatures?: ClassFeatureResource[]
   spellSlots?: Record<string, number>
   cantripsKnown?: number
-  resourceValue?: number | string  // Can be "Unlimited" at level 20
+  resourceValue?: number | string // Can be "Unlimited" at level 20
   resourceName?: string
   isMilestone: boolean
   milestoneType?: 'subclass' | 'asi' | 'spell_tier' | 'capstone'
