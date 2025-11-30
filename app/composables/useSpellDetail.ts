@@ -1,8 +1,47 @@
+import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
 import type { Spell } from '~/types/api/entities'
 import type { components } from '~/types/api/generated'
 
 type SpellEffectResource = components['schemas']['SpellEffectResource']
 type ClassResource = components['schemas']['ClassResource']
+
+/**
+ * Return type for useSpellDetail composable
+ */
+export interface UseSpellDetailReturn {
+  /** Spell data from API */
+  entity: ComputedRef<Spell | null>
+
+  /** Loading state */
+  pending: Ref<boolean>
+
+  /** Error state */
+  error: Ref<unknown>
+
+  /** Refresh spell data */
+  refresh: () => Promise<void>
+
+  /** Formatted spell level text (e.g., "3rd-level Evocation" or "Evocation cantrip") */
+  spellLevelText: ComputedRef<string>
+
+  /** Whether spell has multiple scaling effects */
+  hasScalingEffects: ComputedRef<boolean>
+
+  /** Type of scaling: spell_slot_level or character_level */
+  scalingType: ComputedRef<'spell_slot_level' | 'character_level' | null>
+
+  /** Base damage effect from spell */
+  baseDamage: ComputedRef<SpellEffectResource | null>
+
+  /** Whether combat mechanics section should be visible */
+  combatMechanicsVisible: ComputedRef<boolean>
+
+  /** Classes grouped into base classes and subclasses */
+  groupedClasses: ComputedRef<{ baseClasses: ClassResource[], subclasses: ClassResource[] }>
+
+  /** Parsed area of effect into structured data */
+  parsedAreaOfEffect: ComputedRef<{ type: string, size: string } | null>
+}
 
 /**
  * Composable for spell detail pages.
@@ -33,7 +72,7 @@ type ClassResource = components['schemas']['ClassResource']
  * } = useSpellDetail(slug)
  * ```
  */
-export function useSpellDetail(slug: Ref<string> | string) {
+export function useSpellDetail(slug: Ref<string> | string): UseSpellDetailReturn {
   const slugRef = isRef(slug) ? slug : ref(slug)
 
   // Fetch spell data with caching and SEO
