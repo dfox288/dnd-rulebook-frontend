@@ -37,6 +37,7 @@ export interface Item extends Omit<ItemFromAPI, 'sources' | 'item_type' | 'damag
   item_type?: {
     id: number
     name: string
+    code: string
   }
   damage_type?: { id: number, name: string }
   modifiers?: Modifier[]
