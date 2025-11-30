@@ -11,6 +11,7 @@ interface Props {
   languageDisplay: string
   toolProficiencies: string[]
   startingGold: number | null
+  equipmentCount: number
 }
 
 interface Stat {
@@ -61,6 +62,15 @@ const stats = computed<Stat[]>(() => {
       icon: 'i-heroicons-wrench',
       label: 'Tool Proficiencies',
       value: props.toolProficiencies.join(', ')
+    })
+  }
+
+  // Starting Equipment count stat
+  if (props.equipmentCount > 0) {
+    result.push({
+      icon: 'i-heroicons-cube',
+      label: 'Starting Items',
+      value: `${props.equipmentCount} item${props.equipmentCount !== 1 ? 's' : ''}`
     })
   }
 

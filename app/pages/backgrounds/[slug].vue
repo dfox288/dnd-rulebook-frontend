@@ -20,12 +20,14 @@ const {
   error,
   feature,
   descriptionTrait,
+  characteristics,
   dataTables,
   skillsWithAbilities,
   toolProficiencies,
   languageDisplay,
   startingGold,
   equipment,
+  equipmentCount,
   sources,
   tags
 } = useBackgroundDetail(slug)
@@ -122,6 +124,7 @@ const accordionItems = computed(() => {
             :language-display="languageDisplay"
             :tool-proficiencies="toolProficiencies"
             :starting-gold="startingGold"
+            :equipment-count="equipmentCount"
           />
         </div>
 
@@ -135,14 +138,14 @@ const accordionItems = computed(() => {
         </div>
       </div>
 
-      <!-- Feature Hero Section -->
-      <BackgroundFeatureCard :feature="feature" />
-
-      <!-- Description -->
+      <!-- Description (background lore/flavor) -->
       <UiDetailDescriptionCard
         v-if="descriptionTrait?.description"
         :description="descriptionTrait.description"
       />
+
+      <!-- Feature Hero Section (signature background ability) -->
+      <BackgroundFeatureCard :feature="feature" />
 
       <!-- Suggested Characteristics (2x2 grid of rollable tables) -->
       <section v-if="dataTables.length > 0">
@@ -153,7 +156,10 @@ const accordionItems = computed(() => {
           />
           Suggested Characteristics
         </h2>
-        <BackgroundCharacteristicsGrid :data-tables="dataTables" />
+        <BackgroundCharacteristicsGrid
+          :data-tables="dataTables"
+          :description="characteristics?.description"
+        />
       </section>
 
       <!-- Collapsed Accordions -->

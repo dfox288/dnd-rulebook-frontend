@@ -13,7 +13,8 @@ describe('BackgroundQuickStats', () => {
         ],
         languageDisplay: '2 of your choice',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -31,7 +32,8 @@ describe('BackgroundQuickStats', () => {
         ],
         languageDisplay: '2 of your choice',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -48,7 +50,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '2 of your choice',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -62,7 +65,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '2 of your choice',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -75,7 +79,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: 'Elvish, Dwarvish',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -88,7 +93,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -102,7 +108,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: ['Thieves\' Tools', 'Disguise Kit'],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -117,7 +124,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -131,7 +139,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: 10
+        startingGold: 10,
+        equipmentCount: 0
       }
     })
 
@@ -144,7 +153,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -159,7 +169,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: 0
+        startingGold: 0,
+        equipmentCount: 0
       }
     })
 
@@ -173,7 +184,8 @@ describe('BackgroundQuickStats', () => {
         skills: [{ name: 'Insight', abilityCode: 'WIS' }],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -186,7 +198,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: 'Common, Elvish',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -199,7 +212,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: ['Thieves\' Tools'],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
@@ -212,7 +226,8 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: 15
+        startingGold: 15,
+        equipmentCount: 0
       }
     })
 
@@ -229,7 +244,8 @@ describe('BackgroundQuickStats', () => {
         ],
         languageDisplay: '2 of your choice',
         toolProficiencies: ['Thieves\' Tools'],
-        startingGold: 15
+        startingGold: 15,
+        equipmentCount: 5
       }
     })
 
@@ -238,6 +254,7 @@ describe('BackgroundQuickStats', () => {
     expect(text).toContain('Religion (INT)')
     expect(text).toContain('2 of your choice')
     expect(text).toContain('Thieves\' Tools')
+    expect(text).toContain('5 items')
     expect(text).toContain('15 gp')
   })
 
@@ -247,11 +264,71 @@ describe('BackgroundQuickStats', () => {
         skills: [],
         languageDisplay: '',
         toolProficiencies: [],
-        startingGold: null
+        startingGold: null,
+        equipmentCount: 0
       }
     })
 
     // Should render but be empty (UCard should still exist)
     expect(wrapper.html()).toBeTruthy()
+  })
+
+  // Equipment count tests
+  it('renders starting items count when present', async () => {
+    const wrapper = await mountSuspended(BackgroundQuickStats, {
+      props: {
+        skills: [],
+        languageDisplay: '',
+        toolProficiencies: [],
+        startingGold: null,
+        equipmentCount: 6
+      }
+    })
+
+    expect(wrapper.text()).toContain('6 items')
+  })
+
+  it('shows singular "item" when count is 1', async () => {
+    const wrapper = await mountSuspended(BackgroundQuickStats, {
+      props: {
+        skills: [],
+        languageDisplay: '',
+        toolProficiencies: [],
+        startingGold: null,
+        equipmentCount: 1
+      }
+    })
+
+    expect(wrapper.text()).toContain('1 item')
+    expect(wrapper.text()).not.toContain('1 items')
+  })
+
+  it('hides starting items section when count is 0', async () => {
+    const wrapper = await mountSuspended(BackgroundQuickStats, {
+      props: {
+        skills: [],
+        languageDisplay: '',
+        toolProficiencies: [],
+        startingGold: null,
+        equipmentCount: 0
+      }
+    })
+
+    expect(wrapper.text()).not.toContain('items')
+    expect(wrapper.text()).not.toContain('Starting Items')
+  })
+
+  it('uses cube icon for starting items', async () => {
+    const wrapper = await mountSuspended(BackgroundQuickStats, {
+      props: {
+        skills: [],
+        languageDisplay: '',
+        toolProficiencies: [],
+        startingGold: null,
+        equipmentCount: 3
+      }
+    })
+
+    expect(wrapper.html()).toContain('i-heroicons-cube')
   })
 })

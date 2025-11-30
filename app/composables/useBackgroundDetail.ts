@@ -185,11 +185,12 @@ export function useBackgroundDetail(slug: Ref<string>) {
 
   /**
    * Starting gold amount (extracted from equipment)
+   * Note: Must check slug first to avoid matching items like "Cloth-of-gold vestments"
    */
   const startingGold = computed<number | null>(() => {
     const goldItem = equipment.value.find(eq =>
-      eq.item?.name?.toLowerCase().includes('gold')
-      || eq.item?.slug === 'gold-gp'
+      eq.item?.slug === 'gold-gp'
+      || eq.item?.name?.toLowerCase() === 'gold (gp)'
     )
     return goldItem?.quantity ?? null
   })
