@@ -83,8 +83,9 @@ export function useFeatDetail(slug: Ref<string>) {
   const isHalfFeat = computed(() => {
     const value = entity.value?.is_half_feat
     if (!value) return false
-    // Handle both boolean and string types (API type uncertainty)
-    return value === true || value === 'true'
+    // API returns string 'true'/'false', coerce to boolean
+    // Use String() cast to satisfy TypeScript while handling potential type drift
+    return String(value) === 'true'
   })
 
   // ─────────────────────────────────────────────────────────────────────────────
