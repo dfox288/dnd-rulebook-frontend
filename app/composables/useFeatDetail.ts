@@ -201,32 +201,33 @@ export function useFeatDetail(slug: Ref<string>) {
   const parentFeatSlug = computed(() => entity.value?.parent_feat_slug || null)
 
   /**
-   * Fetch related variants when this feat has a parent
-   * All feats with the same parent_feat_slug are variants
+   * Related variants - fetched client-side only after main entity loads
    */
-  const { data: variantsData } = useAsyncData(
-    `feat-variants-${slug.value}`,
-    async () => {
-      const parent = parentFeatSlug.value
-      if (!parent) return []
+  const variantsData = ref<Feat[]>([])
+
+  // Fetch variants when entity loads and has parent_feat_slug
+  watch(
+    () => entity.value?.parent_feat_slug,
+    async (parent) => {
+      if (!parent) {
+        variantsData.value = []
+        return
+      }
 
       try {
         const response = await apiFetch<{ data: Feat[] }>('/feats', {
           query: { filter: `parent_feat_slug = ${parent}` }
         })
-        return response.data ?? []
+        variantsData.value = response.data ?? []
       } catch (err) {
         console.error('Failed to fetch feat variants:', err)
-        return []
+        variantsData.value = []
       }
     },
-    {
-      watch: [parentFeatSlug],
-      immediate: false // Only fetch when parentFeatSlug changes
-    }
+    { immediate: true }
   )
 
-  const relatedVariants = computed(() => variantsData.value ?? [])
+  const relatedVariants = computed(() => variantsData.value)
 
   // ─────────────────────────────────────────────────────────────────────────────
   // Sources and Tags
