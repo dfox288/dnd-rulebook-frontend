@@ -54,7 +54,7 @@ export interface Item extends Omit<ItemFromAPI, 'sources' | 'item_type' | 'damag
  */
 type RaceFromAPI = components['schemas']['RaceResource']
 
-export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'> {
+export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size' | 'is_subrace'> {
   // Override with our custom types that have better structure
   description?: string
   size?: {
@@ -64,6 +64,20 @@ export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'
   }
   modifiers?: Modifier[]
   sources?: EntitySource[]
+
+  // Override is_subrace as boolean (OpenAPI says string but API returns boolean)
+  is_subrace?: boolean
+
+  // Inherited data for subraces (not in OpenAPI spec yet)
+  inherited_data?: {
+    traits?: components['schemas']['TraitResource'][]
+    modifiers?: components['schemas']['ModifierResource'][]
+    proficiencies?: components['schemas']['ProficiencyResource'][]
+    languages?: components['schemas']['EntityLanguageResource'][]
+    conditions?: components['schemas']['EntityConditionResource'][]
+    senses?: components['schemas']['EntitySenseResource'][]
+  } | null
+
   // All other fields inherited from RaceFromAPI
 }
 
@@ -89,7 +103,7 @@ export interface CounterFromAPI {
   reset_timing: 'Short Rest' | 'Long Rest' | 'Does Not Reset'
   progression: Array<{
     level: number
-    value: number | string  // Can be "Unlimited" at level 20
+    value: number | string // Can be "Unlimited" at level 20
   }>
 }
 
