@@ -23,25 +23,27 @@ const displayTraits = computed(() => {
 })
 
 /**
- * Total count of traits for "View all" link
+ * Total count of lore traits
  */
-const totalTraitCount = computed(() => props.traits.length)
+const totalLoreCount = computed(() => props.traits.length)
 
 /**
- * Truncate description for preview
+ * Check if there are more traits than displayed
  */
-function truncateDescription(text: string | null | undefined, maxLength = 100): string {
-  if (!text) return ''
+const hasMore = computed(() => props.traits.length > props.maxDisplay)
 
-  if (text.length <= maxLength) return text
-
-  const truncated = text.substring(0, maxLength)
-  const lastSpace = truncated.lastIndexOf(' ')
-
-  if (lastSpace > maxLength * 0.7) {
-    return truncated.substring(0, lastSpace) + '...'
+/**
+ * Truncate description to ~150 chars at sentence boundary
+ */
+function truncateDescription(desc: string | null | undefined): string {
+  if (!desc) return ''
+  const maxLength = 150
+  if (desc.length <= maxLength) return desc
+  const truncated = desc.substring(0, maxLength)
+  const lastPeriod = truncated.lastIndexOf('.')
+  if (lastPeriod > maxLength * 0.5) {
+    return truncated.substring(0, lastPeriod + 1)
   }
-
   return truncated + '...'
 }
 </script>
@@ -51,14 +53,14 @@ function truncateDescription(text: string | null | undefined, maxLength = 100): 
     <!-- Header -->
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
-        Key Traits
+        Lore
       </h2>
       <NuxtLink
-        v-if="totalTraitCount > displayTraits.length"
+        v-if="hasMore"
         :to="`/races/${slug}/reference`"
         class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-1 group"
       >
-        <span>View all {{ totalTraitCount }} traits</span>
+        <span>View all {{ totalLoreCount }} lore entries</span>
         <UIcon
           name="i-heroicons-arrow-right"
           class="w-4 h-4 transition-transform group-hover:translate-x-1"
@@ -66,11 +68,8 @@ function truncateDescription(text: string | null | undefined, maxLength = 100): 
       </NuxtLink>
     </div>
 
-    <!-- Traits Cards (same style as LorePreview) -->
-    <div
-      v-if="displayTraits.length > 0"
-      class="grid gap-4"
-    >
+    <!-- Lore Cards -->
+    <div class="grid gap-4">
       <UCard
         v-for="trait in displayTraits"
         :key="trait.id"
@@ -81,7 +80,7 @@ function truncateDescription(text: string | null | undefined, maxLength = 100): 
             {{ trait.name }}
           </h3>
           <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-            {{ truncateDescription(trait.description, 150) }}
+            {{ truncateDescription(trait.description) }}
           </p>
         </div>
       </UCard>

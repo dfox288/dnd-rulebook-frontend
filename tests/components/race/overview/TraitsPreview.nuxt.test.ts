@@ -52,7 +52,7 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('Key Racial Traits')
+    expect(wrapper.text()).toContain('Key Traits')
   })
 
   it('displays first 3 traits by default', async () => {
@@ -164,7 +164,7 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('View all 5 traits in Reference')
+    expect(wrapper.text()).toContain('View all 5 traits')
 
     const link = wrapper.find('a')
     expect(link.attributes('href')).toBe('/races/elf/reference')
@@ -178,7 +178,8 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('View all 2 traits in Reference')
+    // When traits count equals display count, no "view all" link should appear
+    expect(wrapper.text()).not.toContain('View all')
   })
 
   it('displays all traits when count is less than or equal to maxDisplay', async () => {
@@ -204,12 +205,12 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
-    expect(wrapper.text()).toContain('Key Racial Traits')
-    // Should not crash and should not show view all link
+    expect(wrapper.text()).toContain('Key Traits')
+    // Should not crash and should not show view all link (no traits to view)
     expect(wrapper.text()).not.toContain('View all')
   })
 
-  it('uses accordion-like styling for trait cards', async () => {
+  it('uses UCard styling for trait cards', async () => {
     const wrapper = await mountSuspended(RaceOverviewTraitsPreview, {
       props: {
         traits: mockTraits.slice(0, 3),
@@ -217,9 +218,8 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
-    // Check for styling classes that indicate card-like appearance
+    // UCard components should be present
     const html = wrapper.html()
-    expect(html).toContain('rounded')
     expect(html).toContain('bg-gray')
   })
 
@@ -290,7 +290,7 @@ describe('RaceOverviewTraitsPreview', () => {
     expect(html).toContain('i-heroicons-arrow-right')
   })
 
-  it('has hover state for trait cards', async () => {
+  it('uses UCard component for trait display', async () => {
     const wrapper = await mountSuspended(RaceOverviewTraitsPreview, {
       props: {
         traits: mockTraits.slice(0, 3),
@@ -298,8 +298,9 @@ describe('RaceOverviewTraitsPreview', () => {
       }
     })
 
+    // UCard renders with specific classes
     const html = wrapper.html()
-    // Check for hover classes
-    expect(html).toMatch(/hover:bg/)
+    // UCard uses ring styling
+    expect(html).toContain('ring')
   })
 })

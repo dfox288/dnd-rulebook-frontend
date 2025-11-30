@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import type { Race } from '~/types/api/entities'
+import type { components } from '~/types/api/generated'
 import { getSizeColor } from '~/utils/badgeColors'
+
+type TagResource = components['schemas']['TagResource']
 
 interface Props {
   entity: Race
   isSubrace: boolean
   parentRace: Race['parent_race'] | null
+  tags?: TagResource[]
 }
 
 const props = defineProps<Props>()
@@ -91,6 +95,16 @@ const sizeColor = computed(() => {
             size="md"
           >
             {{ entity.size.name }}
+          </UBadge>
+
+          <UBadge
+            v-for="tag in tags"
+            :key="tag.id"
+            color="neutral"
+            variant="outline"
+            size="md"
+          >
+            {{ tag.name }}
           </UBadge>
         </div>
 

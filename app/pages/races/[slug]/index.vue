@@ -16,15 +16,18 @@ const {
   error,
   isSubrace,
   parentRace,
+  inheritedData,
   abilityScoreIncreases,
   damageResistances,
   speciesTraits,
+  descriptionTraits,
   senses,
   spells,
   subraces,
   languages,
   proficiencies,
-  conditions
+  conditions,
+  tags
 } = useRaceDetail(slug)
 
 /**
@@ -53,11 +56,11 @@ const accordionItems = computed(() => {
     })
   }
 
-  // Conditions (if available)
+  // Condition Defenses (if available)
   if (conditions.value && conditions.value.length > 0) {
     items.push({
-      label: 'Conditions',
-      icon: 'i-heroicons-exclamation-triangle',
+      label: 'Condition Defenses',
+      icon: 'i-heroicons-shield-exclamation',
       defaultOpen: false,
       slot: 'conditions'
     })
@@ -91,41 +94,39 @@ const accordionItems = computed(() => {
         :entity="entity"
         :is-subrace="isSubrace"
         :parent-race="parentRace"
+        :tags="tags"
       />
 
       <!-- View Navigation -->
       <RaceViewNavigation :slug="slug" />
 
+      <!-- Inherited Data Section (only for subraces with inherited data) -->
+      <section v-if="isSubrace && parentRace && inheritedData">
+        <RaceOverviewInheritedDataSection
+          :parent-race-name="parentRace.name"
+          :parent-race-slug="parentRace.slug"
+          :inherited-data="inheritedData"
+        />
+      </section>
+
       <!-- Overview Content -->
       <div class="space-y-6">
-        <!-- Quick Stats + ASI Card (2/3) | Image (1/3) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Left Column: Quick Stats + ASI Card (2/3 width) -->
-          <div class="lg:col-span-2 space-y-6">
-            <!-- Quick Stats Card -->
-            <UiDetailQuickStatsCard
-              :columns="2"
-              :stats="[
-                ...(entity.size ? [{ icon: 'i-heroicons-user', label: 'Size', value: entity.size.name }] : []),
-                ...(entity.speed ? [{ icon: 'i-heroicons-bolt', label: 'Speed', value: `${entity.speed} ft.` }] : [])
-              ]"
-            />
+        <!-- Quick Stats + ASI Card -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Quick Stats Card -->
+          <UiDetailQuickStatsCard
+            :columns="2"
+            :stats="[
+              ...(entity.size ? [{ icon: 'i-heroicons-user', label: 'Size', value: entity.size.name }] : []),
+              ...(entity.speed ? [{ icon: 'i-heroicons-bolt', label: 'Speed', value: `${entity.speed} ft.` }] : [])
+            ]"
+          />
 
-            <!-- Ability Score Increases Card -->
-            <RaceOverviewAbilityScoresCard
-              v-if="abilityScoreIncreases.length > 0"
-              :modifiers="abilityScoreIncreases"
-            />
-          </div>
-
-          <!-- Right Column: Image (1/3 width) -->
-          <div class="lg:col-span-1">
-            <UiDetailEntityImage
-              v-if="entity.slug"
-              :image-path="useEntityImage().getImagePath('races', entity.slug, 512)"
-              :image-alt="`${entity.name} character portrait`"
-            />
-          </div>
+          <!-- Ability Score Increases Card -->
+          <RaceOverviewAbilityScoresCard
+            v-if="abilityScoreIncreases.length > 0"
+            :modifiers="abilityScoreIncreases"
+          />
         </div>
 
         <!-- Senses Display (conditional) -->
@@ -144,6 +145,15 @@ const accordionItems = computed(() => {
           :description="entity.description"
         />
 
+        <!-- Racial Lore Preview -->
+        <section v-if="descriptionTraits.length > 0">
+          <RaceOverviewLorePreview
+            :traits="descriptionTraits"
+            :slug="slug"
+            :max-display="3"
+          />
+        </section>
+
         <!-- Key Traits Preview (species category only) -->
         <section v-if="!isSubrace && speciesTraits.length > 0">
           <RaceOverviewTraitsPreview
@@ -158,22 +168,6 @@ const accordionItems = computed(() => {
             Innate Spellcasting
           </h2>
           <RaceOverviewSpellsCard :spells="spells" />
-        </section>
-
-        <!-- Subrace Gallery (only for base races with subraces) -->
-        <section v-if="!isSubrace && subraces.length > 0">
-          <div class="mb-4">
-            <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
-              Subraces
-            </h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Choose a subrace to further customize your {{ entity.name }} character
-            </p>
-          </div>
-          <UiRaceSubraceCards
-            :subraces="subraces"
-            base-path="/races"
-          />
         </section>
 
         <!-- Collapsed Accordions -->
@@ -200,6 +194,22 @@ const accordionItems = computed(() => {
               />
             </template>
           </UAccordion>
+        </section>
+
+        <!-- Subrace Gallery (only for base races with subraces) -->
+        <section v-if="!isSubrace && subraces.length > 0">
+          <div class="mb-4">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">
+              Subraces
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Choose a subrace to further customize your {{ entity.name }} character
+            </p>
+          </div>
+          <UiRaceSubraceCards
+            :subraces="subraces"
+            base-path="/races"
+          />
         </section>
       </div>
 

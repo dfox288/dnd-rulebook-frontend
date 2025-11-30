@@ -54,6 +54,16 @@ export function useRaceDetail(slug: Ref<string>) {
   const parentRace = computed(() => entity.value?.parent_race ?? null)
   const inheritedData = computed(() => isSubrace.value ? entity.value?.inherited_data : null)
 
+  const inheritedSpeciesTraits = computed<TraitResource[]>(() => {
+    if (!isSubrace.value || !inheritedData.value?.traits) return []
+    return inheritedData.value.traits.filter(t => t.category === 'species')
+  })
+
+  const inheritedDescriptionTraits = computed<TraitResource[]>(() => {
+    if (!isSubrace.value || !inheritedData.value?.traits) return []
+    return inheritedData.value.traits.filter(t => t.category === 'description')
+  })
+
   // ─────────────────────────────────────────────────────────────────────────────
   // Modifiers (ability scores and damage resistances)
   // ─────────────────────────────────────────────────────────────────────────────
@@ -125,6 +135,12 @@ export function useRaceDetail(slug: Ref<string>) {
   const subraces = computed(() => entity.value?.subraces ?? [])
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Tags
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const tags = computed(() => entity.value?.tags ?? [])
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // SEO
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -169,6 +185,8 @@ export function useRaceDetail(slug: Ref<string>) {
     subspeciesTraits,
     descriptionTraits,
     mechanicalTraits,
+    inheritedSpeciesTraits,
+    inheritedDescriptionTraits,
 
     // Proficiencies & Languages
     proficiencies,
@@ -180,6 +198,9 @@ export function useRaceDetail(slug: Ref<string>) {
     spells,
 
     // Subraces
-    subraces
+    subraces,
+
+    // Tags
+    tags
   }
 }

@@ -19,13 +19,15 @@ const {
   speciesTraits,
   subspeciesTraits,
   descriptionTraits,
+  inheritedSpeciesTraits,
   abilityScoreIncreases,
   damageResistances,
   proficiencies,
   languages,
   conditions,
   spells,
-  senses
+  senses,
+  tags
 } = useRaceDetail(slug)
 
 // Combine all modifiers for accordion display
@@ -58,6 +60,7 @@ const allModifiers = computed(() => {
         :entity="entity"
         :is-subrace="isSubrace"
         :parent-race="parentRace"
+        :tags="tags"
       />
 
       <!-- View Navigation -->
@@ -70,6 +73,44 @@ const allModifiers = computed(() => {
         </h2>
 
         <div class="space-y-6">
+          <!-- Inherited Species Traits (for subraces) -->
+          <div
+            v-if="isSubrace && inheritedSpeciesTraits.length > 0"
+            class="space-y-4"
+          >
+            <!-- Section Header -->
+            <div class="flex items-center gap-3">
+              <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Inherited from {{ parentRace?.name }}
+              </h3>
+              <div class="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+            </div>
+
+            <!-- Traits Display -->
+            <div
+              v-for="trait in inheritedSpeciesTraits"
+              :key="`inherited-${trait.id}`"
+              class="border-l-4 border-warning-500 pl-4 py-2 space-y-2 opacity-90"
+            >
+              <h4 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ trait.name }}
+              </h4>
+              <div
+                v-if="trait.description"
+                class="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line"
+              >
+                {{ trait.description }}
+              </div>
+
+              <!-- Data Tables (if any) -->
+              <UiAccordionRandomTablesList
+                v-if="trait.data_tables && trait.data_tables.length > 0"
+                :tables="trait.data_tables"
+              />
+            </div>
+          </div>
+
           <!-- Species Traits (core racial abilities) -->
           <div
             v-if="speciesTraits.length > 0"

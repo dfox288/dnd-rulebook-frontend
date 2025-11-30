@@ -10,10 +10,27 @@ interface Props {
 defineProps<Props>()
 
 /**
- * Format effect type for display
+ * Format effect type with D&D context
+ * Examples:
+ * - "Advantage on saving throws"
+ * - "Immunity"
+ * - "Resistance"
  */
 const formatEffectType = (effectType: string): string => {
-  return effectType.charAt(0).toUpperCase() + effectType.slice(1)
+  switch (effectType) {
+    case 'advantage':
+      return 'Advantage on saving throws'
+    case 'immunity':
+      return 'Immunity'
+    case 'resistance':
+      return 'Resistance'
+    case 'disadvantage':
+      return 'Disadvantage on saving throws'
+    case 'vulnerability':
+      return 'Vulnerability'
+    default:
+      return effectType.charAt(0).toUpperCase() + effectType.slice(1)
+  }
 }
 </script>
 
