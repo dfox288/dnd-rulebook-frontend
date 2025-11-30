@@ -1,23 +1,20 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import UiAccordionClassCounters from '~/components/ui/accordion/UiAccordionClassCounters.vue'
-import type { ClassCounterResource } from '~/types/api/entities'
+import type { CounterFromAPI } from '~/types/api/entities'
 
 describe('UiAccordionClassCounters', () => {
-  const mockCounters: ClassCounterResource[] = [
+  // CounterFromAPI: pre-grouped counters with progression arrays
+  const mockCounters: CounterFromAPI[] = [
     {
-      id: 1,
-      level: 3,
-      counter_name: 'Rage',
-      counter_value: 3,
-      reset_timing: 'Long Rest'
+      name: 'Ki Points',
+      reset_timing: 'Short Rest',
+      progression: [{ level: 1, value: 2 }]
     },
     {
-      id: 2,
-      level: 1,
-      counter_name: 'Ki Points',
-      counter_value: 2,
-      reset_timing: 'Short Rest'
+      name: 'Rage',
+      reset_timing: 'Long Rest',
+      progression: [{ level: 3, value: 3 }]
     }
   ]
 
@@ -53,74 +50,48 @@ describe('UiAccordionClassCounters', () => {
     expect(wrapper.text()).toBe('')
   })
 
-  it('groups same-named counters together', async () => {
-    const countersWithDuplicates: ClassCounterResource[] = [
+  it('shows each counter name once with progression', async () => {
+    // API returns pre-grouped counters - each counter appears once with all level progressions
+    const countersWithProgressions: CounterFromAPI[] = [
       {
-        id: 1,
-        level: 1,
-        counter_name: 'Rage',
-        counter_value: 2,
-        reset_timing: 'Long Rest'
+        name: 'Rage',
+        reset_timing: 'Long Rest',
+        progression: [
+          { level: 1, value: 2 },
+          { level: 3, value: 3 },
+          { level: 6, value: 4 }
+        ]
       },
       {
-        id: 2,
-        level: 3,
-        counter_name: 'Rage',
-        counter_value: 3,
-        reset_timing: 'Long Rest'
-      },
-      {
-        id: 3,
-        level: 6,
-        counter_name: 'Rage',
-        counter_value: 4,
-        reset_timing: 'Long Rest'
-      },
-      {
-        id: 4,
-        level: 2,
-        counter_name: 'Ki Points',
-        counter_value: 2,
-        reset_timing: 'Short Rest'
+        name: 'Ki Points',
+        reset_timing: 'Short Rest',
+        progression: [{ level: 2, value: 2 }]
       }
     ]
 
     const wrapper = await mountSuspended(UiAccordionClassCounters, {
-      props: { counters: countersWithDuplicates }
+      props: { counters: countersWithProgressions }
     })
 
-    // Should only show "Rage" once
+    // Each counter name appears once (API pre-groups them)
     const text = wrapper.text()
     const rageMatches = text.match(/Rage/g)
     expect(rageMatches).toHaveLength(1)
 
-    // Should show Ki Points once
     const kiMatches = text.match(/Ki Points/g)
     expect(kiMatches).toHaveLength(1)
   })
 
   it('shows progression values for grouped counters', async () => {
-    const countersWithProgression: ClassCounterResource[] = [
+    const countersWithProgression: CounterFromAPI[] = [
       {
-        id: 1,
-        level: 1,
-        counter_name: 'Rage',
-        counter_value: 2,
-        reset_timing: 'Long Rest'
-      },
-      {
-        id: 2,
-        level: 3,
-        counter_name: 'Rage',
-        counter_value: 3,
-        reset_timing: 'Long Rest'
-      },
-      {
-        id: 3,
-        level: 6,
-        counter_name: 'Rage',
-        counter_value: 4,
-        reset_timing: 'Long Rest'
+        name: 'Rage',
+        reset_timing: 'Long Rest',
+        progression: [
+          { level: 1, value: 2 },
+          { level: 3, value: 3 },
+          { level: 6, value: 4 }
+        ]
       }
     ]
 
@@ -130,7 +101,7 @@ describe('UiAccordionClassCounters', () => {
 
     const text = wrapper.text()
 
-    // Should show progression (2 → 3 → 4)
+    // Should show progression values (2, 3, 4)
     expect(text).toContain('2')
     expect(text).toContain('3')
     expect(text).toContain('4')
@@ -142,13 +113,11 @@ describe('UiAccordionClassCounters', () => {
   })
 
   it('handles single-occurrence counters normally', async () => {
-    const singleCounters: ClassCounterResource[] = [
+    const singleCounters: CounterFromAPI[] = [
       {
-        id: 1,
-        level: 1,
-        counter_name: 'Unique Counter',
-        counter_value: 5,
-        reset_timing: 'Long Rest'
+        name: 'Unique Counter',
+        reset_timing: 'Long Rest',
+        progression: [{ level: 1, value: 5 }]
       }
     ]
 
@@ -161,35 +130,25 @@ describe('UiAccordionClassCounters', () => {
     expect(wrapper.text()).toContain('Level 1')
   })
 
-  it('handles mixed grouped and single counters', async () => {
-    const mixedCounters: ClassCounterResource[] = [
+  it('handles multiple counters with varying progressions', async () => {
+    const mixedCounters: CounterFromAPI[] = [
       {
-        id: 1,
-        level: 1,
-        counter_name: 'Rage',
-        counter_value: 2,
-        reset_timing: 'Long Rest'
+        name: 'Rage',
+        reset_timing: 'Long Rest',
+        progression: [
+          { level: 1, value: 2 },
+          { level: 3, value: 3 }
+        ]
       },
       {
-        id: 2,
-        level: 3,
-        counter_name: 'Rage',
-        counter_value: 3,
-        reset_timing: 'Long Rest'
+        name: 'Ki Points',
+        reset_timing: 'Short Rest',
+        progression: [{ level: 2, value: 2 }]
       },
       {
-        id: 3,
-        level: 2,
-        counter_name: 'Ki Points',
-        counter_value: 2,
-        reset_timing: 'Short Rest'
-      },
-      {
-        id: 4,
-        level: 5,
-        counter_name: 'Sorcery Points',
-        counter_value: 5,
-        reset_timing: 'Long Rest'
+        name: 'Sorcery Points',
+        reset_timing: 'Long Rest',
+        progression: [{ level: 5, value: 5 }]
       }
     ]
 
