@@ -1,1 +1,1 @@
-handovers/SESSION-HANDOVER-2025-11-28-0100-phase3-timeline-ui.md
+handovers/SESSION-HANDOVER-2025-11-30-feat-detail-redesign.md
