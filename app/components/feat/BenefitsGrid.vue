@@ -15,7 +15,8 @@ defineProps<Props>()
     <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
       What You Get
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Max 2 columns - works in constrained hero section width -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Ability Score Card -->
       <UCard v-if="abilityModifiers.length > 0">
         <template #header>

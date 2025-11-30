@@ -113,33 +113,41 @@ const accordionItems = computed(() => {
         :badges="headerBadges"
       />
 
-      <!-- Prerequisites + Image Grid -->
+      <!-- Prerequisites (full width, only if present) -->
+      <UCard v-if="hasPrerequisites">
+        <template #header>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Prerequisites
+          </h2>
+        </template>
+        <ul class="space-y-2">
+          <li
+            v-for="(prereq, idx) in prerequisitesList"
+            :key="idx"
+            class="text-gray-700 dark:text-gray-300"
+          >
+            • {{ prereq }}
+          </li>
+        </ul>
+      </UCard>
+
+      <!-- Hero Section: Benefits + Spells + Image side-by-side -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Prerequisites -->
-        <div class="lg:col-span-2">
-          <UCard v-if="hasPrerequisites">
-            <template #header>
-              <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                Prerequisites
-              </h2>
-            </template>
-            <ul class="space-y-2">
-              <li
-                v-for="(prereq, idx) in prerequisitesList"
-                :key="idx"
-                class="text-gray-700 dark:text-gray-300"
-              >
-                • {{ prereq }}
-              </li>
-            </ul>
-          </UCard>
-          <div
-            v-else
-            class="h-full"
+        <!-- Left Column: Benefits + Spells (2/3 width) -->
+        <div class="lg:col-span-2 space-y-6">
+          <FeatBenefitsGrid
+            v-if="hasBenefits"
+            :ability-modifiers="abilityModifiers"
+            :granted-proficiencies="grantedProficiencies"
+            :advantages="advantages"
+          />
+          <FeatGrantedSpells
+            v-if="hasSpells"
+            :spells="spells"
           />
         </div>
 
-        <!-- Image -->
+        <!-- Right Column: Image (1/3 width) -->
         <div class="lg:col-span-1">
           <UiDetailEntityImage
             :image-path="imagePath"
@@ -147,20 +155,6 @@ const accordionItems = computed(() => {
           />
         </div>
       </div>
-
-      <!-- What You Get (Benefits Grid) -->
-      <FeatBenefitsGrid
-        v-if="hasBenefits"
-        :ability-modifiers="abilityModifiers"
-        :granted-proficiencies="grantedProficiencies"
-        :advantages="advantages"
-      />
-
-      <!-- Granted Spells -->
-      <FeatGrantedSpells
-        v-if="hasSpells"
-        :spells="spells"
-      />
 
       <!-- Description -->
       <UiDetailDescriptionCard

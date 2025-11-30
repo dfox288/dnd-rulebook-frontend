@@ -153,11 +153,12 @@ describe('FeatBenefitsGrid', () => {
       }
     })
 
-    // Check for grid classes
+    // Check for grid classes (max 2 columns for constrained hero section)
     const grid = wrapper.find('.grid')
     expect(grid.exists()).toBe(true)
     expect(grid.classes()).toContain('grid-cols-1')
     expect(grid.classes()).toContain('md:grid-cols-2')
-    expect(grid.classes()).toContain('lg:grid-cols-3')
+    // No lg:grid-cols-3 - max 2 columns in hero section
+    expect(grid.classes()).not.toContain('lg:grid-cols-3')
   })
 })

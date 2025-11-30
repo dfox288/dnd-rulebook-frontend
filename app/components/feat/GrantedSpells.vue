@@ -36,7 +36,8 @@ const shouldRender = computed(() => props.spells.length > 0)
       </h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <!-- Max 2 columns - works in constrained hero section width -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <NuxtLink
         v-for="entitySpell in spells"
         :key="entitySpell.id"

@@ -194,7 +194,7 @@ describe('FeatGrantedSpells', () => {
     expect(wrapper.html()).toContain('/spells/detect-magic')
   })
 
-  it('uses responsive grid layout', async () => {
+  it('uses responsive grid layout (max 2 columns)', async () => {
     const wrapper = await mountSuspended(FeatGrantedSpells, {
       props: { spells: mockSpells }
     })
@@ -203,7 +203,8 @@ describe('FeatGrantedSpells', () => {
     expect(grid.exists()).toBe(true)
     expect(grid.classes()).toContain('grid-cols-1')
     expect(grid.classes()).toContain('md:grid-cols-2')
-    expect(grid.classes()).toContain('lg:grid-cols-3')
+    // Max 2 columns for constrained hero section width
+    expect(grid.classes()).not.toContain('lg:grid-cols-3')
   })
 
   it('handles spells without school gracefully', async () => {
