@@ -68,20 +68,8 @@ export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'
   // Override is_subrace as boolean (OpenAPI says string but API returns boolean)
   is_subrace?: boolean
 
-  // Special movement speeds (Issue #26)
-  // These allow races like Aarakocra (fly) and Triton (swim) to show their special movement
-  fly_speed?: number | null
-  swim_speed?: number | null
-
-  // Inherited data for subraces (not in OpenAPI spec yet)
-  inherited_data?: {
-    traits?: components['schemas']['TraitResource'][]
-    modifiers?: components['schemas']['ModifierResource'][]
-    proficiencies?: components['schemas']['ProficiencyResource'][]
-    languages?: components['schemas']['EntityLanguageResource'][]
-    conditions?: components['schemas']['EntityConditionResource'][]
-    senses?: components['schemas']['EntitySenseResource'][]
-  } | null
+  // fly_speed, swim_speed, and inherited_data now properly typed in generated.ts
+  // No manual overrides needed - inherited from RaceFromAPI
 
   // All other fields inherited from RaceFromAPI
 }
