@@ -118,14 +118,47 @@ export function createMockItem(overrides: Partial<Item> = {}): Item {
     rarity: 'common',
     item_type: {
       id: 5,
+      code: 'M',
       name: 'Martial Weapon'
     },
+    item_type_id: 5,
     is_magic: false,
     requires_attunement: false,
     cost_cp: 1500,
-    weight: 3,
+    weight: '3',
     proficiency_category: 'martial_melee',
     magic_bonus: null,
+    detail: null,
+    // Weapon-specific fields
+    damage_dice: '1d8',
+    versatile_damage: '1d10',
+    damage_type: {
+      id: 1,
+      name: 'Slashing'
+    },
+    damage_type_id: 1,
+    range_normal: null,
+    range_long: null,
+    properties: [
+      { id: 9, code: 'V', name: 'Versatile', description: 'This weapon can be used with one or two hands.' }
+    ],
+    // Armor-specific fields
+    armor_class: null,
+    strength_requirement: null,
+    stealth_disadvantage: false,
+    // Magic item fields
+    charges_max: null,
+    recharge_formula: null,
+    recharge_timing: null,
+    // Arrays
+    modifiers: [],
+    abilities: [],
+    spells: [],
+    prerequisites: [],
+    proficiencies: [],
+    data_tables: [],
+    saving_throws: [],
+    tags: [],
     description: 'A versatile martial weapon used by warriors across the realms.',
     sources: [{ ...mockSource, pages: '149' }],
     ...overrides
