@@ -379,4 +379,77 @@ describe('useFeatDetail - data organization logic', () => {
       expect(mockFeat.tags).toEqual([])
     })
   })
+
+  describe('spells extraction', () => {
+    const mockSpells = [
+      {
+        id: 1,
+        spell_id: 42,
+        spell: {
+          id: 42,
+          slug: 'detect-magic',
+          name: 'Detect Magic',
+          level: 1,
+          school: { id: 1, code: 'D', name: 'Divination', slug: 'divination' }
+        },
+        is_cantrip: false,
+        level_requirement: null,
+        usage_limit: null
+      },
+      {
+        id: 2,
+        spell_id: 99,
+        spell: {
+          id: 99,
+          slug: 'light',
+          name: 'Light',
+          level: 0,
+          school: { id: 2, code: 'EV', name: 'Evocation', slug: 'evocation' }
+        },
+        is_cantrip: true,
+        level_requirement: null,
+        usage_limit: null
+      }
+    ]
+
+    function extractSpells(spells: typeof mockSpells | undefined) {
+      return spells || []
+    }
+
+    function hasSpells(spells: typeof mockSpells | undefined): boolean {
+      return (spells?.length ?? 0) > 0
+    }
+
+    it('returns spells array when feat has spells', () => {
+      const mockFeat: Partial<Feat> = { spells: mockSpells }
+      const result = extractSpells(mockFeat.spells)
+      expect(result).toHaveLength(2)
+      expect(result[0].spell?.name).toBe('Detect Magic')
+      expect(result[1].spell?.name).toBe('Light')
+    })
+
+    it('returns empty array when feat has no spells', () => {
+      const mockFeat: Partial<Feat> = { spells: [] }
+      const result = extractSpells(mockFeat.spells)
+      expect(result).toEqual([])
+    })
+
+    it('returns empty array when spells is undefined', () => {
+      const mockFeat: Partial<Feat> = {}
+      const result = extractSpells(mockFeat.spells)
+      expect(result).toEqual([])
+    })
+
+    it('hasSpells returns true when feat has spells', () => {
+      expect(hasSpells(mockSpells)).toBe(true)
+    })
+
+    it('hasSpells returns false when spells array is empty', () => {
+      expect(hasSpells([])).toBe(false)
+    })
+
+    it('hasSpells returns false when spells is undefined', () => {
+      expect(hasSpells(undefined)).toBe(false)
+    })
+  })
 })

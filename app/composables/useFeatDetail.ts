@@ -35,6 +35,7 @@ export interface FeatAdvantage {
  * - Advantages/conditions
  * - Prerequisites (text + structured)
  * - Related variants via parent_feat_slug
+ * - Granted spells
  *
  * @example
  * ```typescript
@@ -51,6 +52,8 @@ export interface FeatAdvantage {
  *   hasPrerequisites,
  *   prerequisitesList,
  *   relatedVariants,
+ *   spells,
+ *   hasSpells,
  *   sources,
  *   tags
  * } = useFeatDetail(slug)
@@ -230,6 +233,20 @@ export function useFeatDetail(slug: Ref<string>) {
   const relatedVariants = computed(() => variantsData.value)
 
   // ─────────────────────────────────────────────────────────────────────────────
+  // Granted Spells
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * Spells granted by this feat
+   */
+  const spells = computed(() => entity.value?.spells ?? [])
+
+  /**
+   * Does this feat grant any spells?
+   */
+  const hasSpells = computed(() => (entity.value?.spells?.length ?? 0) > 0)
+
+  // ─────────────────────────────────────────────────────────────────────────────
   // Sources and Tags
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -282,6 +299,10 @@ export function useFeatDetail(slug: Ref<string>) {
     // Variants
     parentFeatSlug,
     relatedVariants,
+
+    // Granted Spells
+    spells,
+    hasSpells,
 
     // Metadata
     sources,

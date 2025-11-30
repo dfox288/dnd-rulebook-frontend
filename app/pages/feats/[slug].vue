@@ -14,6 +14,8 @@ const {
   hasPrerequisites,
   prerequisitesList,
   relatedVariants,
+  spells,
+  hasSpells,
   sources,
   tags
 } = useFeatDetail(slug)
@@ -152,6 +154,12 @@ const accordionItems = computed(() => {
         :ability-modifiers="abilityModifiers"
         :granted-proficiencies="grantedProficiencies"
         :advantages="advantages"
+      />
+
+      <!-- Granted Spells -->
+      <FeatGrantedSpells
+        v-if="hasSpells"
+        :spells="spells"
       />
 
       <!-- Description -->
