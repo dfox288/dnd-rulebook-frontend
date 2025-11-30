@@ -45,7 +45,7 @@ const otherVariantsCount = computed(() =>
                 label="Half-Feat"
                 color="warning"
                 variant="subtle"
-                size="sm"
+                size="md"
               />
             </div>
             <div
