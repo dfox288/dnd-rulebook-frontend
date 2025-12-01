@@ -168,7 +168,7 @@ describe('SpellHero', () => {
     const wrapper = await mountSuspended(SpellHero, {
       props: {
         spell: mockSpell,
-        imagePath: '/images/spells/fireball.png'
+        imagePath: '/images/spells/fireball.webp'
       }
     })
 
@@ -192,7 +192,7 @@ describe('SpellHero', () => {
     const wrapper = await mountSuspended(SpellHero, {
       props: {
         spell: mockSpell,
-        imagePath: '/images/spells/fireball.png'
+        imagePath: '/images/spells/fireball.webp'
       }
     })
 
@@ -215,7 +215,7 @@ describe('SpellHero', () => {
     const wrapper = await mountSuspended(SpellHero, {
       props: {
         spell: fullSpell,
-        imagePath: '/images/spells/bless.png'
+        imagePath: '/images/spells/bless.webp'
       }
     })
 
@@ -270,7 +270,7 @@ describe('SpellHero', () => {
     const wrapper = await mountSuspended(SpellHero, {
       props: {
         spell: mockSpell,
-        imagePath: '/images/spells/fireball.png'
+        imagePath: '/images/spells/fireball.webp'
       }
     })
 

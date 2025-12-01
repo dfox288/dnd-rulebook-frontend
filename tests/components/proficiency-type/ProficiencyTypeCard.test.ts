@@ -74,7 +74,7 @@ describe('ProficiencyTypeCard', () => {
 
       // Check that the background div exists and has the image style
       const html = wrapper.html()
-      expect(html).toContain('light-armor.png')
+      expect(html).toContain('light-armor.webp')
     })
   })
 })

@@ -73,7 +73,7 @@ describe('SizeCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/sizes/stability-ai/m.png')
+      expect(url).toBe('/images/generated/conversions/256/sizes/stability-ai/m.webp')
     })
   })
 })

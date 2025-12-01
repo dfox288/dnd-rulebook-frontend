@@ -248,7 +248,7 @@ describe('UiRaceSubraceCards', () => {
 
     const html = wrapper.html()
     expect(html).toContain('/images/generated/conversions/256/races/')
-    expect(html).toContain('high-elf.png')
+    expect(html).toContain('high-elf.webp')
   })
 
   it('displays core source with success badge color', async () => {

@@ -89,7 +89,7 @@ describe('SkillCard', () => {
 
       const html = wrapper.html()
       // Check that the background image is in the HTML
-      expect(html).toContain('animal-handling.png')
+      expect(html).toContain('animal-handling.webp')
     })
   })
 })

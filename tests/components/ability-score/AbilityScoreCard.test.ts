@@ -61,7 +61,7 @@ describe('AbilityScoreCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/ability_scores/stability-ai/str.png')
+      expect(url).toBe('/images/generated/conversions/256/ability_scores/stability-ai/str.webp')
     })
   })
 })

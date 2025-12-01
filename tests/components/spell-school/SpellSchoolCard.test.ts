@@ -112,7 +112,7 @@ describe('SpellSchoolCard', () => {
 
       const url = wrapper.vm.backgroundImageUrl
       // Uses code field (EV) not slug or name
-      expect(url).toBe('/images/generated/conversions/256/spell_schools/stability-ai/EV.png')
+      expect(url).toBe('/images/generated/conversions/256/spell_schools/stability-ai/EV.webp')
     })
   })
 })

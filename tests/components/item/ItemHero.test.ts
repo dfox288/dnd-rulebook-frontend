@@ -127,7 +127,7 @@ describe('ItemHero', () => {
     const wrapper = await mountSuspended(ItemHero, {
       props: {
         item: mockItem,
-        imagePath: '/images/items/longsword.png'
+        imagePath: '/images/items/longsword.webp'
       }
     })
 
@@ -151,7 +151,7 @@ describe('ItemHero', () => {
     const wrapper = await mountSuspended(ItemHero, {
       props: {
         item: mockItem,
-        imagePath: '/images/items/longsword.png'
+        imagePath: '/images/items/longsword.webp'
       }
     })
 
@@ -174,7 +174,7 @@ describe('ItemHero', () => {
     const wrapper = await mountSuspended(ItemHero, {
       props: {
         item: fullItem,
-        imagePath: '/images/items/flametongue.png'
+        imagePath: '/images/items/flametongue.webp'
       }
     })
 
@@ -227,7 +227,7 @@ describe('ItemHero', () => {
     const wrapper = await mountSuspended(ItemHero, {
       props: {
         item: mockItem,
-        imagePath: '/images/items/longsword.png'
+        imagePath: '/images/items/longsword.webp'
       }
     })
 

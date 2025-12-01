@@ -82,7 +82,7 @@ describe('ConditionCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/conditions/stability-ai/blinded.png')
+      expect(url).toBe('/images/generated/conversions/256/conditions/stability-ai/blinded.webp')
     })
   })
 })

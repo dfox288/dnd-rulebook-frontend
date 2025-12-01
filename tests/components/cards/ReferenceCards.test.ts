@@ -151,7 +151,7 @@ describe('Reference Entity Cards - Shared Behavior', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe(`/images/generated/conversions/256/${imageFolder}/stability-ai/${imageKey}.png`)
+      expect(url).toBe(`/images/generated/conversions/256/${imageFolder}/stability-ai/${imageKey}.webp`)
     })
   })
 })

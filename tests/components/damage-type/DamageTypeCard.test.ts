@@ -79,7 +79,7 @@ describe('DamageTypeCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/damage_types/stability-ai/fire.png')
+      expect(url).toBe('/images/generated/conversions/256/damage_types/stability-ai/fire.webp')
     })
   })
 })

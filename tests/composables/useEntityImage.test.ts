@@ -17,100 +17,100 @@ describe('useEntityImage', () => {
     // Main entities (6 tests)
     it('returns correct path for races', () => {
       const result = getImagePath('races', 'dragonborn', 256)
-      expect(result).toBe('/images/generated/conversions/256/races/stability-ai/dragonborn.png')
+      expect(result).toBe('/images/generated/conversions/256/races/stability-ai/dragonborn.webp')
     })
 
     it('returns correct path for classes', () => {
       const result = getImagePath('classes', 'wizard', 256)
-      expect(result).toBe('/images/generated/conversions/256/classes/stability-ai/wizard.png')
+      expect(result).toBe('/images/generated/conversions/256/classes/stability-ai/wizard.webp')
     })
 
     it('returns correct path for backgrounds', () => {
       const result = getImagePath('backgrounds', 'acolyte', 256)
-      expect(result).toBe('/images/generated/conversions/256/backgrounds/stability-ai/acolyte.png')
+      expect(result).toBe('/images/generated/conversions/256/backgrounds/stability-ai/acolyte.webp')
     })
 
     it('returns correct path for feats', () => {
       const result = getImagePath('feats', 'alert', 256)
-      expect(result).toBe('/images/generated/conversions/256/feats/stability-ai/alert.png')
+      expect(result).toBe('/images/generated/conversions/256/feats/stability-ai/alert.webp')
     })
 
     it('returns correct path for spells', () => {
       const result = getImagePath('spells', 'fireball', 256)
-      expect(result).toBe('/images/generated/conversions/256/spells/stability-ai/fireball.png')
+      expect(result).toBe('/images/generated/conversions/256/spells/stability-ai/fireball.webp')
     })
 
     it('returns correct path for items', () => {
       const result = getImagePath('items', 'longsword', 256)
-      expect(result).toBe('/images/generated/conversions/256/items/stability-ai/longsword.png')
+      expect(result).toBe('/images/generated/conversions/256/items/stability-ai/longsword.webp')
     })
 
     // Reference entities with conversion (5 tests)
     it('converts ability-scores to ability_scores', () => {
       const result = getImagePath('ability-scores', 'strength', 256)
-      expect(result).toBe('/images/generated/conversions/256/ability_scores/stability-ai/strength.png')
+      expect(result).toBe('/images/generated/conversions/256/ability_scores/stability-ai/strength.webp')
     })
 
     it('converts spell-schools to spell_schools', () => {
       const result = getImagePath('spell-schools', 'evocation', 256)
-      expect(result).toBe('/images/generated/conversions/256/spell_schools/stability-ai/evocation.png')
+      expect(result).toBe('/images/generated/conversions/256/spell_schools/stability-ai/evocation.webp')
     })
 
     it('converts item-types to item_types', () => {
       const result = getImagePath('item-types', 'weapon', 256)
-      expect(result).toBe('/images/generated/conversions/256/item_types/stability-ai/weapon.png')
+      expect(result).toBe('/images/generated/conversions/256/item_types/stability-ai/weapon.webp')
     })
 
     it('converts proficiency-types to proficiency_types', () => {
       const result = getImagePath('proficiency-types', 'armor', 256)
-      expect(result).toBe('/images/generated/conversions/256/proficiency_types/stability-ai/armor.png')
+      expect(result).toBe('/images/generated/conversions/256/proficiency_types/stability-ai/armor.webp')
     })
 
     it('converts damage-types to damage_types', () => {
       const result = getImagePath('damage-types', 'fire', 256)
-      expect(result).toBe('/images/generated/conversions/256/damage_types/stability-ai/fire.png')
+      expect(result).toBe('/images/generated/conversions/256/damage_types/stability-ai/fire.webp')
     })
 
     // Reference entities with direct match (5 tests)
     it('uses direct match for conditions', () => {
       const result = getImagePath('conditions', 'blinded', 256)
-      expect(result).toBe('/images/generated/conversions/256/conditions/stability-ai/blinded.png')
+      expect(result).toBe('/images/generated/conversions/256/conditions/stability-ai/blinded.webp')
     })
 
     it('uses direct match for languages', () => {
       const result = getImagePath('languages', 'common', 256)
-      expect(result).toBe('/images/generated/conversions/256/languages/stability-ai/common.png')
+      expect(result).toBe('/images/generated/conversions/256/languages/stability-ai/common.webp')
     })
 
     it('uses direct match for sizes', () => {
       const result = getImagePath('sizes', 'medium', 256)
-      expect(result).toBe('/images/generated/conversions/256/sizes/stability-ai/medium.png')
+      expect(result).toBe('/images/generated/conversions/256/sizes/stability-ai/medium.webp')
     })
 
     it('uses direct match for skills', () => {
       const result = getImagePath('skills', 'acrobatics', 256)
-      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/acrobatics.png')
+      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/acrobatics.webp')
     })
 
     it('uses direct match for sources', () => {
       const result = getImagePath('sources', 'phb', 256)
-      expect(result).toBe('/images/generated/conversions/256/sources/stability-ai/phb.png')
+      expect(result).toBe('/images/generated/conversions/256/sources/stability-ai/phb.webp')
     })
 
     // Size variants (3 tests)
     it('returns 256px conversion path by default', () => {
       const result = getImagePath('skills', 'acrobatics')
-      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/acrobatics.png')
+      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/acrobatics.webp')
     })
 
     it('returns 512px conversion path when specified', () => {
       const result = getImagePath('skills', 'acrobatics', 512)
-      expect(result).toBe('/images/generated/conversions/512/skills/stability-ai/acrobatics.png')
+      expect(result).toBe('/images/generated/conversions/512/skills/stability-ai/acrobatics.webp')
     })
 
     it('returns original path when specified', () => {
       const result = getImagePath('skills', 'acrobatics', 'original')
-      expect(result).toBe('/images/generated/skills/stability-ai/acrobatics.png')
+      expect(result).toBe('/images/generated/skills/stability-ai/acrobatics.webp')
     })
 
     // Validation (3 tests)
@@ -126,7 +126,7 @@ describe('useEntityImage', () => {
 
     it('handles slug with hyphens correctly', () => {
       const result = getImagePath('skills', 'animal-handling', 256)
-      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/animal-handling.png')
+      expect(result).toBe('/images/generated/conversions/256/skills/stability-ai/animal-handling.webp')
     })
   })
 })
