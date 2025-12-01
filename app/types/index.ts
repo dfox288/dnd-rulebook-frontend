@@ -28,6 +28,9 @@ export type { components }
 // Search types
 export type { SearchResult, SearchResultData, EntityType, SearchOptions, SearchEntity, Class } from './search'
 
+// Character types
+export * from './character'
+
 // API Response types
 export interface ApiListResponse<T = unknown> {
   data: T[]
