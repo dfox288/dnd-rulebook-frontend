@@ -81,7 +81,7 @@ describe('SourceCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/sources/stability-ai/phb.png')
+      expect(url).toBe('/images/generated/conversions/256/sources/stability-ai/phb.webp')
     })
   })
 })

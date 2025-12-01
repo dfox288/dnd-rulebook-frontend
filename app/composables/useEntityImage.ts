@@ -75,10 +75,10 @@ export function useEntityImage() {
 
       // Build path based on size
       if (size === 'original') {
-        return `/images/generated/${folderName}/${provider}/${slug}.png`
+        return `/images/generated/${folderName}/${provider}/${slug}.webp`
       }
 
-      return `/images/generated/conversions/${size}/${folderName}/${provider}/${slug}.png`
+      return `/images/generated/conversions/${size}/${folderName}/${provider}/${slug}.webp`
     }
   }
 }

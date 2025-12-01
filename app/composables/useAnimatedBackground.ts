@@ -35,7 +35,7 @@ export class ParchmentBackground {
       this.createCachedPattern()
     }
     // Use provided parchment background
-    this.image.src = '/background.png'
+    this.image.src = '/background.webp'
 
     // If image fails to load, we'll draw a solid color
     this.image.onerror = () => {

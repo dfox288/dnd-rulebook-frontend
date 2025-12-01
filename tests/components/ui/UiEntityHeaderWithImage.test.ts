@@ -32,7 +32,7 @@ describe('UiEntityHeaderWithImage', () => {
     const wrapper = await mountSuspended(UiEntityHeaderWithImage, {
       props: {
         title: 'Dragonborn',
-        imagePath: '/images/generated/conversions/512/races/stability-ai/dragonborn.png',
+        imagePath: '/images/generated/conversions/512/races/stability-ai/dragonborn.webp',
         imageAlt: 'Dragonborn character portrait'
       }
     })
@@ -69,7 +69,7 @@ describe('UiEntityHeaderWithImage', () => {
     const wrapper = await mountSuspended(UiEntityHeaderWithImage, {
       props: {
         title: 'Dragonborn',
-        imagePath: '/images/test.png'
+        imagePath: '/images/test.webp'
       }
     })
 
@@ -82,7 +82,7 @@ describe('UiEntityHeaderWithImage', () => {
     const wrapper = await mountSuspended(UiEntityHeaderWithImage, {
       props: {
         title: 'Dragonborn',
-        imagePath: '/images/test.png'
+        imagePath: '/images/test.webp'
       }
     })
 

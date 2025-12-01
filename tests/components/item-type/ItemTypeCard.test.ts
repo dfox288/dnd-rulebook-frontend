@@ -72,7 +72,7 @@ describe('ItemTypeCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/item_types/stability-ai/la.png')
+      expect(url).toBe('/images/generated/conversions/256/item_types/stability-ai/la.webp')
     })
   })
 })

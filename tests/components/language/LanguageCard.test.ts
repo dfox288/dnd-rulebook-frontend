@@ -141,7 +141,7 @@ describe('LanguageCard', () => {
       })
 
       const url = wrapper.vm.backgroundImageUrl
-      expect(url).toBe('/images/generated/conversions/256/languages/stability-ai/common.png')
+      expect(url).toBe('/images/generated/conversions/256/languages/stability-ai/common.webp')
     })
   })
 })

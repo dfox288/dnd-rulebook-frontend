@@ -40,7 +40,7 @@ describe('UiDetailDescriptionWithImage', () => {
     const wrapper = await mountSuspended(UiDetailDescriptionWithImage, {
       props: {
         description: 'Test description',
-        imagePath: '/images/test.png',
+        imagePath: '/images/test.webp',
         imageAlt: 'Test image'
       }
     })
@@ -66,7 +66,7 @@ describe('UiDetailDescriptionWithImage', () => {
     const wrapper = await mountSuspended(UiDetailDescriptionWithImage, {
       props: {
         description: 'Test description',
-        imagePath: '/images/test.png'
+        imagePath: '/images/test.webp'
       }
     })
 
