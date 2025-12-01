@@ -22,22 +22,13 @@ async function handleCreate() {
   if (!isValid.value) return
 
   errorMessage.value = null
-  store.isLoading = true
 
   try {
-    const response = await apiFetch<{ data: { id: number; name: string } }>('/characters', {
-      method: 'POST',
-      body: { name: name.value.trim() }
-    })
-
-    store.characterId = response.data.id
+    await store.createDraft(name.value.trim())
     store.nextStep()
   }
   catch (err: unknown) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to create character'
-  }
-  finally {
-    store.isLoading = false
   }
 }
 

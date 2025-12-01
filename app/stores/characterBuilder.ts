@@ -10,6 +10,8 @@ import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Ba
  * Character is created as draft on step 1, updated as user progresses.
  */
 export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
+  // API client
+  const { apiFetch } = useApi()
   // ══════════════════════════════════════════════════════════════
   // WIZARD NAVIGATION
   // ══════════════════════════════════════════════════════════════
@@ -98,6 +100,35 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   // ══════════════════════════════════════════════════════════════
+  // API ACTIONS
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Step 1: Create a draft character with just a name
+   */
+  async function createDraft(characterName: string): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await apiFetch<{ data: { id: number; name: string } }>('/characters', {
+        method: 'POST',
+        body: { name: characterName }
+      })
+
+      characterId.value = response.data.id
+      name.value = characterName
+    }
+    catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Failed to create character'
+      throw err
+    }
+    finally {
+      isLoading.value = false
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════
   // RESET ACTION
   // ══════════════════════════════════════════════════════════════
   function reset(): void {
@@ -155,6 +186,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     nextStep,
     previousStep,
     goToStep,
+    createDraft,
     reset
   }
 })

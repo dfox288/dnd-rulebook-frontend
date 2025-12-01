@@ -3,9 +3,18 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
+// Mock apiFetch at module level
+const mockApiFetch = vi.fn()
+vi.mock('~/composables/useApi', () => ({
+  useApi: () => ({
+    apiFetch: mockApiFetch
+  })
+}))
+
 describe('useCharacterBuilderStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    mockApiFetch.mockReset()
   })
 
   describe('initial state', () => {
@@ -118,6 +127,64 @@ describe('useCharacterBuilderStore', () => {
       expect(store.raceId).toBeNull()
       expect(store.classId).toBeNull()
       expect(store.abilityScores.strength).toBe(10)
+    })
+  })
+
+  describe('createDraft action', () => {
+    it('calls API with character name', async () => {
+      mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf' } })
+
+      const store = useCharacterBuilderStore()
+      await store.createDraft('Gandalf')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters', {
+        method: 'POST',
+        body: { name: 'Gandalf' }
+      })
+    })
+
+    it('sets characterId from response', async () => {
+      mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf' } })
+
+      const store = useCharacterBuilderStore()
+      await store.createDraft('Gandalf')
+
+      expect(store.characterId).toBe(42)
+    })
+
+    it('sets name from input', async () => {
+      mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf' } })
+
+      const store = useCharacterBuilderStore()
+      await store.createDraft('Gandalf')
+
+      expect(store.name).toBe('Gandalf')
+    })
+
+    it('sets loading state during API call', async () => {
+      let resolvePromise: (value: unknown) => void
+      mockApiFetch.mockReturnValue(new Promise(resolve => {
+        resolvePromise = resolve
+      }))
+
+      const store = useCharacterBuilderStore()
+      const promise = store.createDraft('Gandalf')
+
+      expect(store.isLoading).toBe(true)
+
+      resolvePromise!({ data: { id: 42, name: 'Gandalf' } })
+      await promise
+
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('sets error on API failure', async () => {
+      mockApiFetch.mockRejectedValue(new Error('Network error'))
+
+      const store = useCharacterBuilderStore()
+
+      await expect(store.createDraft('Gandalf')).rejects.toThrow('Network error')
+      expect(store.error).toBe('Network error')
     })
   })
 })
