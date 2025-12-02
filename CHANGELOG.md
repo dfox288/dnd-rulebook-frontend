@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Character Builder Phase 2: Race & Class Selection (2025-12-02)** - Complete implementation of Steps 2-3
+  - Store actions: `selectRace()`, `selectClass()`, `refreshStats()` with full error handling
+  - `RacePickerCard` and `ClassPickerCard` - Click-to-select wrapper components with ring highlight
+  - `RaceDetailModal` and `ClassDetailModal` - Full entity info in UModal dialogs
+  - `StepRace` - Race grid with search, inline subrace selector for races with subraces
+  - `StepClass` - Class grid with search, spellcaster detection notice
+  - 74 tests covering all new components and store actions
+  - Design docs: `docs/plans/2025-12-02-character-builder-phase2-design.md`
+
 ### Changed
 
 - **Badge Size Standardization (2025-11-29)** - All badges now use `size="md"` for improved readability

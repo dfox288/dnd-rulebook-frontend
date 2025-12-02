@@ -1,6 +1,6 @@
 # Project Status
 
-**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-01
+**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-02
 
 ---
 
@@ -37,12 +37,12 @@
 | Phase | Description | Status | PR |
 |-------|-------------|--------|-----|
 | 1 | Foundation (store, wizard, Step 1) | ✅ Complete | [#2](https://github.com/dfox288/dnd-rulebook-frontend/pull/2) |
-| 2 | Race & Class Selection | 🔲 Pending | - |
+| 2 | Race & Class Selection | ✅ Complete | - |
 | 3 | Ability Scores | 🔲 Pending | - |
 | 4 | Background & Spells | 🔲 Pending | - |
 | 5 | Review & Character Sheet | 🔲 Pending | - |
 
-**Wizard Steps:** Name ✅ → Race 🔲 → Class 🔲 → Abilities 🔲 → Background 🔲 → Spells 🔲 → Review 🔲
+**Wizard Steps:** Name ✅ → Race ✅ → Class ✅ → Abilities 🔲 → Background 🔲 → Spells 🔲 → Review 🔲
 
 **Issue:** [#89](https://github.com/dfox288/dnd-rulebook-project/issues/89)
 
@@ -129,6 +129,10 @@
 
 ## Recent Milestones
 
+- **2025-12-02:** Character Builder Phase 2 - Race & Class Selection complete (74 tests, 8 new components)
+- **2025-12-02:** Store actions: `selectRace()`, `selectClass()`, `refreshStats()`
+- **2025-12-02:** Picker cards with click-to-select + View Details modal pattern
+- **2025-12-02:** Subrace inline selector for races with subraces
 - **2025-12-01:** Character Builder Phase 1 - Wizard foundation with Step 1 (Name) working, 30 new tests
 - **2025-12-01:** Character list page (`/characters`) with CharacterCard component
 - **2025-12-01:** Nitro server routes for character CRUD operations
