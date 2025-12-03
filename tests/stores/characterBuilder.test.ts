@@ -908,4 +908,138 @@ describe('useCharacterBuilderStore', () => {
       })
     })
   })
+
+  describe('proficiency choices', () => {
+    it('fetchProficiencyChoices populates proficiencyChoices state', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+
+      mockApiFetch.mockResolvedValueOnce({
+        data: {
+          class: {
+            skill_choice_1: {
+              quantity: 2,
+              remaining: 2,
+              options: [
+                { type: 'skill', skill_id: 1, skill: { id: 1, name: 'Acrobatics', slug: 'acrobatics' } }
+              ]
+            }
+          },
+          race: {},
+          background: {}
+        }
+      })
+
+      await store.fetchProficiencyChoices()
+
+      expect(store.proficiencyChoices).not.toBeNull()
+      expect(store.proficiencyChoices?.data.class.skill_choice_1.quantity).toBe(2)
+    })
+
+    it('toggleProficiencySelection adds and removes skills', () => {
+      const store = useCharacterBuilderStore()
+
+      store.toggleProficiencySelection('class', 'skill_choice_1', 5)
+      expect(store.pendingProficiencySelections.get('class:skill_choice_1')?.has(5)).toBe(true)
+
+      store.toggleProficiencySelection('class', 'skill_choice_1', 5)
+      expect(store.pendingProficiencySelections.get('class:skill_choice_1')?.has(5)).toBe(false)
+    })
+
+    it('hasPendingChoices returns true when choices exist', () => {
+      const store = useCharacterBuilderStore()
+
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 2, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+
+      expect(store.hasPendingChoices).toBe(true)
+    })
+
+    it('hasPendingChoices returns false when no choices', () => {
+      const store = useCharacterBuilderStore()
+
+      store.proficiencyChoices = {
+        data: { class: {}, race: {}, background: {} }
+      }
+
+      expect(store.hasPendingChoices).toBe(false)
+    })
+
+    it('allProficiencyChoicesComplete returns true when all choices made', () => {
+      const store = useCharacterBuilderStore()
+
+      store.proficiencyChoices = {
+        data: {
+          class: {
+            skill_choice_1: { quantity: 2, remaining: 2, options: [] }
+          },
+          race: {},
+          background: {}
+        }
+      }
+
+      // No selections yet
+      expect(store.allProficiencyChoicesComplete).toBe(false)
+
+      // Add correct number of selections
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1, 5]))
+      expect(store.allProficiencyChoicesComplete).toBe(true)
+    })
+
+    it('saveProficiencyChoices calls API for each selection group', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 2, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1, 5]))
+
+      mockApiFetch
+        .mockResolvedValueOnce({}) // POST proficiency-choices
+        .mockResolvedValueOnce({ data: { class: {}, race: {}, background: {} } }) // refresh
+
+      await store.saveProficiencyChoices()
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/1/proficiency-choices', {
+        method: 'POST',
+        body: {
+          source: 'class',
+          choice_group: 'skill_choice_1',
+          skill_ids: [1, 5]
+        }
+      })
+    })
+
+    it('totalSteps includes proficiency step when choices exist', () => {
+      const store = useCharacterBuilderStore()
+
+      // Non-caster without proficiency choices: 7 steps
+      store.selectedClass = { spellcasting_ability: null } as any
+      store.proficiencyChoices = { data: { class: {}, race: {}, background: {} } }
+      expect(store.totalSteps).toBe(7)
+
+      // Non-caster with proficiency choices: 8 steps
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 2, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+      expect(store.totalSteps).toBe(8)
+
+      // Caster with proficiency choices: 9 steps
+      store.selectedClass = { spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' } } as any
+      expect(store.totalSteps).toBe(9)
+    })
+  })
 })
