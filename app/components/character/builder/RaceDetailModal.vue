@@ -49,20 +49,11 @@ function handleClose() {
 </script>
 
 <template>
-  <UModal v-model:open="isOpen">
+  <UModal
+    v-model:open="isOpen"
+    :title="race?.name ?? 'Race Details'"
+  >
     <template #body>
-      <div class="flex items-center justify-between w-full mb-4">
-        <h2 class="text-xl font-bold">
-          {{ race?.name }}
-        </h2>
-        <UButton
-          data-testid="close-btn"
-          variant="ghost"
-          icon="i-heroicons-x-mark"
-          @click="handleClose"
-        />
-      </div>
-
       <div
         v-if="race"
         class="space-y-6"

@@ -26,10 +26,17 @@ const mockRace: Race = {
 // Stub UModal to avoid teleport issues in tests
 const UModalStub = {
   name: 'UModal',
-  props: ['open'],
+  props: ['open', 'title'],
   emits: ['update:open'],
-  setup(props: { open: boolean }, { slots, emit }: { slots: Record<string, () => unknown>, emit: (event: string, value: boolean) => void }) {
-    return () => props.open ? h('div', { class: 'modal-stub' }, slots.body ? slots.body() : slots.default?.()) : null
+  setup(props: { open: boolean, title?: string }, { slots, emit }: { slots: Record<string, () => unknown>, emit: (event: string, value: boolean) => void }) {
+    return () => props.open ? h('div', { class: 'modal-stub' }, [
+      // Render title if provided
+      props.title ? h('h2', { class: 'modal-title' }, props.title) : null,
+      // Render close button that emits update:open
+      h('button', { 'data-testid': 'modal-close', onClick: () => emit('update:open', false) }, 'Close'),
+      // Render body slot
+      slots.body ? slots.body() : slots.default?.()
+    ]) : null
   }
 }
 
@@ -85,12 +92,13 @@ describe('RaceDetailModal', () => {
     expect(wrapper.text()).toContain('Dwarven Resilience')
   })
 
-  it('emits close when close button is clicked', async () => {
+  it('emits close when modal is dismissed', async () => {
     const wrapper = await mountSuspended(RaceDetailModal, {
       props: { race: mockRace, open: true },
       global: { stubs: { UModal: UModalStub } }
     })
-    await wrapper.find('[data-testid="close-btn"]').trigger('click')
+    // Click the stubbed modal's close button which triggers update:open
+    await wrapper.find('[data-testid="modal-close"]').trigger('click')
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 })
