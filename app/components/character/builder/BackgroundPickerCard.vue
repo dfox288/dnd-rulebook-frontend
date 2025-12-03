@@ -13,6 +13,12 @@ const emit = defineEmits<{
   viewDetails: []
 }>()
 
+// Get background image path (256px variant)
+const { getImagePath } = useEntityImage()
+const backgroundImage = computed(() => {
+  return getImagePath('backgrounds', props.background.slug, 256)
+})
+
 // Extract skill names from proficiencies
 const skillNames = computed(() => {
   if (!props.background.proficiencies) return []
@@ -38,46 +44,57 @@ function handleViewDetails(event: Event) {
 </script>
 
 <template>
-  <div class="relative">
-    <button
-      data-test="card-button"
-      type="button"
-      class="w-full text-left"
-      @click="handleSelect"
-    >
-      <UCard
-        class="h-full transition-all"
-        :class="[
-          selected
-            ? 'ring-2 ring-background-500 bg-background-50 dark:bg-background-900/30'
-            : 'hover:ring-2 hover:ring-background-300'
-        ]"
+  <div
+    data-test="picker-card"
+    class="relative cursor-pointer transition-all"
+    :class="[
+      selected ? 'ring-2 ring-background-500 ring-offset-2' : ''
+    ]"
+    @click="handleSelect"
+  >
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-background-300 dark:border-background-700 hover:border-background-500">
+      <!-- Background Image Layer -->
+      <div
+        v-if="backgroundImage"
+        class="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-300"
+        :style="{ backgroundImage: `url(${backgroundImage})` }"
+      />
+
+      <!-- Selected Checkmark -->
+      <div
+        v-if="selected"
+        data-test="selected-check"
+        class="absolute top-2 right-2 z-20"
       >
-        <!-- Selected Checkmark -->
-        <div
-          v-if="selected"
-          data-test="selected-check"
-          class="absolute top-2 right-2 w-6 h-6 bg-background-500 rounded-full flex items-center justify-center"
+        <UBadge
+          color="success"
+          variant="solid"
+          size="md"
         >
           <UIcon
             name="i-heroicons-check"
-            class="w-4 h-4 text-white"
+            class="w-4 h-4"
           />
-        </div>
+        </UBadge>
+      </div>
 
-        <div class="space-y-2">
+      <!-- Content Layer -->
+      <div class="relative z-10 flex flex-col h-full">
+        <div class="space-y-3 flex-1">
           <!-- Feature Badge -->
-          <UBadge
-            v-if="background.feature_name"
-            color="background"
-            variant="subtle"
-            size="md"
-          >
-            {{ background.feature_name }}
-          </UBadge>
+          <div class="flex items-center gap-2 flex-wrap">
+            <UBadge
+              v-if="background.feature_name"
+              color="background"
+              variant="subtle"
+              size="md"
+            >
+              {{ background.feature_name }}
+            </UBadge>
+          </div>
 
           <!-- Name -->
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
             {{ background.name }}
           </h3>
 
@@ -107,19 +124,23 @@ function handleViewDetails(event: Event) {
         </div>
 
         <!-- View Details Button -->
-        <template #footer>
+        <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
           <UButton
             data-test="view-details-btn"
             variant="ghost"
-            color="neutral"
+            color="background"
             size="sm"
             block
             @click="handleViewDetails"
           >
+            <UIcon
+              name="i-heroicons-eye"
+              class="w-4 h-4 mr-1"
+            />
             View Details
           </UButton>
-        </template>
-      </UCard>
-    </button>
+        </div>
+      </div>
+    </UCard>
   </div>
 </template>

@@ -58,7 +58,7 @@ describe('BackgroundPickerCard', () => {
       props: { background: mockBackground, selected: false }
     })
 
-    await wrapper.find('[data-test="card-button"]').trigger('click')
+    await wrapper.find('[data-test="picker-card"]').trigger('click')
 
     expect(wrapper.emitted('select')).toBeTruthy()
     expect(wrapper.emitted('select')![0]).toEqual([mockBackground])
