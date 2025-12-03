@@ -32,6 +32,20 @@ const { data: availableSpells } = await useAsyncData(
   { transform: (response: { data: Spell[] }) => response.data }
 )
 
+// Fetch saved proficiencies for display (skill names)
+interface CharacterProficiency {
+  id: number
+  source: string
+  skill?: { id: number, name: string, slug: string }
+  proficiency_type?: { id: number, name: string, slug: string, category: string }
+}
+
+const { data: savedProficiencies } = await useAsyncData(
+  `review-proficiencies-${characterId.value}`,
+  () => apiFetch<{ data: CharacterProficiency[] }>(`/characters/${characterId.value}/proficiencies`),
+  { transform: (response: { data: CharacterProficiency[] }) => response.data }
+)
+
 // Get selected spells by filtering available spells by pending IDs
 const selectedSpellsForDisplay = computed(() => {
   if (!availableSpells.value) return []
@@ -116,6 +130,37 @@ const selectedSkillNames = computed(() => {
  */
 const proficiencyStepNumber = computed(() => {
   return hasPendingChoices.value ? 6 : -1
+})
+
+/**
+ * Check if there are any saved proficiency choices (remaining < quantity)
+ */
+const hasExistingProficiencyChoices = computed(() => {
+  if (!proficiencyChoices.value) return false
+  const { class: cls, race, background } = proficiencyChoices.value.data
+
+  for (const group of Object.values(cls)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(race)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(background)) {
+    if (group.remaining < group.quantity) return true
+  }
+
+  return false
+})
+
+/**
+ * Get saved skill proficiency names from the proficiencies endpoint
+ * Filters to only skill proficiencies (those with a skill object, not proficiency_type)
+ */
+const savedSkillProficiencies = computed((): string[] => {
+  if (!savedProficiencies.value) return []
+  return savedProficiencies.value
+    .filter(p => p.skill !== undefined && p.skill !== null)
+    .map(p => p.skill!.name)
 })
 
 /**
@@ -284,16 +329,18 @@ const hasFeatures = computed(() => {
         </div>
       </div>
 
-      <!-- Proficiencies (only shown if there were choices to make) -->
+      <!-- Proficiencies (shown if pending selections OR already saved choices) -->
       <div
-        v-if="hasPendingChoices && selectedSkillNames.length > 0"
+        v-if="selectedSkillNames.length > 0 || hasExistingProficiencyChoices"
         class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
       >
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">
             Skill Proficiencies
           </h3>
+          <!-- Edit button only shown if step exists -->
           <UButton
+            v-if="proficiencyStepNumber > 0"
             data-test="edit-proficiencies"
             variant="ghost"
             size="sm"
@@ -302,6 +349,7 @@ const hasFeatures = computed(() => {
           />
         </div>
         <div class="flex flex-wrap gap-2">
+          <!-- Show pending selections if any -->
           <UBadge
             v-for="skill in selectedSkillNames"
             :key="skill"
@@ -311,6 +359,18 @@ const hasFeatures = computed(() => {
           >
             {{ skill }}
           </UBadge>
+          <!-- Show saved choices if no pending selections -->
+          <template v-if="selectedSkillNames.length === 0">
+            <UBadge
+              v-for="skill in savedSkillProficiencies"
+              :key="skill"
+              color="primary"
+              variant="subtle"
+              size="md"
+            >
+              {{ skill }}
+            </UBadge>
+          </template>
         </div>
       </div>
 
