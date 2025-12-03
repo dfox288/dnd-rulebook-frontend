@@ -335,6 +335,80 @@ Naming based on folder structure:
 
 ---
 
+## Nitro Server Routes (API Proxy)
+
+**⚠️ CRITICAL:** All API calls go through Nitro server routes, NOT directly to the Laravel backend!
+
+### How It Works
+
+```
+Frontend Component → /api/spells → Nitro Route → Laravel Backend
+                     (port 4000)   (server/api/)   (port 8080)
+```
+
+The `useApi` composable provides `apiFetch` with `baseURL: '/api'`. This means:
+- `apiFetch('/spells')` → calls `/api/spells` → Nitro proxies to Laravel
+
+### When Adding New API Endpoints
+
+**If the backend has an endpoint, you MUST create a matching Nitro route!**
+
+```bash
+# Backend endpoint:
+GET http://localhost:8080/api/v1/characters/1/available-spells
+
+# Requires Nitro route at:
+server/api/characters/[id]/available-spells.get.ts
+```
+
+### Route File Structure
+
+```
+server/api/
+├── spells/
+│   ├── index.get.ts          # GET /api/spells
+│   └── [slug].get.ts         # GET /api/spells/:slug
+├── characters/
+│   ├── index.get.ts          # GET /api/characters
+│   ├── index.post.ts         # POST /api/characters
+│   ├── [id].get.ts           # GET /api/characters/:id
+│   ├── [id].patch.ts         # PATCH /api/characters/:id
+│   ├── [id].delete.ts        # DELETE /api/characters/:id
+│   └── [id]/
+│       ├── stats.get.ts      # GET /api/characters/:id/stats
+│       └── available-spells.get.ts  # GET /api/characters/:id/available-spells
+```
+
+### Route Template
+
+```typescript
+// server/api/characters/[id]/example.get.ts
+export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig()
+  const id = getRouterParam(event, 'id')
+  const query = getQuery(event)
+
+  // Build query string if needed
+  const queryString = query.param ? `?param=${query.param}` : ''
+
+  const data = await $fetch(`${config.apiBaseServer}/characters/${id}/example${queryString}`)
+  return data
+})
+```
+
+### Common Mistake
+
+```typescript
+// ❌ WRONG - Direct backend call (fails in SSR, CORS issues)
+const data = await $fetch('http://localhost:8080/api/v1/spells')
+
+// ✅ CORRECT - Use Nitro proxy
+const { apiFetch } = useApi()
+const data = await apiFetch('/spells')
+```
+
+---
+
 ## API Reference
 
 ### Backend

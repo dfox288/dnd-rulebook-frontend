@@ -26,8 +26,9 @@ function handleSelect(id: number) {
 
 function handleItemSelect(choiceOption: number, choiceItemIndex: number, itemIds: number[]) {
   // For single selection, emit the first (and only) item
-  if (itemIds.length > 0) {
-    emit('itemSelect', choiceOption, choiceItemIndex, itemIds[0])
+  const firstItem = itemIds[0]
+  if (firstItem !== undefined) {
+    emit('itemSelect', choiceOption, choiceItemIndex, firstItem)
   }
 }
 

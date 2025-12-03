@@ -10,7 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  select: [race: Race]
+  'select': [race: Race]
   'view-details': []
 }>()
 
@@ -71,7 +71,7 @@ const backgroundImage = computed(() => {
     data-testid="picker-card"
     class="relative cursor-pointer transition-all"
     :class="[
-      selected ? 'ring-2 ring-race-500 ring-offset-2' : '',
+      selected ? 'ring-2 ring-race-500 ring-offset-2' : ''
     ]"
     @click="handleCardClick"
   >

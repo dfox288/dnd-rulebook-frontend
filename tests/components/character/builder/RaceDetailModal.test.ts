@@ -33,7 +33,7 @@ const UModalStub = {
       // Render title if provided
       props.title ? h('h2', { class: 'modal-title' }, props.title) : null,
       // Render close button that emits update:open
-      h('button', { 'data-testid': 'modal-close', onClick: () => emit('update:open', false) }, 'Close'),
+      h('button', { 'data-testid': 'modal-close', 'onClick': () => emit('update:open', false) }, 'Close'),
       // Render body slot
       slots.body ? slots.body() : slots.default?.()
     ]) : null

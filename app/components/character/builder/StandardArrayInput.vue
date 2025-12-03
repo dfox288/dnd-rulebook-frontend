@@ -65,7 +65,7 @@ const isValid = computed(() => {
 })
 
 // Emit validity on mount and when it changes
-watch(isValid, (valid) => emit('update:valid', valid), { immediate: true })
+watch(isValid, valid => emit('update:valid', valid), { immediate: true })
 </script>
 
 <template>

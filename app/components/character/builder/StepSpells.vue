@@ -21,11 +21,29 @@ const {
 const { apiFetch } = useApi()
 
 // Fetch available spells for this character
-const { data: availableSpells, pending: loadingSpells } = await useAsyncData(
+const { data: availableSpells, pending: loadingSpells, refresh: refreshSpells } = await useAsyncData(
   `builder-available-spells-${characterId.value}`,
   () => apiFetch<{ data: Spell[] }>(`/characters/${characterId.value}/available-spells?max_level=1`),
   { transform: (response: { data: Spell[] }) => response.data }
 )
+
+// Debug: log what we got
+if (import.meta.dev) {
+  console.log('[StepSpells] characterId:', characterId.value)
+  console.log('[StepSpells] availableSpells:', availableSpells.value?.length ?? 0, 'spells')
+  console.log('[StepSpells] cantrips:', availableSpells.value?.filter(s => s.level === 0).length ?? 0)
+  console.log('[StepSpells] leveled:', availableSpells.value?.filter(s => s.level > 0).length ?? 0)
+}
+
+// If we didn't get spells (e.g., due to SSR timing), refresh on mount
+onMounted(async () => {
+  if (characterId.value && (!availableSpells.value || availableSpells.value.length === 0)) {
+    if (import.meta.dev) {
+      console.log('[StepSpells] Refreshing spells on mount...')
+    }
+    await refreshSpells()
+  }
+})
 
 // Split available spells into cantrips and leveled spells
 const availableCantrips = computed(() =>
@@ -137,6 +155,26 @@ function formatLevelText(level: number): string {
   if (level === 0) return 'Cantrip'
   const suffix = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th']
   return `${level}${suffix[level]} Level`
+}
+
+// Modal state for spell details
+const detailModalOpen = ref(false)
+const detailSpell = ref<Spell | null>(null)
+
+/**
+ * View spell details - open modal
+ */
+function handleViewDetails(spell: Spell) {
+  detailSpell.value = spell
+  detailModalOpen.value = true
+}
+
+/**
+ * Close detail modal
+ */
+function handleCloseModal() {
+  detailModalOpen.value = false
+  detailSpell.value = null
 }
 </script>
 
@@ -256,6 +294,7 @@ function formatLevelText(level: number): string {
             :selected="isSpellSelected(spell.id)"
             :disabled="!isSpellSelected(spell.id) && cantripsAtLimit"
             @toggle="handleSpellToggle"
+            @view-details="handleViewDetails(spell)"
           />
         </div>
       </div>
@@ -286,6 +325,7 @@ function formatLevelText(level: number): string {
             :selected="isSpellSelected(spell.id)"
             :disabled="!isSpellSelected(spell.id) && spellsAtLimit"
             @toggle="handleSpellToggle"
+            @view-details="handleViewDetails(spell)"
           />
         </div>
       </div>
@@ -317,5 +357,12 @@ function formatLevelText(level: number): string {
         Continue with Spells
       </UButton>
     </div>
+
+    <!-- Spell Detail Modal -->
+    <CharacterBuilderSpellDetailModal
+      :spell="detailSpell"
+      :open="detailModalOpen"
+      @close="handleCloseModal"
+    />
   </div>
 </template>

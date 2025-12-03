@@ -100,10 +100,10 @@ const selectOptions = computed(() =>
         option-attribute="label"
         value-attribute="value"
         class="w-full"
-        @update:model-value="(val: number | null) => {
+        @update:model-value="(val) => {
           const newSelections = [...selectedItems]
-          if (val !== null) {
-            newSelections[i - 1] = val
+          if (val !== null && val !== undefined) {
+            newSelections[i - 1] = val as number
             selectedItems = newSelections
           }
         }"
