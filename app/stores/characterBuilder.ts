@@ -220,6 +220,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   /**
    * Step 3: Select class
    * This updates isCaster computed which affects totalSteps
+   * Fetches full class detail to get equipment data
    */
   async function selectClass(cls: CharacterClass): Promise<void> {
     isLoading.value = true
@@ -232,7 +233,10 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       })
 
       classId.value = cls.id
-      selectedClass.value = cls
+
+      // Fetch full class detail to get equipment data
+      const fullClass = await apiFetch<{ data: CharacterClass }>(`/classes/${cls.slug}`)
+      selectedClass.value = fullClass.data
 
       await refreshStats()
     } catch (err: unknown) {
@@ -280,6 +284,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
 
   /**
    * Step 5: Select background
+   * Fetches full background detail to get equipment data
    */
   async function selectBackground(background: Background): Promise<void> {
     isLoading.value = true
@@ -292,7 +297,10 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       })
 
       backgroundId.value = background.id
-      selectedBackground.value = background
+
+      // Fetch full background detail to get equipment data
+      const fullBackground = await apiFetch<{ data: Background }>(`/backgrounds/${background.slug}`)
+      selectedBackground.value = fullBackground.data
 
       await refreshStats()
     } catch (err: unknown) {

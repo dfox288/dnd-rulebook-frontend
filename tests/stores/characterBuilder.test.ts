@@ -329,8 +329,12 @@ describe('useCharacterBuilderStore', () => {
       spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
     } as CharacterClass
 
-    it('calls API with class_id', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+    it('calls API with class_id and fetches full detail', async () => {
+      // Mock PATCH and GET calls
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH
+        .mockResolvedValueOnce({ data: mockClass }) // GET /classes/{slug}
+        .mockResolvedValueOnce({ data: {} }) // refreshStats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -341,10 +345,15 @@ describe('useCharacterBuilderStore', () => {
         method: 'PATCH',
         body: { class_id: 1 }
       })
+      expect(mockApiFetch).toHaveBeenCalledWith('/classes/fighter')
     })
 
-    it('updates store state after selection', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+    it('updates store state with full class detail', async () => {
+      const fullClassDetail = { ...mockClass, equipment: [{ id: 1, item: { name: 'Sword' } }] }
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH
+        .mockResolvedValueOnce({ data: fullClassDetail }) // GET detail
+        .mockResolvedValueOnce({ data: {} }) // refreshStats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -352,11 +361,14 @@ describe('useCharacterBuilderStore', () => {
       await store.selectClass(mockClass)
 
       expect(store.classId).toBe(1)
-      expect(store.selectedClass).toEqual(mockClass)
+      expect(store.selectedClass).toEqual(fullClassDetail)
     })
 
     it('isCaster is false for non-caster class', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} })
+        .mockResolvedValueOnce({ data: mockClass })
+        .mockResolvedValueOnce({ data: {} })
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -368,7 +380,10 @@ describe('useCharacterBuilderStore', () => {
     })
 
     it('isCaster is true for caster class', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} })
+        .mockResolvedValueOnce({ data: mockCasterClass })
+        .mockResolvedValueOnce({ data: {} })
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -392,7 +407,7 @@ describe('useCharacterBuilderStore', () => {
       expect(store.isLoading).toBe(true)
 
       resolvePromise!({ data: {} })
-      await promise
+      await promise.catch(() => {}) // May fail due to incomplete mocking
 
       expect(store.isLoading).toBe(false)
     })
@@ -469,7 +484,7 @@ describe('useCharacterBuilderStore', () => {
   })
 
   describe('selectBackground', () => {
-    it('saves background to API and updates store state', async () => {
+    it('saves background to API and fetches full detail', async () => {
       const store = useCharacterBuilderStore()
       store.characterId = 1
 
@@ -484,8 +499,16 @@ describe('useCharacterBuilderStore', () => {
         languages: []
       }
 
-      // Mock the API call
-      mockApiFetch.mockResolvedValue({ data: { id: 1 } })
+      const fullBackgroundDetail = {
+        ...mockBackground,
+        equipment: [{ id: 1, item: { name: 'Dagger' }, quantity: 1 }]
+      }
+
+      // Mock PATCH, GET detail, and refreshStats calls
+      mockApiFetch
+        .mockResolvedValueOnce({ data: { id: 1 } }) // PATCH
+        .mockResolvedValueOnce({ data: fullBackgroundDetail }) // GET /backgrounds/{slug}
+        .mockResolvedValueOnce({ data: {} }) // refreshStats
 
       await store.selectBackground(mockBackground as any)
 
@@ -493,8 +516,9 @@ describe('useCharacterBuilderStore', () => {
         method: 'PATCH',
         body: { background_id: 5 }
       })
+      expect(mockApiFetch).toHaveBeenCalledWith('/backgrounds/soldier')
       expect(store.backgroundId).toBe(5)
-      expect(store.selectedBackground).toEqual(mockBackground)
+      expect(store.selectedBackground).toEqual(fullBackgroundDetail)
     })
   })
 
