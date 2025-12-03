@@ -407,4 +407,46 @@ describe('useCharacterBuilderStore', () => {
       expect(store.error).toBe('Failed to save class')
     })
   })
+
+  describe('saveAbilityScores', () => {
+    it('saves ability scores and method to API', async () => {
+      mockApiFetch.mockResolvedValue({ data: {} })
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+
+      await store.saveAbilityScores('point_buy', {
+        strength: 14,
+        dexterity: 12,
+        constitution: 15,
+        intelligence: 10,
+        wisdom: 13,
+        charisma: 8
+      })
+
+      expect(store.abilityScores).toEqual({
+        strength: 14,
+        dexterity: 12,
+        constitution: 15,
+        intelligence: 10,
+        wisdom: 13,
+        charisma: 8
+      })
+      expect(store.abilityScoreMethod).toBe('point_buy')
+    })
+
+    it('sets error on API failure', async () => {
+      mockApiFetch.mockRejectedValue(new Error('Not found'))
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 999 // Will cause 404
+
+      await expect(store.saveAbilityScores('manual', {
+        strength: 10, dexterity: 10, constitution: 10,
+        intelligence: 10, wisdom: 10, charisma: 10
+      })).rejects.toThrow()
+
+      expect(store.error).toBe('Failed to save ability scores')
+    })
+  })
 })

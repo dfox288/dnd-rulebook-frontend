@@ -37,6 +37,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     wisdom: 10,
     charisma: 10
   })
+  const abilityScoreMethod = ref<'standard_array' | 'point_buy' | 'manual'>('manual')
 
   // ══════════════════════════════════════════════════════════════
   // FETCHED REFERENCE DATA (for display without re-fetching)
@@ -191,6 +192,41 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     }
   }
 
+  /**
+   * Step 4: Assign ability scores
+   */
+  async function saveAbilityScores(
+    method: 'standard_array' | 'point_buy' | 'manual',
+    scores: AbilityScores
+  ): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await apiFetch(`/characters/${characterId.value}`, {
+        method: 'PATCH',
+        body: {
+          ability_score_method: method,
+          strength: scores.strength,
+          dexterity: scores.dexterity,
+          constitution: scores.constitution,
+          intelligence: scores.intelligence,
+          wisdom: scores.wisdom,
+          charisma: scores.charisma
+        }
+      })
+
+      abilityScores.value = scores
+      abilityScoreMethod.value = method
+      await refreshStats()
+    } catch (err: unknown) {
+      error.value = 'Failed to save ability scores'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════
   // RESET ACTION
   // ══════════════════════════════════════════════════════════════
@@ -209,6 +245,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       wisdom: 10,
       charisma: 10
     }
+    abilityScoreMethod.value = 'manual'
     selectedRace.value = null
     selectedClass.value = null
     selectedBackground.value = null
@@ -233,6 +270,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     classId,
     backgroundId,
     abilityScores,
+    abilityScoreMethod,
     selectedRace,
     selectedClass,
     selectedBackground,
@@ -253,6 +291,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     refreshStats,
     selectRace,
     selectClass,
+    saveAbilityScores,
     reset
   }
 })
