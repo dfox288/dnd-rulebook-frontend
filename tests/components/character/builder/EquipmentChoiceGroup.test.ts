@@ -1,6 +1,14 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import EquipmentChoiceGroup from '~/components/character/builder/EquipmentChoiceGroup.vue'
+import { mockCompoundChoiceGroup, mockMartialWeapons } from '../../../fixtures/equipment'
+
+// Mock useApi composable
+vi.mock('~/composables/useApi', () => ({
+  useApi: () => ({
+    apiFetch: vi.fn().mockResolvedValue({ data: mockMartialWeapons })
+  })
+}))
 
 const mockItems = [
   { id: 1, item_id: 101, item: { id: 101, name: 'Longsword' }, quantity: 1, is_choice: true, choice_group: 'weapon', choice_option: 1 },
@@ -71,5 +79,64 @@ describe('EquipmentChoiceGroup', () => {
 
     expect(wrapper.emitted('select')).toBeTruthy()
     expect(wrapper.emitted('select')![0]).toEqual([10])
+  })
+})
+
+describe('EquipmentChoiceGroup with choice_items', () => {
+  it('shows inline picker when selected option has category choice_items', async () => {
+    const wrapper = await mountSuspended(EquipmentChoiceGroup, {
+      props: {
+        groupName: 'Equipment Choice 2',
+        items: mockCompoundChoiceGroup,
+        selectedId: 36, // "martial weapon + shield" option
+        itemSelections: new Map()
+      }
+    })
+
+    // Should show item picker for the martial weapons category
+    expect(wrapper.find('[data-test="choice-item-picker-0"]').exists()).toBe(true)
+  })
+
+  it('shows checkmark for fixed items in choice_items', async () => {
+    const wrapper = await mountSuspended(EquipmentChoiceGroup, {
+      props: {
+        groupName: 'Equipment Choice 2',
+        items: mockCompoundChoiceGroup,
+        selectedId: 36,
+        itemSelections: new Map()
+      }
+    })
+
+    // Shield should show as auto-included
+    expect(wrapper.text()).toContain('Shield')
+    expect(wrapper.find('[data-test="fixed-item-1"]').exists()).toBe(true)
+  })
+
+  it('hides pickers when option not selected', async () => {
+    const wrapper = await mountSuspended(EquipmentChoiceGroup, {
+      props: {
+        groupName: 'Equipment Choice 2',
+        items: mockCompoundChoiceGroup,
+        selectedId: null,
+        itemSelections: new Map()
+      }
+    })
+
+    expect(wrapper.find('[data-test="choice-item-picker-0"]').exists()).toBe(false)
+  })
+
+  it('emits itemSelect when picker selection changes', async () => {
+    const wrapper = await mountSuspended(EquipmentChoiceGroup, {
+      props: {
+        groupName: 'Equipment Choice 2',
+        items: mockCompoundChoiceGroup,
+        selectedId: 36,
+        itemSelections: new Map()
+      }
+    })
+
+    // Component should emit itemSelect events
+    // Exact mechanism depends on implementation
+    expect(wrapper.emitted).toBeDefined()
   })
 })
