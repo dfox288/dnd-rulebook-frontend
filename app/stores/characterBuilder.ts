@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Background, CharacterSpell } from '~/types'
+import type { ProficiencyChoicesResponse } from '~/types/proficiencies'
 
 /**
  * Character Builder Wizard Store
@@ -16,7 +17,12 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // WIZARD NAVIGATION
   // ══════════════════════════════════════════════════════════════
   const currentStep = ref(1)
-  const totalSteps = computed(() => isCaster.value ? 8 : 7)
+  const totalSteps = computed(() => {
+    let steps = 7 // Base: Name, Race, Class, Abilities, Background, Equipment, Review
+    if (hasPendingChoices.value) steps++
+    if (isCaster.value) steps++
+    return steps
+  })
   const isFirstStep = computed(() => currentStep.value === 1)
   const isLastStep = computed(() => currentStep.value === totalSteps.value)
 
@@ -53,6 +59,12 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // Set of spell IDs the user has selected but not yet saved
   const pendingSpellIds = ref<Set<number>>(new Set())
 
+  // Proficiency choices from API
+  const proficiencyChoices = ref<ProficiencyChoicesResponse | null>(null)
+
+  // User's pending proficiency selections: Map<"source:choice_group", Set<skillId>>
+  const pendingProficiencySelections = ref<Map<string, Set<number>>>(new Map())
+
   // ══════════════════════════════════════════════════════════════
   // FETCHED REFERENCE DATA (for display without re-fetching)
   // ══════════════════════════════════════════════════════════════
@@ -70,10 +82,70 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   // DERIVED STATE
   // ══════════════════════════════════════════════════════════════
-  const isCaster = computed(() =>
-    selectedClass.value?.spellcasting_ability !== null
-    && selectedClass.value?.spellcasting_ability !== undefined
-  )
+
+  // Check if class has spells to choose at level 1
+  // A class is only considered a "caster" for wizard purposes if they
+  // actually have cantrips or spells to select (e.g., Paladins/Rangers
+  // have spellcasting_ability but get 0 spells at level 1)
+  const isCaster = computed(() => {
+    if (!selectedClass.value?.spellcasting_ability) return false
+
+    // Check level 1 progression for spells_known or cantrips_known
+    const progression = selectedClass.value.level_progression
+    if (!progression || progression.length === 0) return false
+
+    const level1 = progression.find(p => p.level === 1)
+    if (!level1) return false
+
+    const cantrips = level1.cantrips_known ?? 0
+    const spells = level1.spells_known ?? 0
+
+    return cantrips > 0 || spells > 0
+  })
+
+  // Does this character have any proficiency choice groups?
+  // Returns true if ANY choice groups exist (whether or not choices have been made)
+  // This determines if the Proficiency step appears in the wizard
+  const hasPendingChoices = computed(() => {
+    if (!proficiencyChoices.value) return false
+    const { class: cls, race, background } = proficiencyChoices.value.data
+
+    // Check if any choice groups exist (user can edit even if already selected)
+    return Object.keys(cls).length > 0
+      || Object.keys(race).length > 0
+      || Object.keys(background).length > 0
+  })
+
+  // Are all required proficiency choices complete?
+  // A group is complete if: (remaining === 0) OR (pending selections === quantity)
+  // This handles both fresh selections and editing existing choices
+  const allProficiencyChoicesComplete = computed(() => {
+    if (!proficiencyChoices.value) return true
+    if (!hasPendingChoices.value) return true
+
+    const { class: cls, race, background } = proficiencyChoices.value.data
+
+    for (const [groupName, group] of Object.entries(cls)) {
+      const selected = pendingProficiencySelections.value.get(`class:${groupName}`)?.size ?? 0
+      // Complete if: already saved (remaining=0) and no pending changes, OR pending matches quantity
+      if (group.remaining === 0 && selected === 0) continue // Already saved, not editing
+      if (selected !== group.quantity) return false // Editing or fresh - need full quantity
+    }
+
+    for (const [groupName, group] of Object.entries(race)) {
+      const selected = pendingProficiencySelections.value.get(`race:${groupName}`)?.size ?? 0
+      if (group.remaining === 0 && selected === 0) continue
+      if (selected !== group.quantity) return false
+    }
+
+    for (const [groupName, group] of Object.entries(background)) {
+      const selected = pendingProficiencySelections.value.get(`background:${groupName}`)?.size ?? 0
+      if (group.remaining === 0 && selected === 0) continue
+      if (selected !== group.quantity) return false
+    }
+
+    return true
+  })
 
   const validationStatus = computed(() =>
     characterData.value?.validation_status ?? { is_complete: false, missing: [] }
@@ -310,6 +382,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   /**
    * Step 5: Select background
    * Fetches full background detail to get equipment data
+   * Also fetches proficiency choices (all sources are now selected)
    */
   async function selectBackground(background: Background): Promise<void> {
     isLoading.value = true
@@ -328,6 +401,10 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       selectedBackground.value = fullBackground.data
 
       await refreshStats()
+
+      // Fetch proficiency choices now that all sources (race, class, background) are selected
+      // This determines if the Proficiency Choices step will appear
+      await fetchProficiencyChoices()
     } catch (err: unknown) {
       error.value = 'Failed to save background'
       throw err
@@ -476,6 +553,81 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
    */
   function setRaceSpellChoice(choiceGroup: string, spellId: number): void {
     raceSpellChoices.value.set(choiceGroup, spellId)
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // PROFICIENCY CHOICE ACTIONS
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Fetch pending proficiency choices from API
+   */
+  async function fetchProficiencyChoices(): Promise<void> {
+    if (!characterId.value) return
+
+    const response = await apiFetch<ProficiencyChoicesResponse>(
+      `/characters/${characterId.value}/proficiency-choices`
+    )
+    proficiencyChoices.value = response
+  }
+
+  /**
+   * Toggle a skill selection in pending state
+   */
+  function toggleProficiencySelection(
+    source: 'class' | 'race' | 'background',
+    choiceGroup: string,
+    skillId: number
+  ): void {
+    const key = `${source}:${choiceGroup}`
+    const current = pendingProficiencySelections.value.get(key) ?? new Set<number>()
+
+    // Create new Set to ensure Vue reactivity triggers
+    const updated = new Set(current)
+    if (updated.has(skillId)) {
+      updated.delete(skillId)
+    } else {
+      updated.add(skillId)
+    }
+
+    // Create new Map to ensure reactivity
+    const newMap = new Map(pendingProficiencySelections.value)
+    newMap.set(key, updated)
+    pendingProficiencySelections.value = newMap
+  }
+
+  /**
+   * Save all pending proficiency selections to API
+   */
+  async function saveProficiencyChoices(): Promise<void> {
+    if (!characterId.value) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      for (const [key, skillIds] of pendingProficiencySelections.value) {
+        if (skillIds.size === 0) continue
+
+        const [source, choiceGroup] = key.split(':')
+        await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
+          method: 'POST',
+          body: {
+            source,
+            choice_group: choiceGroup,
+            skill_ids: [...skillIds]
+          }
+        })
+      }
+
+      // Refresh choices to update remaining counts
+      await fetchProficiencyChoices()
+    } catch (err: unknown) {
+      error.value = 'Failed to save proficiency choices'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
   }
 
   /**
@@ -661,7 +813,12 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         await initializePendingSpells()
       }
 
-      // 7. Determine starting step
+      // 7. Fetch proficiency choices for existing character
+      if (character.background) {
+        await fetchProficiencyChoices()
+      }
+
+      // 8. Determine starting step
       currentStep.value = determineStartingStep(character)
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Failed to load character'
@@ -720,6 +877,8 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     raceSpellChoices.value = new Map()
     equipmentItemSelections.value = new Map()
     pendingSpellIds.value = new Set()
+    proficiencyChoices.value = null
+    pendingProficiencySelections.value = new Map()
     selectedRace.value = null
     selectedClass.value = null
     selectedBackground.value = null
@@ -766,6 +925,11 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     selectedLeveledSpells,
     isLoading,
     error,
+    // Proficiency choices
+    proficiencyChoices,
+    pendingProficiencySelections,
+    hasPendingChoices,
+    allProficiencyChoicesComplete,
     // Actions
     nextStep,
     previousStep,
@@ -787,6 +951,9 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     initializePendingSpells,
     saveSpellChoices,
     setRaceSpellChoice,
+    fetchProficiencyChoices,
+    toggleProficiencySelection,
+    saveProficiencyChoices,
     loadCharacterForEditing,
     updateName,
     reset

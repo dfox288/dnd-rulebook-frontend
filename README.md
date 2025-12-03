@@ -261,6 +261,36 @@ All features must pass:
 - ✅ Dark mode support
 - ✅ Mobile responsive
 
+## 🤖 Parallel Agent Development
+
+Run multiple Claude Code agents simultaneously on different features using Git worktrees:
+
+```bash
+# Create isolated environment for agent work
+./scripts/create-agent-worktree.sh 1 feature/issue-130-race-subrace
+./scripts/create-agent-worktree.sh 2 feature/issue-131-languages
+
+# Start the environment
+cd ../frontend-agent-1
+./start-env.sh
+./run.sh dev
+
+# List all active agent environments
+./scripts/list-agent-worktrees.sh
+
+# Clean up when done
+./scripts/remove-agent-worktree.sh 1
+```
+
+**Port assignments:**
+| Instance | Nuxt | Nginx |
+|----------|------|-------|
+| Main | 4000 | 8081 |
+| Agent 1 | 4001 | 8082 |
+| Agent 2 | 4002 | 8083 |
+
+**Full documentation:** [docs/reference/parallel-agent-development.md](./docs/reference/parallel-agent-development.md)
+
 ## 📊 Project Status
 
 **Current Version:** 7 of 7 entity types complete

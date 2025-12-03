@@ -1,0 +1,30 @@
+# Docker Compose Override Template for Parallel Agent Environments
+#
+# This file is used by scripts/create-agent-worktree.sh to generate
+# environment-specific overrides that allow multiple frontend instances
+# to run simultaneously without port/container conflicts.
+#
+# DO NOT use this file directly. Run the setup script instead:
+#   ./scripts/create-agent-worktree.sh <instance-number> <branch-name>
+#
+# Placeholders replaced by setup script:
+#   {{INSTANCE_ID}}  - Unique instance number (1, 2, 3, etc.)
+#   {{NUXT_PORT}}    - Nuxt dev server port (4001, 4002, etc.)
+#   {{HMR_PORT}}     - HMR WebSocket port (34679, 34680, etc.)
+#   {{STORYBOOK_PORT}} - Storybook port (6007, 6008, etc.)
+#   {{NGINX_PORT}}   - Nginx proxy port (8082, 8083, etc.)
+#
+# NOTE: The !override tag tells Docker Compose to REPLACE arrays instead of merging them.
+
+services:
+  nuxt:
+    container_name: dnd-frontend-nuxt-{{INSTANCE_ID}}
+    ports: !override
+      - "{{NUXT_PORT}}:3000"
+      - "{{HMR_PORT}}:24678"
+      - "{{STORYBOOK_PORT}}:6006"
+
+  nginx:
+    container_name: dnd-frontend-nginx-{{INSTANCE_ID}}
+    ports: !override
+      - "{{NGINX_PORT}}:80"

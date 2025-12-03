@@ -12,6 +12,9 @@ const {
   selectedBackground,
   abilityScores,
   isCaster,
+  hasPendingChoices,
+  proficiencyChoices,
+  pendingProficiencySelections,
   pendingSpellIds,
   fixedEquipment,
   equipmentByChoiceGroup,
@@ -27,6 +30,20 @@ const { data: availableSpells } = await useAsyncData(
     ? apiFetch<{ data: Spell[] }>(`/characters/${characterId.value}/available-spells?max_level=1&include_known=true`)
     : Promise.resolve({ data: [] }),
   { transform: (response: { data: Spell[] }) => response.data }
+)
+
+// Fetch saved proficiencies for display (skill names)
+interface CharacterProficiency {
+  id: number
+  source: string
+  skill?: { id: number, name: string, slug: string }
+  proficiency_type?: { id: number, name: string, slug: string, category: string }
+}
+
+const { data: savedProficiencies } = await useAsyncData(
+  `review-proficiencies-${characterId.value}`,
+  () => apiFetch<{ data: CharacterProficiency[] }>(`/characters/${characterId.value}/proficiencies`),
+  { transform: (response: { data: CharacterProficiency[] }) => response.data }
 )
 
 // Get selected spells by filtering available spells by pending IDs
@@ -80,6 +97,96 @@ const abilityLabels = [
   { key: 'wisdom', label: 'WIS' },
   { key: 'charisma', label: 'CHA' }
 ] as const
+
+/**
+ * Get selected skill names from pending proficiency selections
+ */
+const selectedSkillNames = computed(() => {
+  const skills: string[] = []
+
+  for (const [key, skillIds] of pendingProficiencySelections.value) {
+    const [source, groupName] = key.split(':') as ['class' | 'race' | 'background', string]
+    const sourceData = proficiencyChoices.value?.data[source]
+    if (!sourceData || !groupName) continue
+
+    const group = sourceData[groupName]
+
+    if (group) {
+      for (const skillId of skillIds) {
+        const option = group.options.find((o: { skill_id: number }) => o.skill_id === skillId)
+        if (option) {
+          skills.push(option.skill.name)
+        }
+      }
+    }
+  }
+
+  return skills
+})
+
+/**
+ * Get the step number for proficiencies (for edit button)
+ * Proficiency step is step 6 when it exists (after background)
+ */
+const proficiencyStepNumber = computed(() => {
+  return hasPendingChoices.value ? 6 : -1
+})
+
+/**
+ * Check if there are any saved proficiency choices (remaining < quantity)
+ */
+const hasExistingProficiencyChoices = computed(() => {
+  if (!proficiencyChoices.value) return false
+  const { class: cls, race, background } = proficiencyChoices.value.data
+
+  for (const group of Object.values(cls)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(race)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(background)) {
+    if (group.remaining < group.quantity) return true
+  }
+
+  return false
+})
+
+/**
+ * Get saved skill proficiency names from the proficiencies endpoint
+ * Filters to only skill proficiencies (those with a skill object, not proficiency_type)
+ */
+const savedSkillProficiencies = computed((): string[] => {
+  if (!savedProficiencies.value) return []
+  return savedProficiencies.value
+    .filter(p => p.skill !== undefined && p.skill !== null)
+    .map(p => p.skill!.name)
+})
+
+/**
+ * Get level 1 class features
+ */
+const classFeatures = computed(() => {
+  if (!selectedClass.value?.features) return []
+  // Filter to level 1 features only (for level 1 character creation)
+  return selectedClass.value.features.filter(f => f.level === 1)
+})
+
+/**
+ * Get racial traits
+ */
+const racialTraits = computed(() => {
+  return selectedRace.value?.traits ?? []
+})
+
+/**
+ * Check if any features exist to display
+ */
+const hasFeatures = computed(() => {
+  return classFeatures.value.length > 0
+    || racialTraits.value.length > 0
+    || !!selectedBackground.value?.feature_name
+})
 </script>
 
 <template>
@@ -219,6 +326,116 @@ const abilityLabels = [
             icon="i-heroicons-pencil"
             @click="editStep(5)"
           />
+        </div>
+      </div>
+
+      <!-- Proficiencies (shown if pending selections OR already saved choices) -->
+      <div
+        v-if="selectedSkillNames.length > 0 || hasExistingProficiencyChoices"
+        class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+      >
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Skill Proficiencies
+          </h3>
+          <!-- Edit button only shown if step exists -->
+          <UButton
+            v-if="proficiencyStepNumber > 0"
+            data-test="edit-proficiencies"
+            variant="ghost"
+            size="sm"
+            icon="i-heroicons-pencil"
+            @click="editStep(proficiencyStepNumber)"
+          />
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <!-- Show pending selections if any -->
+          <UBadge
+            v-for="skill in selectedSkillNames"
+            :key="skill"
+            color="primary"
+            variant="subtle"
+            size="md"
+          >
+            {{ skill }}
+          </UBadge>
+          <!-- Show saved choices if no pending selections -->
+          <template v-if="selectedSkillNames.length === 0">
+            <UBadge
+              v-for="skill in savedSkillProficiencies"
+              :key="skill"
+              color="primary"
+              variant="subtle"
+              size="md"
+            >
+              {{ skill }}
+            </UBadge>
+          </template>
+        </div>
+      </div>
+
+      <!-- Features & Traits (read-only, no edit button) -->
+      <div
+        v-if="hasFeatures"
+        class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+      >
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+          Features & Traits
+        </h3>
+        <div class="space-y-4">
+          <!-- Class Features -->
+          <div v-if="classFeatures.length > 0">
+            <h4 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+              Class Features
+            </h4>
+            <ul class="space-y-1">
+              <li
+                v-for="feature in classFeatures"
+                :key="`class-${feature.id}`"
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              >
+                <UIcon
+                  name="i-heroicons-star"
+                  class="w-4 h-4 text-yellow-500 flex-shrink-0"
+                />
+                <span>{{ feature.feature_name }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Racial Traits -->
+          <div v-if="racialTraits.length > 0">
+            <h4 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+              Racial Traits
+            </h4>
+            <ul class="space-y-1">
+              <li
+                v-for="trait in racialTraits"
+                :key="`race-${trait.id}`"
+                class="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              >
+                <UIcon
+                  name="i-heroicons-sparkles"
+                  class="w-4 h-4 text-indigo-500 flex-shrink-0"
+                />
+                <span>{{ trait.name }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Background Feature -->
+          <div v-if="selectedBackground?.feature_name">
+            <h4 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+              Background Feature
+            </h4>
+            <div class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+              <UIcon
+                name="i-heroicons-book-open"
+                class="w-4 h-4 text-emerald-500 flex-shrink-0"
+              />
+              <span>{{ selectedBackground.feature_name }}</span>
+            </div>
+          </div>
         </div>
       </div>
 

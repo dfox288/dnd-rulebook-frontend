@@ -48,13 +48,15 @@ describe('Character Builder Store Integration', () => {
       expect(store.totalSteps).toBe(7)
     })
 
-    it('has 8 steps for caster classes', () => {
+    it('has 8 steps for caster classes (with spells at level 1)', () => {
       const store = useCharacterBuilderStore()
+      // isCaster now requires level_progression to have cantrips/spells at level 1
       store.selectedClass = {
         id: 1,
         name: 'Wizard',
         slug: 'wizard',
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
 
       expect(store.totalSteps).toBe(8)
@@ -223,12 +225,14 @@ describe('Character Builder Store Integration', () => {
   })
 
   describe('caster detection', () => {
-    it('identifies caster class by spellcasting ability', () => {
+    it('identifies caster class by spellcasting ability and level 1 spells', () => {
       const store = useCharacterBuilderStore()
 
+      // isCaster now requires level_progression to have cantrips/spells at level 1
       store.selectedClass = {
         id: 1,
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
 
       expect(store.isCaster).toBe(true)
@@ -313,12 +317,14 @@ describe('Character Builder Store Integration', () => {
       expect(store.isLastStep).toBe(false)
     })
 
-    it('isLastStep adjusts for casters', () => {
+    it('isLastStep adjusts for casters (with spells at level 1)', () => {
       const store = useCharacterBuilderStore()
 
+      // isCaster now requires level_progression to have cantrips/spells at level 1
       store.selectedClass = {
         id: 1,
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
 
       // Caster: 8 steps
