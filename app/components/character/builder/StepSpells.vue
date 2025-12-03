@@ -87,9 +87,14 @@ const spellsLimit = computed(() => {
 const cantripsSelected = computed(() => selectedCantrips.value.length)
 const spellsSelected = computed(() => selectedLeveledSpells.value.length)
 
+// Computed Set of selected spell IDs for reactive template binding
+const selectedSpellIds = computed(() =>
+  new Set(selectedSpells.value.map(s => s.spell?.id).filter((id): id is number => id !== undefined))
+)
+
 // Check if a spell is already selected
 function isSpellSelected(spellId: number): boolean {
-  return selectedSpells.value.some(s => s.spell?.id === spellId)
+  return selectedSpellIds.value.has(spellId)
 }
 
 // Check if selection is at limit for cantrips
@@ -124,7 +129,7 @@ const canProceed = computed(() => {
  * Toggle spell selection
  */
 async function handleSpellToggle(spell: Spell) {
-  if (isSpellSelected(spell.id)) {
+  if (selectedSpellIds.value.has(spell.id)) {
     await store.unlearnSpell(spell.id)
   } else {
     // Don't allow selecting more than limit
@@ -291,8 +296,8 @@ function handleCloseModal() {
             v-for="spell in availableCantrips"
             :key="spell.id"
             :spell="spell"
-            :selected="isSpellSelected(spell.id)"
-            :disabled="!isSpellSelected(spell.id) && cantripsAtLimit"
+            :selected="selectedSpellIds.has(spell.id)"
+            :disabled="!selectedSpellIds.has(spell.id) && cantripsAtLimit"
             @toggle="handleSpellToggle"
             @view-details="handleViewDetails(spell)"
           />
@@ -322,8 +327,8 @@ function handleCloseModal() {
             v-for="spell in availableLeveledSpells"
             :key="spell.id"
             :spell="spell"
-            :selected="isSpellSelected(spell.id)"
-            :disabled="!isSpellSelected(spell.id) && spellsAtLimit"
+            :selected="selectedSpellIds.has(spell.id)"
+            :disabled="!selectedSpellIds.has(spell.id) && spellsAtLimit"
             @toggle="handleSpellToggle"
             @view-details="handleViewDetails(spell)"
           />
