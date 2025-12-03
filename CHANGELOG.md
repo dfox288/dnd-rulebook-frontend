@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Edit Level 1 Characters (#105) (2025-12-03)** - Allow editing characters still at level 1
+  - New `/characters/[id]/edit` page loads existing character into wizard
+  - "Create Character" now creates empty character and redirects to edit page (unified flow)
+  - Store actions: `loadCharacterForEditing()`, `updateName()` for edit mode
+  - Edit/Continue button on CharacterCard for level 1 characters
+  - Clickable stepper steps to navigate back without using Back button
+  - StepName supports both create and edit modes
+  - Route restructure: `[id].vue` → `[id]/index.vue` for proper nested routing
+
 - **Character Builder Phase 4: Background, Equipment, Spells & Review (2025-12-03)** - Complete implementation of Steps 5-8
   - `BackgroundPickerCard` and `BackgroundDetailModal` - Background selection with feature preview
   - `StepBackground` - Background grid with search and feature display
