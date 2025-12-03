@@ -467,4 +467,34 @@ describe('useCharacterBuilderStore', () => {
       expect(store.error).toBe('Failed to save ability scores')
     })
   })
+
+  describe('selectBackground', () => {
+    it('saves background to API and updates store state', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+
+      const mockBackground = {
+        id: 5,
+        slug: 'soldier',
+        name: 'Soldier',
+        feature_name: 'Military Rank',
+        feature_description: 'You have a military rank...',
+        proficiencies: [],
+        equipment: [],
+        languages: []
+      }
+
+      // Mock the API call
+      mockApiFetch.mockResolvedValue({ data: { id: 1 } })
+
+      await store.selectBackground(mockBackground as any)
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/1', {
+        method: 'PATCH',
+        body: { background_id: 5 }
+      })
+      expect(store.backgroundId).toBe(5)
+      expect(store.selectedBackground).toEqual(mockBackground)
+    })
+  })
 })

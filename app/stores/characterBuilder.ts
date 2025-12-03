@@ -227,6 +227,31 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     }
   }
 
+  /**
+   * Step 5: Select background
+   */
+  async function selectBackground(background: Background): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await apiFetch(`/characters/${characterId.value}`, {
+        method: 'PATCH',
+        body: { background_id: background.id }
+      })
+
+      backgroundId.value = background.id
+      selectedBackground.value = background
+
+      await refreshStats()
+    } catch (err: unknown) {
+      error.value = 'Failed to save background'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════
   // RESET ACTION
   // ══════════════════════════════════════════════════════════════
@@ -292,6 +317,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     selectRace,
     selectClass,
     saveAbilityScores,
+    selectBackground,
     reset
   }
 })
