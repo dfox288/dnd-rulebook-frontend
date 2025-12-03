@@ -796,6 +796,33 @@ describe('useCharacterBuilderStore', () => {
     })
   })
 
+  describe('updateName', () => {
+    it('updates character name via API', async () => {
+      mockApiFetch.mockResolvedValueOnce({ data: { id: 42, name: 'New Name' } })
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.name = 'Old Name'
+
+      await store.updateName('New Name')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42', {
+        method: 'PATCH',
+        body: { name: 'New Name' }
+      })
+      expect(store.name).toBe('New Name')
+    })
+
+    it('does nothing if no characterId', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = null
+
+      await store.updateName('New Name')
+
+      expect(mockApiFetch).not.toHaveBeenCalled()
+    })
+  })
+
   describe('equipment item selections', () => {
     it('tracks item selections within compound choices', () => {
       const store = useCharacterBuilderStore()

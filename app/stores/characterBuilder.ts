@@ -608,6 +608,20 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   /**
+   * Update character name (for edit mode)
+   */
+  async function updateName(newName: string): Promise<void> {
+    if (!characterId.value) return
+
+    await apiFetch(`/characters/${characterId.value}`, {
+      method: 'PATCH',
+      body: { name: newName }
+    })
+
+    name.value = newName
+  }
+
+  /**
    * Determine which step to start on based on what's filled
    */
   function determineStartingStep(character: Character): number {
@@ -707,6 +721,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     fetchSelectedSpells,
     setRaceSpellChoice,
     loadCharacterForEditing,
+    updateName,
     reset
   }
 })
