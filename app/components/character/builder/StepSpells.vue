@@ -300,9 +300,9 @@ function handleCloseModal() {
         </div>
       </div>
 
-      <!-- 1st Level Spells Section -->
+      <!-- 1st Level Spells Section (only show if class learns spells at level 1) -->
       <div
-        v-if="availableLeveledSpells.length > 0"
+        v-if="availableLeveledSpells.length > 0 && spellsLimit > 0"
         class="space-y-4"
       >
         <div class="flex items-center justify-between border-b pb-2">
