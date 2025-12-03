@@ -406,7 +406,7 @@ cd ../frontend && docker compose up -d
 # 3. Install dependencies (first time)
 docker compose exec nuxt npm install
 
-# Access: http://localhost:3000
+# Access: http://localhost:4000 (or http://localhost:8081 via nginx)
 ```
 
 **⚠️ CRITICAL:** Always use Docker. Never run dev server locally outside Docker.

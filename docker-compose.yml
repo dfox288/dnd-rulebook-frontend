@@ -10,8 +10,8 @@ services:
     container_name: dnd-frontend-nuxt
     restart: unless-stopped
     ports:
-      - "3000:3000"    # Nuxt dev server
-      - "24678:24678"  # Nuxt HMR WebSocket
+      - "4000:3000"    # Nuxt dev server
+      - "34678:24678"  # Nuxt HMR WebSocket
       - "6006:6006"    # Storybook dev server
     volumes:
       - .:/app
