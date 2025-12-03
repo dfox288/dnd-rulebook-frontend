@@ -5,6 +5,7 @@ import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
 const route = useRoute()
 const characterId = computed(() => Number(route.params.id))
+const isNewCharacter = computed(() => route.query.new === 'true')
 
 // Page metadata
 useSeoMeta({
@@ -22,6 +23,12 @@ onMounted(async () => {
 
   try {
     await store.loadCharacterForEditing(characterId.value)
+
+    // For new characters, always start at step 1 (Name)
+    // This allows users to replace the placeholder "New Character" name
+    if (isNewCharacter.value) {
+      store.goToStep(1)
+    }
   } catch {
     await navigateTo(`/characters/${characterId.value}`)
   }
@@ -56,13 +63,24 @@ const steps = computed(() => {
 <template>
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary" />
+    <div
+      v-if="isLoading"
+      class="flex justify-center items-center py-12"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-8 h-8 animate-spin text-primary"
+      />
       <span class="ml-3 text-gray-600 dark:text-gray-400">Loading character...</span>
     </div>
 
     <!-- Error State -->
-    <UAlert v-else-if="error" color="error" :title="error" class="mb-6" />
+    <UAlert
+      v-else-if="error"
+      color="error"
+      :title="error"
+      class="mb-6"
+    />
 
     <!-- Wizard Content -->
     <template v-else>

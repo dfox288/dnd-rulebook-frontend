@@ -22,7 +22,7 @@ onMounted(async () => {
       body: { name: 'New Character' }
     })
 
-    await navigateTo(`/characters/${response.data.id}/edit`)
+    await navigateTo(`/characters/${response.data.id}/edit?new=true`)
   } catch {
     await navigateTo('/characters')
   }
@@ -31,7 +31,10 @@ onMounted(async () => {
 
 <template>
   <div class="flex justify-center items-center min-h-[50vh]">
-    <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary" />
+    <UIcon
+      name="i-heroicons-arrow-path"
+      class="w-8 h-8 animate-spin text-primary"
+    />
     <span class="ml-3 text-gray-600 dark:text-gray-400">Creating character...</span>
   </div>
 </template>

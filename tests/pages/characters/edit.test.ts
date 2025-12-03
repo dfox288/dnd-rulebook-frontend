@@ -8,11 +8,13 @@ import { ref, computed } from 'vue'
 // Mock the store with proper refs for storeToRefs
 const mockLoadCharacterForEditing = vi.fn()
 const mockReset = vi.fn()
+const mockGoToStep = vi.fn()
 
 vi.mock('~/stores/characterBuilder', () => ({
   useCharacterBuilderStore: () => ({
     loadCharacterForEditing: mockLoadCharacterForEditing,
     reset: mockReset,
+    goToStep: mockGoToStep,
     currentStep: ref(1),
     isFirstStep: computed(() => true),
     isLastStep: computed(() => false),
@@ -32,7 +34,8 @@ vi.mock('vue-router', async () => {
   return {
     ...actual,
     useRoute: vi.fn(() => ({
-      params: { id: '42' }
+      params: { id: '42' },
+      query: {}
     }))
   }
 })
@@ -42,6 +45,7 @@ describe('CharacterEditPage', () => {
     setActivePinia(createPinia())
     mockLoadCharacterForEditing.mockReset()
     mockReset.mockReset()
+    mockGoToStep.mockReset()
   })
 
   it('calls loadCharacterForEditing on mount', async () => {
@@ -79,5 +83,34 @@ describe('CharacterEditPage', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('Test Character')
+  })
+})
+
+describe('CharacterEditPage - New Character Flow', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    mockLoadCharacterForEditing.mockReset()
+    mockReset.mockReset()
+    mockGoToStep.mockReset()
+  })
+
+  it('forces step 1 when ?new=true query parameter is present', async () => {
+    mockLoadCharacterForEditing.mockResolvedValue(undefined)
+
+    // Mock useRoute to include query param
+    const { useRoute } = await import('vue-router')
+    vi.mocked(useRoute).mockReturnValue({
+      params: { id: '42' },
+      query: { new: 'true' }
+    } as ReturnType<typeof useRoute>)
+
+    const CharacterEditPage = await import('~/pages/characters/[id]/edit.vue')
+    await mountSuspended(CharacterEditPage.default, {
+      route: '/characters/42/edit?new=true'
+    })
+    await flushPromises()
+
+    // Should call goToStep(1) after loading to force step 1
+    expect(mockGoToStep).toHaveBeenCalledWith(1)
   })
 })
