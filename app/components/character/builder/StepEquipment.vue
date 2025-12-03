@@ -67,6 +67,20 @@ function formatGroupName(group: string): string {
 }
 
 /**
+ * Get display name for equipment item
+ * Uses item name if available, otherwise falls back to description
+ */
+function getItemDisplayName(item: { item?: { name?: string } | null, description?: string | null }): string {
+  if (item.item?.name) {
+    return item.item.name
+  }
+  if (item.description) {
+    return item.description
+  }
+  return 'Unknown item'
+}
+
+/**
  * Continue to next step
  */
 function handleContinue() {
@@ -109,7 +123,7 @@ function handleContinue() {
             name="i-heroicons-check-circle"
             class="w-5 h-5 text-green-500"
           />
-          <span>{{ item.item?.name }}</span>
+          <span>{{ getItemDisplayName(item) }}</span>
           <span
             v-if="item.quantity > 1"
             class="text-gray-500"
@@ -151,7 +165,7 @@ function handleContinue() {
             name="i-heroicons-check-circle"
             class="w-5 h-5 text-green-500"
           />
-          <span>{{ item.item?.name }}</span>
+          <span>{{ getItemDisplayName(item) }}</span>
           <span
             v-if="item.quantity > 1"
             class="text-gray-500"

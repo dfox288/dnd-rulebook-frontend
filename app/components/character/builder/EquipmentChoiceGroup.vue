@@ -76,7 +76,7 @@ function getItemDisplayName(item: EntityItemResource): string {
             {{ getItemDisplayName(item) }}
           </span>
           <span
-            v-if="item.quantity > 1 && item.item?.name"
+            v-if="item.quantity > 1"
             class="text-gray-500 ml-1"
           >
             (×{{ item.quantity }})
