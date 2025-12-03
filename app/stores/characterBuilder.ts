@@ -82,10 +82,26 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   // DERIVED STATE
   // ══════════════════════════════════════════════════════════════
-  const isCaster = computed(() =>
-    selectedClass.value?.spellcasting_ability !== null
-    && selectedClass.value?.spellcasting_ability !== undefined
-  )
+
+  // Check if class has spells to choose at level 1
+  // A class is only considered a "caster" for wizard purposes if they
+  // actually have cantrips or spells to select (e.g., Paladins/Rangers
+  // have spellcasting_ability but get 0 spells at level 1)
+  const isCaster = computed(() => {
+    if (!selectedClass.value?.spellcasting_ability) return false
+
+    // Check level 1 progression for spells_known or cantrips_known
+    const progression = selectedClass.value.level_progression
+    if (!progression || progression.length === 0) return false
+
+    const level1 = progression.find(p => p.level === 1)
+    if (!level1) return false
+
+    const cantrips = level1.cantrips_known ?? 0
+    const spells = level1.spells_known ?? 0
+
+    return cantrips > 0 || spells > 0
+  })
 
   // Does this character have any proficiency choice groups?
   // Returns true if ANY choice groups exist (whether or not choices have been made)
@@ -586,22 +602,32 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   async function saveProficiencyChoices(): Promise<void> {
     if (!characterId.value) return
 
-    for (const [key, skillIds] of pendingProficiencySelections.value) {
-      if (skillIds.size === 0) continue
+    isLoading.value = true
+    error.value = null
 
-      const [source, choiceGroup] = key.split(':')
-      await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
-        method: 'POST',
-        body: {
-          source,
-          choice_group: choiceGroup,
-          skill_ids: [...skillIds]
-        }
-      })
+    try {
+      for (const [key, skillIds] of pendingProficiencySelections.value) {
+        if (skillIds.size === 0) continue
+
+        const [source, choiceGroup] = key.split(':')
+        await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
+          method: 'POST',
+          body: {
+            source,
+            choice_group: choiceGroup,
+            skill_ids: [...skillIds]
+          }
+        })
+      }
+
+      // Refresh choices to update remaining counts
+      await fetchProficiencyChoices()
+    } catch (err: unknown) {
+      error.value = 'Failed to save proficiency choices'
+      throw err
+    } finally {
+      isLoading.value = false
     }
-
-    // Refresh choices to update remaining counts
-    await fetchProficiencyChoices()
   }
 
   /**

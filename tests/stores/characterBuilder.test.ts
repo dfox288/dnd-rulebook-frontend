@@ -379,19 +379,55 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(7)
     })
 
-    it('isCaster is true for caster class', async () => {
+    it('isCaster is true for caster class with spells at level 1', async () => {
+      const wizardWithSpells: CharacterClass = {
+        ...mockCasterClass,
+        level_progression: [
+          { level: 1, cantrips_known: 3, spells_known: 6 }
+        ]
+      } as CharacterClass
+
       mockApiFetch
         .mockResolvedValueOnce({ data: {} })
-        .mockResolvedValueOnce({ data: mockCasterClass })
+        .mockResolvedValueOnce({ data: wizardWithSpells })
         .mockResolvedValueOnce({ data: {} })
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
 
-      await store.selectClass(mockCasterClass)
+      await store.selectClass(wizardWithSpells)
 
       expect(store.isCaster).toBe(true)
       expect(store.totalSteps).toBe(8)
+    })
+
+    it('isCaster is false for class with spellcasting_ability but no spells at level 1 (e.g., Paladin)', async () => {
+      const paladinClass: CharacterClass = {
+        id: 3,
+        name: 'Paladin',
+        slug: 'paladin',
+        hit_die: 10,
+        is_base_class: true,
+        spellcasting_ability: { id: 6, code: 'CHA', name: 'Charisma' },
+        // Paladins don't get spells until level 2
+        level_progression: [
+          { level: 1, cantrips_known: 0, spells_known: 0 }
+        ]
+      } as CharacterClass
+
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} })
+        .mockResolvedValueOnce({ data: paladinClass })
+        .mockResolvedValueOnce({ data: {} })
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+
+      await store.selectClass(paladinClass)
+
+      // Should be false because no spells are available at level 1
+      expect(store.isCaster).toBe(false)
+      expect(store.totalSteps).toBe(7) // No spell step
     })
 
     it('sets loading state during API call', async () => {
@@ -534,12 +570,13 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(7)
     })
 
-    it('returns 8 for casters', () => {
+    it('returns 8 for casters (with spells at level 1)', () => {
       const store = useCharacterBuilderStore()
       store.selectedClass = {
         id: 2,
         name: 'Wizard',
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
 
       expect(store.totalSteps).toBe(8)
@@ -1006,6 +1043,49 @@ describe('useCharacterBuilderStore', () => {
       expect(store.allProficiencyChoicesComplete).toBe(true)
     })
 
+    it('allProficiencyChoicesComplete returns true when choices already made (remaining=0, no pending selections)', () => {
+      const store = useCharacterBuilderStore()
+
+      // User has already made their proficiency choices in a previous session
+      // remaining=0 means all choices were already saved
+      store.proficiencyChoices = {
+        data: {
+          class: {
+            skill_choice_1: { quantity: 2, remaining: 0, options: [] }
+          },
+          race: {},
+          background: {}
+        }
+      }
+
+      // No pending selections (user is just passing through)
+      // This should still be complete because remaining=0
+      expect(store.allProficiencyChoicesComplete).toBe(true)
+    })
+
+    it('allProficiencyChoicesComplete requires full quantity when user starts re-editing (remaining=0 but has pending)', () => {
+      const store = useCharacterBuilderStore()
+
+      // User has made choices (remaining=0) but now wants to edit
+      store.proficiencyChoices = {
+        data: {
+          class: {
+            skill_choice_1: { quantity: 2, remaining: 0, options: [{ type: 'skill', skill_id: 1, skill: { id: 1, name: 'Acrobatics', slug: 'acrobatics' } }] }
+          },
+          race: {},
+          background: {}
+        }
+      }
+
+      // User started editing (selected 1 skill) but hasn't selected the full quantity
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1]))
+      expect(store.allProficiencyChoicesComplete).toBe(false)
+
+      // User selects full quantity
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1, 2]))
+      expect(store.allProficiencyChoicesComplete).toBe(true)
+    })
+
     it('saveProficiencyChoices calls API for each selection group', async () => {
       const store = useCharacterBuilderStore()
       store.characterId = 1
@@ -1034,6 +1114,51 @@ describe('useCharacterBuilderStore', () => {
       })
     })
 
+    it('saveProficiencyChoices sets loading state and handles errors', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 2, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1, 5]))
+
+      mockApiFetch.mockRejectedValue(new Error('Network error'))
+
+      await expect(store.saveProficiencyChoices()).rejects.toThrow('Network error')
+      expect(store.error).toBe('Failed to save proficiency choices')
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('saveProficiencyChoices sets loading during API call', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 1
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 2, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+      store.pendingProficiencySelections.set('class:skill_choice_1', new Set([1, 5]))
+
+      let resolvePromise: (value: unknown) => void
+      mockApiFetch.mockReturnValue(new Promise((resolve) => {
+        resolvePromise = resolve
+      }))
+
+      const promise = store.saveProficiencyChoices()
+      expect(store.isLoading).toBe(true)
+
+      resolvePromise!({})
+      await promise.catch(() => {}) // May fail due to incomplete mocking
+
+      expect(store.isLoading).toBe(false)
+    })
+
     it('totalSteps includes proficiency step when choices exist', () => {
       const store = useCharacterBuilderStore()
 
@@ -1052,8 +1177,12 @@ describe('useCharacterBuilderStore', () => {
       }
       expect(store.totalSteps).toBe(8)
 
-      // Caster with proficiency choices: 9 steps
-      store.selectedClass = { spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' } } as any
+      // Caster (with spells at level 1) with proficiency choices: 9 steps
+      // Note: isCaster now requires level_progression to have cantrips/spells at level 1
+      store.selectedClass = {
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 2 }]
+      } as any
       expect(store.totalSteps).toBe(9)
     })
   })
