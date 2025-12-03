@@ -7,6 +7,7 @@ const {
   selectedClass,
   selectedBackground,
   equipmentChoices,
+  equipmentItemSelections,
   allEquipmentChoicesMade,
   isLoading
 } = storeToRefs(store)
@@ -45,10 +46,36 @@ const backgroundChoiceGroups = computed(() => {
 
 /**
  * Handle equipment choice selection
- * Uses pivot record ID (not item_id) for reliable selection
+ * Clear any previous item selections for this group when option changes
  */
 function handleChoiceSelect(choiceGroup: string, id: number) {
+  // Clear item selections when changing options
+  store.clearEquipmentItemSelections(choiceGroup)
   store.setEquipmentChoice(choiceGroup, id)
+}
+
+/**
+ * Handle item selection within a compound choice
+ */
+function handleItemSelect(choiceGroup: string, choiceOption: number, choiceItemIndex: number, itemId: number) {
+  store.setEquipmentItemSelection(choiceGroup, choiceOption, choiceItemIndex, itemId)
+}
+
+/**
+ * Build itemSelections map for a specific choice group
+ * Extracts selections from the full map and formats for EquipmentChoiceGroup
+ */
+function buildItemSelectionsMap(choiceGroup: string): Map<string, number> {
+  const map = new Map<string, number>()
+  for (const [key, value] of equipmentItemSelections.value) {
+    if (key.startsWith(`${choiceGroup}:`)) {
+      // Extract "choiceOption:index" from "choiceGroup:choiceOption:index"
+      const parts = key.split(':')
+      const shortKey = `${parts[1]}:${parts[2]}`
+      map.set(shortKey, value)
+    }
+  }
+  return map
 }
 
 /**
@@ -138,7 +165,9 @@ function handleContinue() {
         :group-name="formatGroupName(group)"
         :items="items"
         :selected-id="equipmentChoices.get(group) ?? null"
+        :item-selections="buildItemSelectionsMap(group)"
         @select="(id) => handleChoiceSelect(group, id)"
+        @item-select="(opt, idx, itemId) => handleItemSelect(group, opt, idx, itemId)"
       />
     </div>
 
@@ -180,7 +209,9 @@ function handleContinue() {
         :group-name="formatGroupName(group)"
         :items="items"
         :selected-id="equipmentChoices.get(group) ?? null"
+        :item-selections="buildItemSelectionsMap(group)"
         @select="(id) => handleChoiceSelect(group, id)"
+        @item-select="(opt, idx, itemId) => handleItemSelect(group, opt, idx, itemId)"
       />
     </div>
 
