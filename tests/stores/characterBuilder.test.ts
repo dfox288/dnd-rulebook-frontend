@@ -865,4 +865,61 @@ describe('useCharacterBuilderStore', () => {
       expect(store.getEquipmentItemSelection('choice_3', 1, 0)).toBe(44) // other group unaffected
     })
   })
+
+  describe('saveEquipmentChoices', () => {
+    it('saves fixed equipment with item_id', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.selectedClass = {
+        name: 'Fighter',
+        equipment: [
+          { id: 1, item: { id: 100, name: 'Chain Mail' }, quantity: 1, is_choice: false }
+        ]
+      } as any
+      store.selectedBackground = { name: 'Soldier', equipment: [] } as any
+
+      mockApiFetch.mockResolvedValue({})
+
+      await store.saveEquipmentChoices()
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42/equipment', {
+        method: 'POST',
+        body: { item_id: 100, quantity: 1 }
+      })
+    })
+
+    it('saves flavor equipment without item_id using custom_name', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.selectedClass = { name: 'Fighter', equipment: [] } as any
+      store.selectedBackground = {
+        name: 'Acolyte',
+        equipment: [
+          // Flavor item - no item_id, just description
+          { id: 118, item: null, description: 'holy symbol (a gift to you when you entered the priesthood)', quantity: 1, is_choice: false },
+          // Regular item with item_id
+          { id: 121, item: { id: 455, name: 'Cloth-of-gold vestments' }, quantity: 1, is_choice: false }
+        ]
+      } as any
+
+      mockApiFetch.mockResolvedValue({})
+
+      await store.saveEquipmentChoices()
+
+      // Should save both types of equipment
+      expect(mockApiFetch).toHaveBeenCalledTimes(2)
+
+      // Flavor item saved with custom_name
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42/equipment', {
+        method: 'POST',
+        body: { custom_name: 'holy symbol (a gift to you when you entered the priesthood)', quantity: 1 }
+      })
+
+      // Regular item saved with item_id
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42/equipment', {
+        method: 'POST',
+        body: { item_id: 455, quantity: 1 }
+      })
+    })
+  })
 })

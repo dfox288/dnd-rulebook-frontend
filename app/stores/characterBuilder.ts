@@ -511,13 +511,20 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         }
       }
 
-      // Also add fixed equipment
-      const fixedEquipment = allItems.filter(item => !item.is_choice && item.item)
+      // Also add fixed equipment (both database items and flavor items)
+      const fixedEquipment = allItems.filter(item => !item.is_choice)
       for (const item of fixedEquipment) {
         if (item.item) {
+          // Database item - save with item_id
           await apiFetch(`/characters/${characterId.value}/equipment`, {
             method: 'POST',
             body: { item_id: item.item.id, quantity: item.quantity }
+          })
+        } else if (item.description) {
+          // Flavor item - save with custom_name
+          await apiFetch(`/characters/${characterId.value}/equipment`, {
+            method: 'POST',
+            body: { custom_name: item.description, quantity: item.quantity }
           })
         }
       }
