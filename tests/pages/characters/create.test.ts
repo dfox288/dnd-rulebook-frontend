@@ -1,69 +1,51 @@
 // tests/pages/characters/create.test.ts
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
-import CharacterCreatePage from '~/pages/characters/create.vue'
-import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+
+// Mock useApi
+const mockApiFetch = vi.fn()
+vi.mock('~/composables/useApi', () => ({
+  useApi: () => ({
+    apiFetch: mockApiFetch
+  })
+}))
 
 describe('CharacterCreatePage', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    mockApiFetch.mockReset()
   })
 
-  it('renders the page title', async () => {
-    const wrapper = await mountSuspended(CharacterCreatePage)
-    expect(wrapper.text()).toContain('Create Your Character')
-  })
+  it('calls API to create empty character on mount', async () => {
+    mockApiFetch.mockResolvedValueOnce({ data: { id: 42 } })
 
-  it('displays the stepper component', async () => {
-    const wrapper = await mountSuspended(CharacterCreatePage)
-    expect(wrapper.findComponent({ name: 'CharacterBuilderStepper' }).exists()).toBe(true)
-  })
+    const CharacterCreatePage = await import('~/pages/characters/create.vue')
+    await mountSuspended(CharacterCreatePage.default)
+    await flushPromises()
 
-  it('shows step 1 content initially', async () => {
-    const wrapper = await mountSuspended(CharacterCreatePage)
-    expect(wrapper.findComponent({ name: 'CharacterBuilderStepName' }).exists()).toBe(true)
-  })
-
-  describe('step reset on new character (issue #97)', () => {
-    it('resets to step 1 when page loads with leftover step state but no character', async () => {
-      // Mount the page first
-      const wrapper = await mountSuspended(CharacterCreatePage)
-
-      // Get the same store instance the component is using
-      const store = useCharacterBuilderStore()
-
-      // Simulate leftover state (as if persisted from previous session)
-      store.currentStep = 3
-      store.characterId = null
-
-      // Trigger a re-mount by unmounting and remounting
-      // This simulates the user navigating TO the create page
-      wrapper.unmount()
-
-      const newWrapper = await mountSuspended(CharacterCreatePage)
-      await flushPromises()
-      await newWrapper.vm.$nextTick()
-
-      // Should reset to step 1 and show the name input step
-      expect(store.currentStep).toBe(1)
-      expect(newWrapper.findComponent({ name: 'CharacterBuilderStepName' }).exists()).toBe(true)
+    expect(mockApiFetch).toHaveBeenCalledWith('/characters', {
+      method: 'POST',
+      body: { name: 'New Character' }
     })
+  })
 
-    it('preserves step when resuming an in-progress character', async () => {
-      // Simulate an in-progress character
-      const store = useCharacterBuilderStore()
-      store.currentStep = 3
-      store.characterId = 42 // Character exists
+  it('shows loading spinner while creating', async () => {
+    // Don't resolve immediately
+    mockApiFetch.mockReturnValue(new Promise(() => {}))
 
-      // Mount the page
-      await mountSuspended(CharacterCreatePage)
+    const CharacterCreatePage = await import('~/pages/characters/create.vue')
+    const wrapper = await mountSuspended(CharacterCreatePage.default)
 
-      // Should stay on step 3 (resuming in-progress character)
-      // Note: We only test store state here because rendering step 3
-      // requires additional setup (race/class data loaded)
-      expect(store.currentStep).toBe(3)
-    })
+    expect(wrapper.text()).toContain('Creating character')
+  })
+
+  it('handles API error gracefully', async () => {
+    mockApiFetch.mockRejectedValueOnce(new Error('Failed'))
+
+    const CharacterCreatePage = await import('~/pages/characters/create.vue')
+    // Should not throw
+    await expect(mountSuspended(CharacterCreatePage.default)).resolves.toBeDefined()
   })
 })

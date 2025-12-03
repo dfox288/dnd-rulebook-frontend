@@ -720,6 +720,109 @@ describe('useCharacterBuilderStore', () => {
     })
   })
 
+  describe('loadCharacterForEditing', () => {
+    it('loads character data into store', async () => {
+      const mockCharacter = {
+        id: 42,
+        name: 'Gandalf',
+        level: 1,
+        ability_scores: { STR: 14, DEX: 12, CON: 15, INT: 18, WIS: 16, CHA: 10 },
+        race: { id: 1, name: 'Human', slug: 'human' },
+        class: { id: 2, name: 'Wizard', slug: 'wizard' },
+        background: { id: 3, name: 'Sage', slug: 'sage' }
+      }
+
+      const mockRace = { id: 1, name: 'Human', slug: 'human', speed: 30 }
+      const mockClass = { id: 2, name: 'Wizard', slug: 'wizard', spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' } }
+      const mockBackground = { id: 3, name: 'Sage', slug: 'sage' }
+
+      mockApiFetch
+        .mockResolvedValueOnce({ data: mockCharacter }) // GET /characters/42
+        .mockResolvedValueOnce({ data: mockRace }) // GET /races/human
+        .mockResolvedValueOnce({ data: mockClass }) // GET /classes/wizard
+        .mockResolvedValueOnce({ data: mockBackground }) // GET /backgrounds/sage
+        .mockResolvedValueOnce({ data: [] }) // GET /characters/42/spells
+
+      const store = useCharacterBuilderStore()
+      await store.loadCharacterForEditing(42)
+
+      expect(store.characterId).toBe(42)
+      expect(store.name).toBe('Gandalf')
+      expect(store.abilityScores.strength).toBe(14)
+      expect(store.abilityScores.intelligence).toBe(18)
+      expect(store.raceId).toBe(1)
+      expect(store.classId).toBe(2)
+      expect(store.backgroundId).toBe(3)
+      expect(store.selectedRace).toEqual(mockRace)
+      expect(store.selectedClass).toEqual(mockClass)
+    })
+
+    it('throws error for characters above level 1', async () => {
+      mockApiFetch.mockResolvedValueOnce({
+        data: { id: 42, name: 'High Level', level: 5 }
+      })
+
+      const store = useCharacterBuilderStore()
+      await expect(store.loadCharacterForEditing(42)).rejects.toThrow('Only level 1 characters can be edited')
+    })
+
+    it('handles subrace by setting both raceId and subraceId', async () => {
+      const mockCharacter = {
+        id: 42,
+        name: 'Thorin',
+        level: 1,
+        ability_scores: { STR: 14, DEX: 10, CON: 16, INT: 10, WIS: 12, CHA: 8 },
+        race: { id: 2, name: 'Hill Dwarf', slug: 'hill-dwarf' },
+        class: null,
+        background: null
+      }
+
+      const mockSubrace = {
+        id: 2,
+        name: 'Hill Dwarf',
+        slug: 'hill-dwarf',
+        parent_race: { id: 1, name: 'Dwarf', slug: 'dwarf' }
+      }
+
+      mockApiFetch
+        .mockResolvedValueOnce({ data: mockCharacter })
+        .mockResolvedValueOnce({ data: mockSubrace })
+
+      const store = useCharacterBuilderStore()
+      await store.loadCharacterForEditing(42)
+
+      expect(store.raceId).toBe(1) // Parent race ID
+      expect(store.subraceId).toBe(2) // Subrace ID
+    })
+  })
+
+  describe('updateName', () => {
+    it('updates character name via API', async () => {
+      mockApiFetch.mockResolvedValueOnce({ data: { id: 42, name: 'New Name' } })
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.name = 'Old Name'
+
+      await store.updateName('New Name')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42', {
+        method: 'PATCH',
+        body: { name: 'New Name' }
+      })
+      expect(store.name).toBe('New Name')
+    })
+
+    it('does nothing if no characterId', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = null
+
+      await store.updateName('New Name')
+
+      expect(mockApiFetch).not.toHaveBeenCalled()
+    })
+  })
+
   describe('equipment item selections', () => {
     it('tracks item selections within compound choices', () => {
       const store = useCharacterBuilderStore()

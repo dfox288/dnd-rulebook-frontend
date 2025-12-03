@@ -61,14 +61,25 @@ const statusText = computed(() =>
     </div>
 
     <template #footer>
-      <div class="flex justify-between">
-        <UButton
-          :to="`/characters/${character.id}`"
-          variant="ghost"
-          size="sm"
-        >
-          View
-        </UButton>
+      <div class="flex justify-between items-center">
+        <div class="flex gap-2">
+          <UButton
+            :to="`/characters/${character.id}`"
+            variant="ghost"
+            size="sm"
+          >
+            View
+          </UButton>
+          <UButton
+            v-if="character.level === 1"
+            :to="`/characters/${character.id}/edit`"
+            variant="soft"
+            color="primary"
+            size="sm"
+          >
+            {{ character.is_complete ? 'Edit' : 'Continue' }}
+          </UButton>
+        </div>
         <UButton
           variant="ghost"
           color="error"
