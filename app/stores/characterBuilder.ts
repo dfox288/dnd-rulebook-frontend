@@ -436,6 +436,74 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     raceSpellChoices.value.set(choiceGroup, spellId)
   }
 
+  /**
+   * Save all equipment choices to the character
+   * Called when moving from equipment step to next step
+   */
+  async function saveEquipmentChoices(): Promise<void> {
+    if (!characterId.value) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const allItems = [...(selectedClass.value?.equipment ?? []), ...(selectedBackground.value?.equipment ?? [])]
+
+      for (const [group, optionId] of equipmentChoices.value) {
+        const selectedOption = allItems.find(item => item.id === optionId)
+        if (!selectedOption) continue
+
+        // If option has choice_items, process each
+        if (selectedOption.choice_items?.length) {
+          for (const [index, choiceItem] of selectedOption.choice_items.entries()) {
+            let itemId: number
+            const quantity = choiceItem.quantity
+
+            if (choiceItem.item) {
+              // Fixed item - use directly
+              itemId = choiceItem.item.id
+            } else if (choiceItem.proficiency_type) {
+              // Category item - get user's selection
+              const key = `${group}:${selectedOption.choice_option}:${index}`
+              const selectedItemId = equipmentItemSelections.value.get(key)
+              if (!selectedItemId) continue
+              itemId = selectedItemId
+            } else {
+              continue
+            }
+
+            await apiFetch(`/characters/${characterId.value}/equipment`, {
+              method: 'POST',
+              body: { item_id: itemId, quantity }
+            })
+          }
+        } else if (selectedOption.item) {
+          // Simple choice with direct item reference
+          await apiFetch(`/characters/${characterId.value}/equipment`, {
+            method: 'POST',
+            body: { item_id: selectedOption.item.id, quantity: selectedOption.quantity }
+          })
+        }
+      }
+
+      // Also add fixed equipment
+      const fixedEquipment = allItems.filter(item => !item.is_choice && item.item)
+      for (const item of fixedEquipment) {
+        if (item.item) {
+          await apiFetch(`/characters/${characterId.value}/equipment`, {
+            method: 'POST',
+            body: { item_id: item.item.id, quantity: item.quantity }
+          })
+        }
+      }
+    } catch (err: unknown) {
+      error.value = 'Failed to save equipment'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // ══════════════════════════════════════════════════════════════
   // RESET ACTION
   // ══════════════════════════════════════════════════════════════
@@ -518,6 +586,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     setEquipmentItemSelection,
     getEquipmentItemSelection,
     clearEquipmentItemSelections,
+    saveEquipmentChoices,
     learnSpell,
     unlearnSpell,
     setRaceSpellChoice,
