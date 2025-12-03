@@ -356,6 +356,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   /**
    * Step 5: Select background
    * Fetches full background detail to get equipment data
+   * Also fetches proficiency choices (all sources are now selected)
    */
   async function selectBackground(background: Background): Promise<void> {
     isLoading.value = true
@@ -374,6 +375,10 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       selectedBackground.value = fullBackground.data
 
       await refreshStats()
+
+      // Fetch proficiency choices now that all sources (race, class, background) are selected
+      // This determines if the Proficiency Choices step will appear
+      await fetchProficiencyChoices()
     } catch (err: unknown) {
       error.value = 'Failed to save background'
       throw err
@@ -772,7 +777,12 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         await initializePendingSpells()
       }
 
-      // 7. Determine starting step
+      // 7. Fetch proficiency choices for existing character
+      if (character.background) {
+        await fetchProficiencyChoices()
+      }
+
+      // 8. Determine starting step
       currentStep.value = determineStartingStep(character)
     } catch (err: unknown) {
       error.value = err instanceof Error ? err.message : 'Failed to load character'

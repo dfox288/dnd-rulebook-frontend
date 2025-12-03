@@ -1,7 +1,7 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
 const store = useCharacterBuilderStore()
-const { proficiencyChoices, pendingProficiencySelections, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
+const { proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
 
 const hasAnyChoices = computed(() => {
   if (!proficiencyChoices.value) return false
@@ -23,7 +23,7 @@ const choicesBySource = computed(() => {
       groupName: string
       quantity: number
       remaining: number
-      options: Array<{ type: string; skill_id: number; skill: { id: number; name: string; slug: string } }>
+      options: Array<{ type: string, skill_id: number, skill: { id: number, name: string, slug: string } }>
     }>
   }> = []
 
@@ -96,6 +96,14 @@ function handleSkillToggle(source: 'class' | 'race' | 'background', groupName: s
   if (!isSelected && current >= quantity) return
 
   store.toggleProficiencySelection(source, groupName, skillId)
+}
+
+/**
+ * Continue to next step - saves proficiency choices first
+ */
+async function handleContinue() {
+  await store.saveProficiencyChoices()
+  store.nextStep()
 }
 </script>
 
@@ -188,6 +196,19 @@ function handleSkillToggle(source: 'class' | 'race' | 'background', groupName: s
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Continue Button -->
+    <div class="flex justify-center pt-6">
+      <UButton
+        data-test="continue-btn"
+        size="lg"
+        :disabled="!allProficiencyChoicesComplete || isLoading"
+        :loading="isLoading"
+        @click="handleContinue"
+      >
+        Continue with Proficiencies
+      </UButton>
     </div>
   </div>
 </template>

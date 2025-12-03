@@ -15,7 +15,7 @@ useSeoMeta({
 
 // Store
 const store = useCharacterBuilderStore()
-const { currentStep, isFirstStep, isLastStep, isCaster, isLoading, error, name } = storeToRefs(store)
+const { currentStep, isFirstStep, isLastStep, isCaster, hasPendingChoices, isLoading, error, name } = storeToRefs(store)
 
 // Load character on mount
 onMounted(async () => {
@@ -34,29 +34,41 @@ onMounted(async () => {
   }
 })
 
-// Step definitions
+// Step definitions - dynamically built based on character state
 const steps = computed(() => {
-  const baseSteps = [
+  const stepList: Array<{ id: number, name: string, label: string, icon: string }> = [
     { id: 1, name: 'name', label: 'Name', icon: 'i-heroicons-user' },
     { id: 2, name: 'race', label: 'Race', icon: 'i-heroicons-globe-alt' },
     { id: 3, name: 'class', label: 'Class', icon: 'i-heroicons-shield-check' },
     { id: 4, name: 'abilities', label: 'Abilities', icon: 'i-heroicons-chart-bar' },
-    { id: 5, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' },
-    { id: 6, name: 'equipment', label: 'Equipment', icon: 'i-heroicons-briefcase' }
+    { id: 5, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' }
   ]
 
-  if (isCaster.value) {
-    baseSteps.push({ id: 7, name: 'spells', label: 'Spells', icon: 'i-heroicons-sparkles' })
+  let nextId = 6
+
+  // Conditional proficiency choices step (after background)
+  if (hasPendingChoices.value) {
+    stepList.push({ id: nextId++, name: 'proficiencies', label: 'Proficiencies', icon: 'i-heroicons-academic-cap' })
   }
 
-  baseSteps.push({
-    id: isCaster.value ? 8 : 7,
-    name: 'review',
-    label: 'Review',
-    icon: 'i-heroicons-check-circle'
-  })
+  // Equipment step (always present)
+  stepList.push({ id: nextId++, name: 'equipment', label: 'Equipment', icon: 'i-heroicons-briefcase' })
 
-  return baseSteps
+  // Conditional spells step (casters only)
+  if (isCaster.value) {
+    stepList.push({ id: nextId++, name: 'spells', label: 'Spells', icon: 'i-heroicons-sparkles' })
+  }
+
+  // Review step (always last)
+  stepList.push({ id: nextId, name: 'review', label: 'Review', icon: 'i-heroicons-check-circle' })
+
+  return stepList
+})
+
+// Helper to get step name by current step number
+const currentStepName = computed(() => {
+  const step = steps.value.find(s => s.id === currentStep.value)
+  return step?.name ?? 'unknown'
 })
 </script>
 
@@ -109,8 +121,11 @@ const steps = computed(() => {
           components use top-level await (useAsyncData). Without Suspense, Vue
           resolves all async components in the v-if chain simultaneously, causing
           all steps to render at once.
+
+          Steps are rendered by name (not number) to handle conditional steps
+          like Proficiencies (appears only when choices exist) and Spells (casters only).
         -->
-        <Suspense v-if="currentStep === 1">
+        <Suspense v-if="currentStepName === 'name'">
           <CharacterBuilderStepName />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -122,7 +137,7 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <Suspense v-else-if="currentStep === 2">
+        <Suspense v-else-if="currentStepName === 'race'">
           <CharacterBuilderStepRace />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -134,7 +149,7 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <Suspense v-else-if="currentStep === 3">
+        <Suspense v-else-if="currentStepName === 'class'">
           <CharacterBuilderStepClass />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -146,7 +161,7 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <Suspense v-else-if="currentStep === 4">
+        <Suspense v-else-if="currentStepName === 'abilities'">
           <CharacterBuilderStepAbilities />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -158,7 +173,7 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <Suspense v-else-if="currentStep === 5">
+        <Suspense v-else-if="currentStepName === 'background'">
           <CharacterBuilderStepBackground />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -170,7 +185,19 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <Suspense v-else-if="currentStep === 6">
+        <Suspense v-else-if="currentStepName === 'proficiencies'">
+          <CharacterBuilderStepProficiencies />
+          <template #fallback>
+            <div class="flex justify-center py-12">
+              <UIcon
+                name="i-heroicons-arrow-path"
+                class="w-8 h-8 animate-spin text-primary"
+              />
+            </div>
+          </template>
+        </Suspense>
+
+        <Suspense v-else-if="currentStepName === 'equipment'">
           <CharacterBuilderStepEquipment />
           <template #fallback>
             <div class="flex justify-center py-12">
@@ -182,22 +209,19 @@ const steps = computed(() => {
           </template>
         </Suspense>
 
-        <template v-else-if="currentStep === 7">
-          <Suspense v-if="isCaster">
-            <CharacterBuilderStepSpells />
-            <template #fallback>
-              <div class="flex justify-center py-12">
-                <UIcon
-                  name="i-heroicons-arrow-path"
-                  class="w-8 h-8 animate-spin text-primary"
-                />
-              </div>
-            </template>
-          </Suspense>
-          <CharacterBuilderStepReview v-else />
-        </template>
+        <Suspense v-else-if="currentStepName === 'spells'">
+          <CharacterBuilderStepSpells />
+          <template #fallback>
+            <div class="flex justify-center py-12">
+              <UIcon
+                name="i-heroicons-arrow-path"
+                class="w-8 h-8 animate-spin text-primary"
+              />
+            </div>
+          </template>
+        </Suspense>
 
-        <CharacterBuilderStepReview v-else-if="currentStep === 8" />
+        <CharacterBuilderStepReview v-else-if="currentStepName === 'review'" />
       </div>
 
       <!-- Navigation Buttons -->

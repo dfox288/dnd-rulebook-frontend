@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Character Proficiencies & Features (#106) (2025-12-03)** - Integrate proficiency choices and features into character builder
+  - New conditional "Proficiency Choices" wizard step (appears only when choices needed)
+  - Skill selection UI with multi-select checkboxes, quantity validation, and visual feedback
+  - Review step enhanced with Proficiencies section (displays selected skill choices)
+  - Review step enhanced with Features & Traits section (class features, racial traits, background feature)
+  - 4 new Nitro routes: `/characters/:id/proficiencies`, `/characters/:id/proficiency-choices` (GET/POST), `/characters/:id/features`
+  - Store additions: `proficiencyChoices`, `pendingProficiencySelections`, `hasPendingChoices`, `allProficiencyChoicesComplete`
+  - Store actions: `fetchProficiencyChoices()`, `toggleProficiencySelection()`, `saveProficiencyChoices()`
+  - Dynamic wizard step routing by name (supports conditional steps like Proficiencies and Spells)
+
 - **Proficiency Category Filtering (#108) (2025-12-03)** - EquipmentItemPicker supports new proficiency categories
   - Musical instruments now filter by `proficiency_category = musical_instrument`
   - Artisan tools now filter by `proficiency_category = artisan_tools`
