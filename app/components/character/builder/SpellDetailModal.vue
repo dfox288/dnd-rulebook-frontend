@@ -37,15 +37,13 @@ const levelText = computed(() => {
 const componentsText = computed(() => {
   if (!props.spell) return ''
   const parts = []
-  if (props.spell.needs_verbal_component) parts.push('V')
-  if (props.spell.needs_somatic_component) parts.push('S')
-  if (props.spell.needs_material_component) parts.push('M')
+  if (props.spell.requires_verbal) parts.push('V')
+  if (props.spell.requires_somatic) parts.push('S')
+  if (props.spell.requires_material) parts.push('M')
   return parts.join(', ')
 })
 
-function handleClose() {
-  emit('close')
-}
+// handleClose not needed - UModal v-model handles closing via isOpen setter
 </script>
 
 <template>
@@ -115,11 +113,11 @@ function handleClose() {
 
         <!-- Material Component Detail -->
         <div
-          v-if="spell.needs_material_component && spell.material_component"
+          v-if="spell.requires_material && spell.material_components"
           class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-sm"
         >
           <span class="font-semibold text-gray-900 dark:text-gray-100">Materials:</span>
-          <span class="ml-1 text-gray-600 dark:text-gray-400">{{ spell.material_component }}</span>
+          <span class="ml-1 text-gray-600 dark:text-gray-400">{{ spell.material_components }}</span>
         </div>
 
         <!-- Description -->
@@ -134,14 +132,14 @@ function handleClose() {
 
         <!-- Higher Levels -->
         <div
-          v-if="spell.higher_level"
+          v-if="spell.higher_levels"
           class="bg-spell-50 dark:bg-spell-900/20 rounded-lg p-3"
         >
           <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-1">
             At Higher Levels
           </h4>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            {{ spell.higher_level }}
+            {{ spell.higher_levels }}
           </p>
         </div>
       </div>

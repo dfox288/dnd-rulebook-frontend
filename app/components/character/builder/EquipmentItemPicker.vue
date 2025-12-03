@@ -60,8 +60,8 @@ const selectedItems = computed({
 
 // Single selection for quantity = 1
 const singleSelection = computed({
-  get: () => props.modelValue[0] ?? null,
-  set: (value: number | null) => {
+  get: () => props.modelValue[0] ?? undefined,
+  set: (value: number | undefined) => {
     emit('update:modelValue', value ? [value] : [])
   }
 })
@@ -107,7 +107,7 @@ const selectOptions = computed(() =>
       <USelectMenu
         v-for="i in quantity"
         :key="i"
-        :model-value="selectedItems[i - 1] ?? null"
+        :model-value="selectedItems[i - 1] ?? undefined"
         :data-test="`item-picker-${i}`"
         :items="selectOptions"
         :loading="pending"

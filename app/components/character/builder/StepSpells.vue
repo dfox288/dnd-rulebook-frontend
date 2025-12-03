@@ -12,7 +12,6 @@ const {
   selectedCantrips,
   selectedLeveledSpells,
   raceSpellChoices,
-  characterStats,
   isLoading,
   error
 } = storeToRefs(store)
@@ -21,35 +20,22 @@ const {
 const { apiFetch } = useApi()
 
 // Fetch available spells for this character
+// include_known=true ensures already-learned spells appear in list for highlighting
 const { data: availableSpells, pending: loadingSpells, refresh: refreshSpells } = await useAsyncData(
   `builder-available-spells-${characterId.value}`,
-  () => apiFetch<{ data: Spell[] }>(`/characters/${characterId.value}/available-spells?max_level=1`),
+  () => apiFetch<{ data: Spell[] }>(`/characters/${characterId.value}/available-spells?max_level=1&include_known=true`),
   { transform: (response: { data: Spell[] }) => response.data }
 )
-
-// Debug: log what we got
-if (import.meta.dev) {
-  console.log('[StepSpells] characterId:', characterId.value)
-  console.log('[StepSpells] availableSpells:', availableSpells.value?.length ?? 0, 'spells')
-  console.log('[StepSpells] cantrips:', availableSpells.value?.filter(s => s.level === 0).length ?? 0)
-  console.log('[StepSpells] leveled:', availableSpells.value?.filter(s => s.level > 0).length ?? 0)
-}
 
 // Fetch existing spells and refresh available spells on mount
 onMounted(async () => {
   // Always fetch the character's current spells to restore highlighting
   if (characterId.value) {
-    if (import.meta.dev) {
-      console.log('[StepSpells] Fetching selected spells on mount...')
-    }
     await store.fetchSelectedSpells()
   }
 
   // Refresh available spells if needed
   if (characterId.value && (!availableSpells.value || availableSpells.value.length === 0)) {
-    if (import.meta.dev) {
-      console.log('[StepSpells] Refreshing available spells on mount...')
-    }
     await refreshSpells()
   }
 })
@@ -97,25 +83,19 @@ const cantripsSelected = computed(() => selectedCantrips.value.length)
 const spellsSelected = computed(() => selectedLeveledSpells.value.length)
 
 // Computed Set of selected spell IDs for reactive template binding
+// Note: Explicitly convert to Number() to handle potential string IDs from API
 const selectedSpellIds = computed(() => {
-  const ids = selectedSpells.value.map(s => s.spell?.id).filter((id): id is number => id !== undefined)
-  if (import.meta.dev) {
-    console.log('[StepSpells] selectedSpellIds computed:', ids)
-  }
+  const ids = selectedSpells.value
+    .map(s => s.spell?.id)
+    .filter((id): id is number => id !== undefined)
+    .map(id => Number(id))
   return new Set(ids)
 })
 
-// Debug: watch for changes to selectedSpells
-if (import.meta.dev) {
-  watch(selectedSpells, (spells) => {
-    console.log('[StepSpells] selectedSpells changed:', spells?.length ?? 0, 'spells')
-    console.log('[StepSpells] spell IDs:', spells?.map(s => s.spell?.id))
-  }, { immediate: true })
-}
-
 // Check if a spell is already selected
 function isSpellSelected(spellId: number): boolean {
-  return selectedSpellIds.value.has(spellId)
+  // Ensure consistent type comparison by converting to number
+  return selectedSpellIds.value.has(Number(spellId))
 }
 
 // Check if selection is at limit for cantrips
@@ -317,8 +297,8 @@ function handleCloseModal() {
             v-for="spell in availableCantrips"
             :key="spell.id"
             :spell="spell"
-            :selected="selectedSpellIds.has(spell.id)"
-            :disabled="!selectedSpellIds.has(spell.id) && cantripsAtLimit"
+            :selected="isSpellSelected(spell.id)"
+            :disabled="!isSpellSelected(spell.id) && cantripsAtLimit"
             @toggle="handleSpellToggle"
             @view-details="handleViewDetails(spell)"
           />
@@ -348,8 +328,8 @@ function handleCloseModal() {
             v-for="spell in availableLeveledSpells"
             :key="spell.id"
             :spell="spell"
-            :selected="selectedSpellIds.has(spell.id)"
-            :disabled="!selectedSpellIds.has(spell.id) && spellsAtLimit"
+            :selected="isSpellSelected(spell.id)"
+            :disabled="!isSpellSelected(spell.id) && spellsAtLimit"
             @toggle="handleSpellToggle"
             @view-details="handleViewDetails(spell)"
           />
