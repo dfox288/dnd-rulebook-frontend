@@ -108,9 +108,10 @@ function getItemDisplayName(item: { item?: { name?: string } | null, description
 }
 
 /**
- * Continue to next step
+ * Continue to next step - saves equipment choices first
  */
-function handleContinue() {
+async function handleContinue() {
+  await store.saveEquipmentChoices()
   store.nextStep()
 }
 </script>
