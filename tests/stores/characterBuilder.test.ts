@@ -557,4 +557,142 @@ describe('useCharacterBuilderStore', () => {
       expect(store.allEquipmentChoicesMade).toBe(true)
     })
   })
+
+  describe('spell actions', () => {
+    describe('learnSpell', () => {
+      it('calls API to learn spell and updates selectedSpells', async () => {
+        const store = useCharacterBuilderStore()
+        store.characterId = 1
+
+        const mockSpellResponse = {
+          id: 100,
+          spell_id: 42,
+          spell: {
+            id: 42,
+            slug: 'fireball',
+            name: 'Fireball',
+            level: 3
+          },
+          source: 'class'
+        }
+
+        mockApiFetch.mockResolvedValue({ data: mockSpellResponse })
+
+        await store.learnSpell(42)
+
+        expect(mockApiFetch).toHaveBeenCalledWith('/characters/1/spells', {
+          method: 'POST',
+          body: { spell_id: 42 }
+        })
+        expect(store.selectedSpells).toContainEqual(mockSpellResponse)
+      })
+
+      it('sets loading state during API call', async () => {
+        let resolvePromise: (value: unknown) => void
+        mockApiFetch.mockReturnValue(new Promise((resolve) => {
+          resolvePromise = resolve
+        }))
+
+        const store = useCharacterBuilderStore()
+        store.characterId = 1
+
+        const promise = store.learnSpell(42)
+        expect(store.isLoading).toBe(true)
+
+        resolvePromise!({ data: { id: 100, spell_id: 42, spell: { id: 42 }, source: 'class' } })
+        await promise
+
+        expect(store.isLoading).toBe(false)
+      })
+
+      it('sets error on API failure', async () => {
+        mockApiFetch.mockRejectedValue(new Error('Network error'))
+
+        const store = useCharacterBuilderStore()
+        store.characterId = 1
+
+        await expect(store.learnSpell(42)).rejects.toThrow('Network error')
+        expect(store.error).toBe('Failed to learn spell')
+      })
+    })
+
+    describe('unlearnSpell', () => {
+      it('calls API to unlearn spell and removes from selectedSpells', async () => {
+        const store = useCharacterBuilderStore()
+        store.characterId = 1
+        store.selectedSpells = [
+          { id: 100, spell_id: 42, spell: { id: 42, name: 'Fireball' }, source: 'class' } as any,
+          { id: 101, spell_id: 43, spell: { id: 43, name: 'Magic Missile' }, source: 'class' } as any
+        ]
+
+        mockApiFetch.mockResolvedValue({})
+
+        await store.unlearnSpell(42)
+
+        expect(mockApiFetch).toHaveBeenCalledWith('/characters/1/spells/42', {
+          method: 'DELETE'
+        })
+        expect(store.selectedSpells).toHaveLength(1)
+        expect(store.selectedSpells[0].spell_id).toBe(43)
+      })
+
+      it('sets error on API failure', async () => {
+        mockApiFetch.mockRejectedValue(new Error('Network error'))
+
+        const store = useCharacterBuilderStore()
+        store.characterId = 1
+        store.selectedSpells = [
+          { id: 100, spell_id: 42, spell: { id: 42 }, source: 'class' } as any
+        ]
+
+        await expect(store.unlearnSpell(42)).rejects.toThrow('Network error')
+        expect(store.error).toBe('Failed to unlearn spell')
+      })
+    })
+
+    describe('setRaceSpellChoice', () => {
+      it('updates local state for race spell choices', () => {
+        const store = useCharacterBuilderStore()
+
+        store.setRaceSpellChoice('high-elf-cantrip', 123)
+
+        expect(store.raceSpellChoices.get('high-elf-cantrip')).toBe(123)
+      })
+
+      it('overwrites previous choice for same group', () => {
+        const store = useCharacterBuilderStore()
+
+        store.setRaceSpellChoice('high-elf-cantrip', 123)
+        store.setRaceSpellChoice('high-elf-cantrip', 456)
+
+        expect(store.raceSpellChoices.get('high-elf-cantrip')).toBe(456)
+      })
+    })
+
+    describe('spell computed properties', () => {
+      it('selectedCantrips returns only cantrips from selectedSpells', () => {
+        const store = useCharacterBuilderStore()
+        store.selectedSpells = [
+          { id: 1, spell_id: 10, spell: { id: 10, name: 'Fire Bolt', level: 0 }, source: 'class' } as any,
+          { id: 2, spell_id: 20, spell: { id: 20, name: 'Fireball', level: 3 }, source: 'class' } as any,
+          { id: 3, spell_id: 30, spell: { id: 30, name: 'Light', level: 0 }, source: 'class' } as any
+        ]
+
+        expect(store.selectedCantrips).toHaveLength(2)
+        expect(store.selectedCantrips.every(s => s.spell?.level === 0)).toBe(true)
+      })
+
+      it('selectedLeveledSpells returns only non-cantrip spells', () => {
+        const store = useCharacterBuilderStore()
+        store.selectedSpells = [
+          { id: 1, spell_id: 10, spell: { id: 10, name: 'Fire Bolt', level: 0 }, source: 'class' } as any,
+          { id: 2, spell_id: 20, spell: { id: 20, name: 'Fireball', level: 3 }, source: 'class' } as any,
+          { id: 3, spell_id: 30, spell: { id: 30, name: 'Magic Missile', level: 1 }, source: 'class' } as any
+        ]
+
+        expect(store.selectedLeveledSpells).toHaveLength(2)
+        expect(store.selectedLeveledSpells.every(s => (s.spell?.level ?? 0) > 0)).toBe(true)
+      })
+    })
+  })
 })

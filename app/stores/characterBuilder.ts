@@ -42,6 +42,9 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // Equipment choices (choice_group → selected item_id)
   const equipmentChoices = ref<Map<string, number>>(new Map())
 
+  // Race spell choices (choice_group → selected spell_id)
+  const raceSpellChoices = ref<Map<string, number>>(new Map())
+
   // ══════════════════════════════════════════════════════════════
   // FETCHED REFERENCE DATA (for display without re-fetching)
   // ══════════════════════════════════════════════════════════════
@@ -106,6 +109,20 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     }
     return true
   })
+
+  // ══════════════════════════════════════════════════════════════
+  // SPELL COMPUTED PROPERTIES
+  // ══════════════════════════════════════════════════════════════
+
+  // Filter selectedSpells to only cantrips (level 0)
+  const selectedCantrips = computed(() =>
+    selectedSpells.value.filter(s => s.spell?.level === 0)
+  )
+
+  // Filter selectedSpells to only leveled spells (level > 0)
+  const selectedLeveledSpells = computed(() =>
+    selectedSpells.value.filter(s => (s.spell?.level ?? 0) > 0)
+  )
 
   // ══════════════════════════════════════════════════════════════
   // LOADING STATE
@@ -294,6 +311,60 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   // ══════════════════════════════════════════════════════════════
+  // SPELL ACTIONS
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Learn a spell (add to character's known/prepared spells)
+   */
+  async function learnSpell(spellId: number): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await apiFetch<{ data: CharacterSpell }>(`/characters/${characterId.value}/spells`, {
+        method: 'POST',
+        body: { spell_id: spellId }
+      })
+
+      selectedSpells.value = [...selectedSpells.value, response.data]
+    } catch (err: unknown) {
+      error.value = 'Failed to learn spell'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Unlearn a spell (remove from character's known/prepared spells)
+   */
+  async function unlearnSpell(spellId: number): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await apiFetch(`/characters/${characterId.value}/spells/${spellId}`, {
+        method: 'DELETE'
+      })
+
+      selectedSpells.value = selectedSpells.value.filter(s => s.spell_id !== spellId)
+    } catch (err: unknown) {
+      error.value = 'Failed to unlearn spell'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Set race spell choice (local state only, e.g., High Elf cantrip)
+   */
+  function setRaceSpellChoice(choiceGroup: string, spellId: number): void {
+    raceSpellChoices.value.set(choiceGroup, spellId)
+  }
+
+  // ══════════════════════════════════════════════════════════════
   // RESET ACTION
   // ══════════════════════════════════════════════════════════════
   function reset(): void {
@@ -313,6 +384,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     }
     abilityScoreMethod.value = 'manual'
     equipmentChoices.value = new Map()
+    raceSpellChoices.value = new Map()
     selectedRace.value = null
     selectedClass.value = null
     selectedBackground.value = null
@@ -339,6 +411,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     abilityScores,
     abilityScoreMethod,
     equipmentChoices,
+    raceSpellChoices,
     selectedRace,
     selectedClass,
     selectedBackground,
@@ -353,6 +426,8 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     equipmentByChoiceGroup,
     fixedEquipment,
     allEquipmentChoicesMade,
+    selectedCantrips,
+    selectedLeveledSpells,
     isLoading,
     error,
     // Actions
@@ -366,6 +441,9 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     saveAbilityScores,
     selectBackground,
     setEquipmentChoice,
+    learnSpell,
+    unlearnSpell,
+    setRaceSpellChoice,
     reset
   }
 })
