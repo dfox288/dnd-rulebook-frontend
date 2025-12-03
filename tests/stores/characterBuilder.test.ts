@@ -970,9 +970,10 @@ describe('useCharacterBuilderStore', () => {
       expect(store.hasPendingChoices).toBe(false)
     })
 
-    it('hasPendingChoices returns false when remaining is 0 (choices already made)', () => {
+    it('hasPendingChoices returns true when remaining is 0 (allows editing saved choices)', () => {
       const store = useCharacterBuilderStore()
 
+      // Even when remaining is 0, we show the step so users can edit their choices
       store.proficiencyChoices = {
         data: {
           class: { skill_choice_1: { quantity: 2, remaining: 0, options: [] } },
@@ -981,7 +982,7 @@ describe('useCharacterBuilderStore', () => {
         }
       }
 
-      expect(store.hasPendingChoices).toBe(false)
+      expect(store.hasPendingChoices).toBe(true)
     })
 
     it('allProficiencyChoicesComplete returns true when all choices made', () => {

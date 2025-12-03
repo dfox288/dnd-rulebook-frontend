@@ -87,28 +87,22 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     && selectedClass.value?.spellcasting_ability !== undefined
   )
 
-  // Does this character have any pending proficiency choices?
-  // Checks for choice groups with remaining > 0 (choices not yet made)
+  // Does this character have any proficiency choice groups?
+  // Returns true if ANY choice groups exist (whether or not choices have been made)
+  // This determines if the Proficiency step appears in the wizard
   const hasPendingChoices = computed(() => {
     if (!proficiencyChoices.value) return false
     const { class: cls, race, background } = proficiencyChoices.value.data
 
-    // Check if any choice group has remaining choices to make
-    for (const group of Object.values(cls)) {
-      if (group.remaining > 0) return true
-    }
-    for (const group of Object.values(race)) {
-      if (group.remaining > 0) return true
-    }
-    for (const group of Object.values(background)) {
-      if (group.remaining > 0) return true
-    }
-
-    return false
+    // Check if any choice groups exist (user can edit even if already selected)
+    return Object.keys(cls).length > 0
+      || Object.keys(race).length > 0
+      || Object.keys(background).length > 0
   })
 
   // Are all required proficiency choices complete?
-  // Compares pending selections against `remaining` (not `quantity`) to handle partial saves
+  // A group is complete if: (remaining === 0) OR (pending selections === quantity)
+  // This handles both fresh selections and editing existing choices
   const allProficiencyChoicesComplete = computed(() => {
     if (!proficiencyChoices.value) return true
     if (!hasPendingChoices.value) return true
@@ -116,21 +110,22 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     const { class: cls, race, background } = proficiencyChoices.value.data
 
     for (const [groupName, group] of Object.entries(cls)) {
-      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`class:${groupName}`)?.size ?? 0
-      if (selected !== group.remaining) return false
+      // Complete if: already saved (remaining=0) and no pending changes, OR pending matches quantity
+      if (group.remaining === 0 && selected === 0) continue // Already saved, not editing
+      if (selected !== group.quantity) return false // Editing or fresh - need full quantity
     }
 
     for (const [groupName, group] of Object.entries(race)) {
-      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`race:${groupName}`)?.size ?? 0
-      if (selected !== group.remaining) return false
+      if (group.remaining === 0 && selected === 0) continue
+      if (selected !== group.quantity) return false
     }
 
     for (const [groupName, group] of Object.entries(background)) {
-      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`background:${groupName}`)?.size ?? 0
-      if (selected !== group.remaining) return false
+      if (group.remaining === 0 && selected === 0) continue
+      if (selected !== group.quantity) return false
     }
 
     return true

@@ -1,7 +1,41 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
 const store = useCharacterBuilderStore()
-const { proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
+const { characterId, proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
+
+// Fetch saved proficiencies to show already-selected skills
+const { apiFetch } = useApi()
+
+interface SavedProficiency {
+  id: number
+  source: string
+  choice_group?: string
+  skill?: { id: number, name: string, slug: string }
+}
+
+const { data: savedProficiencies } = await useAsyncData(
+  `step-proficiencies-saved-${characterId.value}`,
+  () => apiFetch<{ data: SavedProficiency[] }>(`/characters/${characterId.value}/proficiencies`),
+  { transform: (response: { data: SavedProficiency[] }) => response.data }
+)
+
+// Check if this is an edit (choices already made)
+const isEditing = computed(() => {
+  if (!proficiencyChoices.value) return false
+  const { class: cls, race, background } = proficiencyChoices.value.data
+
+  // If any group has remaining < quantity, choices were made
+  for (const group of Object.values(cls)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(race)) {
+    if (group.remaining < group.quantity) return true
+  }
+  for (const group of Object.values(background)) {
+    if (group.remaining < group.quantity) return true
+  }
+  return false
+})
 
 const hasAnyChoices = computed(() => {
   if (!proficiencyChoices.value) return false
@@ -98,6 +132,15 @@ function handleSkillToggle(source: 'class' | 'race' | 'background', groupName: s
   store.toggleProficiencySelection(source, groupName, skillId)
 }
 
+// Get saved skill names for a specific choice group (for displaying already-selected skills)
+function getSavedSkillsForGroup(source: string, groupName: string): string[] {
+  if (!savedProficiencies.value) return []
+
+  return savedProficiencies.value
+    .filter(p => p.source === source && p.choice_group === groupName && p.skill)
+    .map(p => p.skill!.name)
+}
+
 /**
  * Continue to next step - saves proficiency choices first
  */
@@ -161,15 +204,52 @@ async function handleContinue() {
               Choose {{ group.quantity }} skill{{ group.quantity > 1 ? 's' : '' }}:
             </span>
             <UBadge
-              :color="getSelectedCount(sourceData.source, group.groupName) === group.quantity ? 'success' : 'neutral'"
+              :color="getSelectedCount(sourceData.source, group.groupName) === group.quantity || group.remaining === 0 ? 'success' : 'neutral'"
               size="md"
             >
-              {{ getSelectedCount(sourceData.source, group.groupName) }}/{{ group.quantity }} selected
+              <template v-if="group.remaining === 0 && getSelectedCount(sourceData.source, group.groupName) === 0">
+                ✓ Already selected
+              </template>
+              <template v-else>
+                {{ getSelectedCount(sourceData.source, group.groupName) }}/{{ group.quantity }} selected
+              </template>
             </UBadge>
           </div>
 
-          <!-- Skill options grid -->
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <!-- Already selected message (when editing and no options available) -->
+          <div
+            v-if="group.remaining === 0 && group.options.length === 0"
+            class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
+          >
+            <div class="flex items-start gap-3">
+              <UIcon
+                name="i-heroicons-check-circle"
+                class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0"
+              />
+              <div>
+                <p class="font-medium text-green-800 dark:text-green-200">
+                  Skills already selected
+                </p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <UBadge
+                    v-for="skill in getSavedSkillsForGroup(sourceData.source, group.groupName)"
+                    :key="skill"
+                    color="primary"
+                    variant="subtle"
+                    size="md"
+                  >
+                    {{ skill }}
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skill options grid (when options available) -->
+          <div
+            v-else
+            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
+          >
             <button
               v-for="option in group.options"
               :key="option.skill_id"
