@@ -21,21 +21,24 @@ const store = useCharacterBuilderStore()
 const { currentStep, isFirstStep, isLastStep, isCaster } = storeToRefs(store)
 
 // Step definitions
+// Non-caster: Name → Race → Class → Abilities → Background → Equipment → Review (7 steps)
+// Caster: Name → Race → Class → Abilities → Background → Equipment → Spells → Review (8 steps)
 const steps = computed(() => {
   const baseSteps = [
     { id: 1, name: 'name', label: 'Name', icon: 'i-heroicons-user' },
     { id: 2, name: 'race', label: 'Race', icon: 'i-heroicons-globe-alt' },
     { id: 3, name: 'class', label: 'Class', icon: 'i-heroicons-shield-check' },
     { id: 4, name: 'abilities', label: 'Abilities', icon: 'i-heroicons-chart-bar' },
-    { id: 5, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' }
+    { id: 5, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' },
+    { id: 6, name: 'equipment', label: 'Equipment', icon: 'i-heroicons-briefcase' }
   ]
 
   if (isCaster.value) {
-    baseSteps.push({ id: 6, name: 'spells', label: 'Spells', icon: 'i-heroicons-sparkles' })
+    baseSteps.push({ id: 7, name: 'spells', label: 'Spells', icon: 'i-heroicons-sparkles' })
   }
 
   baseSteps.push({
-    id: isCaster.value ? 7 : 6,
+    id: isCaster.value ? 8 : 7,
     name: 'review',
     label: 'Review',
     icon: 'i-heroicons-check-circle'
@@ -90,14 +93,17 @@ onBeforeUnmount(() => {
       <!-- Step 5: Background -->
       <CharacterBuilderStepBackground v-else-if="currentStep === 5" />
 
-      <!-- Step 6: Spells (conditional) or Review -->
-      <template v-else-if="currentStep === 6">
+      <!-- Step 6: Equipment -->
+      <CharacterBuilderStepEquipment v-else-if="currentStep === 6" />
+
+      <!-- Step 7: Spells (caster) or Review (non-caster) -->
+      <template v-else-if="currentStep === 7">
         <CharacterBuilderStepSpells v-if="isCaster" />
         <CharacterBuilderStepReview v-else />
       </template>
 
-      <!-- Step 7: Review (for casters) -->
-      <CharacterBuilderStepReview v-else-if="currentStep === 7" />
+      <!-- Step 8: Review (for casters) -->
+      <CharacterBuilderStepReview v-else-if="currentStep === 8" />
     </div>
 
     <!-- Navigation Buttons -->
