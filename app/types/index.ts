@@ -23,10 +23,14 @@ export type Skill = components['schemas']['SkillResource']
 export type SpellSchool = components['schemas']['SpellSchoolResource']
 export type SpellEffect = components['schemas']['SpellEffectResource']
 export type SpellSavingThrow = components['schemas']['SavingThrowResource']
+export type CharacterSpell = components['schemas']['CharacterSpellResource']
 export type { components }
 
 // Search types
 export type { SearchResult, SearchResultData, EntityType, SearchOptions, SearchEntity, Class } from './search'
+
+// Character types
+export * from './character'
 
 // API Response types
 export interface ApiListResponse<T = unknown> {
