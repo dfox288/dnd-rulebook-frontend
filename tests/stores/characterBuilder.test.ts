@@ -970,6 +970,20 @@ describe('useCharacterBuilderStore', () => {
       expect(store.hasPendingChoices).toBe(false)
     })
 
+    it('hasPendingChoices returns false when remaining is 0 (choices already made)', () => {
+      const store = useCharacterBuilderStore()
+
+      store.proficiencyChoices = {
+        data: {
+          class: { skill_choice_1: { quantity: 2, remaining: 0, options: [] } },
+          race: {},
+          background: {}
+        }
+      }
+
+      expect(store.hasPendingChoices).toBe(false)
+    })
+
     it('allProficiencyChoicesComplete returns true when all choices made', () => {
       const store = useCharacterBuilderStore()
 

@@ -88,15 +88,27 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   )
 
   // Does this character have any pending proficiency choices?
+  // Checks for choice groups with remaining > 0 (choices not yet made)
   const hasPendingChoices = computed(() => {
     if (!proficiencyChoices.value) return false
     const { class: cls, race, background } = proficiencyChoices.value.data
-    return Object.keys(cls).length > 0
-      || Object.keys(race).length > 0
-      || Object.keys(background).length > 0
+
+    // Check if any choice group has remaining choices to make
+    for (const group of Object.values(cls)) {
+      if (group.remaining > 0) return true
+    }
+    for (const group of Object.values(race)) {
+      if (group.remaining > 0) return true
+    }
+    for (const group of Object.values(background)) {
+      if (group.remaining > 0) return true
+    }
+
+    return false
   })
 
   // Are all required proficiency choices complete?
+  // Compares pending selections against `remaining` (not `quantity`) to handle partial saves
   const allProficiencyChoicesComplete = computed(() => {
     if (!proficiencyChoices.value) return true
     if (!hasPendingChoices.value) return true
@@ -104,18 +116,21 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     const { class: cls, race, background } = proficiencyChoices.value.data
 
     for (const [groupName, group] of Object.entries(cls)) {
+      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`class:${groupName}`)?.size ?? 0
-      if (selected !== group.quantity) return false
+      if (selected !== group.remaining) return false
     }
 
     for (const [groupName, group] of Object.entries(race)) {
+      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`race:${groupName}`)?.size ?? 0
-      if (selected !== group.quantity) return false
+      if (selected !== group.remaining) return false
     }
 
     for (const [groupName, group] of Object.entries(background)) {
+      if (group.remaining === 0) continue // Already fully selected
       const selected = pendingProficiencySelections.value.get(`background:${groupName}`)?.size ?? 0
-      if (selected !== group.quantity) return false
+      if (selected !== group.remaining) return false
     }
 
     return true
