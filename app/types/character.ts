@@ -79,6 +79,16 @@ export interface CharacterSummary {
 }
 
 /**
+ * Movement speeds from race
+ */
+export interface CharacterSpeeds {
+  walk: number | null
+  fly: number | null
+  swim: number | null
+  climb: number | null
+}
+
+/**
  * Full character data from API
  */
 export interface Character {
@@ -96,6 +106,12 @@ export interface Character {
   temp_hit_points: number
   armor_class: number | null
   alignment: CharacterAlignment | null
+  /** Walking speed in feet (from race) */
+  speed: number | null
+  /** Size category name (from race) */
+  size: string | null
+  /** All movement types (from race) */
+  speeds: CharacterSpeeds | null
   /** Whether character currently has inspiration (DM awarded) */
   has_inspiration: boolean
   race: { id: number, name: string, slug: string } | null
