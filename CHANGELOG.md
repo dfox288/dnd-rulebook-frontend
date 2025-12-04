@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Character Alignment (#125) (2025-12-04)** - Add alignment selector to character builder Name step
+  - New alignment dropdown inline with character name input
+  - Fetches alignment options from `/api/alignments` endpoint
+  - Filters to standard D&D 5e player alignments (9 alignments + Unaligned)
+  - Alignment saved with character on create/update
+  - Store additions: `alignment` ref with `CharacterAlignment` type
+  - 10 new tests for store and UI
+
 - **Character Proficiencies & Features (#106) (2025-12-03)** - Integrate proficiency choices and features into character builder
   - New conditional "Proficiency Choices" wizard step (appears only when choices needed)
   - Skill selection UI with multi-select checkboxes, quantity validation, and visual feedback

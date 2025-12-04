@@ -1,7 +1,7 @@
 // app/stores/characterBuilder.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Background, CharacterSpell, CharacterClassEntry } from '~/types'
+import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Background, CharacterSpell, CharacterClassEntry, CharacterAlignment } from '~/types'
 import type { ProficiencyChoicesResponse } from '~/types/proficiencies'
 
 /**
@@ -40,6 +40,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   const characterId = ref<number | null>(null)
   const name = ref('')
+  const alignment = ref<CharacterAlignment | null>(null)
   const raceId = ref<number | null>(null)
   const subraceId = ref<number | null>(null)
   // Array of character classes (supports multiclass, but level 1 uses just one)
@@ -307,16 +308,16 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
 
   /**
-   * Step 1: Create a draft character with just a name
+   * Step 1: Create a draft character with name and optional alignment
    */
   async function createDraft(characterName: string): Promise<void> {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await apiFetch<{ data: { id: number, name: string } }>('/characters', {
+      const response = await apiFetch<{ data: { id: number, name: string, alignment: CharacterAlignment | null } }>('/characters', {
         method: 'POST',
-        body: { name: characterName }
+        body: { name: characterName, alignment: alignment.value }
       })
 
       characterId.value = response.data.id
@@ -898,6 +899,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       // 3. Populate basic fields
       characterId.value = character.id
       name.value = character.name
+      alignment.value = character.alignment ?? null
 
       // 4. Map ability scores (API uses STR/DEX, store uses strength/dexterity)
       if (character.ability_scores) {
@@ -978,14 +980,14 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   /**
-   * Update character name (for edit mode)
+   * Update character name and alignment (for edit mode)
    */
   async function updateName(newName: string): Promise<void> {
     if (!characterId.value) return
 
     await apiFetch(`/characters/${characterId.value}`, {
       method: 'PATCH',
-      body: { name: newName }
+      body: { name: newName, alignment: alignment.value }
     })
 
     name.value = newName
@@ -1009,6 +1011,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   function reset(): void {
     characterId.value = null
     name.value = ''
+    alignment.value = null
     raceId.value = null
     subraceId.value = null
     characterClasses.value = [] // Clears classId and selectedClass (computed)
@@ -1047,6 +1050,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     isLastStep,
     characterId,
     name,
+    alignment,
     raceId,
     subraceId,
     characterClasses,

@@ -160,7 +160,7 @@ describe('useCharacterBuilderStore', () => {
   })
 
   describe('createDraft action', () => {
-    it('calls API with character name', async () => {
+    it('calls API with character name and null alignment by default', async () => {
       mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf' } })
 
       const store = useCharacterBuilderStore()
@@ -168,7 +168,7 @@ describe('useCharacterBuilderStore', () => {
 
       expect(mockApiFetch).toHaveBeenCalledWith('/characters', {
         method: 'POST',
-        body: { name: 'Gandalf' }
+        body: { name: 'Gandalf', alignment: null }
       })
     })
 
@@ -1009,7 +1009,7 @@ describe('useCharacterBuilderStore', () => {
 
       expect(mockApiFetch).toHaveBeenCalledWith('/characters/42', {
         method: 'PATCH',
-        body: { name: 'New Name' }
+        body: { name: 'New Name', alignment: null }
       })
       expect(store.name).toBe('New Name')
     })
@@ -1631,7 +1631,88 @@ describe('useCharacterBuilderStore', () => {
 
       expect(store.isLoading).toBe(false)
     })
+  })
 
+  describe('alignment', () => {
+    it('has null alignment initially', () => {
+      const store = useCharacterBuilderStore()
+      expect(store.alignment).toBeNull()
+    })
+
+    it('createDraft includes alignment when provided', async () => {
+      mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf', alignment: 'Neutral Good' } })
+
+      const store = useCharacterBuilderStore()
+      store.alignment = 'Neutral Good'
+      await store.createDraft('Gandalf')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters', {
+        method: 'POST',
+        body: { name: 'Gandalf', alignment: 'Neutral Good' }
+      })
+    })
+
+    it('createDraft sends null alignment when not set', async () => {
+      mockApiFetch.mockResolvedValue({ data: { id: 42, name: 'Gandalf', alignment: null } })
+
+      const store = useCharacterBuilderStore()
+      await store.createDraft('Gandalf')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters', {
+        method: 'POST',
+        body: { name: 'Gandalf', alignment: null }
+      })
+    })
+
+    it('updateName includes alignment in payload', async () => {
+      mockApiFetch.mockResolvedValueOnce({ data: { id: 42, name: 'New Name', alignment: 'Chaotic Good' } })
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.name = 'Old Name'
+      store.alignment = 'Chaotic Good'
+
+      await store.updateName('New Name')
+
+      expect(mockApiFetch).toHaveBeenCalledWith('/characters/42', {
+        method: 'PATCH',
+        body: { name: 'New Name', alignment: 'Chaotic Good' }
+      })
+    })
+
+    it('loadCharacterForEditing populates alignment from API', async () => {
+      const mockCharacter = {
+        id: 42,
+        name: 'Test Character',
+        level: 1,
+        alignment: 'Lawful Evil',
+        race: null,
+        class: null,
+        background: null,
+        classes: [],
+        ability_scores: null,
+        validation_status: { is_complete: false, missing: [] }
+      }
+
+      mockApiFetch.mockResolvedValueOnce({ data: mockCharacter })
+
+      const store = useCharacterBuilderStore()
+      await store.loadCharacterForEditing(42)
+
+      expect(store.alignment).toBe('Lawful Evil')
+    })
+
+    it('reset clears alignment to null', () => {
+      const store = useCharacterBuilderStore()
+      store.alignment = 'True Neutral'
+
+      store.reset()
+
+      expect(store.alignment).toBeNull()
+    })
+  })
+
+  describe('proficiency choices', () => {
     it('totalSteps includes proficiency step when choices exist', () => {
       const store = useCharacterBuilderStore()
 

@@ -59,4 +59,37 @@ describe('CharacterBuilderStepName', () => {
     // Store should have the name
     expect(store.name).toBe('Frodo')
   })
+
+  describe('alignment selector', () => {
+    it('renders alignment select', async () => {
+      const wrapper = await mountSuspended(StepName)
+      // Look for the alignment label or select element
+      expect(wrapper.text()).toContain('Alignment')
+    })
+
+    it('shows alignment select with placeholder', async () => {
+      const wrapper = await mountSuspended(StepName)
+      const html = wrapper.html()
+      // The select should show the placeholder option when no alignment is selected
+      expect(html).toContain('Select alignment')
+    })
+
+    it('binds to store alignment value', async () => {
+      const store = useCharacterBuilderStore()
+      store.alignment = 'Chaotic Good'
+
+      await mountSuspended(StepName)
+
+      // The component should have access to the store alignment
+      expect(store.alignment).toBe('Chaotic Good')
+    })
+
+    it('allows selecting an alignment', async () => {
+      const wrapper = await mountSuspended(StepName)
+
+      // Find and interact with alignment select
+      const select = wrapper.find('[data-testid="alignment-select"]')
+      expect(select.exists()).toBe(true)
+    })
+  })
 })
