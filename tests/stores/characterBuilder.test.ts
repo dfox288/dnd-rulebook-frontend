@@ -51,6 +51,26 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(7)
     })
 
+    it('has empty characterClasses array initially', () => {
+      const store = useCharacterBuilderStore()
+      expect(store.characterClasses).toEqual([])
+    })
+
+    it('primaryClass returns null when no classes', () => {
+      const store = useCharacterBuilderStore()
+      expect(store.primaryClass).toBeNull()
+    })
+
+    it('classId computed returns null when no classes', () => {
+      const store = useCharacterBuilderStore()
+      expect(store.classId).toBeNull()
+    })
+
+    it('selectedClass computed returns null when no classes', () => {
+      const store = useCharacterBuilderStore()
+      expect(store.selectedClass).toBeNull()
+    })
+
     it('isFirstStep is true at step 1', () => {
       const store = useCharacterBuilderStore()
       expect(store.isFirstStep).toBe(true)
