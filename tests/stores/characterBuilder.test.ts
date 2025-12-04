@@ -864,9 +864,15 @@ describe('useCharacterBuilderStore', () => {
         classes: [{
           class: { id: 2, name: 'Wizard', slug: 'wizard' },
           subclass: null,
-          level: 1,
-          is_primary: true,
-          order: 0
+          level: '1',
+          is_primary: 'true',
+          order: '0',
+          hit_dice: {
+            die: 'd6',
+            max: '1',
+            spent: '0',
+            available: '1'
+          }
         }],
         background: { id: 3, name: 'Sage', slug: 'sage' }
       }

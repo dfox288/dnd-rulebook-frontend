@@ -1,6 +1,7 @@
 // app/types/character.ts
 
 import type { CharacterClass } from './api/entities'
+import type { components } from './api/generated'
 
 /**
  * Ability scores for character creation
@@ -86,7 +87,10 @@ export interface Character {
   temp_hit_points: number
   armor_class: number | null
   race: { id: number, name: string, slug: string } | null
+  /** @deprecated Legacy field for primary class. Use classes array instead */
   class: { id: number, name: string, slug: string } | null
+  /** Multiclass support - array of character's classes */
+  classes: components['schemas']['CharacterClassPivotResource'][]
   background: { id: number, name: string, slug: string } | null
   created_at: string
   updated_at: string
