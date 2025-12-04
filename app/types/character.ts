@@ -32,6 +32,15 @@ export interface CharacterClassEntry {
 }
 
 /**
+ * Character alignment values (D&D 5e standard alignments)
+ */
+export type CharacterAlignment
+  = 'Lawful Good' | 'Neutral Good' | 'Chaotic Good'
+    | 'Lawful Neutral' | 'True Neutral' | 'Chaotic Neutral'
+    | 'Lawful Evil' | 'Neutral Evil' | 'Chaotic Evil'
+    | 'Unaligned'
+
+/**
  * Ability score codes used by the API
  */
 export type AbilityScoreCode = 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA'
@@ -86,6 +95,7 @@ export interface Character {
   current_hit_points: number | null
   temp_hit_points: number
   armor_class: number | null
+  alignment: CharacterAlignment | null
   race: { id: number, name: string, slug: string } | null
   /** @deprecated Legacy field for primary class. Use classes array instead */
   class: { id: number, name: string, slug: string } | null
