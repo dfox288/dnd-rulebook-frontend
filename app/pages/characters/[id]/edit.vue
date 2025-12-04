@@ -15,7 +15,7 @@ useSeoMeta({
 
 // Store
 const store = useCharacterBuilderStore()
-const { currentStep, isFirstStep, isLastStep, isCaster, hasSubraces, hasPendingChoices, isLoading, error, name } = storeToRefs(store)
+const { currentStep, isFirstStep, isLastStep, isCaster, needsSubrace, hasPendingChoices, isLoading, error, name } = storeToRefs(store)
 
 // Load character on mount
 onMounted(async () => {
@@ -43,17 +43,15 @@ const steps = computed(() => {
 
   let nextId = 3
 
-  // Conditional subrace step (only when selected race has subraces)
-  if (hasSubraces.value) {
-    stepList.push({ id: nextId++, name: 'subrace', label: 'Subrace', icon: 'i-heroicons-globe-americas' })
+  // Conditional subrace step (only if selected race has subraces)
+  if (needsSubrace.value) {
+    stepList.push({ id: nextId++, name: 'subrace', label: 'Subrace', icon: 'i-heroicons-sparkles' })
   }
 
-  // Core steps
-  stepList.push(
-    { id: nextId++, name: 'class', label: 'Class', icon: 'i-heroicons-shield-check' },
-    { id: nextId++, name: 'abilities', label: 'Abilities', icon: 'i-heroicons-chart-bar' },
-    { id: nextId++, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' }
-  )
+  // Core steps (always present)
+  stepList.push({ id: nextId++, name: 'class', label: 'Class', icon: 'i-heroicons-shield-check' })
+  stepList.push({ id: nextId++, name: 'abilities', label: 'Abilities', icon: 'i-heroicons-chart-bar' })
+  stepList.push({ id: nextId++, name: 'background', label: 'Background', icon: 'i-heroicons-book-open' })
 
   // Conditional proficiency choices step (after background)
   if (hasPendingChoices.value) {

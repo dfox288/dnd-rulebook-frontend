@@ -1,41 +1,9 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
+import type { ProficiencyOption } from '~/types/proficiencies'
+
 const store = useCharacterBuilderStore()
-const { characterId, proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
-
-// Fetch saved proficiencies to show already-selected skills
-const { apiFetch } = useApi()
-
-interface SavedProficiency {
-  id: number
-  source: string
-  choice_group?: string
-  skill?: { id: number, name: string, slug: string }
-}
-
-const { data: savedProficiencies } = await useAsyncData(
-  `step-proficiencies-saved-${characterId.value}`,
-  () => apiFetch<{ data: SavedProficiency[] }>(`/characters/${characterId.value}/proficiencies`),
-  { transform: (response: { data: SavedProficiency[] }) => response.data }
-)
-
-// Check if this is an edit (choices already made)
-const isEditing = computed(() => {
-  if (!proficiencyChoices.value) return false
-  const { class: cls, race, background } = proficiencyChoices.value.data
-
-  // If any group has remaining < quantity, choices were made
-  for (const group of Object.values(cls)) {
-    if (group.remaining < group.quantity) return true
-  }
-  for (const group of Object.values(race)) {
-    if (group.remaining < group.quantity) return true
-  }
-  for (const group of Object.values(background)) {
-    if (group.remaining < group.quantity) return true
-  }
-  return false
-})
+const { proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
 
 const hasAnyChoices = computed(() => {
   if (!proficiencyChoices.value) return false
@@ -57,7 +25,9 @@ const choicesBySource = computed(() => {
       groupName: string
       quantity: number
       remaining: number
-      options: Array<{ type: string, skill_id: number, skill: { id: number, name: string, slug: string } }>
+      selectedSkills: number[]
+      selectedProficiencyTypes: number[]
+      options: ProficiencyOption[]
     }>
   }> = []
 
@@ -72,6 +42,8 @@ const choicesBySource = computed(() => {
         groupName,
         quantity: group.quantity,
         remaining: group.remaining,
+        selectedSkills: group.selected_skills ?? [],
+        selectedProficiencyTypes: group.selected_proficiency_types ?? [],
         options: group.options
       }))
     })
@@ -86,6 +58,8 @@ const choicesBySource = computed(() => {
         groupName,
         quantity: group.quantity,
         remaining: group.remaining,
+        selectedSkills: group.selected_skills ?? [],
+        selectedProficiencyTypes: group.selected_proficiency_types ?? [],
         options: group.options
       }))
     })
@@ -100,6 +74,8 @@ const choicesBySource = computed(() => {
         groupName,
         quantity: group.quantity,
         remaining: group.remaining,
+        selectedSkills: group.selected_skills ?? [],
+        selectedProficiencyTypes: group.selected_proficiency_types ?? [],
         options: group.options
       }))
     })
@@ -108,13 +84,61 @@ const choicesBySource = computed(() => {
   return sources
 })
 
+/**
+ * Initialize pending selections from API's selected_skills/selected_proficiency_types
+ * This pre-populates the selections when editing an existing character
+ */
+function initializePendingSelections() {
+  if (!proficiencyChoices.value) return
+
+  const { class: cls, race, background } = proficiencyChoices.value.data
+
+  // Helper to initialize a source's selections
+  const initSource = (source: 'class' | 'race' | 'background', groups: typeof cls) => {
+    for (const [groupName, group] of Object.entries(groups)) {
+      const key = `${source}:${groupName}`
+
+      // Only initialize if not already in pending selections
+      if (!pendingProficiencySelections.value.has(key)) {
+        const selectedIds = new Set<number>()
+
+        // Add previously selected skills
+        for (const skillId of group.selected_skills ?? []) {
+          selectedIds.add(skillId)
+        }
+
+        // Note: proficiency_type selections would need separate tracking
+        // For now, we focus on skills which are the most common
+
+        if (selectedIds.size > 0) {
+          store.initializeProficiencySelections(source, groupName, selectedIds)
+        }
+      }
+    }
+  }
+
+  initSource('class', cls)
+  initSource('race', race)
+  initSource('background', background)
+}
+
+// Initialize on mount
+onMounted(() => {
+  initializePendingSelections()
+})
+
+// Re-initialize if proficiencyChoices changes (e.g., after refetch)
+watch(proficiencyChoices, () => {
+  initializePendingSelections()
+}, { immediate: false })
+
 // Get selected count for a choice group
 function getSelectedCount(source: string, groupName: string): number {
   const key = `${source}:${groupName}`
   return pendingProficiencySelections.value.get(key)?.size ?? 0
 }
 
-// Check if a skill is selected
+// Check if a skill is selected (either pending or from API)
 function isSkillSelected(source: string, groupName: string, skillId: number): boolean {
   const key = `${source}:${groupName}`
   return pendingProficiencySelections.value.get(key)?.has(skillId) ?? false
@@ -132,13 +156,26 @@ function handleSkillToggle(source: 'class' | 'race' | 'background', groupName: s
   store.toggleProficiencySelection(source, groupName, skillId)
 }
 
-// Get saved skill names for a specific choice group (for displaying already-selected skills)
-function getSavedSkillsForGroup(source: string, groupName: string): string[] {
-  if (!savedProficiencies.value) return []
+/**
+ * Get display name for an option (handles both skill and proficiency_type)
+ */
+function getOptionName(option: ProficiencyOption): string {
+  if (option.type === 'skill') {
+    return option.skill.name
+  } else {
+    return option.proficiency_type.name
+  }
+}
 
-  return savedProficiencies.value
-    .filter(p => p.source === source && p.choice_group === groupName && p.skill)
-    .map(p => p.skill!.name)
+/**
+ * Get option ID for keying and selection
+ */
+function getOptionId(option: ProficiencyOption): number {
+  if (option.type === 'skill') {
+    return option.skill_id
+  } else {
+    return option.proficiency_type_id
+  }
 }
 
 /**
@@ -204,73 +241,36 @@ async function handleContinue() {
               Choose {{ group.quantity }} skill{{ group.quantity > 1 ? 's' : '' }}:
             </span>
             <UBadge
-              :color="getSelectedCount(sourceData.source, group.groupName) === group.quantity || group.remaining === 0 ? 'success' : 'neutral'"
+              :color="getSelectedCount(sourceData.source, group.groupName) === group.quantity ? 'success' : 'neutral'"
               size="md"
             >
-              <template v-if="group.remaining === 0 && getSelectedCount(sourceData.source, group.groupName) === 0">
-                ✓ Already selected
-              </template>
-              <template v-else>
-                {{ getSelectedCount(sourceData.source, group.groupName) }}/{{ group.quantity }} selected
-              </template>
+              {{ getSelectedCount(sourceData.source, group.groupName) }}/{{ group.quantity }} selected
             </UBadge>
           </div>
 
-          <!-- Already selected message (when editing and no options available) -->
-          <div
-            v-if="group.remaining === 0 && group.options.length === 0"
-            class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4"
-          >
-            <div class="flex items-start gap-3">
-              <UIcon
-                name="i-heroicons-check-circle"
-                class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p class="font-medium text-green-800 dark:text-green-200">
-                  Skills already selected
-                </p>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  <UBadge
-                    v-for="skill in getSavedSkillsForGroup(sourceData.source, group.groupName)"
-                    :key="skill"
-                    color="primary"
-                    variant="subtle"
-                    size="md"
-                  >
-                    {{ skill }}
-                  </UBadge>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Skill options grid (when options available) -->
-          <div
-            v-else
-            class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
-          >
+          <!-- Skill options grid -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             <button
               v-for="option in group.options"
-              :key="option.skill_id"
+              :key="getOptionId(option)"
               type="button"
               class="skill-option p-3 rounded-lg border text-left transition-all"
               :class="{
-                'border-primary bg-primary/10': isSkillSelected(sourceData.source, group.groupName, option.skill_id),
-                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isSkillSelected(sourceData.source, group.groupName, option.skill_id)
+                'border-primary bg-primary/10': isSkillSelected(sourceData.source, group.groupName, getOptionId(option)),
+                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isSkillSelected(sourceData.source, group.groupName, getOptionId(option))
               }"
-              @click="handleSkillToggle(sourceData.source, group.groupName, option.skill_id, group.quantity)"
+              @click="handleSkillToggle(sourceData.source, group.groupName, getOptionId(option), group.quantity)"
             >
               <div class="flex items-center gap-2">
                 <UIcon
-                  :name="isSkillSelected(sourceData.source, group.groupName, option.skill_id) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
+                  :name="isSkillSelected(sourceData.source, group.groupName, getOptionId(option)) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
                   class="w-5 h-5"
                   :class="{
-                    'text-primary': isSkillSelected(sourceData.source, group.groupName, option.skill_id),
-                    'text-gray-400': !isSkillSelected(sourceData.source, group.groupName, option.skill_id)
+                    'text-primary': isSkillSelected(sourceData.source, group.groupName, getOptionId(option)),
+                    'text-gray-400': !isSkillSelected(sourceData.source, group.groupName, getOptionId(option))
                   }"
                 />
-                <span class="font-medium">{{ option.skill.name }}</span>
+                <span class="font-medium">{{ getOptionName(option) }}</span>
               </div>
             </button>
           </div>

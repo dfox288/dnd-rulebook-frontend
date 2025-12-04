@@ -8,10 +8,27 @@ export interface SkillOption {
   }
 }
 
+export interface ProficiencyTypeOption {
+  type: 'proficiency_type'
+  proficiency_type_id: number
+  proficiency_type: {
+    id: number
+    name: string
+    slug: string
+  }
+}
+
+export type ProficiencyOption = SkillOption | ProficiencyTypeOption
+
 export interface ProficiencyChoice {
   quantity: number
   remaining: number
-  options: SkillOption[]
+  /** IDs of skills already selected for this choice group */
+  selected_skills: number[]
+  /** IDs of proficiency types already selected for this choice group */
+  selected_proficiency_types: number[]
+  /** All available options (no longer filtered by selection) */
+  options: ProficiencyOption[]
 }
 
 export interface ProficiencyChoicesResponse {

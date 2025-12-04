@@ -5,7 +5,7 @@ import type { Race } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
 const store = useCharacterBuilderStore()
-const { selectedRace, subraceId, isLoading, error } = storeToRefs(store)
+const { selectedBaseRace, subraceId, isLoading, error } = storeToRefs(store)
 
 // API client
 const { apiFetch } = useApi()
@@ -43,7 +43,7 @@ const filteredRaces = computed((): Race[] => {
 })
 
 // Validation: can proceed if race selected
-const canProceed = computed(() => !!localSelectedRace.value)
+const canProceed = computed(() => localSelectedRace.value !== null)
 
 /**
  * Handle race card selection
@@ -97,6 +97,8 @@ function handleCloseModal() {
 
 /**
  * Confirm selection and call store action
+ * Note: If the race has subraces, the wizard will automatically
+ * show the subrace step next (handled by edit.vue steps array)
  */
 async function confirmSelection() {
   if (!localSelectedRace.value) return
@@ -112,13 +114,9 @@ async function confirmSelection() {
 
 // Initialize from store if already selected
 onMounted(() => {
-  if (selectedRace.value) {
-    // Find the base race if we have a subrace selected
-    if (selectedRace.value.parent_race) {
-      localSelectedRace.value = baseRaces.value.find((r: Race) => r.id === selectedRace.value?.parent_race?.id) ?? null
-    } else {
-      localSelectedRace.value = selectedRace.value
-    }
+  if (selectedBaseRace.value) {
+    // Find the matching race in our loaded list (for proper reference equality)
+    localSelectedRace.value = baseRaces.value.find((r: Race) => r.id === selectedBaseRace.value?.id) ?? selectedBaseRace.value
   }
 })
 </script>

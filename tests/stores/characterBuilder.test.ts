@@ -232,6 +232,14 @@ describe('useCharacterBuilderStore', () => {
       speed: 25
     } as Race
 
+    const mockRaceWithSubraces: Race = {
+      id: 1,
+      name: 'Dwarf',
+      slug: 'dwarf',
+      speed: 25,
+      subraces: [{ id: 2, name: 'Hill Dwarf', slug: 'hill-dwarf' }]
+    } as Race
+
     const mockSubrace: Race = {
       id: 2,
       name: 'Hill Dwarf',
@@ -241,7 +249,10 @@ describe('useCharacterBuilderStore', () => {
     } as Race
 
     it('calls API with race_id', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH character
+        .mockResolvedValueOnce({ data: mockRaceWithSubraces }) // GET race detail
+        .mockResolvedValueOnce({ data: {} }) // GET stats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -255,7 +266,10 @@ describe('useCharacterBuilderStore', () => {
     })
 
     it('uses subrace ID when subrace provided', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH character
+        .mockResolvedValueOnce({ data: mockRaceWithSubraces }) // GET race detail
+        .mockResolvedValueOnce({ data: {} }) // GET stats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -269,7 +283,10 @@ describe('useCharacterBuilderStore', () => {
     })
 
     it('updates store state after selection', async () => {
-      mockApiFetch.mockResolvedValue({ data: {} })
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH character
+        .mockResolvedValueOnce({ data: mockRaceWithSubraces }) // GET race detail
+        .mockResolvedValueOnce({ data: {} }) // GET stats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -279,13 +296,31 @@ describe('useCharacterBuilderStore', () => {
       expect(store.raceId).toBe(1)
       expect(store.subraceId).toBe(2)
       expect(store.selectedRace).toEqual(mockSubrace)
+      expect(store.selectedBaseRace).toEqual(mockRaceWithSubraces)
+    })
+
+    it('sets needsSubrace when race has subraces', async () => {
+      mockApiFetch
+        .mockResolvedValueOnce({ data: {} }) // PATCH character
+        .mockResolvedValueOnce({ data: mockRaceWithSubraces }) // GET race detail
+        .mockResolvedValueOnce({ data: {} }) // GET stats
+
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+
+      await store.selectRace(mockRace)
+
+      expect(store.needsSubrace).toBe(true)
     })
 
     it('sets loading state during API call', async () => {
       let resolvePromise: (value: unknown) => void
-      mockApiFetch.mockReturnValue(new Promise((resolve) => {
-        resolvePromise = resolve
-      }))
+      mockApiFetch
+        .mockReturnValueOnce(new Promise((resolve) => {
+          resolvePromise = resolve
+        }))
+        .mockResolvedValueOnce({ data: mockRaceWithSubraces }) // GET race detail
+        .mockResolvedValueOnce({ data: {} }) // GET stats
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
@@ -798,7 +833,7 @@ describe('useCharacterBuilderStore', () => {
         parent_race: { id: 1, name: 'Dwarf', slug: 'dwarf' }
       }
 
-      const mockParentRace = {
+      const mockBaseRace = {
         id: 1,
         name: 'Dwarf',
         slug: 'dwarf',
@@ -806,16 +841,17 @@ describe('useCharacterBuilderStore', () => {
       }
 
       mockApiFetch
-        .mockResolvedValueOnce({ data: mockCharacter }) // GET /characters/42
-        .mockResolvedValueOnce({ data: mockSubrace }) // GET /races/hill-dwarf
-        .mockResolvedValueOnce({ data: mockParentRace }) // GET /races/dwarf (parent)
+        .mockResolvedValueOnce({ data: mockCharacter })
+        .mockResolvedValueOnce({ data: mockSubrace })
+        .mockResolvedValueOnce({ data: mockBaseRace }) // Fetch base race for selectedBaseRace
 
       const store = useCharacterBuilderStore()
       await store.loadCharacterForEditing(42)
 
       expect(store.raceId).toBe(1) // Parent race ID
       expect(store.subraceId).toBe(2) // Subrace ID
-      expect(store.selectedRace?.subraces?.length).toBeGreaterThan(0) // Parent race with subraces
+      expect(store.selectedBaseRace?.id).toBe(1) // Base race is stored
+      expect(store.needsSubrace).toBe(true) // Base race has subraces
     })
   })
 
@@ -1040,6 +1076,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       await store.selectSubrace(mockSubrace)
 
@@ -1055,6 +1092,7 @@ describe('useCharacterBuilderStore', () => {
       const store = useCharacterBuilderStore()
       store.characterId = 42
       store.raceId = 1
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       await store.selectSubrace(mockSubrace)
 
@@ -1066,6 +1104,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       await store.selectSubrace(mockSubrace)
 
@@ -1079,6 +1118,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       await store.selectSubrace(mockSubrace)
 
@@ -1093,6 +1133,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       const promise = store.selectSubrace(mockSubrace)
       expect(store.isLoading).toBe(true)
@@ -1108,9 +1149,20 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = { id: 1, name: 'Elf', slug: 'elf' } as Race
 
       await expect(store.selectSubrace(mockSubrace)).rejects.toThrow('Network error')
       expect(store.error).toBe('Failed to save subrace')
+    })
+
+    it('sets error when no base race selected', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.selectedBaseRace = null
+
+      await store.selectSubrace(mockSubrace)
+
+      expect(store.error).toBe('No base race selected')
     })
   })
 
@@ -1118,15 +1170,15 @@ describe('useCharacterBuilderStore', () => {
     it('returns 7 for non-caster without subraces', () => {
       const store = useCharacterBuilderStore()
       store.selectedClass = { spellcasting_ability: null } as any
-      store.selectedRace = { id: 1, name: 'Human', subraces: [] } as Race
+      store.selectedBaseRace = { id: 1, name: 'Human', subraces: [] } as Race
 
       expect(store.totalSteps).toBe(7)
     })
 
-    it('returns 8 when race has subraces (non-caster)', () => {
+    it('returns 8 when base race has subraces (non-caster)', () => {
       const store = useCharacterBuilderStore()
       store.selectedClass = { spellcasting_ability: null } as any
-      store.selectedRace = {
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1135,12 +1187,13 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(8)
     })
 
-    it('returns 9 when race has subraces and is caster', () => {
+    it('returns 9 when base race has subraces and is caster', () => {
       const store = useCharacterBuilderStore()
       store.selectedClass = {
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
-      store.selectedRace = {
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1149,12 +1202,13 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(9)
     })
 
-    it('returns 10 when race has subraces, is caster, and has proficiency choices', () => {
+    it('returns 10 when base race has subraces, is caster, and has proficiency choices', () => {
       const store = useCharacterBuilderStore()
       store.selectedClass = {
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' }
+        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
       } as any
-      store.selectedRace = {
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1268,15 +1322,15 @@ describe('useCharacterBuilderStore', () => {
       expect(store.allProficiencyChoicesComplete).toBe(true)
     })
 
-    it('allProficiencyChoicesComplete returns true when choices already made (remaining=0, no pending selections)', () => {
+    it('allProficiencyChoicesComplete returns true when choices already made (selected_skills populated, no pending selections)', () => {
       const store = useCharacterBuilderStore()
 
       // User has already made their proficiency choices in a previous session
-      // remaining=0 means all choices were already saved
+      // selected_skills array shows which skills were already saved
       store.proficiencyChoices = {
         data: {
           class: {
-            skill_choice_1: { quantity: 2, remaining: 0, options: [] }
+            skill_choice_1: { quantity: 2, remaining: 0, options: [], selected_skills: [1, 5] }
           },
           race: {},
           background: {}
@@ -1284,7 +1338,7 @@ describe('useCharacterBuilderStore', () => {
       }
 
       // No pending selections (user is just passing through)
-      // This should still be complete because remaining=0
+      // This should still be complete because selected_skills.length === quantity
       expect(store.allProficiencyChoicesComplete).toBe(true)
     })
 
