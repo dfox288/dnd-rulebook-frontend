@@ -400,29 +400,37 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
 
   /**
    * Step 3: Select class
-   * This updates isCaster computed which affects totalSteps
-   * Fetches full class detail to get equipment data
+   * Uses new /classes endpoints for multiclass support
+   * Clears existing classes first (level 1 characters have exactly one class)
    */
   async function selectClass(cls: CharacterClass): Promise<void> {
     isLoading.value = true
     error.value = null
 
     try {
-      // Use new /classes endpoint for multiclass support
+      // Clear existing classes first (for re-selection)
+      for (const entry of characterClasses.value) {
+        await apiFetch(`/characters/${characterId.value}/classes/${entry.classId}`, {
+          method: 'DELETE'
+        })
+      }
+
+      // Add the new class
       await apiFetch(`/characters/${characterId.value}/classes`, {
         method: 'POST',
-        body: { class_id: cls.id, level: 1 }
+        body: { class_id: cls.id }
       })
 
       // Fetch full class detail to get equipment data
       const fullClass = await apiFetch<{ data: CharacterClass }>(`/classes/${cls.slug}`)
 
-      // Update characterClasses array (level 1 characters have single primary class)
+      // Update characterClasses array
       characterClasses.value = [{
         classId: cls.id,
-        classSlug: cls.slug,
+        subclassId: null,
         level: 1,
         isPrimary: true,
+        order: 0,
         classData: fullClass.data
       }]
 
@@ -912,16 +920,21 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         }
       }
 
-      if (character.class) {
-        const classResponse = await apiFetch<{ data: CharacterClass }>(`/classes/${character.class.slug}`)
-        // Populate characterClasses array from loaded class
-        characterClasses.value = [{
-          classId: character.class.id,
-          classSlug: character.class.slug,
-          level: 1,
-          isPrimary: true,
-          classData: classResponse.data
-        }]
+      // Load classes from character.classes array (new multiclass API)
+      if (character.classes && character.classes.length > 0) {
+        characterClasses.value = await Promise.all(
+          character.classes.map(async (pivot) => {
+            const fullClass = await apiFetch<{ data: CharacterClass }>(`/classes/${pivot.class.slug}`)
+            return {
+              classId: pivot.class.id,
+              subclassId: pivot.subclass?.id ?? null,
+              level: typeof pivot.level === 'string' ? parseInt(pivot.level, 10) : pivot.level,
+              isPrimary: pivot.is_primary === true || pivot.is_primary === 'true' || pivot.is_primary === '1',
+              order: typeof pivot.order === 'string' ? parseInt(pivot.order, 10) : pivot.order,
+              classData: fullClass.data
+            }
+          })
+        )
       }
 
       if (character.background) {
