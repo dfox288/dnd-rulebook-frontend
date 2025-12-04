@@ -38,7 +38,14 @@ describe('StepProficiencies', () => {
     it('renders class skill choices when present', async () => {
       const wrapper = await mountSuspended(StepProficiencies)
       const store = useCharacterBuilderStore()
-      store.selectedClass = { name: 'Bard' } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: { name: 'Bard' } as any
+      }]
       store.proficiencyChoices = {
         data: {
           class: {
@@ -91,7 +98,14 @@ describe('StepProficiencies', () => {
     it('renders skill option buttons with correct class', async () => {
       const wrapper = await mountSuspended(StepProficiencies)
       const store = useCharacterBuilderStore()
-      store.selectedClass = { name: 'Bard' } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: { name: 'Bard' } as any
+      }]
       store.proficiencyChoices = {
         data: {
           class: {

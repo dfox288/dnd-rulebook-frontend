@@ -13,13 +13,20 @@ describe('StepEquipment', () => {
     const wrapper = await mountSuspended(StepEquipment)
 
     const store = useCharacterBuilderStore()
-    store.selectedClass = {
-      name: 'Fighter',
-      equipment: [
-        { id: 1, item_id: 1, item: { name: 'Chain Mail' }, quantity: 1, is_choice: false }
-      ]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any
+    store.characterClasses = [{
+      classId: 1,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        name: 'Fighter',
+        equipment: [
+          { id: 1, item_id: 1, item: { name: 'Chain Mail' }, quantity: 1, is_choice: false }
+        ]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
+    }]
 
     await wrapper.vm.$nextTick()
 
@@ -32,7 +39,14 @@ describe('StepEquipment', () => {
 
     const store = useCharacterBuilderStore()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    store.selectedClass = { name: 'Fighter', equipment: [] } as any
+    store.characterClasses = [{
+      classId: 1,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: { name: 'Fighter', equipment: [] } as any
+    }]
     store.selectedBackground = {
       name: 'Soldier',
       equipment: [
@@ -51,14 +65,21 @@ describe('StepEquipment', () => {
     const wrapper = await mountSuspended(StepEquipment)
 
     const store = useCharacterBuilderStore()
-    store.selectedClass = {
-      name: 'Fighter',
-      equipment: [
-        { id: 1, item_id: 101, item: { name: 'Longsword' }, quantity: 1, is_choice: true, choice_group: 'weapon' },
-        { id: 2, item_id: 102, item: { name: 'Rapier' }, quantity: 1, is_choice: true, choice_group: 'weapon' }
-      ]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any
+    store.characterClasses = [{
+      classId: 1,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        name: 'Fighter',
+        equipment: [
+          { id: 1, item_id: 101, item: { name: 'Longsword' }, quantity: 1, is_choice: true, choice_group: 'weapon' },
+          { id: 2, item_id: 102, item: { name: 'Rapier' }, quantity: 1, is_choice: true, choice_group: 'weapon' }
+        ]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
+    }]
 
     await wrapper.vm.$nextTick()
 
@@ -70,13 +91,20 @@ describe('StepEquipment', () => {
     const wrapper = await mountSuspended(StepEquipment)
 
     const store = useCharacterBuilderStore()
-    store.selectedClass = {
-      name: 'Fighter',
-      equipment: [
-        { id: 1, item_id: 101, item: { name: 'Longsword' }, is_choice: true, choice_group: 'weapon' }
-      ]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any
+    store.characterClasses = [{
+      classId: 1,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        name: 'Fighter',
+        equipment: [
+          { id: 1, item_id: 101, item: { name: 'Longsword' }, is_choice: true, choice_group: 'weapon' }
+        ]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
+    }]
 
     await wrapper.vm.$nextTick()
 

@@ -1,7 +1,7 @@
 // app/stores/characterBuilder.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Background, CharacterSpell } from '~/types'
+import type { AbilityScores, Character, CharacterStats, Race, CharacterClass, Background, CharacterSpell, CharacterClassEntry } from '~/types'
 import type { ProficiencyChoicesResponse } from '~/types/proficiencies'
 
 /**
@@ -34,7 +34,8 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   const name = ref('')
   const raceId = ref<number | null>(null)
   const subraceId = ref<number | null>(null)
-  const classId = ref<number | null>(null)
+  // Array of character classes (supports multiclass, but level 1 uses just one)
+  const characterClasses = ref<CharacterClassEntry[]>([])
   const backgroundId = ref<number | null>(null)
   const abilityScores = ref<AbilityScores>({
     strength: 10,
@@ -71,9 +72,23 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   const selectedBaseRace = ref<Race | null>(null) // Always the base race (e.g., Elf)
   const selectedRace = ref<Race | null>(null) // The subrace if selected, otherwise base race
-  const selectedClass = ref<CharacterClass | null>(null)
   const selectedBackground = ref<Background | null>(null)
   const selectedSpells = ref<CharacterSpell[]>([])
+
+  // ══════════════════════════════════════════════════════════════
+  // MULTICLASS COMPUTED PROPERTIES
+  // ══════════════════════════════════════════════════════════════
+
+  // Primary class (first/only class for level 1 characters)
+  const primaryClass = computed(() =>
+    characterClasses.value.find(c => c.isPrimary) ?? null
+  )
+
+  // Backwards-compatible classId (for existing code)
+  const classId = computed(() => primaryClass.value?.classId ?? null)
+
+  // Backwards-compatible selectedClass (for existing code)
+  const selectedClass = computed(() => primaryClass.value?.classData ?? null)
 
   // ══════════════════════════════════════════════════════════════
   // COMPUTED STATS (from API)
@@ -316,6 +331,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   /**
    * Step 2: Select race (base race only, subrace selected in separate step)
    * API expects race_id to be the base race ID at this point
+   * Fetches full race detail to get subraces array (for hasSubraces computed)
    */
   async function selectRace(race: Race, subrace?: Race): Promise<void> {
     isLoading.value = true
@@ -385,24 +401,39 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
 
   /**
    * Step 3: Select class
-   * This updates isCaster computed which affects totalSteps
-   * Fetches full class detail to get equipment data
+   * Uses new /classes endpoints for multiclass support
+   * Clears existing classes first (level 1 characters have exactly one class)
    */
   async function selectClass(cls: CharacterClass): Promise<void> {
     isLoading.value = true
     error.value = null
 
     try {
-      await apiFetch(`/characters/${characterId.value}`, {
-        method: 'PATCH',
+      // Clear existing classes first (for re-selection)
+      for (const entry of characterClasses.value) {
+        await apiFetch(`/characters/${characterId.value}/classes/${entry.classId}`, {
+          method: 'DELETE'
+        })
+      }
+
+      // Add the new class
+      await apiFetch(`/characters/${characterId.value}/classes`, {
+        method: 'POST',
         body: { class_id: cls.id }
       })
 
-      classId.value = cls.id
-
       // Fetch full class detail to get equipment data
       const fullClass = await apiFetch<{ data: CharacterClass }>(`/classes/${cls.slug}`)
-      selectedClass.value = fullClass.data
+
+      // Update characterClasses array
+      characterClasses.value = [{
+        classId: cls.id,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: fullClass.data
+      }]
 
       await refreshStats()
     } catch (err: unknown) {
@@ -890,10 +921,21 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         }
       }
 
-      if (character.class) {
-        const classResponse = await apiFetch<{ data: CharacterClass }>(`/classes/${character.class.slug}`)
-        selectedClass.value = classResponse.data
-        classId.value = character.class.id
+      // Load classes from character.classes array (new multiclass API)
+      if (character.classes && character.classes.length > 0) {
+        characterClasses.value = await Promise.all(
+          character.classes.map(async (pivot) => {
+            const fullClass = await apiFetch<{ data: CharacterClass }>(`/classes/${pivot.class.slug}`)
+            return {
+              classId: pivot.class.id,
+              subclassId: pivot.subclass?.id ?? null,
+              level: typeof pivot.level === 'string' ? parseInt(pivot.level, 10) : pivot.level,
+              isPrimary: pivot.is_primary === 'true' || pivot.is_primary === '1',
+              order: typeof pivot.order === 'string' ? parseInt(pivot.order, 10) : pivot.order,
+              classData: fullClass.data
+            }
+          })
+        )
       }
 
       if (character.background) {
@@ -956,7 +998,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     name.value = ''
     raceId.value = null
     subraceId.value = null
-    classId.value = null
+    characterClasses.value = [] // Clears classId and selectedClass (computed)
     backgroundId.value = null
     abilityScores.value = {
       strength: 10,
@@ -975,7 +1017,6 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     pendingProficiencySelections.value = new Map()
     selectedBaseRace.value = null
     selectedRace.value = null
-    selectedClass.value = null
     selectedBackground.value = null
     selectedSpells.value = []
     characterData.value = null
@@ -995,6 +1036,8 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     name,
     raceId,
     subraceId,
+    characterClasses,
+    primaryClass,
     classId,
     backgroundId,
     abilityScores,
