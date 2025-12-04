@@ -86,3 +86,78 @@ export const stepRegistry: WizardStep[] = [
     visible: () => true
   }
 ]
+
+/**
+ * Composable for wizard navigation
+ * Uses route params to track current step instead of store state
+ *
+ * This composable should be used in the wizard parent layout to manage
+ * navigation between steps. Each step becomes a nested route.
+ */
+export function useWizardNavigation() {
+  const route = useRoute()
+  const store = useCharacterBuilderStore()
+
+  // Filter registry to only visible steps (computed so it reacts to store changes)
+  const activeSteps = computed(() =>
+    stepRegistry.filter(step => step.visible())
+  )
+
+  // Current step name from route params
+  const currentStepName = computed(() =>
+    (route.params.step as string) || 'name'
+  )
+
+  // Current step index within active steps
+  const currentStepIndex = computed(() =>
+    activeSteps.value.findIndex(s => s.name === currentStepName.value)
+  )
+
+  // Current step object
+  const currentStep = computed(() =>
+    activeSteps.value[currentStepIndex.value]
+  )
+
+  // Navigation helpers
+  const totalSteps = computed(() => activeSteps.value.length)
+  const isFirstStep = computed(() => currentStepIndex.value === 0)
+  const isLastStep = computed(() => currentStepIndex.value === totalSteps.value - 1)
+
+  // Navigation functions
+  async function nextStep() {
+    const nextIndex = currentStepIndex.value + 1
+    if (nextIndex < activeSteps.value.length) {
+      const next = activeSteps.value[nextIndex]
+      await navigateTo(`/characters/${store.characterId}/edit/${next.name}`)
+    }
+  }
+
+  async function previousStep() {
+    const prevIndex = currentStepIndex.value - 1
+    if (prevIndex >= 0) {
+      const prev = activeSteps.value[prevIndex]
+      await navigateTo(`/characters/${store.characterId}/edit/${prev.name}`)
+    }
+  }
+
+  async function goToStep(stepName: string) {
+    const step = activeSteps.value.find(s => s.name === stepName)
+    if (step) {
+      await navigateTo(`/characters/${store.characterId}/edit/${stepName}`)
+    }
+  }
+
+  return {
+    stepRegistry,
+    activeSteps,
+    currentStep,
+    currentStepName,
+    currentStepIndex,
+    totalSteps,
+    isFirstStep,
+    isLastStep,
+    nextStep,
+    previousStep,
+    goToStep
+  }
+}

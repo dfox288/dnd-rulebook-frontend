@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { ref } from 'vue'
 import { setActivePinia, createPinia } from 'pinia'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
@@ -7,14 +8,25 @@ vi.mock('~/stores/characterBuilder', () => ({
   useCharacterBuilderStore: vi.fn(() => ({
     hasPendingChoices: false,
     isCaster: false,
-    needsSubrace: false
+    needsSubrace: false,
+    characterId: 5
   }))
+}))
+
+// Mock Nuxt's useRoute and navigateTo
+const mockRoute = ref({ params: { id: '5', step: 'race' } })
+const mockNavigateTo = vi.fn()
+vi.mock('#app', () => ({
+  useRoute: () => mockRoute.value,
+  navigateTo: (...args: unknown[]) => mockNavigateTo(...args)
 }))
 
 describe('useWizardSteps', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    mockRoute.value = { params: { id: '5', step: 'race' } }
+    mockNavigateTo.mockClear()
   })
 
   describe('stepRegistry', () => {
@@ -150,6 +162,99 @@ describe('useWizardSteps', () => {
         const step = stepRegistry.find(s => s.name === stepName)
         expect(step?.visible(), `${stepName} should be visible`).toBe(true)
       }
+    })
+  })
+
+  describe('useWizardNavigation', () => {
+    it('returns active steps filtered by visibility and provides navigation helpers', async () => {
+      // This test uses the default mock values:
+      // - hasPendingChoices: false
+      // - isCaster: false
+      // - needsSubrace: false
+      // - Route: { params: { id: '5', step: 'race' } }
+
+      const { useWizardNavigation, stepRegistry } = await import('~/composables/useWizardSteps')
+      const nav = useWizardNavigation()
+
+      // Check activeSteps filters out conditional steps
+      // With non-caster, no pending choices, no subrace should have 7 steps
+      expect(nav.activeSteps.value.length).toBe(7)
+      expect(nav.activeSteps.value.map(s => s.name)).toEqual([
+        'name', 'race', 'class', 'abilities', 'background', 'equipment', 'review'
+      ])
+
+      // totalSteps should match activeSteps length
+      expect(nav.totalSteps.value).toBe(7)
+
+      // stepRegistry should be exported
+      expect(stepRegistry.length).toBe(10) // All steps including conditional ones
+
+      // Check step names are correct in registry
+      expect(stepRegistry.map(s => s.name)).toContain('subrace')
+      expect(stepRegistry.map(s => s.name)).toContain('proficiencies')
+      expect(stepRegistry.map(s => s.name)).toContain('spells')
+    })
+
+    it('currentStepName defaults to name when route.params.step is undefined', async () => {
+      // Change mock route to have no step param
+      mockRoute.value = { params: { id: '5' } }
+
+      const { useWizardNavigation } = await import('~/composables/useWizardSteps')
+      const { currentStepName } = useWizardNavigation()
+
+      expect(currentStepName.value).toBe('name')
+    })
+
+    it('isFirstStep and isLastStep are computed based on currentStepIndex', async () => {
+      // Note: After the previous test changed mockRoute to have no step,
+      // currentStepName defaults to 'name' which is index 0
+
+      const { useWizardNavigation } = await import('~/composables/useWizardSteps')
+      const { activeSteps, isFirstStep, isLastStep, currentStepIndex, totalSteps } = useWizardNavigation()
+
+      // Verify activeSteps structure
+      expect(totalSteps.value).toBe(7)
+      expect(activeSteps.value[0].name).toBe('name')
+      expect(activeSteps.value[6].name).toBe('review')
+
+      // currentStepIndex is 0 (name step), so:
+      // - isFirstStep should be true (0 === 0)
+      // - isLastStep should be false (0 !== 6)
+      expect(currentStepIndex.value).toBe(0)
+      expect(isFirstStep.value).toBe(true)
+      expect(isLastStep.value).toBe(false)
+    })
+
+    it('includes conditional steps when conditions are met', async () => {
+      // Setup mock for caster with pending choices and subrace
+      vi.mocked(useCharacterBuilderStore).mockReturnValue({
+        hasPendingChoices: true,
+        isCaster: true,
+        needsSubrace: true,
+        characterId: 5
+      } as ReturnType<typeof useCharacterBuilderStore>)
+
+      // Need to reset modules so visibility functions get fresh store state
+      vi.resetModules()
+
+      // Re-mock after reset
+      vi.doMock('~/stores/characterBuilder', () => ({
+        useCharacterBuilderStore: () => ({
+          hasPendingChoices: true,
+          isCaster: true,
+          needsSubrace: true,
+          characterId: 5
+        })
+      }))
+
+      const { useWizardNavigation } = await import('~/composables/useWizardSteps')
+      const { activeSteps } = useWizardNavigation()
+
+      // Should now include all conditional steps: subrace, proficiencies, spells
+      expect(activeSteps.value.length).toBe(10) // 7 base + 3 conditional
+      expect(activeSteps.value.map(s => s.name)).toContain('subrace')
+      expect(activeSteps.value.map(s => s.name)).toContain('proficiencies')
+      expect(activeSteps.value.map(s => s.name)).toContain('spells')
     })
   })
 })
