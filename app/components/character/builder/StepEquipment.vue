@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const {
@@ -11,6 +12,7 @@ const {
   allEquipmentChoicesMade,
   isLoading
 } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // Separate equipment by source
 const classFixedEquipment = computed(() =>
@@ -112,7 +114,7 @@ function getItemDisplayName(item: { item?: { name?: string } | null, description
  */
 async function handleContinue() {
   await store.saveEquipmentChoices()
-  store.nextStep()
+  nextStep()
 }
 </script>
 

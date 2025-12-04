@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 /**
  * Step 1: Name Your Character
@@ -12,6 +13,7 @@ import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
 const store = useCharacterBuilderStore()
 const { name, isLoading, characterId } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // Validation
 const isValid = computed(() => name.value.trim().length > 0)
@@ -25,7 +27,7 @@ async function handleCreate() {
 
   try {
     await store.createDraft(name.value.trim())
-    store.nextStep()
+    nextStep()
   } catch (err: unknown) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to create character'
   }
@@ -39,7 +41,7 @@ async function handleUpdate() {
 
   try {
     await store.updateName(name.value.trim())
-    store.nextStep()
+    nextStep()
   } catch (err: unknown) {
     errorMessage.value = err instanceof Error ? err.message : 'Failed to update name'
   }

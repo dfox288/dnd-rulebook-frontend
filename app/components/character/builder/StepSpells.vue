@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import type { Spell } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const {
@@ -13,6 +14,7 @@ const {
   isLoading,
   error
 } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // API client
 const { apiFetch } = useApi()
@@ -146,7 +148,7 @@ function handleRaceSpellChoice(choiceGroup: string, spellId: number) {
  */
 async function handleContinue() {
   await store.saveSpellChoices()
-  store.nextStep()
+  nextStep()
 }
 
 /**

@@ -1,9 +1,11 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
 import type { ProficiencyOption } from '~/types/proficiencies'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 const hasAnyChoices = computed(() => {
   if (!proficiencyChoices.value) return false
@@ -183,7 +185,7 @@ function getOptionId(option: ProficiencyOption): number {
  */
 async function handleContinue() {
   await store.saveProficiencyChoices()
-  store.nextStep()
+  nextStep()
 }
 </script>
 

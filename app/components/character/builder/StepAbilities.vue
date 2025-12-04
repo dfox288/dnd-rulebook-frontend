@@ -1,9 +1,11 @@
 <!-- app/components/character/builder/StepAbilities.vue -->
 <script setup lang="ts">
 import type { AbilityScores } from '~/types'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { selectedRace, abilityScores, abilityScoreMethod, isLoading, error } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 type Method = 'standard_array' | 'point_buy' | 'manual'
 
@@ -83,7 +85,7 @@ async function saveAndContinue() {
     : localScores.value
 
   await store.saveAbilityScores(selectedMethod.value, scores)
-  store.nextStep()
+  nextStep()
 }
 
 // Method options for selector

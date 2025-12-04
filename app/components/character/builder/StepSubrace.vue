@@ -3,9 +3,11 @@
 import { storeToRefs } from 'pinia'
 import type { Race } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { selectedBaseRace, selectedRace, subraceId, isLoading, error } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // API client for fetching full subrace details
 const { apiFetch } = useApi()
@@ -80,7 +82,7 @@ async function confirmSelection() {
     // Fetch full subrace detail before saving (the subraces array only has partial data)
     const fullSubrace = await apiFetch<{ data: Race }>(`/races/${localSelectedSubrace.value.slug}`)
     await store.selectSubrace(fullSubrace.data)
-    store.nextStep()
+    nextStep()
   } catch (err) {
     console.error('Failed to save subrace:', err)
   }

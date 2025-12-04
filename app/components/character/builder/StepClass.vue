@@ -3,9 +3,11 @@
 import { storeToRefs } from 'pinia'
 import type { CharacterClass } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { selectedClass, isLoading, error } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // Get API client
 const { apiFetch } = useApi()
@@ -69,7 +71,7 @@ async function confirmSelection() {
 
   try {
     await store.selectClass(localSelectedClass.value)
-    store.nextStep()
+    nextStep()
   } catch (err) {
     // Error is already set in store
     console.error('Failed to save class:', err)
