@@ -21,13 +21,20 @@ describe('StepReview', () => {
       slug: 'dwarf',
       is_subrace: false
     } as any
-    store.selectedClass = {
-      id: 2,
-      name: 'Fighter',
-      slug: 'fighter',
-      hit_die: 10,
-      spellcasting_ability: null
-    } as any
+    store.characterClasses = [{
+      classId: 2,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        id: 2,
+        name: 'Fighter',
+        slug: 'fighter',
+        hit_die: 10,
+        spellcasting_ability: null
+      } as any
+    }]
     store.abilityScores = {
       strength: 16,
       dexterity: 12,
@@ -116,14 +123,21 @@ describe('StepReview', () => {
 
       // Change to caster class (with spells at level 1)
       // Note: isCaster now requires level_progression to have cantrips/spells at level 1
-      store.selectedClass = {
-        id: 5,
-        name: 'Wizard',
-        slug: 'wizard',
-        hit_die: 6,
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
-        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
-      } as any
+      store.characterClasses = [{
+        classId: 5,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 5,
+          name: 'Wizard',
+          slug: 'wizard',
+          hit_die: 6,
+          spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+          level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
+        } as any
+      }]
 
       // The component uses pendingSpellIds to track selected spells
       // Note: selectedSpellsForDisplay is computed from availableSpells (from API) and pendingSpellIds
@@ -141,12 +155,15 @@ describe('StepReview', () => {
       const wrapper = await mountSuspended(StepReview)
       const store = await setupStore(wrapper)
 
-      store.selectedClass = {
-        ...store.selectedClass,
-        equipment: [
-          { id: 1, item: { name: 'Shield' }, quantity: 1, is_choice: false }
-        ]
-      } as any
+      store.characterClasses = [{
+        ...store.characterClasses[0],
+        classData: {
+          ...store.characterClasses[0].classData,
+          equipment: [
+            { id: 1, item: { name: 'Shield' }, quantity: 1, is_choice: false }
+          ]
+        } as any
+      }]
 
       await wrapper.vm.$nextTick()
 
@@ -157,13 +174,16 @@ describe('StepReview', () => {
       const wrapper = await mountSuspended(StepReview)
       const store = await setupStore(wrapper)
 
-      store.selectedClass = {
-        ...store.selectedClass,
-        equipment: [
-          { id: 10, item: { name: 'Longsword' }, quantity: 1, is_choice: true, choice_group: 'choice_1' },
-          { id: 11, item: { name: 'Battleaxe' }, quantity: 1, is_choice: true, choice_group: 'choice_1' }
-        ]
-      } as any
+      store.characterClasses = [{
+        ...store.characterClasses[0],
+        classData: {
+          ...store.characterClasses[0].classData,
+          equipment: [
+            { id: 10, item: { name: 'Longsword' }, quantity: 1, is_choice: true, choice_group: 'choice_1' },
+            { id: 11, item: { name: 'Battleaxe' }, quantity: 1, is_choice: true, choice_group: 'choice_1' }
+          ]
+        } as any
+      }]
       store.equipmentChoices.set('choice_1', 10) // Selected longsword
 
       await wrapper.vm.$nextTick()

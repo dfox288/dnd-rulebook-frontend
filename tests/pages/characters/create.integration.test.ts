@@ -51,25 +51,39 @@ describe('Character Builder Store Integration', () => {
     it('has 8 steps for caster classes (with spells at level 1)', () => {
       const store = useCharacterBuilderStore()
       // isCaster now requires level_progression to have cantrips/spells at level 1
-      store.selectedClass = {
-        id: 1,
-        name: 'Wizard',
-        slug: 'wizard',
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
-        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          name: 'Wizard',
+          slug: 'wizard',
+          spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+          level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
+        } as any
+      }]
 
       expect(store.totalSteps).toBe(8)
     })
 
     it('has 7 steps for non-caster classes', () => {
       const store = useCharacterBuilderStore()
-      store.selectedClass = {
-        id: 2,
-        name: 'Fighter',
-        slug: 'fighter',
-        spellcasting_ability: null
-      } as any
+      store.characterClasses = [{
+        classId: 2,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 2,
+          name: 'Fighter',
+          slug: 'fighter',
+          spellcasting_ability: null
+        } as any
+      }]
 
       expect(store.totalSteps).toBe(7)
     })
@@ -99,17 +113,24 @@ describe('Character Builder Store Integration', () => {
       const store = useCharacterBuilderStore()
 
       // Set up class with equipment choices
-      store.selectedClass = {
-        id: 1,
-        name: 'Fighter',
-        slug: 'fighter',
-        equipment: [
-          { id: 10, is_choice: true, choice_group: 'choice_1' },
-          { id: 11, is_choice: true, choice_group: 'choice_1' },
-          { id: 20, is_choice: true, choice_group: 'choice_2' },
-          { id: 21, is_choice: true, choice_group: 'choice_2' }
-        ]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          name: 'Fighter',
+          slug: 'fighter',
+          equipment: [
+            { id: 10, is_choice: true, choice_group: 'choice_1' },
+            { id: 11, is_choice: true, choice_group: 'choice_1' },
+            { id: 20, is_choice: true, choice_group: 'choice_2' },
+            { id: 21, is_choice: true, choice_group: 'choice_2' }
+          ]
+        } as any
+      }]
 
       // Initially no choices made
       expect(store.allEquipmentChoicesMade).toBe(false)
@@ -128,14 +149,21 @@ describe('Character Builder Store Integration', () => {
     it('separates fixed and choice equipment', () => {
       const store = useCharacterBuilderStore()
 
-      store.selectedClass = {
-        id: 1,
-        equipment: [
-          { id: 1, item: { name: 'Shield' }, is_choice: false },
-          { id: 10, item: { name: 'Longsword' }, is_choice: true, choice_group: 'weapon' },
-          { id: 11, item: { name: 'Battleaxe' }, is_choice: true, choice_group: 'weapon' }
-        ]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          equipment: [
+            { id: 1, item: { name: 'Shield' }, is_choice: false },
+            { id: 10, item: { name: 'Longsword' }, is_choice: true, choice_group: 'weapon' },
+            { id: 11, item: { name: 'Battleaxe' }, is_choice: true, choice_group: 'weapon' }
+          ]
+        } as any
+      }]
 
       expect(store.fixedEquipment).toHaveLength(1)
       expect(store.fixedEquipment[0].item?.name).toBe('Shield')
@@ -147,10 +175,17 @@ describe('Character Builder Store Integration', () => {
     it('combines class and background equipment', () => {
       const store = useCharacterBuilderStore()
 
-      store.selectedClass = {
-        id: 1,
-        equipment: [{ id: 1, item: { name: 'Sword' }, is_choice: false }]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          equipment: [{ id: 1, item: { name: 'Sword' }, is_choice: false }]
+        } as any
+      }]
 
       store.selectedBackground = {
         id: 2,
@@ -194,7 +229,14 @@ describe('Character Builder Store Integration', () => {
       store.characterId = 123
       store.name = 'Test Character'
       store.currentStep = 5
-      store.selectedClass = { id: 1 } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: { id: 1 } as any
+      }]
       store.selectedRace = { id: 2 } as any
       store.selectedBackground = { id: 3 } as any
       store.equipmentChoices.set('choice_1', 10)
@@ -229,11 +271,18 @@ describe('Character Builder Store Integration', () => {
       const store = useCharacterBuilderStore()
 
       // isCaster now requires level_progression to have cantrips/spells at level 1
-      store.selectedClass = {
-        id: 1,
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
-        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+          level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
+        } as any
+      }]
 
       expect(store.isCaster).toBe(true)
     })
@@ -241,10 +290,17 @@ describe('Character Builder Store Integration', () => {
     it('identifies non-caster class by null spellcasting ability', () => {
       const store = useCharacterBuilderStore()
 
-      store.selectedClass = {
-        id: 2,
-        spellcasting_ability: null
-      } as any
+      store.characterClasses = [{
+        classId: 2,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 2,
+          spellcasting_ability: null
+        } as any
+      }]
 
       expect(store.isCaster).toBe(false)
     })
@@ -321,11 +377,18 @@ describe('Character Builder Store Integration', () => {
       const store = useCharacterBuilderStore()
 
       // isCaster now requires level_progression to have cantrips/spells at level 1
-      store.selectedClass = {
-        id: 1,
-        spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
-        level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
-      } as any
+      store.characterClasses = [{
+        classId: 1,
+        subclassId: null,
+        level: 1,
+        isPrimary: true,
+        order: 0,
+        classData: {
+          id: 1,
+          spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
+          level_progression: [{ level: 1, cantrips_known: 3, spells_known: 6 }]
+        } as any
+      }]
 
       // Caster: 8 steps
       store.currentStep = 7
