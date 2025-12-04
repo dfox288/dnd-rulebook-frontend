@@ -1,11 +1,162 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
 import type { ProficiencyOption, ProficiencyTypeOption } from '~/types/proficiencies'
+import type { components } from '~/types/api/generated'
 import { useWizardNavigation } from '~/composables/useWizardSteps'
+
+type ProficiencyResource = components['schemas']['ProficiencyResource']
 
 const store = useCharacterBuilderStore()
 const { proficiencyChoices, pendingProficiencySelections, allProficiencyChoicesComplete, isLoading, selectedClass, selectedRace, selectedBackground } = storeToRefs(store)
 const { nextStep } = useWizardNavigation()
+
+// ══════════════════════════════════════════════════════════════
+// Granted Proficiencies (non-choice, automatically assigned)
+// ══════════════════════════════════════════════════════════════
+
+interface GrantedProficiencyGroup {
+  type: string
+  label: string
+  icon: string
+  items: ProficiencyResource[]
+}
+
+interface GrantedProficienciesBySource {
+  source: 'class' | 'race' | 'background'
+  entityName: string
+  groups: GrantedProficiencyGroup[]
+}
+
+/**
+ * Get display label for proficiency type
+ */
+function getProficiencyTypeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    armor: 'Armor',
+    weapon: 'Weapons',
+    tool: 'Tools',
+    saving_throw: 'Saving Throws',
+    skill: 'Skills'
+  }
+  return labels[type] ?? type
+}
+
+/**
+ * Get icon for proficiency type
+ */
+function getProficiencyTypeIcon(type: string): string {
+  const icons: Record<string, string> = {
+    armor: 'i-heroicons-shield-check',
+    weapon: 'i-heroicons-bolt',
+    tool: 'i-heroicons-wrench-screwdriver',
+    saving_throw: 'i-heroicons-heart',
+    skill: 'i-heroicons-academic-cap'
+  }
+  return icons[type] ?? 'i-heroicons-check-circle'
+}
+
+/**
+ * Group proficiencies by type and filter to only granted (non-choice) ones
+ */
+function groupGrantedProficiencies(proficiencies: ProficiencyResource[] | undefined): GrantedProficiencyGroup[] {
+  if (!proficiencies) return []
+
+  // Filter to only non-choice proficiencies
+  const granted = proficiencies.filter(p => !p.is_choice)
+
+  // Group by type
+  const grouped = new Map<string, ProficiencyResource[]>()
+  for (const prof of granted) {
+    const type = prof.proficiency_type ?? 'other'
+    const existing = grouped.get(type) ?? []
+    grouped.set(type, [...existing, prof])
+  }
+
+  // Convert to array with labels and icons, in display order
+  const typeOrder = ['saving_throw', 'armor', 'weapon', 'tool', 'skill']
+  const result: GrantedProficiencyGroup[] = []
+
+  for (const type of typeOrder) {
+    const items = grouped.get(type)
+    if (items && items.length > 0) {
+      result.push({
+        type,
+        label: getProficiencyTypeLabel(type),
+        icon: getProficiencyTypeIcon(type),
+        items
+      })
+    }
+  }
+
+  // Add any remaining types not in our order
+  for (const [type, items] of grouped) {
+    if (!typeOrder.includes(type) && items.length > 0) {
+      result.push({
+        type,
+        label: getProficiencyTypeLabel(type),
+        icon: getProficiencyTypeIcon(type),
+        items
+      })
+    }
+  }
+
+  return result
+}
+
+/**
+ * Get display name for a proficiency
+ */
+function getGrantedProficiencyName(prof: ProficiencyResource): string {
+  return prof.proficiency_name ?? prof.proficiency_type_detail?.name ?? 'Unknown'
+}
+
+/**
+ * Granted proficiencies organized by source
+ */
+const grantedBySource = computed<GrantedProficienciesBySource[]>(() => {
+  const sources: GrantedProficienciesBySource[] = []
+
+  if (selectedClass.value) {
+    const groups = groupGrantedProficiencies(selectedClass.value.proficiencies)
+    if (groups.length > 0) {
+      sources.push({
+        source: 'class',
+        entityName: selectedClass.value.name,
+        groups
+      })
+    }
+  }
+
+  if (selectedRace.value) {
+    const groups = groupGrantedProficiencies(selectedRace.value.proficiencies)
+    if (groups.length > 0) {
+      sources.push({
+        source: 'race',
+        entityName: selectedRace.value.name,
+        groups
+      })
+    }
+  }
+
+  if (selectedBackground.value) {
+    const groups = groupGrantedProficiencies(selectedBackground.value.proficiencies)
+    if (groups.length > 0) {
+      sources.push({
+        source: 'background',
+        entityName: selectedBackground.value.name,
+        groups
+      })
+    }
+  }
+
+  return sources
+})
+
+const hasAnyGranted = computed(() => grantedBySource.value.length > 0)
+
+// ══════════════════════════════════════════════════════════════
+// Proficiency Choices (player selectable)
+// ══════════════════════════════════════════════════════════════
 
 const hasAnyChoices = computed(() => {
   if (!proficiencyChoices.value) return false
@@ -235,35 +386,67 @@ async function handleContinue() {
   <div class="step-proficiencies">
     <div class="text-center mb-8">
       <h2 class="text-2xl font-bold text-primary">
-        Choose Your Proficiencies
+        Your Proficiencies
       </h2>
       <p class="text-gray-600 dark:text-gray-400 mt-2">
-        Your class, race, and background grant the following choices
+        Review your proficiencies from class, race, and background
       </p>
     </div>
 
-    <!-- No choices needed -->
+    <!-- Granted Proficiencies (always shown) -->
     <div
-      v-if="!hasAnyChoices"
-      class="text-center py-8"
+      v-if="hasAnyGranted"
+      class="space-y-6 mb-8"
     >
-      <UIcon
-        name="i-heroicons-check-circle"
-        class="w-12 h-12 text-success mx-auto mb-4"
-      />
-      <p class="text-lg">
-        No additional choices needed
-      </p>
-      <p class="text-gray-600 dark:text-gray-400">
-        All your proficiencies have been automatically assigned
-      </p>
+      <div
+        v-for="sourceData in grantedBySource"
+        :key="sourceData.source"
+        class="space-y-4"
+      >
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+          From Your {{ sourceData.source === 'class' ? 'Class' : sourceData.source === 'race' ? 'Race' : 'Background' }} ({{ sourceData.entityName }})
+        </h3>
+
+        <!-- Proficiency groups by type -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div
+            v-for="group in sourceData.groups"
+            :key="group.type"
+            class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700"
+          >
+            <div class="flex items-center gap-2 mb-3">
+              <UIcon
+                :name="group.icon"
+                class="w-5 h-5 text-primary"
+              />
+              <span class="font-medium text-gray-900 dark:text-white">{{ group.label }}</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="prof in group.items"
+                :key="prof.id"
+                class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300"
+              >
+                <UIcon
+                  name="i-heroicons-check"
+                  class="w-3 h-3 text-success"
+                />
+                {{ getGrantedProficiencyName(prof) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Choice groups by source -->
+    <!-- Proficiency Choices Section -->
     <div
-      v-else
+      v-if="hasAnyChoices"
       class="space-y-8"
     >
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+        Additional Choices
+      </h3>
       <div
         v-for="sourceData in choicesBySource"
         :key="sourceData.source"
@@ -327,11 +510,11 @@ async function handleContinue() {
       <UButton
         data-test="continue-btn"
         size="lg"
-        :disabled="!allProficiencyChoicesComplete || isLoading"
+        :disabled="(hasAnyChoices && !allProficiencyChoicesComplete) || isLoading"
         :loading="isLoading"
         @click="handleContinue"
       >
-        Continue with Proficiencies
+        {{ hasAnyChoices ? 'Continue with Proficiencies' : 'Continue' }}
       </UButton>
     </div>
   </div>
