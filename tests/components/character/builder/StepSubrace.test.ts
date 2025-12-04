@@ -78,6 +78,7 @@ mockNuxtImport('useApi', () => {
 function setupStore() {
   const store = useCharacterBuilderStore()
   store.characterId = 1
+  store.selectedBaseRace = mockParentRace // StepSubrace reads from selectedBaseRace
   store.selectedRace = mockParentRace
   store.raceId = 1
   return store
@@ -96,8 +97,8 @@ describe('StepSubrace', () => {
 
   it('renders description text', async () => {
     const wrapper = await mountSuspended(StepSubrace)
-    // The component shows "Select a subrace for your [race name]"
-    expect(wrapper.text()).toContain('Select a subrace for your')
+    // The component shows "[race name] has multiple subraces to choose from"
+    expect(wrapper.text()).toContain('has multiple subraces to choose from')
   })
 
   it('renders continue button', async () => {
@@ -109,9 +110,9 @@ describe('StepSubrace', () => {
 
   it('shows subrace grid or empty state', async () => {
     const wrapper = await mountSuspended(StepSubrace)
-    // Either shows subraces or empty state
+    // Either shows subraces from store or empty state with race name
     const text = wrapper.text()
-    const hasSubraces = text.includes('High Elf') || text.includes('No subraces available')
+    const hasSubraces = text.includes('High Elf') || text.includes('No subraces found')
     expect(hasSubraces).toBe(true)
   })
 })

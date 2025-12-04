@@ -5,48 +5,60 @@ import type { Race } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
 
 const store = useCharacterBuilderStore()
-const { selectedRace, subraceId, isLoading, error } = storeToRefs(store)
+const { selectedBaseRace, selectedRace, subraceId, isLoading, error } = storeToRefs(store)
 
-// API client
+// API client for fetching full subrace details
 const { apiFetch } = useApi()
 
-// Fetch all races to get full subrace data with traits/modifiers
-const { data: races, pending: loadingRaces } = await useAsyncData(
-  'builder-subraces',
-  () => apiFetch<{ data: Race[] }>('/races?per_page=100'),
-  { transform: (response: { data: Race[] }) => response.data }
-)
+// Type for subrace items from the subraces array (partial Race data)
+type SubraceItem = NonNullable<Race['subraces']>[number]
 
-// Local state
-const localSelectedSubrace = ref<Race | null>(null)
+// Local state for selected subrace
+const localSelectedSubrace = ref<SubraceItem | null>(null)
+
+// Modal state
 const detailModalOpen = ref(false)
 const detailSubrace = ref<Race | null>(null)
+const loadingDetail = ref(false)
 
-// Get full subrace objects for the selected parent race
-const availableSubraces = computed((): Race[] => {
-  if (!selectedRace.value || !races.value) return []
-  // Filter to find subraces whose parent_race matches the selected race
-  return races.value.filter((race: Race) =>
-    race.parent_race?.id === selectedRace.value?.id
-  )
+// Get subraces directly from the selected base race
+// The selectedBaseRace already has the full subraces array from the detail endpoint
+const availableSubraces = computed(() => {
+  if (!selectedBaseRace.value?.subraces) return []
+  return selectedBaseRace.value.subraces
 })
 
-// Validation: can proceed if subrace selected
-const canProceed = computed(() => !!localSelectedSubrace.value)
+// Validation: can proceed if subrace is selected
+const canProceed = computed(() => {
+  return localSelectedSubrace.value !== null
+})
 
 /**
  * Handle subrace selection
  */
-function handleSubraceSelect(subrace: Race) {
+function handleSubraceSelect(subrace: SubraceItem) {
   localSelectedSubrace.value = subrace
 }
 
 /**
- * Open detail modal for a subrace
+ * Open detail modal - fetch full subrace data for complete info
  */
-function handleViewDetails(subrace: Race) {
-  detailSubrace.value = subrace
+async function handleViewDetails(subrace: SubraceItem) {
+  loadingDetail.value = true
   detailModalOpen.value = true
+
+  try {
+    // Fetch full subrace detail to get all traits, modifiers, etc.
+    const response = await apiFetch<{ data: Race }>(`/races/${subrace.slug}`)
+    detailSubrace.value = response.data
+  } catch (err) {
+    console.error('Failed to fetch subrace details:', err)
+    // Still show modal with partial data from the list
+    // Use unknown intermediate cast since SubraceItem is a partial Race
+    detailSubrace.value = subrace as unknown as Race
+  } finally {
+    loadingDetail.value = false
+  }
 }
 
 /**
@@ -58,30 +70,30 @@ function handleCloseModal() {
 }
 
 /**
- * Confirm selection and advance to next step
+ * Confirm selection and save to store
+ * Needs to fetch full race detail before saving since subraces array only has partial data
  */
 async function confirmSelection() {
   if (!localSelectedSubrace.value) return
 
   try {
-    await store.selectSubrace(localSelectedSubrace.value)
+    // Fetch full subrace detail before saving (the subraces array only has partial data)
+    const fullSubrace = await apiFetch<{ data: Race }>(`/races/${localSelectedSubrace.value.slug}`)
+    await store.selectSubrace(fullSubrace.data)
     store.nextStep()
   } catch (err) {
     console.error('Failed to save subrace:', err)
   }
 }
 
-// Initialize from store if subrace already selected
+// Initialize from store if already selected (editing existing selection)
 onMounted(() => {
-  if (subraceId.value && races.value) {
-    localSelectedSubrace.value = races.value.find(r => r.id === subraceId.value) ?? null
-  }
-})
-
-// Watch for races to load and initialize if needed
-watch(races, (newRaces) => {
-  if (newRaces && subraceId.value && !localSelectedSubrace.value) {
-    localSelectedSubrace.value = newRaces.find(r => r.id === subraceId.value) ?? null
+  if (subraceId.value && selectedRace.value?.parent_race) {
+    // Find the matching subrace in availableSubraces to set local state
+    const existingSubrace = availableSubraces.value.find(s => s.id === subraceId.value)
+    if (existingSubrace) {
+      localSelectedSubrace.value = existingSubrace
+    }
   }
 })
 </script>
@@ -94,7 +106,7 @@ watch(races, (newRaces) => {
         Choose Your Subrace
       </h2>
       <p class="mt-2 text-gray-600 dark:text-gray-400">
-        Select a subrace for your {{ selectedRace?.name }}
+        {{ selectedBaseRace?.name }} has multiple subraces to choose from
       </p>
     </div>
 
@@ -106,114 +118,30 @@ watch(races, (newRaces) => {
       :title="error"
     />
 
-    <!-- Loading State -->
-    <div
-      v-if="loadingRaces"
-      class="flex justify-center py-12"
-    >
-      <UIcon
-        name="i-heroicons-arrow-path"
-        class="w-8 h-8 animate-spin text-race-500"
+    <!-- Subrace Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <CharacterBuilderSubracePickerCard
+        v-for="subrace in availableSubraces"
+        :key="subrace.id"
+        :subrace="subrace"
+        :selected="localSelectedSubrace?.id === subrace.id"
+        :parent-race-slug="selectedBaseRace?.slug"
+        @select="handleSubraceSelect"
+        @view-details="handleViewDetails(subrace)"
       />
     </div>
 
-    <!-- Subrace Grid -->
+    <!-- Empty State -->
     <div
-      v-else-if="availableSubraces.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-    >
-      <button
-        v-for="subrace in availableSubraces"
-        :key="subrace.id"
-        class="p-4 rounded-lg border-2 transition-all text-left hover:shadow-md"
-        :class="[
-          localSelectedSubrace?.id === subrace.id
-            ? 'border-race-500 bg-race-50 dark:bg-race-900/30 ring-2 ring-race-500'
-            : 'border-gray-200 dark:border-gray-700 hover:border-race-300 dark:hover:border-race-600'
-        ]"
-        @click="handleSubraceSelect(subrace)"
-      >
-        <!-- Subrace Header -->
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-semibold text-gray-900 dark:text-white">
-            {{ subrace.name }}
-          </h3>
-          <div
-            class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
-            :class="[
-              localSelectedSubrace?.id === subrace.id
-                ? 'border-race-500 bg-race-500'
-                : 'border-gray-400 dark:border-gray-500'
-            ]"
-          >
-            <UIcon
-              v-if="localSelectedSubrace?.id === subrace.id"
-              name="i-heroicons-check"
-              class="w-3 h-3 text-white"
-            />
-          </div>
-        </div>
-
-        <!-- Speed (if different from parent) -->
-        <div
-          v-if="subrace.speed && subrace.speed !== selectedRace?.speed"
-          class="text-sm text-gray-600 dark:text-gray-400 mb-2"
-        >
-          Speed: {{ subrace.speed }} ft.
-        </div>
-
-        <!-- Ability Score Modifiers -->
-        <div
-          v-if="subrace.modifiers?.length"
-          class="flex flex-wrap gap-1 mb-2"
-        >
-          <UBadge
-            v-for="mod in subrace.modifiers.filter(m => m.modifier_category === 'ability_score')"
-            :key="mod.id"
-            color="race"
-            variant="subtle"
-            size="md"
-          >
-            {{ mod.ability_score?.code }} +{{ mod.value }}
-          </UBadge>
-        </div>
-
-        <!-- Traits Preview -->
-        <div
-          v-if="subrace.traits?.length"
-          class="text-sm text-gray-500 dark:text-gray-400"
-        >
-          <span class="font-medium">Traits:</span>
-          {{ subrace.traits.map(t => t.name).slice(0, 2).join(', ') }}
-          <span v-if="subrace.traits.length > 2">
-            +{{ subrace.traits.length - 2 }} more
-          </span>
-        </div>
-
-        <!-- View Details Link -->
-        <span
-          role="button"
-          tabindex="0"
-          class="mt-3 text-sm text-race-600 dark:text-race-400 hover:underline cursor-pointer inline-block"
-          @click.stop="handleViewDetails(subrace)"
-          @keydown.enter.stop="handleViewDetails(subrace)"
-        >
-          View Details
-        </span>
-      </button>
-    </div>
-
-    <!-- Empty State (no subraces available) -->
-    <div
-      v-else
+      v-if="availableSubraces.length === 0"
       class="text-center py-12"
     >
       <UIcon
         name="i-heroicons-exclamation-triangle"
-        class="w-12 h-12 text-gray-400 mx-auto mb-4"
+        class="w-12 h-12 text-amber-400 mx-auto mb-4"
       />
       <p class="text-gray-600 dark:text-gray-400">
-        No subraces available for {{ selectedRace?.name }}
+        No subraces found for {{ selectedBaseRace?.name }}
       </p>
     </div>
 
@@ -229,10 +157,11 @@ watch(races, (newRaces) => {
       </UButton>
     </div>
 
-    <!-- Detail Modal (reuse RaceDetailModal) -->
-    <CharacterBuilderRaceDetailModal
-      :race="detailSubrace"
+    <!-- Detail Modal -->
+    <CharacterBuilderSubraceDetailModal
+      :subrace="detailSubrace"
       :open="detailModalOpen"
+      :parent-race="selectedBaseRace"
       @close="handleCloseModal"
     />
   </div>

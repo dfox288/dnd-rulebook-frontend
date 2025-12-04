@@ -113,9 +113,18 @@ const selectedSkillNames = computed(() => {
 
     if (group) {
       for (const skillId of skillIds) {
-        const option = group.options.find((o: { skill_id: number }) => o.skill_id === skillId)
+        // Handle both skill and proficiency_type options
+        const option = group.options.find((o) => {
+          if (o.type === 'skill') return o.skill_id === skillId
+          if (o.type === 'proficiency_type') return o.proficiency_type_id === skillId
+          return false
+        })
         if (option) {
-          skills.push(option.skill.name)
+          if (option.type === 'skill') {
+            skills.push(option.skill.name)
+          } else if (option.type === 'proficiency_type') {
+            skills.push(option.proficiency_type.name)
+          }
         }
       }
     }

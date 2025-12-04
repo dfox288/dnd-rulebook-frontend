@@ -19,7 +19,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   const currentStep = ref(1)
   const totalSteps = computed(() => {
     let steps = 7 // Base: Name, Race, Class, Abilities, Background, Equipment, Review
-    if (hasSubraces.value) steps++ // Subrace step (after Race)
+    if (needsSubrace.value) steps++ // Subrace step (after Race)
     if (hasPendingChoices.value) steps++
     if (isCaster.value) steps++
     return steps
@@ -69,7 +69,8 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   // FETCHED REFERENCE DATA (for display without re-fetching)
   // ══════════════════════════════════════════════════════════════
-  const selectedRace = ref<Race | null>(null)
+  const selectedBaseRace = ref<Race | null>(null) // Always the base race (e.g., Elf)
+  const selectedRace = ref<Race | null>(null) // The subrace if selected, otherwise base race
   const selectedClass = ref<CharacterClass | null>(null)
   const selectedBackground = ref<Background | null>(null)
   const selectedSpells = ref<CharacterSpell[]>([])
@@ -104,7 +105,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     return cantrips > 0 || spells > 0
   })
 
-  // Does the selected race have subraces?
+  // Does the selected race have subraces? (checks selectedRace for backwards compatibility)
   const hasSubraces = computed(() =>
     (selectedRace.value?.subraces?.length ?? 0) > 0
   )
@@ -122,8 +123,18 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       || Object.keys(background).length > 0
   })
 
+  // Does the selected base race have subraces?
+  // This determines if the Subrace step appears in the wizard
+  // Returns true if base race exists and has subraces (regardless of whether one is selected)
+  const needsSubrace = computed(() => {
+    if (!selectedBaseRace.value) return false
+    return (selectedBaseRace.value.subraces?.length ?? 0) > 0
+  })
+
   // Are all required proficiency choices complete?
-  // A group is complete if: (remaining === 0) OR (pending selections === quantity)
+  // With the new API format, we check:
+  // 1. If selected_skills has required quantity → complete (already saved)
+  // 2. If pending selections has required quantity → complete (ready to save)
   // This handles both fresh selections and editing existing choices
   const allProficiencyChoicesComplete = computed(() => {
     if (!proficiencyChoices.value) return true
@@ -131,23 +142,32 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
 
     const { class: cls, race, background } = proficiencyChoices.value.data
 
+    // Helper to check if a group is complete
+    const isGroupComplete = (source: string, groupName: string, group: { quantity: number, selected_skills?: number[], selected_proficiency_types?: number[] }): boolean => {
+      const pendingCount = pendingProficiencySelections.value.get(`${source}:${groupName}`)?.size ?? 0
+      const savedSkillCount = group.selected_skills?.length ?? 0
+      const savedProfTypeCount = group.selected_proficiency_types?.length ?? 0
+      const savedTotal = savedSkillCount + savedProfTypeCount
+
+      // Complete if pending selections match quantity (user is actively selecting/editing)
+      if (pendingCount === group.quantity) return true
+
+      // Complete if already saved and no pending changes (user hasn't modified)
+      if (savedTotal === group.quantity && pendingCount === 0) return true
+
+      return false
+    }
+
     for (const [groupName, group] of Object.entries(cls)) {
-      const selected = pendingProficiencySelections.value.get(`class:${groupName}`)?.size ?? 0
-      // Complete if: already saved (remaining=0) and no pending changes, OR pending matches quantity
-      if (group.remaining === 0 && selected === 0) continue // Already saved, not editing
-      if (selected !== group.quantity) return false // Editing or fresh - need full quantity
+      if (!isGroupComplete('class', groupName, group)) return false
     }
 
     for (const [groupName, group] of Object.entries(race)) {
-      const selected = pendingProficiencySelections.value.get(`race:${groupName}`)?.size ?? 0
-      if (group.remaining === 0 && selected === 0) continue
-      if (selected !== group.quantity) return false
+      if (!isGroupComplete('race', groupName, group)) return false
     }
 
     for (const [groupName, group] of Object.entries(background)) {
-      const selected = pendingProficiencySelections.value.get(`background:${groupName}`)?.size ?? 0
-      if (group.remaining === 0 && selected === 0) continue
-      if (selected !== group.quantity) return false
+      if (!isGroupComplete('background', groupName, group)) return false
     }
 
     return true
@@ -309,7 +329,12 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
 
       raceId.value = race.id
       subraceId.value = subrace?.id ?? null
-      selectedRace.value = subrace ?? race
+
+      // Fetch full race detail to get subraces array (not included in list endpoint)
+      // This is needed for needsSubrace computed to work correctly
+      const raceDetail = await apiFetch<{ data: Race }>(`/races/${race.slug}`)
+      selectedBaseRace.value = raceDetail.data
+      selectedRace.value = subrace ?? raceDetail.data
 
       await refreshStats()
     } catch (err: unknown) {
@@ -321,10 +346,15 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   /**
-   * Step 2b: Select subrace (separate step after race selection)
+   * Step 2b: Select subrace (separate step when race has subraces)
    * API receives the subrace ID as race_id (overwrites base race)
    */
   async function selectSubrace(subrace: Race): Promise<void> {
+    if (!selectedBaseRace.value) {
+      error.value = 'No base race selected'
+      return
+    }
+
     isLoading.value = true
     error.value = null
 
@@ -636,6 +666,21 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   }
 
   /**
+   * Initialize pending selections from API's selected_skills
+   * Used when editing existing character - pre-populates selections
+   */
+  function initializeProficiencySelections(
+    source: 'class' | 'race' | 'background',
+    choiceGroup: string,
+    skillIds: Set<number>
+  ): void {
+    const key = `${source}:${choiceGroup}`
+    const newMap = new Map(pendingProficiencySelections.value)
+    newMap.set(key, new Set(skillIds))
+    pendingProficiencySelections.value = newMap
+  }
+
+  /**
    * Save all pending proficiency selections to API
    */
   async function saveProficiencyChoices(): Promise<void> {
@@ -827,15 +872,18 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
         const raceResponse = await apiFetch<{ data: Race }>(`/races/${character.race.slug}`)
         const loadedRace = raceResponse.data
 
-        // Handle subrace detection - need to fetch parent race for hasSubraces to work
+        // Handle subrace detection and set selectedBaseRace
         if (loadedRace.parent_race) {
-          // This is a subrace - fetch parent race so hasSubraces computed works
-          const parentResponse = await apiFetch<{ data: Race }>(`/races/${loadedRace.parent_race.slug}`)
-          selectedRace.value = parentResponse.data // Store parent race (has subraces array)
-          subraceId.value = loadedRace.id
+          // Character has a subrace selected - fetch the parent (base) race
+          subraceId.value = character.race.id
           raceId.value = loadedRace.parent_race.id
+          selectedRace.value = loadedRace
+          // Fetch the base race to get its full data (including subraces array)
+          const baseRaceResponse = await apiFetch<{ data: Race }>(`/races/${loadedRace.parent_race.slug}`)
+          selectedBaseRace.value = baseRaceResponse.data
         } else {
-          // Base race - store as-is
+          // Character has a base race (no subrace) - this race IS the base race
+          selectedBaseRace.value = loadedRace
           selectedRace.value = loadedRace
           raceId.value = loadedRace.id
           subraceId.value = null
@@ -925,6 +973,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     pendingSpellIds.value = new Set()
     proficiencyChoices.value = null
     pendingProficiencySelections.value = new Map()
+    selectedBaseRace.value = null
     selectedRace.value = null
     selectedClass.value = null
     selectedBackground.value = null
@@ -953,6 +1002,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     equipmentChoices,
     raceSpellChoices,
     equipmentItemSelections,
+    selectedBaseRace,
     selectedRace,
     selectedClass,
     selectedBackground,
@@ -961,6 +1011,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     characterStats,
     isCaster,
     hasSubraces,
+    needsSubrace,
     validationStatus,
     isComplete,
     racialBonuses,
@@ -1002,6 +1053,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     setRaceSpellChoice,
     fetchProficiencyChoices,
     toggleProficiencySelection,
+    initializeProficiencySelections,
     saveProficiencyChoices,
     loadCharacterForEditing,
     updateName,
