@@ -1,6 +1,6 @@
 # Project Status
 
-**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-03
+**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-04
 
 ---
 
@@ -107,23 +107,22 @@
 ## Known Issues
 
 ### Critical (Backend - Game-Breaking)
-| Issue | Class | Tracking |
-|-------|-------|----------|
-| Sneak Attack stuck at 9d6 (L10-20) | Rogue | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
-| Zero Eldritch Invocations available | Warlock | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
-| Arcane Recovery at L6 (should be L1) | Wizard | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
-| 8 base disciplines missing | Monk | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
-| No Infusions available | Artificer | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
+*None currently - all critical issues resolved!* 🎉
 
 ### Medium
 | Issue | Severity | Tracking |
 |-------|----------|----------|
 | Missing subclasses (Echo Knight, Drakewarden, etc.) | 🟡 Medium | `CLASSES-COMPREHENSIVE-AUDIT-2025-11-29.md` |
-| Sage background missing languages array | 🟡 Medium | `BACKGROUNDS-API-ENHANCEMENTS.md` |
+| Monk missing optional disciplines (Ki-based choices) | 🟡 Medium | GitHub Issue #9 |
 
 ### Resolved Issues
 | Issue | Resolution |
 |-------|------------|
+| ~~Sneak Attack stuck at 9d6 (L10-20)~~ | ✅ Fixed - now shows L1-L19 progression (1d6 to 10d6) |
+| ~~Zero Eldritch Invocations available~~ | ✅ Fixed - 54 Invocations now available |
+| ~~Arcane Recovery at L6 (should be L1)~~ | ✅ Fixed - Arcane Recovery correctly at L1 |
+| ~~No Infusions available~~ | ✅ Fixed - 16 Infusions now available |
+| ~~Sage background missing languages~~ | ✅ Fixed - languages array with `is_choice: true, quantity: 2` |
 | ~~Subclass `hit_die: 0`~~ | ✅ Backend fixed, using direct field |
 | ~~Feature filtering hardcoded~~ | ✅ Now uses API flags |
 | ~~Totem options missing flag~~ | ✅ Backend removed individual options (cleaner) |
