@@ -1,6 +1,6 @@
 <!-- app/components/character/builder/StepProficiencies.vue -->
 <script setup lang="ts">
-import type { ProficiencyOption } from '~/types/proficiencies'
+import type { ProficiencyOption, ProficiencyTypeOption } from '~/types/proficiencies'
 import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
@@ -181,6 +181,48 @@ function getOptionId(option: ProficiencyOption): number {
 }
 
 /**
+ * Get the label for a choice group based on option types
+ * Returns "skill", "proficiency", or the specific type name
+ */
+function getChoiceLabel(options: ProficiencyOption[], quantity: number): string {
+  const firstOption = options[0]
+  if (!firstOption) return `Choose ${quantity}`
+
+  // Check if all options are the same type
+  const firstType = firstOption.type
+  const allSameType = options.every(opt => opt.type === firstType)
+
+  if (allSameType && firstType === 'skill') {
+    return `Choose ${quantity} skill${quantity > 1 ? 's' : ''}`
+  }
+
+  if (allSameType && firstType === 'proficiency_type') {
+    // Try to get a more specific label from the proficiency type category
+    const proficiencyOption = firstOption as ProficiencyTypeOption
+    const name = proficiencyOption.proficiency_type.name
+
+    // Check for common patterns to provide better labels
+    if (name.toLowerCase().includes('tool')) {
+      return `Choose ${quantity} tool${quantity > 1 ? 's' : ''}`
+    }
+    if (name.toLowerCase().includes('weapon')) {
+      return `Choose ${quantity} weapon${quantity > 1 ? 's' : ''}`
+    }
+    if (name.toLowerCase().includes('armor')) {
+      return `Choose ${quantity} armor type${quantity > 1 ? 's' : ''}`
+    }
+    if (name.toLowerCase().includes('language')) {
+      return `Choose ${quantity} language${quantity > 1 ? 's' : ''}`
+    }
+
+    return `Choose ${quantity} proficienc${quantity > 1 ? 'ies' : 'y'}`
+  }
+
+  // Mixed types
+  return `Choose ${quantity} option${quantity > 1 ? 's' : ''}`
+}
+
+/**
  * Continue to next step - saves proficiency choices first
  */
 async function handleContinue() {
@@ -240,7 +282,7 @@ async function handleContinue() {
         >
           <div class="flex items-center justify-between mb-3">
             <span class="text-sm font-medium">
-              Choose {{ group.quantity }} skill{{ group.quantity > 1 ? 's' : '' }}:
+              {{ getChoiceLabel(group.options, group.quantity) }}:
             </span>
             <UBadge
               :color="getSelectedCount(sourceData.source, group.groupName) === group.quantity ? 'success' : 'neutral'"
