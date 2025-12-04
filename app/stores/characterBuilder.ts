@@ -1174,7 +1174,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
               classId: pivot.class.id,
               subclassId: pivot.subclass?.id ?? null,
               level: typeof pivot.level === 'string' ? parseInt(pivot.level, 10) : pivot.level,
-              isPrimary: pivot.is_primary === 'true' || pivot.is_primary === '1',
+              isPrimary: pivot.is_primary === true,
               order: typeof pivot.order === 'string' ? parseInt(pivot.order, 10) : pivot.order,
               classData: fullClass.data
             }

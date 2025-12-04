@@ -163,7 +163,8 @@ function isFixedPackExpanded(itemId: number): boolean {
 function formatPackContentItem(content: PackContentResource): string {
   const parsed = Number.parseInt(content.quantity, 10)
   const quantity = Number.isNaN(parsed) ? 1 : parsed
-  const name = content.item?.name ?? 'Unknown'
+  // item is typed as { [key: string]: unknown } from OpenAPI, cast to access name
+  const name = (content.item as { name?: string } | null)?.name ?? 'Unknown'
   if (quantity > 1) {
     return `${quantity} ${name}`
   }
