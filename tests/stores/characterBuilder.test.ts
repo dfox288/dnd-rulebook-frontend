@@ -992,7 +992,8 @@ describe('useCharacterBuilderStore', () => {
 
       expect(store.raceId).toBe(1) // Parent race ID
       expect(store.subraceId).toBe(2) // Subrace ID
-      expect(store.selectedRace?.subraces?.length).toBeGreaterThan(0) // Parent race with subraces
+      expect(store.selectedBaseRace?.id).toBe(1) // Base race is stored
+      expect(store.needsSubrace).toBe(true) // Base race has subraces
     })
   })
 
@@ -1226,11 +1227,19 @@ describe('useCharacterBuilderStore', () => {
       parent_race: { id: 1, name: 'Elf', slug: 'elf' }
     } as Race
 
+    const mockBaseRace: Race = {
+      id: 1,
+      name: 'Elf',
+      slug: 'elf',
+      speed: 30
+    } as Race
+
     it('calls API with subrace ID', async () => {
       mockApiFetch.mockResolvedValue({ data: {} })
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       await store.selectSubrace(mockSubrace)
 
@@ -1246,6 +1255,7 @@ describe('useCharacterBuilderStore', () => {
       const store = useCharacterBuilderStore()
       store.characterId = 42
       store.raceId = 1
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       await store.selectSubrace(mockSubrace)
 
@@ -1257,6 +1267,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       await store.selectSubrace(mockSubrace)
 
@@ -1270,6 +1281,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       await store.selectSubrace(mockSubrace)
 
@@ -1284,6 +1296,7 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       const promise = store.selectSubrace(mockSubrace)
       expect(store.isLoading).toBe(true)
@@ -1299,9 +1312,20 @@ describe('useCharacterBuilderStore', () => {
 
       const store = useCharacterBuilderStore()
       store.characterId = 42
+      store.selectedBaseRace = mockBaseRace // Required for selectSubrace
 
       await expect(store.selectSubrace(mockSubrace)).rejects.toThrow('Network error')
       expect(store.error).toBe('Failed to save subrace')
+    })
+
+    it('sets error when no base race selected', async () => {
+      const store = useCharacterBuilderStore()
+      store.characterId = 42
+      store.selectedBaseRace = null // No base race selected
+
+      await store.selectSubrace(mockSubrace)
+
+      expect(store.error).toBe('No base race selected')
     })
   })
 
@@ -1321,7 +1345,7 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(7)
     })
 
-    it('returns 8 when race has subraces (non-caster)', () => {
+    it('returns 8 when base race has subraces (non-caster)', () => {
       const store = useCharacterBuilderStore()
       store.characterClasses = [{
         classId: 1,
@@ -1331,7 +1355,8 @@ describe('useCharacterBuilderStore', () => {
         order: 0,
         classData: { spellcasting_ability: null } as any
       }]
-      store.selectedRace = {
+      // needsSubrace uses selectedBaseRace, not selectedRace
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1340,7 +1365,7 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(8)
     })
 
-    it('returns 9 when race has subraces and is caster', () => {
+    it('returns 9 when base race has subraces and is caster', () => {
       const store = useCharacterBuilderStore()
       store.characterClasses = [{
         classId: 2,
@@ -1353,7 +1378,8 @@ describe('useCharacterBuilderStore', () => {
           level_progression: [{ level: 1, cantrips_known: 3, spells_known: 2 }]
         } as any
       }]
-      store.selectedRace = {
+      // needsSubrace uses selectedBaseRace, not selectedRace
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1362,7 +1388,7 @@ describe('useCharacterBuilderStore', () => {
       expect(store.totalSteps).toBe(9)
     })
 
-    it('returns 10 when race has subraces, is caster, and has proficiency choices', () => {
+    it('returns 10 when base race has subraces, is caster, and has proficiency choices', () => {
       const store = useCharacterBuilderStore()
       store.characterClasses = [{
         classId: 2,
@@ -1375,7 +1401,8 @@ describe('useCharacterBuilderStore', () => {
           level_progression: [{ level: 1, cantrips_known: 3, spells_known: 2 }]
         } as any
       }]
-      store.selectedRace = {
+      // needsSubrace uses selectedBaseRace, not selectedRace
+      store.selectedBaseRace = {
         id: 1,
         name: 'Elf',
         subraces: [{ id: 2, name: 'High Elf' }]
@@ -1489,15 +1516,15 @@ describe('useCharacterBuilderStore', () => {
       expect(store.allProficiencyChoicesComplete).toBe(true)
     })
 
-    it('allProficiencyChoicesComplete returns true when choices already made (remaining=0, no pending selections)', () => {
+    it('allProficiencyChoicesComplete returns true when choices already made (selected_skills populated, no pending selections)', () => {
       const store = useCharacterBuilderStore()
 
       // User has already made their proficiency choices in a previous session
-      // remaining=0 means all choices were already saved
+      // selected_skills array shows which skills were already saved
       store.proficiencyChoices = {
         data: {
           class: {
-            skill_choice_1: { quantity: 2, remaining: 0, options: [] }
+            skill_choice_1: { quantity: 2, remaining: 0, options: [], selected_skills: [1, 5] }
           },
           race: {},
           background: {}
@@ -1505,7 +1532,7 @@ describe('useCharacterBuilderStore', () => {
       }
 
       // No pending selections (user is just passing through)
-      // This should still be complete because remaining=0
+      // This should still be complete because selected_skills.length === quantity
       expect(store.allProficiencyChoicesComplete).toBe(true)
     })
 
