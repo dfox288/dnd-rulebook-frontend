@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia'
 import type { Spell } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const {
@@ -21,6 +22,7 @@ const {
   equipmentChoices,
   isLoading
 } = storeToRefs(store)
+const { goToStep } = useWizardNavigation()
 
 // Fetch available spells for display in review (only for casters)
 const { apiFetch } = useApi()
@@ -73,10 +75,10 @@ function getItemDisplayName(item: { item?: { name?: string } | null, description
 }
 
 /**
- * Navigate to edit a specific step
+ * Navigate to edit a specific step by name
  */
-function editStep(step: number) {
-  store.goToStep(step)
+function editStep(stepName: string) {
+  goToStep(stepName)
 }
 
 /**
@@ -133,13 +135,6 @@ const selectedSkillNames = computed(() => {
   return skills
 })
 
-/**
- * Get the step number for proficiencies (for edit button)
- * Proficiency step is step 6 when it exists (after background)
- */
-const proficiencyStepNumber = computed(() => {
-  return hasPendingChoices.value ? 6 : -1
-})
 
 /**
  * Check if there are any saved proficiency choices (remaining < quantity)
@@ -228,7 +223,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(1)"
+            @click="editStep('name')"
           />
         </div>
       </div>
@@ -249,7 +244,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(2)"
+            @click="editStep('race')"
           />
         </div>
       </div>
@@ -276,7 +271,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(3)"
+            @click="editStep('class')"
           />
         </div>
       </div>
@@ -292,7 +287,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(4)"
+            @click="editStep('abilities')"
           />
         </div>
         <div class="grid grid-cols-6 gap-2">
@@ -333,7 +328,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(5)"
+            @click="editStep('background')"
           />
         </div>
       </div>
@@ -349,12 +344,12 @@ const hasFeatures = computed(() => {
           </h3>
           <!-- Edit button only shown if step exists -->
           <UButton
-            v-if="proficiencyStepNumber > 0"
+            v-if="hasPendingChoices"
             data-test="edit-proficiencies"
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(proficiencyStepNumber)"
+            @click="editStep('proficiencies')"
           />
         </div>
         <div class="flex flex-wrap gap-2">
@@ -462,7 +457,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(6)"
+            @click="editStep('equipment')"
           />
         </div>
         <ul class="space-y-1 text-gray-700 dark:text-gray-300">
@@ -519,7 +514,7 @@ const hasFeatures = computed(() => {
             variant="ghost"
             size="sm"
             icon="i-heroicons-pencil"
-            @click="editStep(7)"
+            @click="editStep('spells')"
           />
         </div>
         <ul class="space-y-1 text-gray-700 dark:text-gray-300">

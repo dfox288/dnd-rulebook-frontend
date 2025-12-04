@@ -3,9 +3,11 @@
 import { storeToRefs } from 'pinia'
 import type { Race } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { selectedBaseRace, subraceId, isLoading, error } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // API client
 const { apiFetch } = useApi()
@@ -105,7 +107,7 @@ async function confirmSelection() {
 
   try {
     await store.selectRace(localSelectedRace.value)
-    store.nextStep()
+    nextStep()
   } catch (err) {
     // Error is already set in store
     console.error('Failed to save race:', err)

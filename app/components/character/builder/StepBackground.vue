@@ -2,9 +2,11 @@
 import { storeToRefs } from 'pinia'
 import type { Background } from '~/types'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
+import { useWizardNavigation } from '~/composables/useWizardSteps'
 
 const store = useCharacterBuilderStore()
 const { selectedBackground, isLoading, error } = storeToRefs(store)
+const { nextStep } = useWizardNavigation()
 
 // API client
 const { apiFetch } = useApi()
@@ -69,7 +71,7 @@ async function confirmSelection() {
 
   try {
     await store.selectBackground(localSelectedBackground.value)
-    store.nextStep()
+    nextStep()
   } catch (err) {
     console.error('Failed to save background:', err)
   }
