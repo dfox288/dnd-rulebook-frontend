@@ -60,13 +60,11 @@ async function fetchSubcategoryOptions(category: string, subcategory: string): P
     // Cache the result
     subcategoryOptionsCache.value.set(cacheKey, options)
     return options
-  }
-  catch {
+  } catch {
     // API errors (test environment, network issues) - return empty array
     console.warn(`Failed to fetch proficiency types for ${category}:${subcategory}`)
     return []
-  }
-  finally {
+  } finally {
     loadingSubcategories.value.delete(cacheKey)
   }
 }

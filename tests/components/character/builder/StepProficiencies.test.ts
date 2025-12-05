@@ -225,8 +225,8 @@ describe('StepProficiencies', () => {
               selected_skills: [],
               selected_proficiency_types: [],
               options: [
-                { type: 'proficiency_type', proficiency_type_id: 46, proficiency_type: { id: 46, name: "Alchemist's Supplies", slug: 'alchemists-supplies' } },
-                { type: 'proficiency_type', proficiency_type_id: 47, proficiency_type: { id: 47, name: "Brewer's Supplies", slug: 'brewers-supplies' } }
+                { type: 'proficiency_type', proficiency_type_id: 46, proficiency_type: { id: 46, name: 'Alchemist\'s Supplies', slug: 'alchemists-supplies' } },
+                { type: 'proficiency_type', proficiency_type_id: 47, proficiency_type: { id: 47, name: 'Brewer\'s Supplies', slug: 'brewers-supplies' } }
               ]
             }
           },
@@ -236,8 +236,8 @@ describe('StepProficiencies', () => {
       }
       await wrapper.vm.$nextTick()
 
-      expect(wrapper.text()).toContain("Alchemist's Supplies")
-      expect(wrapper.text()).toContain("Brewer's Supplies")
+      expect(wrapper.text()).toContain('Alchemist\'s Supplies')
+      expect(wrapper.text()).toContain('Brewer\'s Supplies')
       expect(wrapper.text()).toContain('Choose 1 tool')
     })
   })

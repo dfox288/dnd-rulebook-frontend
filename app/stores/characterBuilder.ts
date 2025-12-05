@@ -638,6 +638,11 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
       // This determines if the Proficiency Choices step will appear
       await fetchProficiencyChoices()
 
+      // Populate fixed languages from race, background, and feats
+      // This must be called before fetchLanguageChoices to ensure inherited
+      // languages (e.g., from parent races for subraces) are saved
+      await populateLanguages()
+
       // Fetch language choices - determines if Languages step will appear
       await fetchLanguageChoices()
     } catch (err: unknown) {
@@ -883,6 +888,19 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   // ══════════════════════════════════════════════════════════════
   // LANGUAGE CHOICE ACTIONS
   // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Populate fixed languages from race, background, and feats.
+   * This should be called before fetchLanguageChoices to ensure
+   * inherited languages (e.g., from parent races) are saved to the character.
+   */
+  async function populateLanguages(): Promise<void> {
+    if (!characterId.value) return
+
+    await apiFetch(`/characters/${characterId.value}/languages/populate`, {
+      method: 'POST'
+    })
+  }
 
   /**
    * Fetch pending language choices from API
@@ -1441,6 +1459,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
     toggleProficiencySelection,
     initializeProficiencySelections,
     saveProficiencyChoices,
+    populateLanguages,
     fetchLanguageChoices,
     toggleLanguageSelection,
     initializeLanguageSelections,
