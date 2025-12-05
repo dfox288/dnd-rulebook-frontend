@@ -37,7 +37,7 @@ const spellcasting = computed(() => {
     CON: 'Constitution',
     INT: 'Intelligence',
     WIS: 'Wisdom',
-    CHA: 'Charisma',
+    CHA: 'Charisma'
   }
 
   return {
@@ -45,7 +45,7 @@ const spellcasting = computed(() => {
     abilityName: abilityNames[sc.ability] ?? sc.ability,
     saveDC: sc.spell_save_dc,
     attackBonus: sc.spell_attack_bonus,
-    formattedAttackBonus: sc.spell_attack_bonus >= 0 ? `+${sc.spell_attack_bonus}` : `${sc.spell_attack_bonus}`,
+    formattedAttackBonus: sc.spell_attack_bonus >= 0 ? `+${sc.spell_attack_bonus}` : `${sc.spell_attack_bonus}`
   }
 })
 
@@ -164,7 +164,7 @@ function handleRaceSpellChoice(choiceGroup: string, spellId: number) {
  * Save spells and continue to next step
  */
 async function handleContinue() {
-  // TODO: Save spell choices to backend when API is ready
+  await store.saveSpellChoices()
   nextStep()
 }
 

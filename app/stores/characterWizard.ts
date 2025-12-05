@@ -14,7 +14,7 @@ import type {
   CharacterClass,
   Background,
   CharacterAlignment,
-  CharacterStats,
+  CharacterStats
 } from '~/types'
 
 // ════════════════════════════════════════════════════════════════
@@ -37,7 +37,7 @@ export interface Subclass {
   name: string
   slug: string
   description?: string
-  source?: { code: string; name: string }
+  source?: { code: string, name: string }
 }
 
 export interface WizardSelections {
@@ -88,7 +88,7 @@ function defaultAbilityScores(): AbilityScores {
     constitution: 10,
     intelligence: 10,
     wisdom: 10,
-    charisma: 10,
+    charisma: 10
   }
 }
 
@@ -102,7 +102,7 @@ function defaultSelections(): WizardSelections {
     abilityScores: defaultAbilityScores(),
     abilityMethod: 'standard_array',
     name: '',
-    alignment: null,
+    alignment: null
   }
 }
 
@@ -112,7 +112,7 @@ function defaultPendingChoices(): PendingChoices {
     languages: new Map(),
     equipment: new Map(),
     equipmentItems: new Map(),
-    spells: new Set(),
+    spells: new Set()
   }
 }
 
@@ -287,7 +287,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     try {
       const [statsRes, summaryRes] = await Promise.all([
         apiFetch<{ data: CharacterStats }>(`/characters/${characterId.value}/stats`),
-        apiFetch<{ data: CharacterSummaryData }>(`/characters/${characterId.value}/summary`),
+        apiFetch<{ data: CharacterSummaryData }>(`/characters/${characterId.value}/summary`)
       ])
 
       stats.value = statsRes.data
@@ -319,8 +319,8 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
           method: 'POST',
           body: {
             name: defaultName,
-            race_id: race.id,
-          },
+            race_id: race.id
+          }
         })
         characterId.value = response.data.id
         // Store the default name in selections
@@ -331,7 +331,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
         // Update existing character
         await apiFetch(`/characters/${characterId.value}`, {
           method: 'PATCH',
-          body: { race_id: race.id },
+          body: { race_id: race.id }
         })
       }
 
@@ -364,7 +364,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
       await apiFetch(`/characters/${characterId.value}`, {
         method: 'PATCH',
-        body: { race_id: raceId },
+        body: { race_id: raceId }
       })
 
       selections.value.subrace = subrace
@@ -391,7 +391,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
       // Then add the new class
       await apiFetch(`/characters/${characterId.value}/classes`, {
         method: 'POST',
-        body: { class_id: cls.id },
+        body: { class_id: cls.id }
       })
 
       // Fetch full class data
@@ -422,7 +422,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
         `/characters/${characterId.value}/classes/${selections.value.class.id}/subclass`,
         {
           method: 'PUT',
-          body: { subclass_id: subclass.id },
+          body: { subclass_id: subclass.id }
         }
       )
 
@@ -448,7 +448,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     try {
       await apiFetch(`/characters/${characterId.value}`, {
         method: 'PATCH',
-        body: { background_id: background.id },
+        body: { background_id: background.id }
       })
 
       // Fetch full background data
@@ -486,8 +486,8 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
           constitution: scores.constitution,
           intelligence: scores.intelligence,
           wisdom: scores.wisdom,
-          charisma: scores.charisma,
-        },
+          charisma: scores.charisma
+        }
       })
 
       selections.value.abilityScores = { ...scores }
@@ -514,7 +514,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     try {
       await apiFetch(`/characters/${characterId.value}`, {
         method: 'PATCH',
-        body: { name, alignment },
+        body: { name, alignment }
       })
 
       selections.value.name = name
@@ -530,7 +530,166 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
   }
 
   // ══════════════════════════════════════════════════════════════
-  // ACTIONS: Pending Choices
+  // ACTIONS: Save Pending Choices to Backend
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * Save proficiency choices to backend
+   * Transforms pendingChoices.proficiencies Map into the API format
+   */
+  async function saveProficiencyChoices(): Promise<void> {
+    if (!characterId.value) return
+    if (pendingChoices.value.proficiencies.size === 0) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      // Transform Map<string, Set<number>> to API format
+      // API expects: { choices: { [key]: number[] } }
+      const choices: Record<string, number[]> = {}
+      for (const [key, ids] of pendingChoices.value.proficiencies) {
+        choices[key] = Array.from(ids)
+      }
+
+      await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
+        method: 'POST',
+        body: { choices }
+      })
+
+      // Clear pending choices after successful save
+      pendingChoices.value.proficiencies = new Map()
+
+      await syncWithBackend()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to save proficiency choices'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Save language choices to backend
+   * Makes separate API calls for each source (race, background)
+   * API expects: { source: 'race'|'background', language_ids: number[] }
+   */
+  async function saveLanguageChoices(): Promise<void> {
+    if (!characterId.value) return
+    if (pendingChoices.value.languages.size === 0) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      // Make separate API calls for each source
+      const promises: Promise<unknown>[] = []
+      for (const [source, ids] of pendingChoices.value.languages) {
+        if (ids.size > 0) {
+          promises.push(
+            apiFetch(`/characters/${characterId.value}/language-choices`, {
+              method: 'POST',
+              body: {
+                source,
+                language_ids: Array.from(ids)
+              }
+            })
+          )
+        }
+      }
+
+      await Promise.all(promises)
+
+      // Clear pending choices after successful save
+      pendingChoices.value.languages = new Map()
+
+      await syncWithBackend()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to save language choices'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Save equipment choices to backend
+   * Sends selected equipment option IDs to the backend
+   */
+  async function saveEquipmentChoices(): Promise<void> {
+    if (!characterId.value) return
+    if (pendingChoices.value.equipment.size === 0) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      // Transform Map<string, number> to API format
+      // API expects: { choices: { [choiceGroup]: optionId } }
+      const choices: Record<string, number> = {}
+      for (const [group, optionId] of pendingChoices.value.equipment) {
+        choices[group] = optionId
+      }
+
+      // Also include item selections for compound choices
+      const itemSelections: Record<string, number> = {}
+      for (const [key, itemId] of pendingChoices.value.equipmentItems) {
+        itemSelections[key] = itemId
+      }
+
+      await apiFetch(`/characters/${characterId.value}/equipment`, {
+        method: 'POST',
+        body: { choices, item_selections: itemSelections }
+      })
+
+      // Clear pending choices after successful save
+      pendingChoices.value.equipment = new Map()
+      pendingChoices.value.equipmentItems = new Map()
+
+      await syncWithBackend()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to save equipment choices'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  /**
+   * Save spell choices to backend
+   * Posts each selected spell to the character's spell list
+   */
+  async function saveSpellChoices(): Promise<void> {
+    if (!characterId.value) return
+    if (pendingChoices.value.spells.size === 0) return
+
+    isLoading.value = true
+    error.value = null
+
+    try {
+      // Post all selected spells
+      const spellIds = Array.from(pendingChoices.value.spells)
+
+      // Send all spell IDs in a single request
+      await apiFetch(`/characters/${characterId.value}/spells`, {
+        method: 'POST',
+        body: { spell_ids: spellIds }
+      })
+
+      // Clear pending choices after successful save
+      pendingChoices.value.spells = new Set()
+
+      await syncWithBackend()
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to save spell choices'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // ACTIONS: Pending Choices (Local State)
   // ══════════════════════════════════════════════════════════════
 
   /**
@@ -663,16 +822,22 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     saveAbilityScores,
     saveDetails,
 
-    // Actions: Pending choices
+    // Actions: Pending choices (local state)
     toggleProficiencyChoice,
     toggleLanguageChoice,
     setEquipmentChoice,
     toggleSpellChoice,
 
+    // Actions: Save pending choices to backend
+    saveProficiencyChoices,
+    saveLanguageChoices,
+    saveEquipmentChoices,
+    saveSpellChoices,
+
     // Actions: Sources
     setSelectedSources,
 
     // Actions: Reset
-    reset,
+    reset
   }
 })

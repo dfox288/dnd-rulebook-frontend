@@ -16,8 +16,15 @@
  */
 
 import { useCharacterWizardStore } from '~/stores/characterWizard'
+import type {
+  CharacterProficiency,
+  CharacterLanguage,
+  CharacterEquipment,
+  CharacterSpell
+} from '~/types/character'
 
 const store = useCharacterWizardStore()
+const { apiFetch } = useApi()
 
 // Fetch character stats
 const {
@@ -28,12 +35,10 @@ const {
   savingThrows,
   spellcasting,
   abilityScores,
-  isSpellcaster,
+  isSpellcaster
 } = useCharacterStats(computed(() => store.characterId))
 
 // Speed comes from race, not stats endpoint
-// For now, use the most common default (30 ft)
-// TODO: Fetch from character/race data when available
 const speed = computed(() => store.selections.race?.speed ?? 30)
 
 // Character identity
@@ -41,6 +46,164 @@ const characterName = computed(() => store.selections.name || 'Unnamed Character
 const race = computed(() => store.selections.race?.name || 'Unknown')
 const characterClass = computed(() => store.selections.class?.name || 'Unknown')
 const background = computed(() => store.selections.background?.name || 'Unknown')
+
+// ══════════════════════════════════════════════════════════════
+// Fetch character data from backend
+// ══════════════════════════════════════════════════════════════
+
+// Fetch proficiencies
+const { data: proficiencies } = await useAsyncData(
+  `review-proficiencies-${store.characterId}`,
+  () => apiFetch<{ data: CharacterProficiency[] }>(`/characters/${store.characterId}/proficiencies`),
+  {
+    transform: response => response.data,
+    watch: [() => store.characterId]
+  }
+)
+
+// Fetch languages
+const { data: languages } = await useAsyncData(
+  `review-languages-${store.characterId}`,
+  () => apiFetch<{ data: CharacterLanguage[] }>(`/characters/${store.characterId}/languages`),
+  {
+    transform: response => response.data,
+    watch: [() => store.characterId]
+  }
+)
+
+// Fetch equipment
+const { data: equipment } = await useAsyncData(
+  `review-equipment-${store.characterId}`,
+  () => apiFetch<{ data: CharacterEquipment[] }>(`/characters/${store.characterId}/equipment`),
+  {
+    transform: response => response.data,
+    watch: [() => store.characterId]
+  }
+)
+
+// Fetch spells (only if spellcaster)
+const { data: spells } = await useAsyncData(
+  `review-spells-${store.characterId}`,
+  () => {
+    if (!isSpellcaster.value) return Promise.resolve({ data: [] })
+    return apiFetch<{ data: CharacterSpell[] }>(`/characters/${store.characterId}/spells`)
+  },
+  {
+    transform: response => response.data,
+    watch: [() => store.characterId, isSpellcaster]
+  }
+)
+
+// ══════════════════════════════════════════════════════════════
+// Group proficiencies by type
+// ══════════════════════════════════════════════════════════════
+
+interface ProficiencyGroup {
+  type: string
+  label: string
+  icon: string
+  items: string[]
+}
+
+const proficiencyGroups = computed<ProficiencyGroup[]>(() => {
+  if (!proficiencies.value || proficiencies.value.length === 0) return []
+
+  const grouped = new Map<string, string[]>()
+
+  for (const prof of proficiencies.value) {
+    // Determine type and name
+    let type = 'other'
+    let name = 'Unknown'
+
+    if (prof.skill) {
+      type = 'skill'
+      name = prof.skill.name
+      if (prof.expertise) name += ' (Expertise)'
+    } else if (prof.proficiency_type) {
+      type = prof.proficiency_type.category || 'other'
+      name = prof.proficiency_type.name
+    }
+
+    const existing = grouped.get(type) ?? []
+    grouped.set(type, [...existing, name])
+  }
+
+  // Define display order and labels
+  const typeConfig: Record<string, { label: string, icon: string }> = {
+    saving_throw: { label: 'Saving Throws', icon: 'i-heroicons-heart' },
+    armor: { label: 'Armor', icon: 'i-heroicons-shield-check' },
+    weapon: { label: 'Weapons', icon: 'i-heroicons-bolt' },
+    tool: { label: 'Tools', icon: 'i-heroicons-wrench-screwdriver' },
+    skill: { label: 'Skills', icon: 'i-heroicons-academic-cap' },
+    other: { label: 'Other', icon: 'i-heroicons-check-circle' }
+  }
+
+  const typeOrder = ['saving_throw', 'armor', 'weapon', 'tool', 'skill', 'other']
+  const result: ProficiencyGroup[] = []
+
+  for (const type of typeOrder) {
+    const items = grouped.get(type)
+    if (items && items.length > 0) {
+      const config = typeConfig[type] || typeConfig.other!
+      result.push({
+        type,
+        label: config.label,
+        icon: config.icon,
+        items: items.sort()
+      })
+    }
+  }
+
+  // Add any remaining types not in typeOrder
+  for (const [type, items] of grouped) {
+    if (!typeOrder.includes(type) && items.length > 0) {
+      result.push({
+        type,
+        label: type.charAt(0).toUpperCase() + type.slice(1),
+        icon: 'i-heroicons-check-circle',
+        items: items.sort()
+      })
+    }
+  }
+
+  return result
+})
+
+// ══════════════════════════════════════════════════════════════
+// Group spells by level
+// ══════════════════════════════════════════════════════════════
+
+interface SpellGroup {
+  level: number
+  label: string
+  spells: CharacterSpell[]
+}
+
+const spellGroups = computed<SpellGroup[]>(() => {
+  if (!spells.value || spells.value.length === 0) return []
+
+  const grouped = new Map<number, CharacterSpell[]>()
+
+  for (const spell of spells.value) {
+    const level = spell.spell.level
+    const existing = grouped.get(level) ?? []
+    grouped.set(level, [...existing, spell])
+  }
+
+  // Sort by level
+  const levels = Array.from(grouped.keys()).sort((a, b) => a - b)
+
+  return levels.map(level => ({
+    level,
+    label: level === 0 ? 'Cantrips' : `${level}${getOrdinalSuffix(level)} Level`,
+    spells: grouped.get(level)?.sort((a, b) => a.spell.name.localeCompare(b.spell.name)) ?? []
+  }))
+})
+
+function getOrdinalSuffix(n: number): string {
+  const suffixes = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th']
+  return suffixes[n] ?? 'th'
+}
 </script>
 
 <template>
@@ -69,12 +232,18 @@ const background = computed(() => store.selections.background?.name || 'Unknown'
         <UCard :ui="{ body: 'p-4' }">
           <template #header>
             <div class="flex items-center gap-2">
-              <UIcon name="i-heroicons-chart-bar" class="w-5 h-5 text-primary" />
+              <UIcon
+                name="i-heroicons-chart-bar"
+                class="w-5 h-5 text-primary"
+              />
               <span class="font-semibold text-gray-900 dark:text-white">Ability Scores</span>
             </div>
           </template>
 
-          <div v-if="abilityScores" class="space-y-3">
+          <div
+            v-if="abilityScores"
+            class="space-y-3"
+          >
             <div
               v-for="ability in abilityScores"
               :key="ability.code"
@@ -131,13 +300,47 @@ const background = computed(() => store.selections.background?.name || 'Unknown'
       <UCard :ui="{ body: 'p-4' }">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-academic-cap" class="w-5 h-5 text-primary" />
+            <UIcon
+              name="i-heroicons-academic-cap"
+              class="w-5 h-5 text-primary"
+            />
             <span class="font-semibold text-gray-900 dark:text-white">Proficiencies</span>
           </div>
         </template>
 
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          <p>Armor, weapons, tools, and skills will be displayed here.</p>
+        <div
+          v-if="proficiencyGroups.length > 0"
+          class="space-y-4"
+        >
+          <div
+            v-for="group in proficiencyGroups"
+            :key="group.type"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <UIcon
+                :name="group.icon"
+                class="w-4 h-4 text-gray-500"
+              />
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ group.label }}</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <UBadge
+                v-for="item in group.items"
+                :key="item"
+                color="neutral"
+                variant="subtle"
+                size="md"
+              >
+                {{ item }}
+              </UBadge>
+            </div>
+          </div>
+        </div>
+        <div
+          v-else
+          class="text-sm text-gray-500 dark:text-gray-400"
+        >
+          No proficiencies selected yet.
         </div>
       </UCard>
 
@@ -145,13 +348,33 @@ const background = computed(() => store.selections.background?.name || 'Unknown'
       <UCard :ui="{ body: 'p-4' }">
         <template #header>
           <div class="flex items-center gap-2">
-            <UIcon name="i-heroicons-language" class="w-5 h-5 text-primary" />
+            <UIcon
+              name="i-heroicons-language"
+              class="w-5 h-5 text-primary"
+            />
             <span class="font-semibold text-gray-900 dark:text-white">Languages</span>
           </div>
         </template>
 
-        <div class="text-sm text-gray-600 dark:text-gray-400">
-          <p>Known languages will be displayed here.</p>
+        <div
+          v-if="languages && languages.length > 0"
+          class="flex flex-wrap gap-2"
+        >
+          <UBadge
+            v-for="lang in languages"
+            :key="lang.id"
+            color="neutral"
+            variant="subtle"
+            size="md"
+          >
+            {{ lang.language.name }}
+          </UBadge>
+        </div>
+        <div
+          v-else
+          class="text-sm text-gray-500 dark:text-gray-400"
+        >
+          No languages selected yet.
         </div>
       </UCard>
     </div>
@@ -160,27 +383,96 @@ const background = computed(() => store.selections.background?.name || 'Unknown'
     <UCard :ui="{ body: 'p-4' }">
       <template #header>
         <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-shopping-bag" class="w-5 h-5 text-primary" />
+          <UIcon
+            name="i-heroicons-shopping-bag"
+            class="w-5 h-5 text-primary"
+          />
           <span class="font-semibold text-gray-900 dark:text-white">Equipment</span>
         </div>
       </template>
 
-      <div class="text-sm text-gray-600 dark:text-gray-400">
-        <p>Selected equipment will be displayed here.</p>
+      <div
+        v-if="equipment && equipment.length > 0"
+        class="space-y-2"
+      >
+        <div
+          v-for="item in equipment"
+          :key="item.id"
+          class="flex items-center gap-2 text-sm"
+        >
+          <UIcon
+            name="i-heroicons-cube"
+            class="w-4 h-4 text-gray-400 flex-shrink-0"
+          />
+          <span class="text-gray-700 dark:text-gray-300">
+            {{ item.item?.name || item.description || 'Unknown item' }}
+          </span>
+          <span
+            v-if="item.quantity > 1"
+            class="text-gray-500"
+          >
+            (×{{ item.quantity }})
+          </span>
+        </div>
+      </div>
+      <div
+        v-else
+        class="text-sm text-gray-500 dark:text-gray-400"
+      >
+        No equipment selected yet.
       </div>
     </UCard>
 
     <!-- Spells (conditional) -->
-    <UCard v-if="isSpellcaster" :ui="{ body: 'p-4' }">
+    <UCard
+      v-if="isSpellcaster"
+      :ui="{ body: 'p-4' }"
+    >
       <template #header>
         <div class="flex items-center gap-2">
-          <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-arcane-500" />
+          <UIcon
+            name="i-heroicons-sparkles"
+            class="w-5 h-5 text-arcane-500"
+          />
           <span class="font-semibold text-gray-900 dark:text-white">Spells</span>
         </div>
       </template>
 
-      <div class="text-sm text-gray-600 dark:text-gray-400">
-        <p>Known and prepared spells will be displayed here.</p>
+      <div
+        v-if="spellGroups.length > 0"
+        class="space-y-4"
+      >
+        <div
+          v-for="group in spellGroups"
+          :key="group.level"
+        >
+          <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {{ group.label }}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <UBadge
+              v-for="spell in group.spells"
+              :key="spell.id"
+              color="spell"
+              variant="subtle"
+              size="md"
+            >
+              {{ spell.spell.name }}
+              <UIcon
+                v-if="spell.always_prepared"
+                name="i-heroicons-star-solid"
+                class="w-3 h-3 ml-1"
+                title="Always Prepared"
+              />
+            </UBadge>
+          </div>
+        </div>
+      </div>
+      <div
+        v-else
+        class="text-sm text-gray-500 dark:text-gray-400"
+      >
+        No spells selected yet.
       </div>
     </UCard>
   </div>

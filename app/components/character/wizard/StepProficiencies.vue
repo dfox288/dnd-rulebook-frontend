@@ -77,12 +77,10 @@ async function fetchSubcategoryOptions(category: string, subcategory: string): P
 
     subcategoryOptionsCache.value.set(cacheKey, options)
     return options
-  }
-  catch {
+  } catch {
     console.warn(`Failed to fetch proficiency types for ${category}:${subcategory}`)
     return []
-  }
-  finally {
+  } finally {
     loadingSubcategories.value.delete(cacheKey)
   }
 }
@@ -442,7 +440,7 @@ const allProficiencyChoicesComplete = computed(() => {
 })
 
 async function handleContinue() {
-  // TODO: Save proficiency choices to backend when API is ready
+  await store.saveProficiencyChoices()
   nextStep()
 }
 </script>

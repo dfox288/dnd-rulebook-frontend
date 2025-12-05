@@ -134,7 +134,7 @@ const allLanguageChoicesComplete = computed(() => {
  * Continue to next step
  */
 async function handleContinue() {
-  // TODO: Save language choices to backend when API is ready
+  await store.saveLanguageChoices()
   nextStep()
 }
 </script>

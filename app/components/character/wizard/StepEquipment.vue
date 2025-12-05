@@ -162,7 +162,7 @@ const allEquipmentChoicesMade = computed(() => {
  * Continue to next step
  */
 async function handleContinue() {
-  // TODO: Save equipment choices to backend when API is ready
+  await store.saveEquipmentChoices()
   nextStep()
 }
 
