@@ -30,7 +30,7 @@ const stepComponents: Record<string, Component> = {
   equipment: defineAsyncComponent(() => import('~/components/character/wizard/StepEquipment.vue')),
   spells: defineAsyncComponent(() => import('~/components/character/wizard/StepSpells.vue')),
   details: defineAsyncComponent(() => import('~/components/character/wizard/StepDetails.vue')),
-  review: defineAsyncComponent(() => import('~/components/character/wizard/StepReview.vue')),
+  review: defineAsyncComponent(() => import('~/components/character/wizard/StepReview.vue'))
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -55,7 +55,7 @@ const stepComponent = computed(() => stepComponents[stepName.value] ?? null)
 if (!stepComponent.value) {
   throw createError({
     statusCode: 404,
-    message: `Unknown wizard step: ${stepName.value}`,
+    message: `Unknown wizard step: ${stepName.value}`
   })
 }
 
@@ -71,7 +71,7 @@ const stepTitle = computed(() =>
 )
 
 useSeoMeta({
-  title: () => `Create Character - ${stepTitle.value}`,
+  title: () => `Create Character - ${stepTitle.value}`
 })
 </script>
 

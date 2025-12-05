@@ -45,7 +45,7 @@ describe('useCharacterStats', () => {
         CON: { score: 13, modifier: 1 },
         INT: { score: 10, modifier: 0 },
         WIS: { score: 15, modifier: 2 },
-        CHA: { score: 8, modifier: -1 },
+        CHA: { score: 8, modifier: -1 }
       },
       saving_throws: {
         STR: 2,
@@ -53,7 +53,7 @@ describe('useCharacterStats', () => {
         CON: 1,
         INT: 0,
         WIS: 4, // proficient
-        CHA: -1,
+        CHA: -1
       },
       armor_class: 12,
       hit_points: { max: 10, current: 10, temporary: 0 },
@@ -62,11 +62,11 @@ describe('useCharacterStats', () => {
       spellcasting: {
         ability: 'WIS' as const,
         spell_save_dc: 12,
-        spell_attack_bonus: 4,
+        spell_attack_bonus: 4
       },
-      spell_slots: { '1': 2 },
+      spell_slots: { 1: 2 },
       preparation_limit: 3,
-      prepared_spell_count: 1,
+      prepared_spell_count: 1
     }
 
     it('formats hit points for display', () => {
@@ -118,7 +118,7 @@ describe('useCharacterStats', () => {
         CON: { score: 10, modifier: 0 },
         INT: { score: 10, modifier: 0 },
         WIS: { score: 10, modifier: 0 },
-        CHA: { score: 10, modifier: 0 },
+        CHA: { score: 10, modifier: 0 }
       },
       saving_throws: {
         STR: 0,
@@ -126,7 +126,7 @@ describe('useCharacterStats', () => {
         CON: 0,
         INT: 0,
         WIS: 0,
-        CHA: 0,
+        CHA: 0
       },
       armor_class: null,
       hit_points: { max: null, current: null, temporary: 0 },
@@ -135,7 +135,7 @@ describe('useCharacterStats', () => {
       spellcasting: null,
       spell_slots: {},
       preparation_limit: null,
-      prepared_spell_count: 0,
+      prepared_spell_count: 0
     }
 
     it('handles null hit points gracefully', () => {

@@ -50,7 +50,7 @@ const ABILITY_NAMES: Record<AbilityScoreCode, string> = {
   CON: 'Constitution',
   INT: 'Intelligence',
   WIS: 'Wisdom',
-  CHA: 'Charisma',
+  CHA: 'Charisma'
 }
 
 /**
@@ -122,7 +122,7 @@ export function useCharacterStats(characterId: Ref<number | null>) {
         score: data.score,
         modifier: data.modifier,
         formattedModifier: formattedMod,
-        formatted: `${data.score} (${formattedMod})`,
+        formatted: `${data.score} (${formattedMod})`
       }
     })
   })
@@ -152,7 +152,7 @@ export function useCharacterStats(characterId: Ref<number | null>) {
         name: ABILITY_NAMES[code],
         bonus,
         formattedBonus: formatModifier(bonus),
-        isProficient,
+        isProficient
       }
     })
   })
@@ -173,7 +173,7 @@ export function useCharacterStats(characterId: Ref<number | null>) {
       abilityName: ABILITY_NAMES[sc.ability],
       saveDC: sc.spell_save_dc,
       attackBonus: sc.spell_attack_bonus,
-      formattedAttackBonus: formatModifier(sc.spell_attack_bonus),
+      formattedAttackBonus: formatModifier(sc.spell_attack_bonus)
     }
   })
 
@@ -269,6 +269,6 @@ export function useCharacterStats(characterId: Ref<number | null>) {
     isSpellcaster,
 
     // Actions
-    refresh,
+    refresh
   }
 }

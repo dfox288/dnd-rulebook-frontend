@@ -15,12 +15,12 @@ const mockElf: Race = {
   subrace_required: true,
   subraces: [
     { id: 2, name: 'High Elf', slug: 'high-elf' },
-    { id: 3, name: 'Wood Elf', slug: 'wood-elf' },
+    { id: 3, name: 'Wood Elf', slug: 'wood-elf' }
   ],
   modifiers: [],
   traits: [],
   languages: [],
-  sources: [{ code: 'PHB', name: "Player's Handbook" }],
+  sources: [{ code: 'PHB', name: 'Player\'s Handbook' }]
 } as Race
 
 const mockHuman: Race = {
@@ -32,12 +32,12 @@ const mockHuman: Race = {
   size: { id: 1, name: 'Medium', slug: 'medium' },
   subrace_required: false,
   subraces: [
-    { id: 5, name: 'Variant Human', slug: 'variant-human' },
+    { id: 5, name: 'Variant Human', slug: 'variant-human' }
   ],
   modifiers: [],
   traits: [],
   languages: [],
-  sources: [{ code: 'PHB', name: "Player's Handbook" }],
+  sources: [{ code: 'PHB', name: 'Player\'s Handbook' }]
 } as Race
 
 const mockHalfOrc: Race = {
@@ -52,7 +52,7 @@ const mockHalfOrc: Race = {
   modifiers: [],
   traits: [],
   languages: [],
-  sources: [{ code: 'PHB', name: "Player's Handbook" }],
+  sources: [{ code: 'PHB', name: 'Player\'s Handbook' }]
 } as Race
 
 // Mock class data
@@ -64,11 +64,11 @@ const mockCleric: CharacterClass = {
   subclass_level: 1,
   spellcasting_ability: { id: 5, code: 'WIS', name: 'Wisdom' },
   level_progression: [
-    { level: 1, cantrips_known: 3, spells_known: null },
+    { level: 1, cantrips_known: 3, spells_known: null }
   ],
   subclasses: [],
   equipment: [],
-  sources: [],
+  sources: []
 } as unknown as CharacterClass
 
 const mockFighter: CharacterClass = {
@@ -81,7 +81,7 @@ const mockFighter: CharacterClass = {
   level_progression: [],
   subclasses: [],
   equipment: [],
-  sources: [],
+  sources: []
 } as unknown as CharacterClass
 
 const mockWizard: CharacterClass = {
@@ -92,11 +92,11 @@ const mockWizard: CharacterClass = {
   subclass_level: 2,
   spellcasting_ability: { id: 4, code: 'INT', name: 'Intelligence' },
   level_progression: [
-    { level: 1, cantrips_known: 3, spells_known: 6 },
+    { level: 1, cantrips_known: 3, spells_known: 6 }
   ],
   subclasses: [],
   equipment: [],
-  sources: [],
+  sources: []
 } as unknown as CharacterClass
 
 describe('characterWizard store', () => {

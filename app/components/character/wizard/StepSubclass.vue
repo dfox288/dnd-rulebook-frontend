@@ -47,8 +47,8 @@ const filteredSubclasses = computed(() => {
 
   const query = searchQuery.value.toLowerCase()
   return subclasses.value.filter(subclass =>
-    subclass.name.toLowerCase().includes(query) ||
-    subclass.description?.toLowerCase().includes(query)
+    subclass.name.toLowerCase().includes(query)
+    || subclass.description?.toLowerCase().includes(query)
   )
 })
 

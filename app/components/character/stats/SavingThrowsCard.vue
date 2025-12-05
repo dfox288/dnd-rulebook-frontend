@@ -21,7 +21,10 @@ defineProps<Props>()
   >
     <template #header>
       <div class="flex items-center gap-2">
-        <UIcon name="i-heroicons-shield-exclamation" class="w-5 h-5 text-primary" />
+        <UIcon
+          name="i-heroicons-shield-exclamation"
+          class="w-5 h-5 text-primary"
+        />
         <span class="font-semibold text-gray-900 dark:text-white">Saving Throws</span>
       </div>
     </template>
@@ -55,7 +58,7 @@ defineProps<Props>()
           :class="{
             'text-green-600 dark:text-green-400': save.bonus > 0,
             'text-gray-600 dark:text-gray-400': save.bonus === 0,
-            'text-red-600 dark:text-red-400': save.bonus < 0,
+            'text-red-600 dark:text-red-400': save.bonus < 0
           }"
         >
           {{ save.formattedBonus }}

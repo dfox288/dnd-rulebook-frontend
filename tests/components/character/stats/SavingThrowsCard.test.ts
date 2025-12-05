@@ -10,7 +10,7 @@ describe('SavingThrowsCard', () => {
     { code: 'CON', name: 'Constitution', bonus: 1, formattedBonus: '+1', isProficient: false },
     { code: 'INT', name: 'Intelligence', bonus: 0, formattedBonus: '+0', isProficient: false },
     { code: 'WIS', name: 'Wisdom', bonus: 4, formattedBonus: '+4', isProficient: true },
-    { code: 'CHA', name: 'Charisma', bonus: -1, formattedBonus: '-1', isProficient: false },
+    { code: 'CHA', name: 'Charisma', bonus: -1, formattedBonus: '-1', isProficient: false }
   ]
 
   describe('structure', () => {
@@ -61,7 +61,7 @@ describe('SavingThrowsCard', () => {
     it('shows positive bonuses with plus sign', async () => {
       const saves: SavingThrowDisplay[] = [
         { code: 'STR', name: 'Strength', bonus: 5, formattedBonus: '+5', isProficient: false },
-        ...defaultSavingThrows.slice(1),
+        ...defaultSavingThrows.slice(1)
       ]
 
       const wrapper = await mountSuspended(SavingThrowsCard, {
@@ -75,7 +75,7 @@ describe('SavingThrowsCard', () => {
     it('shows negative bonuses correctly', async () => {
       const saves: SavingThrowDisplay[] = [
         { code: 'STR', name: 'Strength', bonus: -2, formattedBonus: '-2', isProficient: false },
-        ...defaultSavingThrows.slice(1),
+        ...defaultSavingThrows.slice(1)
       ]
 
       const wrapper = await mountSuspended(SavingThrowsCard, {

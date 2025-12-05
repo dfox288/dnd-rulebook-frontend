@@ -17,7 +17,7 @@ const mockStatsData = {
     { code: 'CON', name: 'Constitution', bonus: 1, formattedBonus: '+1', isProficient: false },
     { code: 'INT', name: 'Intelligence', bonus: 0, formattedBonus: '+0', isProficient: false },
     { code: 'WIS', name: 'Wisdom', bonus: 2, formattedBonus: '+2', isProficient: false },
-    { code: 'CHA', name: 'Charisma', bonus: 5, formattedBonus: '+5', isProficient: true },
+    { code: 'CHA', name: 'Charisma', bonus: 5, formattedBonus: '+5', isProficient: true }
   ]),
   spellcasting: ref(null),
   abilityScores: ref([
@@ -26,9 +26,9 @@ const mockStatsData = {
     { code: 'CON', name: 'Constitution', score: 13, modifier: 1, formattedModifier: '+1', formatted: '13 (+1)' },
     { code: 'INT', name: 'Intelligence', score: 10, modifier: 0, formattedModifier: '+0', formatted: '10 (+0)' },
     { code: 'WIS', name: 'Wisdom', score: 14, modifier: 2, formattedModifier: '+2', formatted: '14 (+2)' },
-    { code: 'CHA', name: 'Charisma', score: 16, modifier: 3, formattedModifier: '+3', formatted: '16 (+3)' },
+    { code: 'CHA', name: 'Charisma', score: 16, modifier: 3, formattedModifier: '+3', formatted: '16 (+3)' }
   ]),
-  isSpellcaster: ref(false),
+  isSpellcaster: ref(false)
 }
 
 // Mock composables

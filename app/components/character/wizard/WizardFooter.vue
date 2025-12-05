@@ -11,7 +11,7 @@ const {
   isLastStep,
   canProceed,
   nextStep,
-  previousStep,
+  previousStep
 } = useCharacterWizard(props)
 
 async function handleNext() {

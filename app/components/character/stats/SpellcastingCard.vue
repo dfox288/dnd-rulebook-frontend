@@ -40,7 +40,10 @@ function getOrdinal(level: number): string {
   >
     <template #header>
       <div class="flex items-center gap-2">
-        <UIcon name="i-heroicons-sparkles" class="w-5 h-5 text-arcane-500" />
+        <UIcon
+          name="i-heroicons-sparkles"
+          class="w-5 h-5 text-arcane-500"
+        />
         <span class="font-semibold text-gray-900 dark:text-white">Spellcasting</span>
       </div>
     </template>

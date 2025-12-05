@@ -127,9 +127,12 @@ function formatGroupName(group: string): string {
 
 /**
  * Get display name for equipment item
- * Uses item name if available, otherwise falls back to description
+ * Uses custom_name if set, otherwise item name, then description
  */
-function getItemDisplayName(item: { item?: { name?: string } | null, description?: string | null }): string {
+function getItemDisplayName(item: { custom_name?: string | null, item?: { name?: string } | null, description?: string | null }): string {
+  if (item.custom_name) {
+    return item.custom_name
+  }
   if (item.item?.name) {
     return item.item.name
   }

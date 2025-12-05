@@ -8,7 +8,7 @@ describe('SpellcastingCard', () => {
     abilityName: 'Wisdom',
     saveDC: 13,
     attackBonus: 5,
-    formattedAttackBonus: '+5',
+    formattedAttackBonus: '+5'
   }
 
   describe('structure', () => {
@@ -133,7 +133,7 @@ describe('SpellcastingCard', () => {
           abilityName: 'Charisma',
           saveDC: 14,
           attackBonus: 6,
-          formattedAttackBonus: '+6',
+          formattedAttackBonus: '+6'
         }
       })
 
@@ -149,7 +149,7 @@ describe('SpellcastingCard', () => {
           abilityName: 'Intelligence',
           saveDC: 15,
           attackBonus: 7,
-          formattedAttackBonus: '+7',
+          formattedAttackBonus: '+7'
         }
       })
 

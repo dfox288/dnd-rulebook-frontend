@@ -11,7 +11,7 @@ vi.mock('#app', async () => {
   const actual = await vi.importActual('#app')
   return {
     ...actual,
-    navigateTo: vi.fn(),
+    navigateTo: vi.fn()
   }
 })
 
@@ -26,7 +26,7 @@ const mockElf: Race = {
   name: 'Elf',
   slug: 'elf',
   subrace_required: true,
-  subraces: [{ id: 2, name: 'High Elf', slug: 'high-elf' }],
+  subraces: [{ id: 2, name: 'High Elf', slug: 'high-elf' }]
 } as Race
 
 const mockHuman: Race = {
@@ -34,7 +34,7 @@ const mockHuman: Race = {
   name: 'Human',
   slug: 'human',
   subrace_required: false,
-  subraces: [{ id: 5, name: 'Variant Human', slug: 'variant-human' }],
+  subraces: [{ id: 5, name: 'Variant Human', slug: 'variant-human' }]
 } as Race
 
 // Mock class data
@@ -44,7 +44,7 @@ const mockCleric: CharacterClass = {
   slug: 'cleric',
   subclass_level: 1,
   spellcasting_ability: { id: 5, code: 'WIS', name: 'Wisdom' },
-  level_progression: [{ level: 1, cantrips_known: 3 }],
+  level_progression: [{ level: 1, cantrips_known: 3 }]
 } as unknown as CharacterClass
 
 const mockFighter: CharacterClass = {
@@ -53,7 +53,7 @@ const mockFighter: CharacterClass = {
   slug: 'fighter',
   subclass_level: 3,
   spellcasting_ability: null,
-  level_progression: [],
+  level_progression: []
 } as unknown as CharacterClass
 
 describe('useCharacterWizard', () => {

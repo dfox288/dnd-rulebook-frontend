@@ -9,7 +9,7 @@ const {
   currentStepName,
   currentStepIndex,
   progressPercent,
-  getStepUrl,
+  getStepUrl
 } = useCharacterWizard(props)
 
 function getStepStatus(stepIndex: number): 'completed' | 'current' | 'future' {
@@ -63,7 +63,7 @@ function handleStepClick(stepName: string, stepIndex: number) {
             :class="{
               'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300': getStepStatus(index) === 'current',
               'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer': getStepStatus(index) === 'completed',
-              'text-gray-400 dark:text-gray-500 cursor-not-allowed': getStepStatus(index) === 'future',
+              'text-gray-400 dark:text-gray-500 cursor-not-allowed': getStepStatus(index) === 'future'
             }"
             :disabled="getStepStatus(index) === 'future'"
             @click="handleStepClick(step.name, index)"
@@ -74,7 +74,7 @@ function handleStepClick(stepName: string, stepIndex: number) {
               :class="{
                 'bg-primary text-white': getStepStatus(index) === 'completed',
                 'bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 ring-2 ring-primary': getStepStatus(index) === 'current',
-                'bg-gray-200 dark:bg-gray-700 text-gray-500': getStepStatus(index) === 'future',
+                'bg-gray-200 dark:bg-gray-700 text-gray-500': getStepStatus(index) === 'future'
               }"
             >
               <UIcon
@@ -88,7 +88,10 @@ function handleStepClick(stepName: string, stepIndex: number) {
 
             <!-- Step icon and label -->
             <span class="flex items-center gap-2 flex-1 min-w-0">
-              <UIcon :name="step.icon" class="w-4 h-4 flex-shrink-0" />
+              <UIcon
+                :name="step.icon"
+                class="w-4 h-4 flex-shrink-0"
+              />
               <span class="truncate">{{ step.label }}</span>
             </span>
           </button>

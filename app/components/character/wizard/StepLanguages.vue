@@ -106,6 +106,12 @@ function isLanguageSelected(source: 'race' | 'background', languageId: number): 
   return pendingChoices.value.languages.get(source)?.has(languageId) ?? false
 }
 
+// Check if a language is selected in a DIFFERENT source (cross-source conflict)
+function isLanguageSelectedElsewhere(source: 'race' | 'background', languageId: number): boolean {
+  const otherSource = source === 'race' ? 'background' : 'race'
+  return pendingChoices.value.languages.get(otherSource)?.has(languageId) ?? false
+}
+
 // Handle language toggle
 function handleLanguageToggle(source: 'race' | 'background', languageId: number, quantity: number) {
   const current = getSelectedCount(source)
@@ -113,6 +119,9 @@ function handleLanguageToggle(source: 'race' | 'background', languageId: number,
 
   // Don't allow selecting more than quantity (unless deselecting)
   if (!isSelected && current >= quantity) return
+
+  // Don't allow selecting a language already chosen from another source
+  if (!isSelected && isLanguageSelectedElsewhere(source, languageId)) return
 
   store.toggleLanguageChoice(source, languageId)
 }
@@ -234,23 +243,36 @@ async function handleContinue() {
               class="language-option p-3 rounded-lg border text-left transition-all"
               :class="{
                 'border-primary bg-primary/10': isLanguageSelected(data.source, option.id),
-                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isLanguageSelected(data.source, option.id)
+                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isLanguageSelected(data.source, option.id) && !isLanguageSelectedElsewhere(data.source, option.id),
+                'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed': isLanguageSelectedElsewhere(data.source, option.id)
               }"
+              :disabled="isLanguageSelectedElsewhere(data.source, option.id)"
               @click="handleLanguageToggle(data.source, option.id, data.choices!.quantity)"
             >
               <div class="flex items-center gap-2">
                 <UIcon
-                  :name="isLanguageSelected(data.source, option.id) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
+                  :name="isLanguageSelectedElsewhere(data.source, option.id)
+                    ? 'i-heroicons-no-symbol'
+                    : isLanguageSelected(data.source, option.id)
+                      ? 'i-heroicons-check-circle-solid'
+                      : 'i-heroicons-circle'"
                   class="w-5 h-5"
                   :class="{
                     'text-primary': isLanguageSelected(data.source, option.id),
-                    'text-gray-400': !isLanguageSelected(data.source, option.id)
+                    'text-gray-400': !isLanguageSelected(data.source, option.id) && !isLanguageSelectedElsewhere(data.source, option.id),
+                    'text-gray-300 dark:text-gray-600': isLanguageSelectedElsewhere(data.source, option.id)
                   }"
                 />
                 <span class="font-medium">{{ option.name }}</span>
               </div>
               <p
-                v-if="option.script"
+                v-if="isLanguageSelectedElsewhere(data.source, option.id)"
+                class="text-xs text-gray-400 dark:text-gray-500 mt-1 ml-7"
+              >
+                Already selected from {{ data.source === 'race' ? 'background' : 'race' }}
+              </p>
+              <p
+                v-else-if="option.script"
                 class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-7"
               >
                 Script: {{ option.script }}

@@ -32,80 +32,80 @@ function createStepRegistry(store: ReturnType<typeof useCharacterWizardStore>): 
       name: 'sourcebooks',
       label: 'Sources',
       icon: 'i-heroicons-book-open',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'race',
       label: 'Race',
       icon: 'i-heroicons-globe-alt',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'subrace',
       label: 'Subrace',
       icon: 'i-heroicons-sparkles',
-      visible: () => store.needsSubraceStep,
+      visible: () => store.needsSubraceStep
     },
     {
       name: 'class',
       label: 'Class',
       icon: 'i-heroicons-shield-check',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'subclass',
       label: 'Subclass',
       icon: 'i-heroicons-star',
-      visible: () => store.needsSubclassStep,
+      visible: () => store.needsSubclassStep
     },
     {
       name: 'background',
       label: 'Background',
       icon: 'i-heroicons-book-open',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'abilities',
       label: 'Abilities',
       icon: 'i-heroicons-chart-bar',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'proficiencies',
       label: 'Skills',
       icon: 'i-heroicons-academic-cap',
-      visible: () => store.hasProficiencyChoices,
+      visible: () => store.hasProficiencyChoices
     },
     {
       name: 'languages',
       label: 'Languages',
       icon: 'i-heroicons-language',
-      visible: () => store.hasLanguageChoices,
+      visible: () => store.hasLanguageChoices
     },
     {
       name: 'equipment',
       label: 'Equipment',
       icon: 'i-heroicons-briefcase',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'spells',
       label: 'Spells',
       icon: 'i-heroicons-sparkles',
-      visible: () => store.isSpellcaster,
+      visible: () => store.isSpellcaster
     },
     {
       name: 'details',
       label: 'Details',
       icon: 'i-heroicons-user',
-      visible: () => true,
+      visible: () => true
     },
     {
       name: 'review',
       label: 'Review',
       icon: 'i-heroicons-check-circle',
-      visible: () => true,
-    },
+      visible: () => true
+    }
   ]
 }
 
@@ -376,6 +376,6 @@ export function useCharacterWizard(options: UseCharacterWizardOptions = {}) {
     goToStep,
     getStepUrl,
     nextStepInfo,
-    previousStepInfo,
+    previousStepInfo
   }
 }
