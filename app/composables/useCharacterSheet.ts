@@ -44,50 +44,50 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
   const { apiFetch } = useApi()
 
   // Fetch character base data
-  const { data: characterData, pending: characterPending, error: characterError, refresh: refreshCharacter } =
-    useAsyncData(
+  const { data: characterData, pending: characterPending, error: characterError, refresh: refreshCharacter }
+    = useAsyncData(
       `character-${characterId.value}`,
       () => apiFetch<{ data: Character }>(`/characters/${characterId.value}`)
     )
 
   // Fetch character stats
-  const { data: statsData, pending: statsPending, refresh: refreshStats } =
-    useAsyncData(
+  const { data: statsData, pending: statsPending, refresh: refreshStats }
+    = useAsyncData(
       `character-${characterId.value}-stats`,
       () => apiFetch<{ data: CharacterStats }>(`/characters/${characterId.value}/stats`)
     )
 
   // Fetch proficiencies
-  const { data: proficienciesData, pending: proficienciesPending, refresh: refreshProficiencies } =
-    useAsyncData(
+  const { data: proficienciesData, pending: proficienciesPending, refresh: refreshProficiencies }
+    = useAsyncData(
       `character-${characterId.value}-proficiencies`,
       () => apiFetch<{ data: CharacterProficiency[] }>(`/characters/${characterId.value}/proficiencies`)
     )
 
   // Fetch features
-  const { data: featuresData, pending: featuresPending, refresh: refreshFeatures } =
-    useAsyncData(
+  const { data: featuresData, pending: featuresPending, refresh: refreshFeatures }
+    = useAsyncData(
       `character-${characterId.value}-features`,
       () => apiFetch<{ data: CharacterFeature[] }>(`/characters/${characterId.value}/features`)
     )
 
   // Fetch equipment
-  const { data: equipmentData, pending: equipmentPending, refresh: refreshEquipment } =
-    useAsyncData(
+  const { data: equipmentData, pending: equipmentPending, refresh: refreshEquipment }
+    = useAsyncData(
       `character-${characterId.value}-equipment`,
       () => apiFetch<{ data: CharacterEquipment[] }>(`/characters/${characterId.value}/equipment`)
     )
 
   // Fetch spells
-  const { data: spellsData, pending: spellsPending, refresh: refreshSpells } =
-    useAsyncData(
+  const { data: spellsData, pending: spellsPending, refresh: refreshSpells }
+    = useAsyncData(
       `character-${characterId.value}-spells`,
       () => apiFetch<{ data: CharacterSpell[] }>(`/characters/${characterId.value}/spells`)
     )
 
   // Fetch languages
-  const { data: languagesData, pending: languagesPending, refresh: refreshLanguages } =
-    useAsyncData(
+  const { data: languagesData, pending: languagesPending, refresh: refreshLanguages }
+    = useAsyncData(
       `character-${characterId.value}-languages`,
       () => apiFetch<{ data: CharacterLanguage[] }>(`/characters/${characterId.value}/languages`)
     )
@@ -106,13 +106,13 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
 
   // Computed: Aggregate loading state
   const loading = computed(() =>
-    characterPending.value ||
-    statsPending.value ||
-    proficienciesPending.value ||
-    featuresPending.value ||
-    equipmentPending.value ||
-    spellsPending.value ||
-    languagesPending.value
+    characterPending.value
+    || statsPending.value
+    || proficienciesPending.value
+    || featuresPending.value
+    || equipmentPending.value
+    || spellsPending.value
+    || languagesPending.value
   )
 
   // Computed: First error encountered
@@ -127,7 +127,7 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     return skillsReference.value.map((skill) => {
       // Find if character is proficient in this skill
       const profRecord = proficiencies.value.find(
-        (p) => p.skill?.slug === skill.slug
+        p => p.skill?.slug === skill.slug
       )
       const isProficient = !!profRecord
       const hasExpertise = profRecord?.expertise ?? false

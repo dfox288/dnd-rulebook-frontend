@@ -15,7 +15,7 @@ const classesDisplay = computed(() => {
     return props.character.class?.name ?? 'No class'
   }
   return props.character.classes
-    .map((c) => `${c.class.name} ${c.level}`)
+    .map(c => `${c.class.name} ${c.level}`)
     .join(' / ')
 })
 </script>

@@ -6,7 +6,7 @@ defineProps<{
   stats: CharacterStats
 }>()
 
-const abilities: { code: AbilityScoreCode; label: string }[] = [
+const abilities: { code: AbilityScoreCode, label: string }[] = [
   { code: 'STR', label: 'STR' },
   { code: 'DEX', label: 'DEX' },
   { code: 'CON', label: 'CON' },
