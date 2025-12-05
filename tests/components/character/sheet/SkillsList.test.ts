@@ -36,12 +36,12 @@ describe('CharacterSheetSkillsList', () => {
     expect(wrapper.text()).toContain('STR')
   })
 
-  it('shows proficiency indicator for proficient skills', async () => {
+  it('shows proficiency indicator for proficient skills (without expertise)', async () => {
     const wrapper = await mountSuspended(SkillsList, {
       props: { skills: mockSkills }
     })
     const profIndicators = wrapper.findAll('[data-test="proficient"]')
-    expect(profIndicators.length).toBe(2) // Athletics and Stealth
+    expect(profIndicators.length).toBe(1) // Athletics only (Stealth has expertise, uses different indicator)
   })
 
   it('shows expertise indicator for expertise skills', async () => {
