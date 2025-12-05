@@ -952,7 +952,7 @@ export const useCharacterBuilderStore = defineStore('characterBuilder', () => {
   async function populateLanguages(): Promise<void> {
     if (!characterId.value) return
 
-    await apiFetch(`/characters/${characterId.value}/languages/populate`, {
+    await apiFetch(`/characters/${characterId.value}/languages/sync`, {
       method: 'POST'
     })
   }
