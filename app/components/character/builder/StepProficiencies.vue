@@ -581,6 +581,23 @@ async function handleContinue() {
       </div>
     </div>
 
+    <!-- Empty State - No proficiencies at all -->
+    <div
+      v-if="!hasAnyGranted && !hasAnyChoices"
+      class="text-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-check-circle"
+        class="w-12 h-12 text-success mx-auto mb-4"
+      />
+      <p class="text-lg">
+        No proficiency choices needed
+      </p>
+      <p class="text-gray-600 dark:text-gray-400">
+        Your proficiencies have been automatically assigned
+      </p>
+    </div>
+
     <!-- Proficiency Choices Section -->
     <div
       v-if="hasAnyChoices"

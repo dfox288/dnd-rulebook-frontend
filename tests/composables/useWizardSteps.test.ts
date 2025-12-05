@@ -96,7 +96,7 @@ describe('useWizardSteps', () => {
       expect(subraceStep?.visible()).toBe(true)
     })
 
-    it('proficiencies step is hidden when no pending choices', async () => {
+    it('proficiencies step is always visible (uses shouldSkip for navigation)', async () => {
       vi.mocked(useCharacterBuilderStore).mockReturnValue({
         hasPendingChoices: false,
         isCaster: false,
@@ -106,10 +106,24 @@ describe('useWizardSteps', () => {
       vi.resetModules()
       const { stepRegistry } = await import('~/composables/useWizardSteps')
       const profStep = stepRegistry.find(s => s.name === 'proficiencies')
-      expect(profStep?.visible()).toBe(false)
+      // Proficiencies is always visible - it uses shouldSkip for navigation
+      expect(profStep?.visible()).toBe(true)
     })
 
-    it('proficiencies step is visible when has pending choices', async () => {
+    it('proficiencies step shouldSkip returns true when no pending choices', async () => {
+      vi.mocked(useCharacterBuilderStore).mockReturnValue({
+        hasPendingChoices: false,
+        isCaster: false,
+        needsSubrace: false
+      } as ReturnType<typeof useCharacterBuilderStore>)
+
+      vi.resetModules()
+      const { stepRegistry } = await import('~/composables/useWizardSteps')
+      const profStep = stepRegistry.find(s => s.name === 'proficiencies')
+      expect(profStep?.shouldSkip?.()).toBe(true)
+    })
+
+    it('proficiencies step shouldSkip returns false when has pending choices', async () => {
       vi.mocked(useCharacterBuilderStore).mockReturnValue({
         hasPendingChoices: true,
         isCaster: false,
@@ -119,7 +133,7 @@ describe('useWizardSteps', () => {
       vi.resetModules()
       const { stepRegistry } = await import('~/composables/useWizardSteps')
       const profStep = stepRegistry.find(s => s.name === 'proficiencies')
-      expect(profStep?.visible()).toBe(true)
+      expect(profStep?.shouldSkip?.()).toBe(false)
     })
 
     it('spells step is hidden for non-casters', async () => {
@@ -152,12 +166,14 @@ describe('useWizardSteps', () => {
       vi.mocked(useCharacterBuilderStore).mockReturnValue({
         hasPendingChoices: false,
         isCaster: false,
-        needsSubrace: false
+        needsSubrace: false,
+        hasLanguageChoices: false
       } as ReturnType<typeof useCharacterBuilderStore>)
 
       vi.resetModules()
       const { stepRegistry } = await import('~/composables/useWizardSteps')
-      const coreSteps = ['name', 'race', 'class', 'abilities', 'background', 'equipment', 'review']
+      // Core steps now include languages and proficiencies (always visible, use shouldSkip)
+      const coreSteps = ['sourcebooks', 'name', 'race', 'class', 'abilities', 'background', 'languages', 'proficiencies', 'equipment', 'review']
 
       for (const stepName of coreSteps) {
         const step = stepRegistry.find(s => s.name === stepName)
@@ -177,18 +193,19 @@ describe('useWizardSteps', () => {
       const { useWizardNavigation, stepRegistry } = await import('~/composables/useWizardSteps')
       const nav = useWizardNavigation()
 
-      // Check activeSteps filters out conditional steps
-      // With non-caster, no pending choices, no subrace should have 8 steps (including sourcebooks)
-      expect(nav.activeSteps.value.length).toBe(8)
+      // Check activeSteps filters out conditional steps (subrace, spells)
+      // Languages and proficiencies are now always visible (use shouldSkip for auto-navigation)
+      // With non-caster, no subrace should have 10 steps
+      expect(nav.activeSteps.value.length).toBe(10)
       expect(nav.activeSteps.value.map(s => s.name)).toEqual([
-        'sourcebooks', 'name', 'race', 'class', 'abilities', 'background', 'equipment', 'review'
+        'sourcebooks', 'name', 'race', 'class', 'abilities', 'background', 'languages', 'proficiencies', 'equipment', 'review'
       ])
 
       // totalSteps should match activeSteps length
-      expect(nav.totalSteps.value).toBe(8)
+      expect(nav.totalSteps.value).toBe(10)
 
       // stepRegistry should be exported
-      expect(stepRegistry.length).toBe(12) // All steps including conditional ones (+ languages step + sourcebooks)
+      expect(stepRegistry.length).toBe(12) // All steps including conditional ones
 
       // Check step names are correct in registry
       expect(stepRegistry.map(s => s.name)).toContain('sourcebooks')
@@ -215,26 +232,27 @@ describe('useWizardSteps', () => {
       const { useWizardNavigation } = await import('~/composables/useWizardSteps')
       const { activeSteps, isFirstStep, isLastStep, currentStepIndex, totalSteps } = useWizardNavigation()
 
-      // Verify activeSteps structure (8 base steps: sourcebooks, name, race, class, abilities, background, equipment, review)
-      expect(totalSteps.value).toBe(8)
+      // Verify activeSteps structure (10 base steps now that languages/proficiencies are always visible)
+      expect(totalSteps.value).toBe(10)
       expect(activeSteps.value[0].name).toBe('sourcebooks')
       expect(activeSteps.value[1].name).toBe('name')
-      expect(activeSteps.value[7].name).toBe('review')
+      expect(activeSteps.value[9].name).toBe('review')
 
       // currentStepName is 'sourcebooks' which is index 0, so:
       // - isFirstStep should be true (0 === 0)
-      // - isLastStep should be false (0 !== 7)
+      // - isLastStep should be false (0 !== 9)
       expect(currentStepIndex.value).toBe(0)
       expect(isFirstStep.value).toBe(true)
       expect(isLastStep.value).toBe(false)
     })
 
     it('includes conditional steps when conditions are met', async () => {
-      // Setup mock for caster with pending choices and subrace
+      // Setup mock for caster with subrace
       vi.mocked(useCharacterBuilderStore).mockReturnValue({
         hasPendingChoices: true,
         isCaster: true,
         needsSubrace: true,
+        hasLanguageChoices: true,
         characterId: 5
       } as ReturnType<typeof useCharacterBuilderStore>)
 
@@ -247,6 +265,7 @@ describe('useWizardSteps', () => {
           hasPendingChoices: true,
           isCaster: true,
           needsSubrace: true,
+          hasLanguageChoices: true,
           characterId: 5
         })
       }))
@@ -254,10 +273,11 @@ describe('useWizardSteps', () => {
       const { useWizardNavigation } = await import('~/composables/useWizardSteps')
       const { activeSteps } = useWizardNavigation()
 
-      // Should now include all conditional steps: subrace, proficiencies, spells
-      // 8 base (sourcebooks, name, race, class, abilities, background, equipment, review) + 3 conditional
-      expect(activeSteps.value.length).toBe(11)
+      // Should now include all steps: 10 base + 2 conditional (subrace, spells)
+      // Languages and proficiencies are always visible now (part of the 10 base)
+      expect(activeSteps.value.length).toBe(12)
       expect(activeSteps.value.map(s => s.name)).toContain('subrace')
+      expect(activeSteps.value.map(s => s.name)).toContain('languages')
       expect(activeSteps.value.map(s => s.name)).toContain('proficiencies')
       expect(activeSteps.value.map(s => s.name)).toContain('spells')
     })

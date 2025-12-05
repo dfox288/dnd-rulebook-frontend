@@ -5,15 +5,32 @@ export interface WizardStep {
   name: string
   label: string
   icon: string
+  /**
+   * Whether this step should appear in the wizard navigation.
+   * Use for "fundamentally conditional" steps (e.g., subrace only if race has subraces).
+   */
   visible: () => boolean
+  /**
+   * Whether this step should be auto-skipped during navigation.
+   * Use for steps that may have no work to do (e.g., no language choices to make).
+   * When true, nextStep/previousStep will skip over this step.
+   */
+  shouldSkip?: () => boolean
 }
 
 /**
  * Step registry - single source of truth for wizard steps
  * Order matters: steps appear in this order in the wizard
  *
- * Note: Uses functions for visibility checks so they're evaluated
- * at runtime based on current store state
+ * Architecture notes:
+ * - `visible`: Controls if step appears in the wizard (true = always show)
+ * - `shouldSkip`: Controls auto-skip during navigation (true = skip to next)
+ *
+ * Two types of conditional steps:
+ * 1. "Fundamentally conditional" (subrace, spells): Use visible()
+ *    - Only show when conceptually applicable
+ * 2. "Sometimes empty" (languages, proficiencies): Use shouldSkip()
+ *    - Always visible, but skip if no choices to make
  */
 export const stepRegistry: WizardStep[] = [
   {
@@ -38,6 +55,7 @@ export const stepRegistry: WizardStep[] = [
     name: 'subrace',
     label: 'Subrace',
     icon: 'i-heroicons-sparkles',
+    // Only visible when race has subraces (fundamentally conditional)
     visible: () => {
       const store = useCharacterBuilderStore()
       return store.needsSubrace
@@ -65,18 +83,24 @@ export const stepRegistry: WizardStep[] = [
     name: 'languages',
     label: 'Languages',
     icon: 'i-heroicons-language',
-    visible: () => {
+    // Always visible in wizard
+    visible: () => true,
+    // Skip during navigation if no choices to make
+    shouldSkip: () => {
       const store = useCharacterBuilderStore()
-      return store.hasLanguageChoices
+      return !store.hasLanguageChoices
     }
   },
   {
     name: 'proficiencies',
     label: 'Proficiencies',
     icon: 'i-heroicons-academic-cap',
-    visible: () => {
+    // Always visible in wizard
+    visible: () => true,
+    // Skip during navigation if no choices to make
+    shouldSkip: () => {
       const store = useCharacterBuilderStore()
-      return store.hasPendingChoices
+      return !store.hasPendingChoices
     }
   },
   {
@@ -89,6 +113,7 @@ export const stepRegistry: WizardStep[] = [
     name: 'spells',
     label: 'Spells',
     icon: 'i-heroicons-sparkles',
+    // Only visible for casters (fundamentally conditional)
     visible: () => {
       const store = useCharacterBuilderStore()
       return store.isCaster
@@ -150,39 +175,32 @@ export function useWizardNavigation() {
   const isFirstStep = computed(() => currentStepIndex.value === 0)
   const isLastStep = computed(() => currentStepIndex.value === totalSteps.value - 1)
 
+  /**
+   * Check if a step should be navigated to.
+   * A step is navigable if it's visible AND not marked for skipping.
+   */
+  function isStepNavigable(step: WizardStep): boolean {
+    return step.visible() && !(step.shouldSkip?.() ?? false)
+  }
+
   // Navigation functions
   /**
    * Navigate to the next step in the wizard.
    *
-   * Uses stepRegistry order (not activeSteps) to find the next visible step.
-   * This handles the edge case where the current step becomes invisible
-   * after saving (e.g., proficiency choices completed → step hidden).
-   *
-   * When currentStepIndex is -1 (step not in activeSteps), we fall back
-   * to finding the current step in stepRegistry and look for the next
-   * visible step from there.
+   * Finds the next step that is both visible AND not shouldSkip.
+   * This handles:
+   * - Steps that should be auto-skipped (e.g., no language choices)
+   * - Edge cases where current step became invisible after save
    */
   async function nextStep() {
-    // If current step is in activeSteps, use the simple path
-    if (currentStepIndex.value >= 0) {
-      const nextIndex = currentStepIndex.value + 1
-      const next = activeSteps.value[nextIndex]
-      if (next) {
-        await navigateTo(`/characters/${store.characterId}/edit/${next.name}`)
-        return
-      }
-    }
-
-    // Fallback: current step is not in activeSteps (became invisible after save)
-    // Find current step in full registry and get next visible step
     const currentName = currentStepName.value
     const registryIndex = stepRegistry.findIndex(s => s.name === currentName)
 
     if (registryIndex >= 0) {
-      // Look for the next visible step after current position in registry
+      // Look for the next navigable step after current position
       for (let i = registryIndex + 1; i < stepRegistry.length; i++) {
         const step = stepRegistry[i]
-        if (step && step.visible()) {
+        if (step && isStepNavigable(step)) {
           await navigateTo(`/characters/${store.characterId}/edit/${step.name}`)
           return
         }
@@ -193,29 +211,17 @@ export function useWizardNavigation() {
   /**
    * Navigate to the previous step in the wizard.
    *
-   * Uses stepRegistry order to handle edge cases where current step
-   * is not in activeSteps.
+   * Finds the previous step that is both visible AND not shouldSkip.
    */
   async function previousStep() {
-    // If current step is in activeSteps, use the simple path
-    if (currentStepIndex.value >= 0) {
-      const prevIndex = currentStepIndex.value - 1
-      const prev = activeSteps.value[prevIndex]
-      if (prev) {
-        await navigateTo(`/characters/${store.characterId}/edit/${prev.name}`)
-        return
-      }
-    }
-
-    // Fallback: find previous visible step in registry
     const currentName = currentStepName.value
     const registryIndex = stepRegistry.findIndex(s => s.name === currentName)
 
     if (registryIndex > 0) {
-      // Look for the previous visible step before current position
+      // Look for the previous navigable step before current position
       for (let i = registryIndex - 1; i >= 0; i--) {
         const step = stepRegistry[i]
-        if (step && step.visible()) {
+        if (step && isStepNavigable(step)) {
           await navigateTo(`/characters/${store.characterId}/edit/${step.name}`)
           return
         }
