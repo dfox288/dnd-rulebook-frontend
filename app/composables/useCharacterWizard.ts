@@ -120,10 +120,10 @@ function createStepRegistry(store: ReturnType<typeof useCharacterWizardStore>): 
 function extractStepFromPath(path: string): string {
   // Match /characters/new/step or /characters/123/edit/step
   const newMatch = path.match(/\/characters\/new\/([^/?]+)/)
-  if (newMatch) return newMatch[1]
+  if (newMatch?.[1]) return newMatch[1]
 
   const editMatch = path.match(/\/characters\/\d+\/edit\/([^/?]+)/)
-  if (editMatch) return editMatch[1]
+  if (editMatch?.[1]) return editMatch[1]
 
   return 'sourcebooks' // Default to first step
 }
@@ -132,9 +132,14 @@ function extractStepFromPath(path: string): string {
 // COMPOSABLE
 // ════════════════════════════════════════════════════════════════
 
-export function useCharacterWizard() {
+export interface UseCharacterWizardOptions {
+  /** Optional route object for testing. Defaults to useRoute(). */
+  route?: { path: string }
+}
+
+export function useCharacterWizard(options: UseCharacterWizardOptions = {}) {
   const store = useCharacterWizardStore()
-  const route = useRoute()
+  const route = options.route ?? useRoute()
 
   // Create step registry with store access
   const stepRegistry = createStepRegistry(store)

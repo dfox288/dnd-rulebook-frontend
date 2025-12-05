@@ -69,6 +69,9 @@ export interface Race extends Omit<RaceFromAPI, 'sources' | 'modifiers' | 'size'
   // Override is_subrace as boolean (OpenAPI says string but API returns boolean)
   is_subrace?: boolean
 
+  // Flag to indicate if selecting a subrace is mandatory (Issue #184)
+  subrace_required?: boolean
+
   // fly_speed, swim_speed, and inherited_data now properly typed in generated.ts
   // No manual overrides needed - inherited from RaceFromAPI
 
