@@ -387,8 +387,15 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     error.value = null
 
     try {
-      // Clear existing classes first (level 1 = single class)
-      // Then add the new class
+      // Clear existing class first (level 1 = single class)
+      // This handles re-selection when user goes back in wizard
+      if (selections.value.class) {
+        await apiFetch(`/characters/${characterId.value}/classes/${selections.value.class.id}`, {
+          method: 'DELETE'
+        })
+      }
+
+      // Add the new class
       await apiFetch(`/characters/${characterId.value}/classes`, {
         method: 'POST',
         body: { class_id: cls.id }
