@@ -151,19 +151,75 @@ export function useWizardNavigation() {
   const isLastStep = computed(() => currentStepIndex.value === totalSteps.value - 1)
 
   // Navigation functions
+  /**
+   * Navigate to the next step in the wizard.
+   *
+   * Uses stepRegistry order (not activeSteps) to find the next visible step.
+   * This handles the edge case where the current step becomes invisible
+   * after saving (e.g., proficiency choices completed → step hidden).
+   *
+   * When currentStepIndex is -1 (step not in activeSteps), we fall back
+   * to finding the current step in stepRegistry and look for the next
+   * visible step from there.
+   */
   async function nextStep() {
-    const nextIndex = currentStepIndex.value + 1
-    const next = activeSteps.value[nextIndex]
-    if (next) {
-      await navigateTo(`/characters/${store.characterId}/edit/${next.name}`)
+    // If current step is in activeSteps, use the simple path
+    if (currentStepIndex.value >= 0) {
+      const nextIndex = currentStepIndex.value + 1
+      const next = activeSteps.value[nextIndex]
+      if (next) {
+        await navigateTo(`/characters/${store.characterId}/edit/${next.name}`)
+        return
+      }
+    }
+
+    // Fallback: current step is not in activeSteps (became invisible after save)
+    // Find current step in full registry and get next visible step
+    const currentName = currentStepName.value
+    const registryIndex = stepRegistry.findIndex(s => s.name === currentName)
+
+    if (registryIndex >= 0) {
+      // Look for the next visible step after current position in registry
+      for (let i = registryIndex + 1; i < stepRegistry.length; i++) {
+        const step = stepRegistry[i]
+        if (step && step.visible()) {
+          await navigateTo(`/characters/${store.characterId}/edit/${step.name}`)
+          return
+        }
+      }
     }
   }
 
+  /**
+   * Navigate to the previous step in the wizard.
+   *
+   * Uses stepRegistry order to handle edge cases where current step
+   * is not in activeSteps.
+   */
   async function previousStep() {
-    const prevIndex = currentStepIndex.value - 1
-    const prev = activeSteps.value[prevIndex]
-    if (prev) {
-      await navigateTo(`/characters/${store.characterId}/edit/${prev.name}`)
+    // If current step is in activeSteps, use the simple path
+    if (currentStepIndex.value >= 0) {
+      const prevIndex = currentStepIndex.value - 1
+      const prev = activeSteps.value[prevIndex]
+      if (prev) {
+        await navigateTo(`/characters/${store.characterId}/edit/${prev.name}`)
+        return
+      }
+    }
+
+    // Fallback: find previous visible step in registry
+    const currentName = currentStepName.value
+    const registryIndex = stepRegistry.findIndex(s => s.name === currentName)
+
+    if (registryIndex > 0) {
+      // Look for the previous visible step before current position
+      for (let i = registryIndex - 1; i >= 0; i--) {
+        const step = stepRegistry[i]
+        if (step && step.visible()) {
+          await navigateTo(`/characters/${store.characterId}/edit/${step.name}`)
+          return
+        }
+      }
     }
   }
 
