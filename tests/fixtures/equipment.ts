@@ -494,6 +494,53 @@ export const mockChoiceItemsWithPackContents: Equipment[] = [
 ]
 
 /**
+ * Mock fixed equipment with pack contents in choice_items structure
+ * This matches the real API structure where even fixed equipment
+ * has item data in choice_items[0].item.contents
+ *
+ * Example: Artificer's "a dungeoneer's pack" (is_choice: false, but data in choice_items)
+ */
+export const mockFixedPackWithChoiceItemsStructure: Equipment = {
+  id: 162,
+  item_id: null,
+  item: null, // null - data is in choice_items
+  quantity: 1,
+  is_choice: false,
+  choice_group: null,
+  choice_option: null,
+  choice_description: null,
+  proficiency_subcategory: null,
+  description: 'a dungeoneer\'s pack',
+  choice_items: [
+    {
+      proficiency_type: null,
+      quantity: 1,
+      item: {
+        id: 181,
+        name: 'Dungeoneer\'s Pack',
+        slug: 'dungeoneers-pack',
+        item_type_id: 8,
+        item_type: { id: 8, code: 'G', name: 'Adventuring Gear', description: null },
+        cost_cp: 1200,
+        weight: '61.50',
+        is_magic: false,
+        contents: [
+          { quantity: 1, item: { id: 121, name: 'Backpack', slug: 'backpack', weight: '5.00', cost_cp: 200 } },
+          { quantity: 1, item: { id: 172, name: 'Crowbar', slug: 'crowbar', weight: '5.00', cost_cp: 200 } },
+          { quantity: 1, item: { id: 203, name: 'Hammer', slug: 'hammer', weight: '3.00', cost_cp: 100 } },
+          { quantity: 10, item: { id: 274, name: 'Piton', slug: 'piton', weight: '0.25', cost_cp: 5 } },
+          { quantity: 10, item: { id: 322, name: 'Torch', slug: 'torch', weight: '1.00', cost_cp: 1 } },
+          { quantity: 1, item: { id: 320, name: 'Tinderbox', slug: 'tinderbox', weight: '1.00', cost_cp: 50 } },
+          { quantity: 10, item: { id: 286, name: 'Rations (1 day)', slug: 'rations-1-day', weight: '2.00', cost_cp: 50 } },
+          { quantity: 1, item: { id: 331, name: 'Waterskin', slug: 'waterskin', weight: '5.00', cost_cp: 20 } },
+          { quantity: 1, item: { id: 205, name: 'Hempen Rope (50 feet)', slug: 'hempen-rope-50-feet', weight: '10.00', cost_cp: 100 } }
+        ]
+      }
+    }
+  ]
+} as Equipment
+
+/**
  * Representative equipment array for general testing
  */
 export const mockEquipmentArray: Equipment[] = [

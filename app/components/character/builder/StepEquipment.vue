@@ -126,16 +126,36 @@ async function handleContinue() {
 
 /**
  * Check if a fixed equipment item has pack contents
+ * Checks both direct item contents and choice_items path (for single-item fixed equipment)
  */
 function hasPackContents(item: EntityItemResource): boolean {
-  return Boolean(item.item?.contents && item.item.contents.length > 0)
+  // Check direct item contents first
+  if (item.item?.contents && item.item.contents.length > 0) {
+    return true
+  }
+  // Check choice_items - if there's exactly one fixed item, check its contents
+  const firstChoiceItem = item.choice_items?.[0]
+  if (item.choice_items?.length === 1 && firstChoiceItem?.item?.contents) {
+    return firstChoiceItem.item.contents.length > 0
+  }
+  return false
 }
 
 /**
  * Get pack contents for an item
+ * For choice_items structure, contents are in choice_items[0].item.contents
  */
 function getPackContents(item: EntityItemResource): PackContentResource[] {
-  return item.item?.contents ?? []
+  // Check direct item contents first
+  if (item.item?.contents && item.item.contents.length > 0) {
+    return item.item.contents
+  }
+  // Check choice_items path
+  const firstChoiceItem = item.choice_items?.[0]
+  if (firstChoiceItem?.item?.contents) {
+    return firstChoiceItem.item.contents
+  }
+  return []
 }
 
 /**

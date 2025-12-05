@@ -8,7 +8,9 @@ import {
   mockHumanLanguageChoices,
   mockHumanAcolyteLanguageChoices,
   mockNoLanguageChoices,
-  mockPartiallySelectedLanguageChoices
+  mockPartiallySelectedLanguageChoices,
+  mockDwarfAcolyteLanguageChoices,
+  mockZeroQuantityLanguageChoices
 } from '../../../fixtures/languageChoices'
 
 describe('StepLanguages', () => {
@@ -87,6 +89,36 @@ describe('StepLanguages', () => {
 
       expect(wrapper.text()).toContain('From Race: Human')
       expect(wrapper.text()).toContain('From Background: Acolyte')
+    })
+
+    it('does not render race source when race has no choices', async () => {
+      const wrapper = await mountSuspended(StepLanguages)
+      const store = useCharacterBuilderStore()
+      store.selectedRace = { name: 'Dwarf' } as any
+      store.selectedBackground = { name: 'Acolyte' } as any
+      store.languageChoices = mockDwarfAcolyteLanguageChoices
+      await wrapper.vm.$nextTick()
+
+      // Should NOT show race section (Dwarf has no language choices)
+      expect(wrapper.text()).not.toContain('From Race')
+      // Should show background section (Acolyte has 2 language choices)
+      expect(wrapper.text()).toContain('From Background: Acolyte')
+      expect(wrapper.text()).toContain('Choose 2 languages')
+    })
+
+    it('does not render sources when choices have quantity 0', async () => {
+      const wrapper = await mountSuspended(StepLanguages)
+      const store = useCharacterBuilderStore()
+      store.selectedRace = { name: 'Aasimar' } as any
+      store.selectedBackground = { name: 'Charlatan' } as any
+      store.languageChoices = mockZeroQuantityLanguageChoices
+      await wrapper.vm.$nextTick()
+
+      // Should NOT show either section (both have quantity: 0)
+      expect(wrapper.text()).not.toContain('From Race')
+      expect(wrapper.text()).not.toContain('From Background')
+      // Should show "no choices needed" message
+      expect(wrapper.text()).toContain('No language choices needed')
     })
 
     it('shows selection count badge', async () => {

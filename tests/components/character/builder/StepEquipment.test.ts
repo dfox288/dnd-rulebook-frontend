@@ -3,7 +3,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
 import StepEquipment from '~/components/character/builder/StepEquipment.vue'
 import { useCharacterBuilderStore } from '~/stores/characterBuilder'
-import { mockFixedPackEquipment } from '../../../fixtures/equipment'
+import { mockFixedPackEquipment, mockFixedPackWithChoiceItemsStructure } from '../../../fixtures/equipment'
 
 describe('StepEquipment', () => {
   beforeEach(() => {
@@ -199,5 +199,64 @@ describe('StepEquipment with pack contents', () => {
 
     expect(wrapper.text()).toContain('Chain Mail')
     expect(wrapper.find('[data-test="fixed-pack-contents-toggle-1"]').exists()).toBe(false)
+  })
+
+  it('shows pack contents for fixed equipment with choice_items structure', async () => {
+    // This tests the real API structure where even fixed equipment
+    // has item data in choice_items[0].item.contents (e.g., Artificer's dungeoneer's pack)
+    const wrapper = await mountSuspended(StepEquipment)
+
+    const store = useCharacterBuilderStore()
+    store.characterClasses = [{
+      classId: 123,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        name: 'Artificer',
+        equipment: [mockFixedPackWithChoiceItemsStructure]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
+    }]
+
+    await wrapper.vm.$nextTick()
+
+    // Should show the pack description (the display uses description field)
+    expect(wrapper.text()).toContain('dungeoneer\'s pack')
+    // Should have a toggle to show contents
+    expect(wrapper.find('[data-test="fixed-pack-contents-toggle-162"]').exists()).toBe(true)
+  })
+
+  it('displays choice_items pack contents when toggle clicked', async () => {
+    const wrapper = await mountSuspended(StepEquipment)
+
+    const store = useCharacterBuilderStore()
+    store.characterClasses = [{
+      classId: 123,
+      subclassId: null,
+      level: 1,
+      isPrimary: true,
+      order: 0,
+      classData: {
+        name: 'Artificer',
+        equipment: [mockFixedPackWithChoiceItemsStructure]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any
+    }]
+
+    await wrapper.vm.$nextTick()
+
+    // Click toggle to expand
+    await wrapper.find('[data-test="fixed-pack-contents-toggle-162"]').trigger('click')
+    await wrapper.vm.$nextTick()
+
+    // Should show contents list from choice_items[0].item.contents
+    const contentsList = wrapper.find('[data-test="fixed-pack-contents-list-162"]')
+    expect(contentsList.exists()).toBe(true)
+    expect(contentsList.text()).toContain('Backpack')
+    expect(contentsList.text()).toContain('Crowbar')
+    expect(contentsList.text()).toContain('10 Torch')
+    expect(contentsList.text()).toContain('Waterskin')
   })
 })

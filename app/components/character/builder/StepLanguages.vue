@@ -14,11 +14,13 @@ const {
 } = storeToRefs(store)
 const { nextStep } = useWizardNavigation()
 
-// Check if there are any choices to make
+// Check if there are any choices to make (must have quantity > 0)
 const hasAnyChoices = computed(() => {
   if (!languageChoices.value) return false
   const { race, background } = languageChoices.value.data
-  return race.choices !== null || background.choices !== null
+  const raceHasChoices = race.choices !== null && race.choices.quantity > 0
+  const backgroundHasChoices = background.choices !== null && background.choices.quantity > 0
+  return raceHasChoices || backgroundHasChoices
 })
 
 // Organize data by source for display
@@ -39,8 +41,8 @@ const sourceData = computed(() => {
 
   const { race, background } = languageChoices.value.data
 
-  // Race source (always show if has known languages or choices)
-  if (race.known.length > 0 || race.choices) {
+  // Race source (only show if has language choices to make with quantity > 0)
+  if (race.choices && race.choices.quantity > 0) {
     sources.push({
       source: 'race',
       label: 'From Race',
@@ -50,8 +52,8 @@ const sourceData = computed(() => {
     })
   }
 
-  // Background source (only show if has choices - backgrounds don't grant fixed languages)
-  if (background.choices) {
+  // Background source (only show if has choices with quantity > 0)
+  if (background.choices && background.choices.quantity > 0) {
     sources.push({
       source: 'background',
       label: 'From Background',

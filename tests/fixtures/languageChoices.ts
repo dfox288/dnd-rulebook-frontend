@@ -153,6 +153,61 @@ export const mockNoLanguageChoices: LanguageChoicesResponse = {
 }
 
 /**
+ * Dwarf (no choices) + Acolyte (2 choices)
+ * Race has known languages but no choices; background has choices
+ */
+export const mockDwarfAcolyteLanguageChoices: LanguageChoicesResponse = {
+  data: {
+    race: {
+      known: [
+        { id: 1, name: 'Common', slug: 'common', script: 'Common' },
+        { id: 2, name: 'Dwarvish', slug: 'dwarvish', script: 'Dwarvish' }
+      ],
+      choices: null
+    },
+    background: {
+      known: [],
+      choices: {
+        quantity: 2,
+        remaining: 2,
+        selected: [],
+        options: standardLanguageOptions.filter(l => l.id !== 2) // Exclude Dwarvish (already known)
+      }
+    }
+  }
+}
+
+/**
+ * Aasimar (quantity 0) + Charlatan (quantity 0)
+ * Both have choices objects but with quantity: 0 - should not show sections
+ */
+export const mockZeroQuantityLanguageChoices: LanguageChoicesResponse = {
+  data: {
+    race: {
+      known: [
+        { id: 1, name: 'Common', slug: 'common', script: 'Common' },
+        { id: 10, name: 'Celestial', slug: 'celestial', script: 'Celestial' }
+      ],
+      choices: {
+        quantity: 0,
+        remaining: 0,
+        selected: [],
+        options: []
+      }
+    },
+    background: {
+      known: [],
+      choices: {
+        quantity: 0,
+        remaining: 0,
+        selected: [],
+        options: []
+      }
+    }
+  }
+}
+
+/**
  * Human + Acolyte with some selections already made (editing scenario)
  */
 export const mockPartiallySelectedLanguageChoices: LanguageChoicesResponse = {
