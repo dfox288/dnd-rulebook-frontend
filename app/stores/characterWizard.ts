@@ -535,7 +535,8 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
   /**
    * Save proficiency choices to backend
-   * Transforms pendingChoices.proficiencies Map into the API format
+   * Makes separate API calls for each source:choice_group
+   * API expects: { source, choice_group, skill_ids: number[] }
    */
   async function saveProficiencyChoices(): Promise<void> {
     if (!characterId.value) return
@@ -545,17 +546,20 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     error.value = null
 
     try {
-      // Transform Map<string, Set<number>> to API format
-      // API expects: { choices: { [key]: number[] } }
-      const choices: Record<string, number[]> = {}
-      for (const [key, ids] of pendingChoices.value.proficiencies) {
-        choices[key] = Array.from(ids)
-      }
+      // Key format is "source:choiceGroup" (e.g., "class:skill_choice_1")
+      for (const [key, skillIds] of pendingChoices.value.proficiencies) {
+        if (skillIds.size === 0) continue
 
-      await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
-        method: 'POST',
-        body: { choices }
-      })
+        const [source, choiceGroup] = key.split(':')
+        await apiFetch(`/characters/${characterId.value}/proficiency-choices`, {
+          method: 'POST',
+          body: {
+            source,
+            choice_group: choiceGroup,
+            skill_ids: Array.from(skillIds)
+          }
+        })
+      }
 
       // Clear pending choices after successful save
       pendingChoices.value.proficiencies = new Map()

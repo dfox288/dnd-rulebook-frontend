@@ -61,7 +61,7 @@ const finalScores = computed(() => {
     const baseScore = base[ability]
 
     // Fixed racial bonuses
-    let bonus = racialBonuses.value
+    const bonus = racialBonuses.value
       .filter(m => codeMap[m.ability_score?.code ?? ''] === ability)
       .reduce((sum, m) => sum + Number(m.value), 0)
 
@@ -84,16 +84,15 @@ const canSave = computed(() => {
 async function saveAndContinue() {
   if (!canSave.value) return
 
-  const scores: AbilityScores = selectedMethod.value === 'standard_array'
-    ? {
-        strength: nullableScores.value.strength ?? 10,
-        dexterity: nullableScores.value.dexterity ?? 10,
-        constitution: nullableScores.value.constitution ?? 10,
-        intelligence: nullableScores.value.intelligence ?? 10,
-        wisdom: nullableScores.value.wisdom ?? 10,
-        charisma: nullableScores.value.charisma ?? 10
-      }
-    : localScores.value
+  // Send FINAL scores (base + racial bonuses) to backend
+  const scores: AbilityScores = {
+    strength: finalScores.value.strength.total ?? 10,
+    dexterity: finalScores.value.dexterity.total ?? 10,
+    constitution: finalScores.value.constitution.total ?? 10,
+    intelligence: finalScores.value.intelligence.total ?? 10,
+    wisdom: finalScores.value.wisdom.total ?? 10,
+    charisma: finalScores.value.charisma.total ?? 10
+  }
 
   await store.saveAbilityScores(selectedMethod.value, scores)
   nextStep()
