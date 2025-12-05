@@ -84,15 +84,17 @@ const canSave = computed(() => {
 async function saveAndContinue() {
   if (!canSave.value) return
 
-  // Send FINAL scores (base + racial bonuses) to backend
-  const scores: AbilityScores = {
-    strength: finalScores.value.strength.total ?? 10,
-    dexterity: finalScores.value.dexterity.total ?? 10,
-    constitution: finalScores.value.constitution.total ?? 10,
-    intelligence: finalScores.value.intelligence.total ?? 10,
-    wisdom: finalScores.value.wisdom.total ?? 10,
-    charisma: finalScores.value.charisma.total ?? 10
-  }
+  // Send BASE scores to backend - the backend applies racial bonuses itself
+  const scores: AbilityScores = selectedMethod.value === 'standard_array'
+    ? {
+        strength: nullableScores.value.strength ?? 10,
+        dexterity: nullableScores.value.dexterity ?? 10,
+        constitution: nullableScores.value.constitution ?? 10,
+        intelligence: nullableScores.value.intelligence ?? 10,
+        wisdom: nullableScores.value.wisdom ?? 10,
+        charisma: nullableScores.value.charisma ?? 10
+      }
+    : localScores.value
 
   await store.saveAbilityScores(selectedMethod.value, scores)
   nextStep()
