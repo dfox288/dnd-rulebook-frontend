@@ -199,4 +199,35 @@ test.describe('Character Creation Wizard', () => {
       await expect(page).toHaveURL(/\/characters\/new\/background/)
     })
   })
+
+  test.describe('Step 4: Background', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'background')
+    })
+
+    test('displays background selection with correct title', async ({ page }) => {
+      await expect(page.getByRole('heading', { name: /choose your background/i })).toBeVisible()
+    })
+
+    test('displays Acolyte background', async ({ page }) => {
+      await expect(page.getByText('Acolyte')).toBeVisible()
+    })
+
+    test('can search for Acolyte', async ({ page }) => {
+      await page.locator('input[placeholder*="Search backgrounds"]').fill('Acolyte')
+      await expect(page.getByText('Acolyte')).toBeVisible()
+    })
+
+    test('can select Acolyte and continue', async ({ page }) => {
+      // Select Acolyte
+      await page.getByText('Acolyte').first().click()
+
+      // Click Continue
+      await page.getByRole('button', { name: /continue with acolyte/i }).click()
+      await waitForLoading(page)
+
+      // Should go to abilities
+      await expect(page).toHaveURL(/\/characters\/new\/abilities/)
+    })
+  })
 })
