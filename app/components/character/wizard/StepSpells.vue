@@ -179,18 +179,41 @@ const canProceed = computed(() => {
   return true
 })
 
+// Saving state
+const isSaving = ref(false)
+const saveError = ref<string | null>(null)
+
+// Toast for user feedback
+const toast = useToast()
+
 /**
  * Save spells and continue to next step
  */
 async function handleContinue() {
-  // Resolve all spell choices
-  for (const choice of choicesByType.value.spells) {
-    const selected = selectedSpells.value.get(choice.id)
-    if (selected && selected.size > 0) {
-      await resolveChoice(choice.id, { selected: Array.from(selected) })
+  isSaving.value = true
+  saveError.value = null
+
+  try {
+    // Resolve all spell choices
+    for (const choice of choicesByType.value.spells) {
+      const selected = selectedSpells.value.get(choice.id)
+      if (selected && selected.size > 0) {
+        await resolveChoice(choice.id, { selected: Array.from(selected) })
+      }
     }
+    nextStep()
+  } catch (e) {
+    console.error('Failed to save spell choices:', e)
+    saveError.value = e instanceof Error ? e.message : 'Failed to save spell choices'
+    toast.add({
+      title: 'Failed to save spells',
+      description: 'Please try again',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
+  } finally {
+    isSaving.value = false
   }
-  nextStep()
 }
 
 /**
@@ -442,8 +465,8 @@ function handleCloseModal() {
       <UButton
         data-test="continue-btn"
         size="lg"
-        :disabled="!canProceed || isLoading"
-        :loading="isLoading"
+        :disabled="!canProceed || isLoading || isSaving"
+        :loading="isLoading || isSaving"
         @click="handleContinue"
       >
         Continue with Spells

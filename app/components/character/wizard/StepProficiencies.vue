@@ -12,6 +12,9 @@ const { apiFetch } = useApi()
 const { selections } = storeToRefs(store)
 const { nextStep } = useCharacterWizard()
 
+// Toast for user feedback
+const toast = useToast()
+
 // ══════════════════════════════════════════════════════════════
 // Fetch proficiency choices from unified API
 // ══════════════════════════════════════════════════════════════
@@ -19,7 +22,7 @@ const { nextStep } = useCharacterWizard()
 const {
   choicesByType,
   pending: loadingChoices,
-  error: _choicesError,
+  error: choicesError,
   fetchChoices,
   resolveChoice
 } = useUnifiedChoices(computed(() => store.characterId))
@@ -403,6 +406,12 @@ async function handleContinue() {
     nextStep()
   } catch (err) {
     console.error('Failed to save proficiency choices:', err)
+    toast.add({
+      title: 'Failed to save proficiencies',
+      description: 'Please try again',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
   } finally {
     isSaving.value = false
   }
@@ -418,6 +427,27 @@ async function handleContinue() {
       <p class="text-gray-600 dark:text-gray-400 mt-2">
         Review your proficiencies from class, race, and background
       </p>
+    </div>
+
+    <!-- Error State -->
+    <UAlert
+      v-if="choicesError"
+      color="error"
+      icon="i-heroicons-exclamation-circle"
+      title="Failed to load proficiency choices"
+      :description="choicesError"
+      class="mb-6"
+    />
+
+    <!-- Loading State -->
+    <div
+      v-if="loadingChoices && !choicesError"
+      class="flex justify-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-8 h-8 animate-spin text-primary"
+      />
     </div>
 
     <!-- Granted Proficiencies -->

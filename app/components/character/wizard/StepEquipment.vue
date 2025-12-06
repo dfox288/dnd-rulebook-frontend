@@ -7,23 +7,19 @@ import { useCharacterWizard } from '~/composables/useCharacterWizard'
 
 type EntityItemResource = components['schemas']['EntityItemResource']
 type PackContentResource = components['schemas']['PackContentResource']
-type PendingChoice = components['schemas']['PendingChoiceResource']
-
-interface EquipmentOption {
-  option: string
-  label: string
-  items: Array<{ id: number, name: string, quantity: number }>
-}
 
 const store = useCharacterWizardStore()
 const { selections } = storeToRefs(store)
 const { nextStep } = useCharacterWizard()
 
+// Toast for user feedback
+const toast = useToast()
+
 // Use unified choices composable
 const {
   choicesByType,
   pending,
-  error: _choicesError,
+  error: choicesError,
   fetchChoices,
   resolveChoice
 } = useUnifiedChoices(computed(() => store.characterId))
@@ -61,13 +57,6 @@ const classEquipmentChoices = computed(() =>
 const backgroundEquipmentChoices = computed(() =>
   (choicesByType.value.equipment || []).filter(c => c.source === 'background')
 )
-
-/**
- * Get typed options for an equipment choice
- */
-function getEquipmentOptions(choice: PendingChoice): EquipmentOption[] {
-  return (choice.options as EquipmentOption[] | null) ?? []
-}
 
 /**
  * Handle equipment choice selection
@@ -121,10 +110,15 @@ const allEquipmentChoicesMade = computed(() => {
   })
 })
 
+// Saving state
+const isSaving = ref(false)
+
 /**
  * Continue to next step - resolve all choices
  */
 async function handleContinue() {
+  isSaving.value = true
+
   try {
     // Resolve each equipment choice
     for (const [choiceId, optionLetter] of localSelections.value) {
@@ -151,6 +145,14 @@ async function handleContinue() {
     nextStep()
   } catch (e) {
     console.error('Failed to save equipment choices:', e)
+    toast.add({
+      title: 'Failed to save equipment',
+      description: 'Please try again',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -234,6 +236,26 @@ function formatPackContentItem(content: PackContentResource): string {
       </p>
     </div>
 
+    <!-- Error State -->
+    <UAlert
+      v-if="choicesError"
+      color="error"
+      icon="i-heroicons-exclamation-circle"
+      title="Failed to load equipment choices"
+      :description="choicesError"
+    />
+
+    <!-- Loading State -->
+    <div
+      v-if="pending && !choicesError"
+      class="flex justify-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-8 h-8 animate-spin text-primary"
+      />
+    </div>
+
     <!-- Class Equipment -->
     <div
       v-if="selections.class"
@@ -308,63 +330,11 @@ function formatPackContentItem(content: PackContentResource): string {
       </div>
 
       <!-- Choice Groups -->
-      <div
-        v-for="choice in classEquipmentChoices"
-        :key="choice.id"
-        class="space-y-2"
-      >
-        <h4 class="font-medium text-gray-700 dark:text-gray-300">
-          {{ choice.source_name }} Equipment Choice
-        </h4>
-
-        <div class="space-y-2">
-          <button
-            v-for="option in getEquipmentOptions(choice)"
-            :key="option.option"
-            :data-test="`option-${option.option}`"
-            type="button"
-            class="w-full p-3 rounded-lg border-2 transition-all text-left flex items-center gap-3"
-            :class="[
-              localSelections.get(choice.id) === option.option
-                ? 'ring-2 ring-primary-500 border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
-            ]"
-            @click="handleChoiceSelect(choice.id, option.option)"
-          >
-            <!-- Radio indicator -->
-            <div
-              class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-              :class="[
-                localSelections.get(choice.id) === option.option
-                  ? 'border-primary-500 bg-primary-500'
-                  : 'border-gray-400'
-              ]"
-            >
-              <div
-                v-if="localSelections.get(choice.id) === option.option"
-                class="w-2 h-2 rounded-full bg-white"
-              />
-            </div>
-
-            <!-- Option label and items -->
-            <div class="flex-1">
-              <div class="font-medium text-gray-900 dark:text-white">
-                {{ option.label }}
-              </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                <span
-                  v-for="(item, idx) in option.items"
-                  :key="item.id"
-                >
-                  {{ item.name }}
-                  <span v-if="item.quantity > 1">(×{{ item.quantity }})</span>
-                  <span v-if="idx < option.items.length - 1">, </span>
-                </span>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+      <CharacterWizardEquipmentChoiceList
+        :choices="classEquipmentChoices"
+        :local-selections="localSelections"
+        @select="handleChoiceSelect"
+      />
     </div>
 
     <!-- Background Equipment -->
@@ -441,63 +411,11 @@ function formatPackContentItem(content: PackContentResource): string {
       </div>
 
       <!-- Choice Groups -->
-      <div
-        v-for="choice in backgroundEquipmentChoices"
-        :key="choice.id"
-        class="space-y-2"
-      >
-        <h4 class="font-medium text-gray-700 dark:text-gray-300">
-          {{ choice.source_name }} Equipment Choice
-        </h4>
-
-        <div class="space-y-2">
-          <button
-            v-for="option in getEquipmentOptions(choice)"
-            :key="option.option"
-            :data-test="`option-${option.option}`"
-            type="button"
-            class="w-full p-3 rounded-lg border-2 transition-all text-left flex items-center gap-3"
-            :class="[
-              localSelections.get(choice.id) === option.option
-                ? 'ring-2 ring-primary-500 border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
-            ]"
-            @click="handleChoiceSelect(choice.id, option.option)"
-          >
-            <!-- Radio indicator -->
-            <div
-              class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
-              :class="[
-                localSelections.get(choice.id) === option.option
-                  ? 'border-primary-500 bg-primary-500'
-                  : 'border-gray-400'
-              ]"
-            >
-              <div
-                v-if="localSelections.get(choice.id) === option.option"
-                class="w-2 h-2 rounded-full bg-white"
-              />
-            </div>
-
-            <!-- Option label and items -->
-            <div class="flex-1">
-              <div class="font-medium text-gray-900 dark:text-white">
-                {{ option.label }}
-              </div>
-              <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                <span
-                  v-for="(item, idx) in option.items"
-                  :key="item.id"
-                >
-                  {{ item.name }}
-                  <span v-if="item.quantity > 1">(×{{ item.quantity }})</span>
-                  <span v-if="idx < option.items.length - 1">, </span>
-                </span>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+      <CharacterWizardEquipmentChoiceList
+        :choices="backgroundEquipmentChoices"
+        :local-selections="localSelections"
+        @select="handleChoiceSelect"
+      />
     </div>
 
     <!-- Continue Button -->
@@ -505,8 +423,8 @@ function formatPackContentItem(content: PackContentResource): string {
       <UButton
         data-test="continue-btn"
         size="lg"
-        :disabled="!allEquipmentChoicesMade || pending"
-        :loading="pending"
+        :disabled="!allEquipmentChoicesMade || pending || isSaving"
+        :loading="pending || isSaving"
         @click="handleContinue"
       >
         Continue with Equipment

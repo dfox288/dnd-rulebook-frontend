@@ -12,6 +12,9 @@ const {
 } = storeToRefs(store)
 const { nextStep } = useCharacterWizard()
 
+// Toast for user feedback
+const toast = useToast()
+
 // ══════════════════════════════════════════════════════════════
 // Fetch language choices using unified API
 // ══════════════════════════════════════════════════════════════
@@ -19,6 +22,7 @@ const { nextStep } = useCharacterWizard()
 const {
   choicesByType,
   pending,
+  error: choicesError,
   fetchChoices,
   resolveChoice
 } = useUnifiedChoices(computed(() => store.characterId))
@@ -159,6 +163,14 @@ async function handleContinue() {
     localSelections.value.clear()
 
     nextStep()
+  } catch (e) {
+    console.error('Failed to save language choices:', e)
+    toast.add({
+      title: 'Failed to save languages',
+      description: 'Please try again',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
   } finally {
     isLoading.value = false
   }
@@ -174,6 +186,27 @@ async function handleContinue() {
       <p class="text-gray-600 dark:text-gray-400 mt-2">
         Your race and background grant the following languages
       </p>
+    </div>
+
+    <!-- Error State -->
+    <UAlert
+      v-if="choicesError"
+      color="error"
+      icon="i-heroicons-exclamation-circle"
+      title="Failed to load language choices"
+      :description="choicesError"
+      class="mb-6"
+    />
+
+    <!-- Loading State -->
+    <div
+      v-if="pending && !choicesError"
+      class="flex justify-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-8 h-8 animate-spin text-primary"
+      />
     </div>
 
     <!-- No choices needed -->
