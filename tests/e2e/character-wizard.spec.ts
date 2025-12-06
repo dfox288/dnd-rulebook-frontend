@@ -407,4 +407,125 @@ test.describe('Character Creation Wizard', () => {
       await expect(getNextButton(page)).toContainText(/finish/i)
     })
   })
+
+  test.describe('Complete Character Creation Flow', () => {
+    test('creates a Human Bard with manual abilities from start to finish', async ({ page }) => {
+      // This is the full happy path test
+      test.setTimeout(120000) // 2 minutes for full flow
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 1: SOURCEBOOKS
+      // ══════════════════════════════════════════════════════════
+      await page.goto(`${WIZARD_BASE_URL}/sourcebooks`)
+      await waitForLoading(page)
+
+      // PHB should be pre-selected, just continue
+      await clickNextAndWait(page)
+      await expect(page).toHaveURL(/\/race/)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 2: RACE - Select Human
+      // ══════════════════════════════════════════════════════════
+      await page.getByText('Human').first().click()
+      await page.getByRole('button', { name: /continue with human/i }).click()
+      await waitForLoading(page)
+
+      // Should skip subrace (Human has none) → class
+      await expect(page).toHaveURL(/\/class/)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 3: CLASS - Select Bard
+      // ══════════════════════════════════════════════════════════
+      await page.getByText('Bard').first().click()
+      await page.getByRole('button', { name: /continue with bard/i }).click()
+      await waitForLoading(page)
+
+      // Should skip subclass (Bard picks at level 3) → background
+      await expect(page).toHaveURL(/\/background/)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 4: BACKGROUND - Select Acolyte
+      // ══════════════════════════════════════════════════════════
+      await page.getByText('Acolyte').first().click()
+      await page.getByRole('button', { name: /continue with acolyte/i }).click()
+      await waitForLoading(page)
+
+      await expect(page).toHaveURL(/\/abilities/)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 5: ABILITIES - Manual Entry
+      // ══════════════════════════════════════════════════════════
+      await page.getByRole('button', { name: 'Manual' }).click()
+
+      // Enter ability scores for a Bard (high CHA)
+      await page.locator('[data-testid="input-strength"]').fill('8')
+      await page.locator('[data-testid="input-dexterity"]').fill('14')
+      await page.locator('[data-testid="input-constitution"]').fill('13')
+      await page.locator('[data-testid="input-intelligence"]').fill('10')
+      await page.locator('[data-testid="input-wisdom"]').fill('12')
+      await page.locator('[data-testid="input-charisma"]').fill('15')
+
+      await page.locator('[data-testid="save-abilities"]').click()
+      await waitForLoading(page)
+
+      await expect(page).toHaveURL(/\/proficiencies/)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 6: PROFICIENCIES
+      // ══════════════════════════════════════════════════════════
+      // Select any required proficiencies then continue
+      await clickNextAndWait(page)
+
+      // May go to languages or skip to equipment
+      const afterProfUrl = page.url()
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 7: LANGUAGES (if visible)
+      // ══════════════════════════════════════════════════════════
+      if (afterProfUrl.includes('/languages')) {
+        await clickNextAndWait(page)
+      }
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 8: EQUIPMENT
+      // ══════════════════════════════════════════════════════════
+      if (page.url().includes('/equipment')) {
+        await clickNextAndWait(page)
+      }
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 9: SPELLS (Bard is spellcaster)
+      // ══════════════════════════════════════════════════════════
+      await expect(page).toHaveURL(/\/spells/)
+      await clickNextAndWait(page)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 10: DETAILS
+      // ══════════════════════════════════════════════════════════
+      await expect(page).toHaveURL(/\/details/)
+      await page.locator('input[type="text"]').first().fill(TEST_CHARACTER_NAME)
+      await clickNextAndWait(page)
+
+      // ══════════════════════════════════════════════════════════
+      // STEP 11: REVIEW
+      // ══════════════════════════════════════════════════════════
+      await expect(page).toHaveURL(/\/review/)
+
+      // Verify key information is displayed
+      await expect(page.getByText('Human')).toBeVisible()
+      await expect(page.getByText('Bard')).toBeVisible()
+      await expect(page.getByText('Acolyte')).toBeVisible()
+      await expect(page.getByText(TEST_CHARACTER_NAME)).toBeVisible()
+
+      // Verify Finish button
+      await expect(getNextButton(page)).toContainText(/finish/i)
+
+      // Complete the wizard
+      await getNextButton(page).click()
+      await waitForLoading(page)
+
+      // Should redirect to characters list
+      await expect(page).toHaveURL(/\/characters/)
+    })
+  })
 })
