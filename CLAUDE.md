@@ -374,13 +374,18 @@ server/api/
 ├── characters/
 │   ├── index.get.ts          # GET /api/characters
 │   ├── index.post.ts         # POST /api/characters
-│   ├── [id].get.ts           # GET /api/characters/:id
+│   ├── [id].get.ts           # GET /api/characters/:id (accepts id or publicId)
 │   ├── [id].patch.ts         # PATCH /api/characters/:id
 │   ├── [id].delete.ts        # DELETE /api/characters/:id
 │   └── [id]/
 │       ├── stats.get.ts      # GET /api/characters/:id/stats
-│       └── available-spells.get.ts  # GET /api/characters/:id/available-spells
+│       ├── pending-choices.get.ts   # GET /api/characters/:id/pending-choices
+│       ├── summary.get.ts    # GET /api/characters/:id/summary
+│       └── choices/
+│           └── [choiceId].post.ts   # POST /api/characters/:id/choices/:choiceId
 ```
+
+**Note:** Character routes accept both numeric IDs and public IDs (e.g., `arcane-phoenix-M7k2`). Frontend pages use `/characters/[publicId]/` for human-readable URLs.
 
 ### Route Template
 
@@ -449,10 +454,21 @@ app/
 ├── components/       # Vue components (auto-import)
 │   ├── spell/       # Entity-specific (SpellCard, etc.)
 │   ├── monster/
+│   ├── character/   # Character builder + sheet
+│   │   ├── wizard/  # StepName, StepRace, StepClass, etc.
+│   │   └── sheet/   # Header, AbilityScoreBlock, SkillsList, etc.
 │   └── ui/          # Reusable (UiListPageHeader, etc.)
 ├── composables/     # useEntityList, useMeilisearchFilters, etc.
-├── stores/          # Pinia filter stores (7 entity stores)
+│   ├── useCharacterSheet.ts    # Parallel fetch for character data
+│   ├── useUnifiedChoices.ts    # Choice management via unified API
+│   └── useCharacterSlug.ts     # D&D-themed public ID generator
+├── stores/          # Pinia stores (7 filter stores + characterWizard)
 ├── pages/           # File-based routing
+│   └── characters/
+│       ├── index.vue           # Character list
+│       └── [publicId]/         # Uses public ID, not numeric ID
+│           ├── index.vue       # Character sheet view
+│           └── edit/           # Wizard edit flow
 ├── types/           # TypeScript types (api/generated.ts)
 └── assets/css/      # Tailwind + NuxtUI colors
 

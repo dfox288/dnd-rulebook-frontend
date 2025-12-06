@@ -16,7 +16,9 @@ A comprehensive D&D 5th Edition reference tool featuring **7 complete entity typ
 
 - **7 Entity Types:** Spells (477), Items (800+), Races, Classes, Backgrounds, Feats, Monsters (598)
 - **10 Reference Pages:** Ability Scores, Conditions, Damage Types, Item Types, Languages, Proficiency Types, Sizes, Skills, Spell Schools, Sources
-- **Builder Tools:** 🪄 Spell List Generator (12+ spellcasting classes, localStorage persistence)
+- **Builder Tools:**
+  - 🧙 Character Builder (11-step wizard with full character sheet)
+  - 🪄 Spell List Generator (12+ spellcasting classes, localStorage persistence)
 - **1,400+ D&D Resources:** Official sourcebooks (PHB, XGE, TCE, MM, etc.)
 - **Advanced Filtering:** Meilisearch-powered with <50ms response times
   - **Spells:** 10 filters (level, school, class, concentration, ritual, damage types, saving throws, components)
@@ -30,14 +32,14 @@ A comprehensive D&D 5th Edition reference tool featuring **7 complete entity typ
 - **Mobile Responsive:** 375px - 1440px+ viewports
 - **100% Test Pass Rate:** 2,848 passing tests across 193 test files (Vitest + Playwright E2E)
 
-### 🆕 Latest: Complete Meilisearch Filter Migration (2025-11-25)
+### 🆕 Latest: Character Builder Complete (2025-12-07)
 
-**Critical Bug Fix:** 93% of spell filters were broken! All filters now migrated to Meilisearch syntax:
-- **All 10 Filters Working:** Level, School, Class, Concentration, Ritual, Damage Types, Saving Throws, Verbal, Somatic, Material
-- **4 Filters Removed:** Not supported by Meilisearch (casting time, range, duration, has higher levels)
-- **Performance:** <50ms response times
-- **Advanced Queries:** `filter=level = 3 AND class_slugs IN [wizard] AND school_code = EV` (7 results)
-- **Impact:** 100% success rate (was 7% before migration)
+**Full character creation wizard with D&D-themed URLs:**
+- **11 Wizard Steps:** Name → Race → Subrace → Class → Abilities → Background → Proficiencies → Equipment → Spells → Languages → Review
+- **Memorable URLs:** Characters get D&D-themed IDs like `/characters/arcane-phoenix-M7k2`
+- **Full Character Sheet:** 10 sheet components with parallel data fetching
+- **Unified Choice API:** All choices use single, consistent API pattern
+- **35+ Components:** Picker cards, modals, step components, sheet panels
 
 ## 📚 Documentation
 
@@ -323,16 +325,18 @@ Ability Scores, Conditions, Damage Types, Item Types, Languages, Proficiency Typ
 - [x] Dark mode support
 - [x] Mobile responsive design
 - [x] Comprehensive test coverage
+- [x] Character Builder with 11-step wizard
+- [x] Full character sheet with D&D 5e layout
+- [x] Unified choice API for character creation
 
 ### Future Enhancements
-- [ ] Parse monster attack data into structured damage display
-- [ ] Stat block alternative view (printable format)
-- [ ] Ability score modifier calculator
-- [ ] Encounter builder (multi-monster selection with CR balancing)
-- [ ] Comparison views (side-by-side monster comparison)
-- [ ] Advanced filters (size, alignment, environment)
-- [ ] E2E testing with Playwright
-- [ ] Performance optimization (if needed)
+- [ ] Monster encounter builder (#18)
+- [ ] Advanced spell list builder (#17)
+- [ ] Storybook component documentation (#13)
+- [ ] E2E test expansion with Playwright (#4)
+- [ ] Human Variant ability score choices (#161)
+- [ ] Background feat selection (#181)
+- [ ] Character speed/size from race (#126)
 
 ## 📝 License
 

@@ -1,6 +1,6 @@
 # Project Status
 
-**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-06
+**D&D 5e Compendium Frontend** | **Last Updated:** 2025-12-07
 
 ---
 
@@ -32,7 +32,7 @@
 
 ---
 
-## Character Builder (WIP)
+## Character Builder ✅
 
 | Phase | Description | Status | PR |
 |-------|-------------|--------|-----|
@@ -40,31 +40,28 @@
 | 2 | Race & Class Selection | ✅ Complete | [#3](https://github.com/dfox288/dnd-rulebook-frontend/pull/3) |
 | 3 | Ability Scores | ✅ Complete | [#3](https://github.com/dfox288/dnd-rulebook-frontend/pull/3) |
 | 4 | Background, Equipment, Spells & Review | ✅ Complete | main |
-| 5 | Character Sheet & Polish | 🔲 Pending | - |
+| 5 | Character Sheet & Polish | ✅ Complete | main |
 
-**Wizard Steps:** Name ✅ → Race ✅ → Subrace ✅ → Class ✅ → Abilities ✅ → Background ✅ → Proficiencies ✅ → Equipment ✅ → Spells ✅ → Languages ⏸️ → Review ✅
+**Wizard Steps:** Name ✅ → Race ✅ → Subrace ✅ → Class ✅ → Abilities ✅ → Background ✅ → Proficiencies ✅ → Equipment ✅ → Spells ✅ → Languages ✅ → Review ✅
 
-**Components:** 25+ character builder components (pickers, modals, step components)
+**Components:** 35+ character builder components (pickers, modals, step components, sheet panels)
 **Tests:** 200+ tests across 25+ test files
 
-**Recent Enhancements:**
-- Route-based wizard navigation (#136) - step names in URL
-- Alignment selector (#125) - inline with name input
-- Equipment pack contents (#133) - shows what's in packs
-- Language choices step (#131) - ⏸️ waiting on backend endpoint #139
+**Key Features:**
+- **Memorable URLs:** D&D-themed public IDs like `/characters/arcane-phoenix-M7k2` (#287)
+- **Unified Choice API:** All choices (proficiencies, languages, equipment, spells) use single API pattern (#264)
+- **Full Character Sheet:** 10 sheet components with parallel data fetching (#172)
+- **Route-based Navigation:** Step names in URL with middleware guards (#136)
+- **Alignment Selector:** Inline with name input (#125)
+- **Equipment Pack Contents:** Shows what's in packs (#133)
 
-**🚧 Major Work Planned: Unified Choice System Migration (#264)**
-
-Backend has completed a unified choice system (#246) that consolidates all character creation choices into a single API pattern. Frontend migration planned with 7 sub-issues:
-- #265: Infrastructure (types, routes, composable)
-- #266-269: Component updates (Proficiencies, Languages, Equipment, Spells)
-- #270-271: Store cleanup and deprecated route removal
-
-**Plan:** `docs/plans/2025-12-06-unified-choice-api-migration.md`
+**Composables:**
+- `useCharacterSheet` - Parallel fetching for 7 character endpoints
+- `useUnifiedChoices` - Centralized choice management via unified API
+- `useCharacterSlug` - D&D-themed slug generator for public IDs
+- `useCharacterWizard` - Wizard step orchestration
 
 **Pending Enhancement:** [#96](https://github.com/dfox288/dnd-rulebook-project/issues/96) - Structured item type data for equipment category choices
-
-**Issue:** [#89](https://github.com/dfox288/dnd-rulebook-project/issues/89)
 
 ---
 
@@ -148,6 +145,12 @@ Backend has completed a unified choice system (#246) that consolidates all chara
 
 ## Recent Milestones
 
+- **2025-12-07:** Character public ID migration (#287) - D&D-themed URLs like `arcane-phoenix-M7k2`
+- **2025-12-07:** Issue cleanup - closed 11 completed issues (#264-271, #172, #174, #287)
+- **2025-12-06:** Unified Choice System Migration (#264) - all wizard steps use unified API
+- **2025-12-06:** Character Sheet complete (#172) - 10 sheet components with parallel fetching
+- **2025-12-06:** Multi-select equipment choices (4c3fd82)
+- **2025-12-06:** Language selection with slug-based API (d867223)
 - **2025-12-04:** Test suite consolidation (PR #19) - removed 16 redundant test files, created 2 new helpers
 - **2025-12-04:** Language choices wizard step (#131) - partial, blocked on backend endpoint #139
 - **2025-12-04:** Equipment pack contents (#133) - shows `choice_items` pack contents structure
