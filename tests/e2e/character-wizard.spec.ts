@@ -301,4 +301,110 @@ test.describe('Character Creation Wizard', () => {
       await expect(page).toHaveURL(/\/characters\/new\/proficiencies/)
     })
   })
+
+  test.describe('Step 6: Proficiencies', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'proficiencies')
+    })
+
+    test('displays proficiencies step', async ({ page }) => {
+      // Should show proficiency choices from class/background
+      await expect(page.getByRole('heading', { name: /proficiencies/i })).toBeVisible()
+    })
+
+    test('can proceed through proficiencies', async ({ page }) => {
+      // Select any required proficiencies (Bard gets skill choices)
+      // Then proceed
+      await clickNextAndWait(page)
+
+      // Should go to languages or equipment
+      await expect(page).toHaveURL(/\/characters\/new\/(languages|equipment)/)
+    })
+  })
+
+  test.describe('Step 7: Languages', () => {
+    test('displays languages step if choices available', async ({ page }) => {
+      await goToStep(page, 'languages')
+      // May be skipped if no language choices
+      // Check we're either on languages or moved past
+      const url = page.url()
+      if (url.includes('/languages')) {
+        await expect(page.getByRole('heading', { name: /languages/i })).toBeVisible()
+      }
+    })
+  })
+
+  test.describe('Step 8: Equipment', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'equipment')
+    })
+
+    test('displays equipment step', async ({ page }) => {
+      await expect(page.getByRole('heading', { name: /equipment/i })).toBeVisible()
+    })
+
+    test('can proceed through equipment', async ({ page }) => {
+      await clickNextAndWait(page)
+      // Bard is spellcaster, should go to spells
+      await expect(page).toHaveURL(/\/characters\/new\/spells/)
+    })
+  })
+
+  test.describe('Step 9: Spells (Bard)', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'spells')
+    })
+
+    test('displays spells step for spellcaster', async ({ page }) => {
+      await expect(page.getByRole('heading', { name: /spells/i })).toBeVisible()
+    })
+
+    test('shows spell selection options', async ({ page }) => {
+      // Bard should have cantrip and spell slots at level 1
+      await expect(page.getByText(/cantrip/i)).toBeVisible()
+    })
+
+    test('can proceed through spells', async ({ page }) => {
+      await clickNextAndWait(page)
+      await expect(page).toHaveURL(/\/characters\/new\/details/)
+    })
+  })
+
+  test.describe('Step 10: Details', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'details')
+    })
+
+    test('displays details step with name input', async ({ page }) => {
+      await expect(page.getByRole('heading', { name: /details/i })).toBeVisible()
+      await expect(page.locator('input[type="text"]').first()).toBeVisible()
+    })
+
+    test('can enter character name', async ({ page }) => {
+      await page.locator('input[type="text"]').first().fill(TEST_CHARACTER_NAME)
+
+      // Name should be filled
+      await expect(page.locator('input[type="text"]').first()).toHaveValue(TEST_CHARACTER_NAME)
+    })
+
+    test('can proceed to review', async ({ page }) => {
+      await page.locator('input[type="text"]').first().fill(TEST_CHARACTER_NAME)
+      await clickNextAndWait(page)
+      await expect(page).toHaveURL(/\/characters\/new\/review/)
+    })
+  })
+
+  test.describe('Step 11: Review', () => {
+    test.beforeEach(async ({ page }) => {
+      await goToStep(page, 'review')
+    })
+
+    test('displays review step', async ({ page }) => {
+      await expect(page.getByRole('heading', { name: /review/i })).toBeVisible()
+    })
+
+    test('shows Finish button instead of Next', async ({ page }) => {
+      await expect(getNextButton(page)).toContainText(/finish/i)
+    })
+  })
 })
