@@ -82,8 +82,11 @@ describe('useCharacterWizard', () => {
       expect(stepNames).not.toContain('subrace')
       expect(stepNames).not.toContain('subclass')
       expect(stepNames).not.toContain('spells')
-      expect(stepNames).not.toContain('proficiencies')
-      expect(stepNames).not.toContain('languages')
+
+      // Proficiencies and languages are ALWAYS visible but use shouldSkip for navigation
+      // This keeps step array indices stable after saving choices
+      expect(stepNames).toContain('proficiencies')
+      expect(stepNames).toContain('languages')
     })
 
     it('shows subrace step when race with subraces is selected', () => {
@@ -139,6 +142,22 @@ describe('useCharacterWizard', () => {
       const stepNames = activeSteps.value.map(s => s.name)
 
       expect(stepNames).not.toContain('spells')
+    })
+
+    it('proficiencies step has shouldSkip true when no choices', () => {
+      const route = createMockRoute()
+      const { activeSteps } = useCharacterWizard({ route })
+      const profStep = activeSteps.value.find(s => s.name === 'proficiencies')
+
+      expect(profStep?.shouldSkip?.()).toBe(true)
+    })
+
+    it('languages step has shouldSkip true when no choices', () => {
+      const route = createMockRoute()
+      const { activeSteps } = useCharacterWizard({ route })
+      const langStep = activeSteps.value.find(s => s.name === 'languages')
+
+      expect(langStep?.shouldSkip?.()).toBe(true)
     })
   })
 
@@ -325,6 +344,26 @@ describe('useCharacterWizard', () => {
       const route = createMockRoute('/characters/new/sourcebooks')
       const { previousStepInfo } = useCharacterWizard({ route })
       expect(previousStepInfo.value).toBeNull()
+    })
+
+    it('nextStepInfo skips steps where shouldSkip returns true', () => {
+      // From abilities step, without any proficiency/language choices,
+      // nextStepInfo should skip proficiencies and languages and go to equipment
+      const route = createMockRoute('/characters/new/abilities')
+      const { nextStepInfo } = useCharacterWizard({ route })
+
+      // Should skip proficiencies and languages (no choices) and go to equipment
+      expect(nextStepInfo.value?.name).toBe('equipment')
+    })
+
+    it('previousStepInfo skips steps where shouldSkip returns true', () => {
+      // From equipment step, without any proficiency/language choices,
+      // previousStepInfo should skip proficiencies and languages and go to abilities
+      const route = createMockRoute('/characters/new/equipment')
+      const { previousStepInfo } = useCharacterWizard({ route })
+
+      // Should skip languages and proficiencies (no choices) and go to abilities
+      expect(previousStepInfo.value?.name).toBe('abilities')
     })
   })
 })

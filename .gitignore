@@ -28,3 +28,7 @@ logs
 
 # Worktrees
 .worktrees/
+
+# Playwright
+playwright-report/
+test-results/

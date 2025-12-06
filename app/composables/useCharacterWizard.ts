@@ -16,6 +16,12 @@ export interface WizardStep {
   label: string
   icon: string
   visible: () => boolean
+  /**
+   * Optional function to determine if this step should be auto-skipped during navigation.
+   * Use this for steps that are always visible but may have no choices to make.
+   * This keeps the step array stable while allowing smart navigation.
+   */
+  shouldSkip?: () => boolean
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -74,13 +80,17 @@ function createStepRegistry(store: ReturnType<typeof useCharacterWizardStore>): 
       name: 'proficiencies',
       label: 'Skills',
       icon: 'i-heroicons-academic-cap',
-      visible: () => store.hasProficiencyChoices
+      visible: () => true,
+      // Skip during navigation if no proficiency choices to make
+      shouldSkip: () => !store.hasProficiencyChoices
     },
     {
       name: 'languages',
       label: 'Languages',
       icon: 'i-heroicons-language',
-      visible: () => store.hasLanguageChoices
+      visible: () => true,
+      // Skip during navigation if no language choices to make
+      shouldSkip: () => !store.hasLanguageChoices
     },
     {
       name: 'equipment',
@@ -300,24 +310,36 @@ export function useCharacterWizard(options: UseCharacterWizardOptions = {}) {
   }
 
   /**
-   * Navigate to next step
+   * Navigate to next step, skipping any steps that should be skipped
    */
   async function nextStep(): Promise<void> {
-    const nextIndex = currentStepIndex.value + 1
-    const next = activeSteps.value[nextIndex]
-    if (next) {
-      await navigateTo(getStepUrl(next.name))
+    let nextIndex = currentStepIndex.value + 1
+
+    // Find the next step that shouldn't be skipped
+    while (nextIndex < activeSteps.value.length) {
+      const next = activeSteps.value[nextIndex]
+      if (next && !next.shouldSkip?.()) {
+        await navigateTo(getStepUrl(next.name))
+        return
+      }
+      nextIndex++
     }
   }
 
   /**
-   * Navigate to previous step
+   * Navigate to previous step, skipping any steps that should be skipped
    */
   async function previousStep(): Promise<void> {
-    const prevIndex = currentStepIndex.value - 1
-    const prev = activeSteps.value[prevIndex]
-    if (prev) {
-      await navigateTo(getStepUrl(prev.name))
+    let prevIndex = currentStepIndex.value - 1
+
+    // Find the previous step that shouldn't be skipped
+    while (prevIndex >= 0) {
+      const prev = activeSteps.value[prevIndex]
+      if (prev && !prev.shouldSkip?.()) {
+        await navigateTo(getStepUrl(prev.name))
+        return
+      }
+      prevIndex--
     }
   }
 
@@ -332,19 +354,33 @@ export function useCharacterWizard(options: UseCharacterWizardOptions = {}) {
   }
 
   /**
-   * Get the next step (without navigating)
+   * Get the next step (without navigating), respecting shouldSkip
    */
   const nextStepInfo = computed(() => {
-    const nextIndex = currentStepIndex.value + 1
-    return activeSteps.value[nextIndex] ?? null
+    let nextIndex = currentStepIndex.value + 1
+    while (nextIndex < activeSteps.value.length) {
+      const next = activeSteps.value[nextIndex]
+      if (next && !next.shouldSkip?.()) {
+        return next
+      }
+      nextIndex++
+    }
+    return null
   })
 
   /**
-   * Get the previous step (without navigating)
+   * Get the previous step (without navigating), respecting shouldSkip
    */
   const previousStepInfo = computed(() => {
-    const prevIndex = currentStepIndex.value - 1
-    return activeSteps.value[prevIndex] ?? null
+    let prevIndex = currentStepIndex.value - 1
+    while (prevIndex >= 0) {
+      const prev = activeSteps.value[prevIndex]
+      if (prev && !prev.shouldSkip?.()) {
+        return prev
+      }
+      prevIndex--
+    }
+    return null
   })
 
   // ══════════════════════════════════════════════════════════════
