@@ -9,15 +9,36 @@ type EntityItemResource = components['schemas']['EntityItemResource']
 type PackContentResource = components['schemas']['PackContentResource']
 
 const store = useCharacterWizardStore()
-const {
-  selections,
-  pendingChoices,
-  isLoading
-} = storeToRefs(store)
+const { selections } = storeToRefs(store)
 const { nextStep } = useCharacterWizard()
+
+// Toast for user feedback
+const toast = useToast()
+
+// Use unified choices composable
+const {
+  choicesByType,
+  pending,
+  error: choicesError,
+  fetchChoices,
+  resolveChoice
+} = useUnifiedChoices(computed(() => store.characterId))
 
 // Track which fixed pack contents are expanded (by item.id)
 const expandedFixedPacks = ref<Set<number>>(new Set())
+
+// Track local selections (choiceId → selected option letter)
+const localSelections = ref<Map<string, string>>(new Map())
+
+// Track item selections for compound choices (choiceId:itemKey → itemId)
+const itemSelections = ref<Map<string, number>>(new Map())
+
+// Fetch equipment choices on mount
+onMounted(async () => {
+  if (store.characterId) {
+    await fetchChoices('equipment')
+  }
+})
 
 // Separate equipment by source
 const classFixedEquipment = computed(() =>
@@ -28,101 +49,37 @@ const backgroundFixedEquipment = computed(() =>
   selections.value.background?.equipment?.filter(eq => !eq.is_choice) ?? []
 )
 
-// Get choice groups by source
-const classChoiceGroups = computed(() => {
-  const groups = new Map()
-  for (const item of selections.value.class?.equipment ?? []) {
-    if (item.is_choice && item.choice_group) {
-      const existing = groups.get(item.choice_group) ?? []
-      groups.set(item.choice_group, [...existing, item])
-    }
-  }
-  return groups
-})
+// Get equipment choices by source
+const classEquipmentChoices = computed(() =>
+  (choicesByType.value.equipment || []).filter(c => c.source === 'class')
+)
 
-const backgroundChoiceGroups = computed(() => {
-  const groups = new Map()
-  for (const item of selections.value.background?.equipment ?? []) {
-    if (item.is_choice && item.choice_group) {
-      const existing = groups.get(item.choice_group) ?? []
-      groups.set(item.choice_group, [...existing, item])
-    }
-  }
-  return groups
-})
+const backgroundEquipmentChoices = computed(() =>
+  (choicesByType.value.equipment || []).filter(c => c.source === 'background')
+)
 
 /**
  * Handle equipment choice selection
- * Clear any previous item selections for this group when option changes
  */
-function handleChoiceSelect(choiceGroup: string, id: number) {
-  // Clear item selections when changing options
-  clearEquipmentItemSelections(choiceGroup)
-  store.setEquipmentChoice(choiceGroup, id)
+function handleChoiceSelect(choiceId: string, optionLetter: string) {
+  localSelections.value.set(choiceId, optionLetter)
+  // Clear any item selections for this choice when changing options
+  clearItemSelectionsForChoice(choiceId)
 }
 
 /**
- * Handle item selection within a compound choice
+ * Clear item selections for a specific choice
  */
-function handleItemSelect(choiceGroup: string, choiceOption: number, choiceItemIndex: number, itemId: number) {
-  setEquipmentItemSelection(choiceGroup, choiceOption, choiceItemIndex, itemId)
-}
-
-/**
- * Clear all equipment item selections for a choice group
- */
-function clearEquipmentItemSelections(choiceGroup: string) {
+function clearItemSelectionsForChoice(choiceId: string) {
   const keysToDelete: string[] = []
-  for (const key of pendingChoices.value.equipmentItems.keys()) {
-    if (key.startsWith(`${choiceGroup}:`)) {
+  for (const key of itemSelections.value.keys()) {
+    if (key.startsWith(`${choiceId}:`)) {
       keysToDelete.push(key)
     }
   }
   for (const key of keysToDelete) {
-    pendingChoices.value.equipmentItems.delete(key)
+    itemSelections.value.delete(key)
   }
-}
-
-/**
- * Set equipment item selection
- */
-function setEquipmentItemSelection(choiceGroup: string, choiceOption: number, choiceItemIndex: number, itemId: number) {
-  const key = `${choiceGroup}:${choiceOption}:${choiceItemIndex}`
-  pendingChoices.value.equipmentItems = new Map(
-    pendingChoices.value.equipmentItems.set(key, itemId)
-  )
-}
-
-/**
- * Build itemSelections map for a specific choice group
- * Extracts selections from the full map and formats for EquipmentChoiceGroup
- */
-function buildItemSelectionsMap(choiceGroup: string): Map<string, number> {
-  const map = new Map<string, number>()
-  for (const [key, value] of pendingChoices.value.equipmentItems) {
-    if (key.startsWith(`${choiceGroup}:`)) {
-      // Extract "choiceOption:index" from "choiceGroup:choiceOption:index"
-      const parts = key.split(':')
-      const shortKey = `${parts[1]}:${parts[2]}`
-      map.set(shortKey, value)
-    }
-  }
-  return map
-}
-
-/**
- * Format choice group name for display
- * Converts "choice_1" to "Equipment Choice 1"
- */
-function formatGroupName(group: string): string {
-  // Extract number from "choice_1", "choice_2", etc.
-  const match = group.match(/choice[_-]?(\d+)/i)
-  if (match) {
-    return `Equipment Choice ${match[1]}`
-  }
-  return group
-    .replace(/[_-]/g, ' ')
-    .replace(/\b\w/g, l => l.toUpperCase())
 }
 
 /**
@@ -146,27 +103,57 @@ function getItemDisplayName(item: { custom_name?: string | null, item?: { name?:
  * Check if all equipment choices are made
  */
 const allEquipmentChoicesMade = computed(() => {
-  // Check class choice groups
-  for (const [group] of classChoiceGroups.value) {
-    if (!pendingChoices.value.equipment.has(group)) {
-      return false
-    }
-  }
-  // Check background choice groups
-  for (const [group] of backgroundChoiceGroups.value) {
-    if (!pendingChoices.value.equipment.has(group)) {
-      return false
-    }
-  }
-  return true
+  const equipmentChoices = choicesByType.value.equipment || []
+  return equipmentChoices.every((choice) => {
+    // Check if there's a local selection
+    return localSelections.value.has(choice.id) || choice.remaining === 0
+  })
 })
 
+// Saving state
+const isSaving = ref(false)
+
 /**
- * Continue to next step
+ * Continue to next step - resolve all choices
  */
 async function handleContinue() {
-  await store.saveEquipmentChoices()
-  nextStep()
+  isSaving.value = true
+
+  try {
+    // Resolve each equipment choice
+    for (const [choiceId, optionLetter] of localSelections.value) {
+      // Build item_selections if any exist for this choice
+      const itemSelectionsForChoice: Record<string, number> = {}
+      for (const [key, itemId] of itemSelections.value) {
+        if (key.startsWith(`${choiceId}:`)) {
+          const itemKey = key.substring(choiceId.length + 1) // Remove "choiceId:" prefix
+          itemSelectionsForChoice[itemKey] = itemId
+        }
+      }
+
+      const payload: Record<string, unknown> = {
+        selected: [optionLetter]
+      }
+
+      if (Object.keys(itemSelectionsForChoice).length > 0) {
+        payload.item_selections = itemSelectionsForChoice
+      }
+
+      await resolveChoice(choiceId, payload)
+    }
+
+    nextStep()
+  } catch (e) {
+    console.error('Failed to save equipment choices:', e)
+    toast.add({
+      title: 'Failed to save equipment',
+      description: 'Please try again',
+      color: 'error',
+      icon: 'i-heroicons-exclamation-circle'
+    })
+  } finally {
+    isSaving.value = false
+  }
 }
 
 /**
@@ -249,6 +236,26 @@ function formatPackContentItem(content: PackContentResource): string {
       </p>
     </div>
 
+    <!-- Error State -->
+    <UAlert
+      v-if="choicesError"
+      color="error"
+      icon="i-heroicons-exclamation-circle"
+      title="Failed to load equipment choices"
+      :description="choicesError"
+    />
+
+    <!-- Loading State -->
+    <div
+      v-if="pending && !choicesError"
+      class="flex justify-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-8 h-8 animate-spin text-primary"
+      />
+    </div>
+
     <!-- Class Equipment -->
     <div
       v-if="selections.class"
@@ -323,15 +330,10 @@ function formatPackContentItem(content: PackContentResource): string {
       </div>
 
       <!-- Choice Groups -->
-      <CharacterBuilderEquipmentChoiceGroup
-        v-for="[group, items] in classChoiceGroups"
-        :key="group"
-        :group-name="formatGroupName(group)"
-        :items="items"
-        :selected-id="pendingChoices.equipment.get(group) ?? null"
-        :item-selections="buildItemSelectionsMap(group)"
-        @select="(id: number) => handleChoiceSelect(group, id)"
-        @item-select="(opt: number, idx: number, itemId: number) => handleItemSelect(group, opt, idx, itemId)"
+      <CharacterWizardEquipmentChoiceList
+        :choices="classEquipmentChoices"
+        :local-selections="localSelections"
+        @select="handleChoiceSelect"
       />
     </div>
 
@@ -409,15 +411,10 @@ function formatPackContentItem(content: PackContentResource): string {
       </div>
 
       <!-- Choice Groups -->
-      <CharacterBuilderEquipmentChoiceGroup
-        v-for="[group, items] in backgroundChoiceGroups"
-        :key="group"
-        :group-name="formatGroupName(group)"
-        :items="items"
-        :selected-id="pendingChoices.equipment.get(group) ?? null"
-        :item-selections="buildItemSelectionsMap(group)"
-        @select="(id: number) => handleChoiceSelect(group, id)"
-        @item-select="(opt: number, idx: number, itemId: number) => handleItemSelect(group, opt, idx, itemId)"
+      <CharacterWizardEquipmentChoiceList
+        :choices="backgroundEquipmentChoices"
+        :local-selections="localSelections"
+        @select="handleChoiceSelect"
       />
     </div>
 
@@ -426,8 +423,8 @@ function formatPackContentItem(content: PackContentResource): string {
       <UButton
         data-test="continue-btn"
         size="lg"
-        :disabled="!allEquipmentChoicesMade || isLoading"
-        :loading="isLoading"
+        :disabled="!allEquipmentChoicesMade || pending || isSaving"
+        :loading="pending || isSaving"
         @click="handleContinue"
       >
         Continue with Equipment
