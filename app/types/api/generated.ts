@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  *
  * Generated from: http://localhost:8080/docs/api.json
- * Generated at: 2025-12-05T22:17:01.025Z
+ * Generated at: 2025-12-06T08:36:46.183Z
  *
  * To regenerate: npm run types:sync
  */
@@ -6029,6 +6029,21 @@ export interface components {
             name: string;
             slug: string;
         };
+        /** CharacterConditionResource */
+        CharacterConditionResource: {
+            id: number;
+            condition: {
+                id: number;
+                name: string;
+                slug: string;
+            };
+            level: number | null;
+            source: string | null;
+            duration: string | null;
+            is_exhaustion: boolean;
+            /** @enum {string|null} */
+            exhaustion_warning: "Level 6 exhaustion results in death" | null;
+        };
         /** CharacterEquipmentResource */
         CharacterEquipmentResource: {
             id: number;
@@ -6187,6 +6202,13 @@ export interface components {
             } | null;
             background?: {
                 [key: string]: unknown;
+            } | null;
+            /** @description Primary class with equipment */
+            class: {
+                id: number;
+                name: string;
+                slug: string;
+                equipment: unknown[];
             } | null;
             classes: components["schemas"]["CharacterClassPivotResource"][];
             /** @description Spell slots */
@@ -6792,6 +6814,8 @@ export interface components {
             name: string;
             description: string | null;
         };
+        /** JsonResource */
+        JsonResource: string;
         /** LanguageResource */
         LanguageResource: {
             id: number;
@@ -7386,39 +7410,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
+            /** @description Array of `AbilityScoreResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
+                        data: components["schemas"]["AbilityScoreResource"][];
                     };
                 };
             };
@@ -7437,14 +7436,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description `AbilityScoreResource` */
+            /** @description `JsonResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["AbilityScoreResource"];
+                        data: components["schemas"]["JsonResource"];
                     };
                 };
             };
@@ -8158,25 +8157,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Array of `CharacterConditionResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: {
-                            id: number;
-                            condition: {
-                                id: number;
-                                name: string;
-                                slug: string;
-                            };
-                            level: string;
-                            source: string;
-                            duration: string;
-                            is_exhaustion: boolean;
-                            exhaustion_warning: string;
-                        }[];
+                        data: components["schemas"]["CharacterConditionResource"][];
                     };
                 };
             };
@@ -8457,14 +8445,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Array of `CharacterFeatureResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        /** @enum {string} */
-                        message: "Features synced successfully";
                         data: components["schemas"]["CharacterFeatureResource"][];
                     };
                 };
@@ -8592,14 +8579,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Array of `CharacterLanguageResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        /** @enum {string} */
-                        message: "Languages synced successfully";
                         data: components["schemas"]["CharacterLanguageResource"][];
                     };
                 };
@@ -8861,14 +8847,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Array of `CharacterProficiencyResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        /** @enum {string} */
-                        message: "Proficiencies synced successfully";
                         data: components["schemas"]["CharacterProficiencyResource"][];
                     };
                 };
@@ -9265,39 +9250,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
+            /** @description Array of `ConditionResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
+                        data: components["schemas"]["ConditionResource"][];
                     };
                 };
             };
@@ -9316,14 +9276,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description `ConditionResource` */
+            /** @description `JsonResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["ConditionResource"];
+                        data: components["schemas"]["JsonResource"];
                     };
                 };
             };
@@ -9552,39 +9512,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
+            /** @description Array of `DamageTypeResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
+                        data: components["schemas"]["DamageTypeResource"][];
                     };
                 };
             };
@@ -9603,14 +9538,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description `DamageTypeResource` */
+            /** @description `JsonResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["DamageTypeResource"];
+                        data: components["schemas"]["JsonResource"];
                     };
                 };
             };
@@ -10207,39 +10142,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
+            /** @description Array of `LanguageResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
+                        data: components["schemas"]["LanguageResource"][];
                     };
                 };
             };
@@ -10258,14 +10168,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description `LanguageResource` */
+            /** @description `JsonResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["LanguageResource"];
+                        data: components["schemas"]["JsonResource"];
                     };
                 };
             };
@@ -10393,15 +10303,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `MediaResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["MediaResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
         };
@@ -10583,15 +10490,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `SpellResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["SpellResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -10772,40 +10676,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             422: components["responses"]["ValidationException"];
@@ -10851,15 +10727,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `ClassResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["ClassResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -10880,15 +10753,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `RaceResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["RaceResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -10909,15 +10779,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `BackgroundResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["BackgroundResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11025,15 +10892,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `SpellResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["SpellResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11157,40 +11021,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             422: components["responses"]["ValidationException"];
@@ -11603,15 +11439,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `ClassResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["ClassResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11629,15 +11462,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `MonsterResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["MonsterResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11655,15 +11485,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `ItemResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["ItemResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11681,15 +11508,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `RaceResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["RaceResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
             404: components["responses"]["ModelNotFoundException"];
@@ -11713,39 +11537,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Paginated set */
+            /** @description Array of `SpellSchoolResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: string[];
-                        links: {
-                            first: string | null;
-                            last: string | null;
-                            prev: string | null;
-                            next: string | null;
-                        };
-                        meta: {
-                            current_page: number;
-                            from: number | null;
-                            last_page: number;
-                            /** @description Generated paginator links. */
-                            links: {
-                                url: string | null;
-                                label: string;
-                                active: boolean;
-                            }[];
-                            /** @description Base path for paginator generated URLs. */
-                            path: string | null;
-                            /** @description Number of items shown per page. */
-                            per_page: number;
-                            /** @description Number of the last item in the slice. */
-                            to: number | null;
-                            /** @description Total number of items being paginated. */
-                            total: number;
-                        };
+                        data: components["schemas"]["SpellSchoolResource"][];
                     };
                 };
             };
@@ -11764,14 +11563,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description `SpellSchoolResource` */
+            /** @description `JsonResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data: components["schemas"]["SpellSchoolResource"];
+                        data: components["schemas"]["JsonResource"];
                     };
                 };
             };
@@ -11900,15 +11699,12 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Array of `TagResource` */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        data: components["schemas"]["TagResource"][];
-                    };
+                    "application/json": Record<string, never>;
                 };
             };
         };
