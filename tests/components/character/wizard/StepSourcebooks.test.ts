@@ -102,11 +102,21 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 200))
 
-      // Wait for initial auto-select, then set specific state
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB'])
+      // Verify sources are loaded
+      expect(vm.sources).toBeDefined()
+      expect(vm.sources.length).toBeGreaterThan(0)
+
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
       await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
+      await wrapper.vm.$nextTick()
+
+      // Verify initial state
+      expect(store.selectedSources).toContain('PHB')
 
       // Toggle the source off
       vm.toggleSource('PHB')
@@ -125,10 +135,14 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for initial auto-select, then set specific selection
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB', 'MM'])
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
+      await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
+      vm.toggleSource('MM')
       await wrapper.vm.$nextTick()
 
       expect(vm.isSelected('PHB')).toBe(true)
@@ -155,9 +169,10 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount, deselect all first
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Deselect all first
       vm.deselectAll()
       await wrapper.vm.$nextTick()
       expect(store.selectedSources.length).toBe(0)
@@ -171,12 +186,13 @@ describe('StepSourcebooks - Specific Behavior', () => {
     })
 
     it('deselects all sources when "Deselect All" is clicked', async () => {
-      const { wrapper, store } = await mountWizardStep(StepSourcebooks)
+      const { wrapper, store} = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for async sources to load and auto-select to trigger
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount with auto-selected sources
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Should have auto-selected sources
       expect(store.selectedSources.length).toBeGreaterThan(0)
 
       // Click deselect all
@@ -199,12 +215,17 @@ describe('StepSourcebooks - Specific Behavior', () => {
     it('displays count of selected sources', async () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
-      // Wait for mount, then set specific selection
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB', 'MM'])
+      const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
+
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
+      await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
+      vm.toggleSource('MM')
       await wrapper.vm.$nextTick()
 
-      const vm = wrapper.vm as any
       expect(vm.selectionCount).toBe(2)
 
       const text = wrapper.text()
@@ -215,11 +236,15 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount, then set specific selections
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB'])
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
       await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
+      await wrapper.vm.$nextTick()
+
       expect(vm.selectionCount).toBe(1)
 
       store.setSelectedSources(['PHB', 'MM', 'DMG'])
@@ -255,9 +280,10 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount, then deselect all via component method
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Deselect all via component method
       vm.deselectAll()
       await wrapper.vm.$nextTick()
 
@@ -268,10 +294,13 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount then set specific selection
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB'])
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
+      await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
       await wrapper.vm.$nextTick()
 
       expect(vm.canProceed).toBe(true)
@@ -281,9 +310,10 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount, then deselect all
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Deselect all
       vm.deselectAll()
       await wrapper.vm.$nextTick()
 
@@ -295,10 +325,13 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper, store } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount then set selection
-      await new Promise(resolve => setTimeout(resolve, 50))
-      store.setSelectedSources(['PHB'])
+      // Manually set to known state after auto-select completes
+      vm.deselectAll()
+      await wrapper.vm.$nextTick()
+      vm.toggleSource('PHB')
       await wrapper.vm.$nextTick()
 
       expect(vm.canProceed).toBe(true)
@@ -337,9 +370,10 @@ describe('StepSourcebooks - Specific Behavior', () => {
       const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
+      // Wait for sources to load and auto-select to complete
+      await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Wait for mount then deselect all
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Deselect all
       vm.deselectAll()
       await wrapper.vm.$nextTick()
 
