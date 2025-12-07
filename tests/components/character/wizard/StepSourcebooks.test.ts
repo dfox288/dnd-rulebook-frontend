@@ -99,7 +99,7 @@ describe('StepSourcebooks - Specific Behavior', () => {
 
   describe('Source Selection', () => {
     it('toggles source selection when clicked', async () => {
-      const { wrapper, store } = await mountWizardStep(StepSourcebooks)
+      const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
       // Wait for sources to load and auto-select to complete
@@ -115,20 +115,20 @@ describe('StepSourcebooks - Specific Behavior', () => {
       vm.toggleSource('PHB')
       await wrapper.vm.$nextTick()
 
-      // Verify initial state
-      expect(store.selectedSources).toContain('PHB')
+      // Verify initial state using component's isSelected method
+      expect(vm.isSelected('PHB')).toBe(true)
 
       // Toggle the source off
       vm.toggleSource('PHB')
       await wrapper.vm.$nextTick()
 
-      expect(store.selectedSources).not.toContain('PHB')
+      expect(vm.isSelected('PHB')).toBe(false)
 
       // Toggle it back on
       vm.toggleSource('PHB')
       await wrapper.vm.$nextTick()
 
-      expect(store.selectedSources).toContain('PHB')
+      expect(vm.isSelected('PHB')).toBe(true)
     })
 
     it('checks if source is selected', async () => {
@@ -166,7 +166,7 @@ describe('StepSourcebooks - Specific Behavior', () => {
 
   describe('Select All / Deselect All', () => {
     it('selects all sources when "Select All" is clicked', async () => {
-      const { wrapper, store } = await mountWizardStep(StepSourcebooks)
+      const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
       // Wait for sources to load and auto-select to complete
@@ -175,31 +175,31 @@ describe('StepSourcebooks - Specific Behavior', () => {
       // Deselect all first
       vm.deselectAll()
       await wrapper.vm.$nextTick()
-      expect(store.selectedSources.length).toBe(0)
+      expect(vm.selectionCount).toBe(0)
 
       // Click select all
       vm.selectAll()
       await wrapper.vm.$nextTick()
 
       // All sources should be selected (5 sources in mock data)
-      expect(store.selectedSources.length).toBe(5)
+      expect(vm.selectionCount).toBe(5)
     })
 
     it('deselects all sources when "Deselect All" is clicked', async () => {
-      const { wrapper, store} = await mountWizardStep(StepSourcebooks)
+      const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
       // Wait for async sources to load and auto-select to trigger
       await new Promise(resolve => setTimeout(resolve, 150))
 
-      // Should have auto-selected sources
-      expect(store.selectedSources.length).toBeGreaterThan(0)
+      // Should have auto-selected sources (use component's selectionCount)
+      expect(vm.selectionCount).toBeGreaterThan(0)
 
       // Click deselect all
       vm.deselectAll()
       await wrapper.vm.$nextTick()
 
-      expect(store.selectedSources.length).toBe(0)
+      expect(vm.selectionCount).toBe(0)
     })
 
     it('shows select all and deselect all buttons', async () => {
@@ -233,7 +233,7 @@ describe('StepSourcebooks - Specific Behavior', () => {
     })
 
     it('updates count when selection changes', async () => {
-      const { wrapper, store } = await mountWizardStep(StepSourcebooks)
+      const { wrapper } = await mountWizardStep(StepSourcebooks)
 
       const vm = wrapper.vm as any
       // Wait for sources to load and auto-select to complete
@@ -247,7 +247,9 @@ describe('StepSourcebooks - Specific Behavior', () => {
 
       expect(vm.selectionCount).toBe(1)
 
-      store.setSelectedSources(['PHB', 'MM', 'DMG'])
+      // Add more sources using component methods
+      vm.toggleSource('MM')
+      vm.toggleSource('DMG')
       await wrapper.vm.$nextTick()
       expect(vm.selectionCount).toBe(3)
     })
