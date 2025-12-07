@@ -6,13 +6,15 @@ type PendingChoice = components['schemas']['PendingChoiceResource']
 
 interface PackContent {
   quantity: number | string
-  item: { id: number, name: string, slug: string }
+  name: string
+  full_slug?: string
 }
 
 interface EquipmentItem {
   id: number
   name: string
   slug?: string
+  full_slug?: string
   quantity: number
   contents?: PackContent[]
 }
@@ -158,9 +160,9 @@ function formatPackContentItem(content: PackContent): string {
   const quantity = isNaN(qty) ? 1 : qty
 
   if (quantity > 1) {
-    return `${quantity}× ${content.item.name}`
+    return `${quantity}× ${content.name}`
   }
-  return content.item.name
+  return content.name
 }
 
 // Track which pack contents are expanded (by option key: choiceId:optionLetter)
@@ -343,7 +345,7 @@ function isSelected(choiceId: string, optionLetter: string): boolean {
               </span>
               <USelectMenu
                 :model-value="getSelectedItem(choice.id, option.option, selectionIndex)"
-                :items="option.items.map(item => ({ label: item.name, value: item.full_slug || item.slug || String(item.id) }))"
+                :items="(option.items ?? []).map(item => ({ label: item.name, value: item.full_slug || item.slug || String(item.id) }))"
                 :placeholder="`Select item ${selectionIndex + 1}...`"
                 value-key="value"
                 class="flex-1"
