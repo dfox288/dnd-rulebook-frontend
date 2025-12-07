@@ -44,12 +44,11 @@ const languagesCount = computed(() => {
 /**
  * Truncate description to specified length
  */
-const truncatedDescription = computed(() => {
-  if (!props.background.description) return 'A character background for D&D 5e'
-  const maxLength = 150
-  if (props.background.description.length <= maxLength) return props.background.description
-  return props.background.description.substring(0, maxLength).trim() + '...'
-})
+const truncatedDescription = useTruncateDescription(
+  computed(() => props.background.description),
+  150,
+  'A character background for D&D 5e'
+)
 
 /**
  * Get background image path (256px variant)

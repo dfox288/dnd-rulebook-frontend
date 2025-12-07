@@ -19,12 +19,9 @@ const props = withDefaults(defineProps<Props>(), {
 /**
  * Truncate description to specified length
  */
-const truncatedDescription = computed(() => {
-  const maxLength = 150
-  if (!props.description) return ''
-  if (props.description.length <= maxLength) return props.description
-  return props.description.substring(0, maxLength).trim() + '...'
-})
+const truncatedDescription = useTruncateDescription(
+  computed(() => props.description)
+)
 
 /**
  * Get background image path (256px variant)

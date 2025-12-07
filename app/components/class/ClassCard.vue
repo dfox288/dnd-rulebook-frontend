@@ -31,12 +31,11 @@ const typeBadgeText = computed(() => {
 /**
  * Truncate description to specified length
  */
-const truncatedDescription = computed(() => {
-  if (!props.characterClass.description) return 'A playable class for D&D 5e characters'
-  const maxLength = 150
-  if (props.characterClass.description.length <= maxLength) return props.characterClass.description
-  return props.characterClass.description.substring(0, maxLength).trim() + '...'
-})
+const truncatedDescription = useTruncateDescription(
+  computed(() => props.characterClass.description),
+  150,
+  'A playable class for D&D 5e characters'
+)
 
 /**
  * Get primary ability code for display

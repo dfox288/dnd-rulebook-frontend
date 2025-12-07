@@ -60,12 +60,11 @@ const modifiersCount = computed(() => {
 /**
  * Truncate description to specified length
  */
-const truncatedDescription = computed(() => {
-  if (!props.feat.description) return 'A feat that provides special abilities or bonuses'
-  const maxLength = 150
-  if (props.feat.description.length <= maxLength) return props.feat.description
-  return props.feat.description.substring(0, maxLength).trim() + '...'
-})
+const truncatedDescription = useTruncateDescription(
+  computed(() => props.feat.description),
+  150,
+  'A feat that provides special abilities or bonuses'
+)
 
 /**
  * Get background image path (256px variant)
