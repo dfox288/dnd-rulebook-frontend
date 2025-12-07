@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import type { Race } from '~/types'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
+import { logger } from '~/utils/logger'
 
 const store = useCharacterWizardStore()
 const { selections, isLoading, error, isSubraceRequired } = storeToRefs(store)
@@ -64,7 +65,7 @@ async function handleViewDetails(subrace: SubraceItem) {
     const response = await apiFetch<{ data: Race }>(`/races/${subrace.slug}`)
     detailSubrace.value = response.data
   } catch (err) {
-    console.error('Failed to fetch subrace details:', err)
+    logger.error('Failed to fetch subrace details:', err)
     toast.add({
       title: 'Save Failed',
       description: 'Unable to save your selection. Please try again.',
@@ -97,7 +98,7 @@ async function confirmSelection() {
       await store.selectSubrace(null)
       nextStep()
     } catch (err) {
-      console.error('Failed to save subrace selection:', err)
+      logger.error('Failed to save subrace selection:', err)
       toast.add({
         title: 'Save Failed',
         description: 'Unable to save your selection. Please try again.',
@@ -114,7 +115,7 @@ async function confirmSelection() {
     await store.selectSubrace(fullSubrace.data)
     nextStep()
   } catch (err) {
-    console.error('Failed to save subrace:', err)
+    logger.error('Failed to save subrace:', err)
     toast.add({
       title: 'Save Failed',
       description: 'Unable to save your selection. Please try again.',

@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import type { Subclass } from '~/stores/characterWizard'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
+import { logger } from '~/utils/logger'
 
 const store = useCharacterWizardStore()
 const { nextStep } = useCharacterWizard()
@@ -77,7 +78,7 @@ async function confirmSelection() {
     await store.selectSubclass(localSelectedSubclass.value)
     await nextStep()
   } catch (err) {
-    console.error('Failed to save subclass:', err)
+    logger.error('Failed to save subclass:', err)
     toast.add({
       title: 'Save Failed',
       description: 'Unable to save your selection. Please try again.',

@@ -1,4 +1,5 @@
 import type { Feat } from '~/types/api/entities'
+import { logger } from '~/utils/logger'
 
 /**
  * Ability modifier extracted from feat modifiers
@@ -234,7 +235,7 @@ export function useFeatDetail(slug: Ref<string>) {
         })
         variantsData.value = response.data ?? []
       } catch (err) {
-        console.error('Failed to fetch feat variants:', err)
+        logger.error('Failed to fetch feat variants:', err)
         variantsData.value = []
       }
     },

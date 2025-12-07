@@ -1,3 +1,5 @@
+import { logger } from '~/utils/logger'
+
 /**
  * API composable that provides a configured fetch client
  * for calling Nitro API proxy routes.
@@ -41,7 +43,7 @@ export const useApi = () => {
     },
     onResponseError({ response }) {
       // Global error handling
-      console.error('API Error:', response.status, response.statusText)
+      logger.error('API Error:', response.status, response.statusText)
     }
   })
 

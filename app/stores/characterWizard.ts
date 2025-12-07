@@ -9,6 +9,7 @@
  * 3. Cached backend data (stats, summary)
  */
 import { defineStore } from 'pinia'
+import { logger } from '~/utils/logger'
 import type {
   Race,
   CharacterClass,
@@ -149,7 +150,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
         if (isCollision && attempt < maxRetries - 1) {
           // Collision detected, retry with new public_id
-          console.warn(`public_id collision on attempt ${attempt + 1}, retrying...`)
+          logger.warn(`public_id collision on attempt ${attempt + 1}, retrying...`)
           lastError = err as Error
           continue
         }
@@ -334,7 +335,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
       stats.value = statsRes.data
       summary.value = summaryRes.data
     } catch (err) {
-      console.error('Failed to sync with backend:', err)
+      logger.error('Failed to sync with backend:', err)
       // Don't throw - UI should still work with stale data
     }
   }

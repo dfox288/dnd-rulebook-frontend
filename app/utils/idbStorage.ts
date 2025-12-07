@@ -1,4 +1,5 @@
 import { get, set, del } from 'idb-keyval'
+import { logger } from '~/utils/logger'
 
 /**
  * IndexedDB storage adapter for pinia-plugin-persistedstate.
@@ -13,7 +14,7 @@ export const idbStorage = {
       const value = await get<string>(key)
       return value ?? null
     } catch (e) {
-      console.warn(`[idbStorage] Failed to get "${key}":`, e)
+      logger.warn(`[idbStorage] Failed to get "${key}":`, e)
       return null
     }
   },
@@ -22,7 +23,7 @@ export const idbStorage = {
     try {
       await set(key, value)
     } catch (e) {
-      console.warn(`[idbStorage] Failed to set "${key}":`, e)
+      logger.warn(`[idbStorage] Failed to set "${key}":`, e)
     }
   },
 
@@ -30,7 +31,7 @@ export const idbStorage = {
     try {
       await del(key)
     } catch (e) {
-      console.warn(`[idbStorage] Failed to remove "${key}":`, e)
+      logger.warn(`[idbStorage] Failed to remove "${key}":`, e)
     }
   }
 }
