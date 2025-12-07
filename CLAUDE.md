@@ -128,6 +128,20 @@ docker compose exec nuxt npm run types:sync # Sync API types from backend
 | All Pinia stores | `npm run test:stores` | ~15s |
 | CI, pre-commit, final check | `npm run test` | ~250s |
 
+### Character Builder Stress Test
+
+Rapidly create N characters via API to test the character builder without UI:
+
+```bash
+npm run test:character-stress -- --count=10          # Create 10 random characters
+npm run test:character-stress -- --count=3 --verbose # Watch choices being made
+npm run test:character-stress -- --dry-run           # Preview without API calls
+```
+
+**What it tests:** Character creation → class → background → ability scores → all pending choices (proficiencies, languages, equipment, spells) → validation → cleanup.
+
+**Test pool:** 5 races × 5 classes × 4 backgrounds = 100 unique combinations (PHB-focused).
+
 ---
 
 ## Development Cycle
