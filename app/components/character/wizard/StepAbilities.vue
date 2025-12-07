@@ -163,7 +163,7 @@ watch(selectedMethod, (newMethod) => {
       <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Method
       </label>
-      <UButtonGroup>
+      <UFieldGroup>
         <UButton
           v-for="option in methodOptions"
           :key="option.value"
@@ -172,7 +172,7 @@ watch(selectedMethod, (newMethod) => {
         >
           {{ option.label }}
         </UButton>
-      </UButtonGroup>
+      </UFieldGroup>
     </div>
 
     <!-- Method-specific Input -->

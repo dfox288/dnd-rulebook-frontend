@@ -360,10 +360,10 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     error.value = null
 
     try {
-      // Race must have full_slug for slug-based references (#318)
-      const raceSlug = race.full_slug
+      // Use full_slug if available, fall back to slug for base races without full_slug (#318)
+      const raceSlug = race.full_slug ?? race.slug
       if (!raceSlug) {
-        throw new Error('Race missing full_slug - cannot save')
+        throw new Error('Race missing slug - cannot save')
       }
 
       if (!characterId.value) {
@@ -414,9 +414,10 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     error.value = null
 
     try {
-      // Use subrace's full_slug if selected, otherwise fall back to base race's full_slug (#318)
-      const raceSlug = subrace?.full_slug ?? selections.value.race?.full_slug
-      if (!raceSlug) throw new Error('No race selected or race missing full_slug')
+      // Use subrace's slug if selected, otherwise fall back to base race's slug (#318)
+      // Prefer full_slug when available, fall back to slug for base races without full_slug
+      const raceSlug = subrace?.full_slug ?? subrace?.slug ?? selections.value.race?.full_slug ?? selections.value.race?.slug
+      if (!raceSlug) throw new Error('No race selected or race missing slug')
 
       await apiFetch(`/characters/${characterId.value}`, {
         method: 'PATCH',

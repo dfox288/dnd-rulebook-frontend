@@ -323,7 +323,7 @@ function handleOptionToggle(choice: PendingChoice, optionId: string | number) {
 // ══════════════════════════════════════════════════════════════
 
 interface OptionDisplay {
-  id: string | number
+  id: string  // Slug identifier (full_slug or slug) - see #318
   name: string
 }
 
@@ -331,18 +331,23 @@ function getDisplayOptions(choice: PendingChoice): OptionDisplay[] {
   const options = getEffectiveOptions(choice)
   return options.map((rawOpt: unknown) => {
     const opt = rawOpt as Record<string, unknown>
-    // Handle skill options
+
+    // Handle nested skill options (from endpoint fetch)
     if (opt.skill) {
-      const skill = opt.skill as { id: number, name: string }
-      return { id: skill.id, name: skill.name }
+      const skill = opt.skill as { slug: string, name: string }
+      return { id: skill.slug, name: skill.name }
     }
-    // Handle proficiency_type options
+
+    // Handle nested proficiency_type options (from endpoint fetch)
     if (opt.proficiency_type) {
-      const profType = opt.proficiency_type as { id: number, name: string }
-      return { id: profType.id, name: profType.name }
+      const profType = opt.proficiency_type as { slug: string, name: string }
+      return { id: profType.slug, name: profType.name }
     }
-    // Fallback
-    return { id: (opt.id as number) ?? 0, name: (opt.name as string) ?? 'Unknown' }
+
+    // Handle flat options from API (type, full_slug, slug, name format)
+    // Use full_slug for unique identification (includes source prefix) - see #318
+    const slug = (opt.full_slug as string) ?? (opt.slug as string)
+    return { id: slug, name: (opt.name as string) ?? 'Unknown' }
   })
 }
 
