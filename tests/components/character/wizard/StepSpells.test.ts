@@ -115,12 +115,12 @@ describe('StepSpells - Specific Behavior', () => {
 
       const vm = wrapper.vm as any
       const mockChoice = { id: 'test-choice', quantity: 3 }
-      const mockSpell = { id: 1, name: 'Magic Missile' }
+      const mockSpell = { id: 1, name: 'Magic Missile', slug: 'magic-missile', full_slug: 'phb:magic-missile' }
 
       vm.handleSpellToggle(mockChoice, mockSpell)
       await wrapper.vm.$nextTick()
 
-      expect(vm.selectedSpells.get('test-choice')?.has('1')).toBe(true)
+      expect(vm.selectedSpells.get('test-choice')?.has('phb:magic-missile')).toBe(true)
     })
 
     it('removes spell from selection when already selected', async () => {
@@ -132,14 +132,14 @@ describe('StepSpells - Specific Behavior', () => {
 
       const vm = wrapper.vm as any
       const mockChoice = { id: 'test-choice', quantity: 3 }
-      const mockSpell = { id: 1, name: 'Magic Missile' }
+      const mockSpell = { id: 1, name: 'Magic Missile', slug: 'magic-missile', full_slug: 'phb:magic-missile' }
 
       // Select then deselect
       vm.handleSpellToggle(mockChoice, mockSpell)
       vm.handleSpellToggle(mockChoice, mockSpell)
       await wrapper.vm.$nextTick()
 
-      expect(vm.selectedSpells.get('test-choice')?.has('1')).toBe(false)
+      expect(vm.selectedSpells.get('test-choice')?.has('phb:magic-missile')).toBe(false)
     })
 
     it('respects quantity limit', async () => {
@@ -152,11 +152,11 @@ describe('StepSpells - Specific Behavior', () => {
       const vm = wrapper.vm as any
       const mockChoice = { id: 'test-choice', quantity: 2 }
 
-      // Add spells up to limit
-      vm.handleSpellToggle(mockChoice, { id: 1, name: 'Spell 1' })
-      vm.handleSpellToggle(mockChoice, { id: 2, name: 'Spell 2' })
+      // Add spells up to limit (using full_slug format)
+      vm.handleSpellToggle(mockChoice, { id: 1, name: 'Spell 1', slug: 'spell-1', full_slug: 'phb:spell-1' })
+      vm.handleSpellToggle(mockChoice, { id: 2, name: 'Spell 2', slug: 'spell-2', full_slug: 'phb:spell-2' })
       // Try to add beyond limit
-      vm.handleSpellToggle(mockChoice, { id: 3, name: 'Spell 3' })
+      vm.handleSpellToggle(mockChoice, { id: 3, name: 'Spell 3', slug: 'spell-3', full_slug: 'phb:spell-3' })
       await wrapper.vm.$nextTick()
 
       expect(vm.selectedSpells.get('test-choice')?.size).toBe(2)

@@ -8,6 +8,15 @@ import { useCharacterWizard } from '~/composables/useCharacterWizard'
 const store = useCharacterWizardStore()
 const { selectedSources } = storeToRefs(store)
 const { nextStep } = useCharacterWizard()
+const route = useRoute()
+
+// Reset store when starting a NEW character (not editing existing)
+// The /characters/new/* route is for new characters only
+onMounted(() => {
+  if (route.path.startsWith('/characters/new')) {
+    store.reset()
+  }
+})
 
 // API client
 const { apiFetch } = useApi()

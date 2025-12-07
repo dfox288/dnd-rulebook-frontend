@@ -249,7 +249,8 @@ const proficiencyChoicesBySource = computed<ChoicesBySource[]>(() => {
     sources.push({
       source: 'class',
       label: 'From Class',
-      entityName: selections.value.class?.name ?? 'Unknown',
+      // Use source_name from API (reliable after reload) with fallback to store
+      entityName: bySource.class[0]?.source_name ?? selections.value.class?.name ?? 'Unknown',
       choices: bySource.class
     })
   }
@@ -258,7 +259,7 @@ const proficiencyChoicesBySource = computed<ChoicesBySource[]>(() => {
     sources.push({
       source: 'race',
       label: 'From Race',
-      entityName: selections.value.race?.name ?? 'Unknown',
+      entityName: bySource.race[0]?.source_name ?? selections.value.race?.name ?? 'Unknown',
       choices: bySource.race
     })
   }
@@ -267,7 +268,7 @@ const proficiencyChoicesBySource = computed<ChoicesBySource[]>(() => {
     sources.push({
       source: 'background',
       label: 'From Background',
-      entityName: selections.value.background?.name ?? 'Unknown',
+      entityName: bySource.background[0]?.source_name ?? selections.value.background?.name ?? 'Unknown',
       choices: bySource.background
     })
   }
@@ -323,7 +324,7 @@ function handleOptionToggle(choice: PendingChoice, optionId: string | number) {
 // ══════════════════════════════════════════════════════════════
 
 interface OptionDisplay {
-  id: string  // Slug identifier (full_slug or slug) - see #318
+  id: string // Slug identifier (full_slug or slug) - see #318
   name: string
 }
 

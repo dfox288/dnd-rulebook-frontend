@@ -41,7 +41,7 @@ onMounted(async () => {
 const error = computed(() => storeError.value || choicesError.value)
 
 // Local tracking for selected spells per choice
-// Map<choiceId, Set<spellId as string>> - API expects string IDs like "33"
+// Map<choiceId, Set<full_slug>> - API expects full_slug format like "phb:blade-ward"
 const selectedSpells = ref<Map<string, Set<string>>>(new Map())
 
 // Local cache for fetched spell options
@@ -145,9 +145,10 @@ function getSelectedCount(choiceId: string): number {
   return selectedSpells.value.get(choiceId)?.size ?? 0
 }
 
-// Check if a spell is selected in a choice
-function isSpellSelected(choiceId: string, spellId: number): boolean {
-  return selectedSpells.value.get(choiceId)?.has(String(spellId)) ?? false
+// Check if a spell is selected in a choice (by full_slug)
+function isSpellSelected(choiceId: string, spell: Spell): boolean {
+  const slug = spell.full_slug ?? spell.slug
+  return selectedSpells.value.get(choiceId)?.has(slug) ?? false
 }
 
 // Check if a choice is at limit
@@ -155,18 +156,18 @@ function isChoiceAtLimit(choice: PendingChoice): boolean {
   return getSelectedCount(choice.id) >= choice.quantity
 }
 
-// Toggle spell selection for a choice
+// Toggle spell selection for a choice (uses full_slug for API compatibility)
 function handleSpellToggle(choice: PendingChoice, spell: Spell) {
   const selected = selectedSpells.value.get(choice.id) ?? new Set<string>()
-  const spellIdStr = String(spell.id)
+  const spellSlug = spell.full_slug ?? spell.slug
 
-  if (selected.has(spellIdStr)) {
+  if (selected.has(spellSlug)) {
     // Deselect
-    selected.delete(spellIdStr)
+    selected.delete(spellSlug)
   } else {
     // Don't allow selecting more than limit
     if (selected.size >= choice.quantity) return
-    selected.add(spellIdStr)
+    selected.add(spellSlug)
   }
 
   selectedSpells.value.set(choice.id, selected)
@@ -377,8 +378,8 @@ function handleCloseModal() {
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"
-            :selected="isSpellSelected(choice.id, spell.id)"
-            :disabled="!isSpellSelected(choice.id, spell.id) && isChoiceAtLimit(choice)"
+            :selected="isSpellSelected(choice.id, spell)"
+            :disabled="!isSpellSelected(choice.id, spell) && isChoiceAtLimit(choice)"
             @toggle="handleSpellToggle(choice, spell)"
             @view-details="handleViewDetails(spell)"
           />
@@ -409,8 +410,8 @@ function handleCloseModal() {
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"
-            :selected="isSpellSelected(choice.id, spell.id)"
-            :disabled="!isSpellSelected(choice.id, spell.id) && isChoiceAtLimit(choice)"
+            :selected="isSpellSelected(choice.id, spell)"
+            :disabled="!isSpellSelected(choice.id, spell) && isChoiceAtLimit(choice)"
             @toggle="handleSpellToggle(choice, spell)"
             @view-details="handleViewDetails(spell)"
           />
@@ -441,8 +442,8 @@ function handleCloseModal() {
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"
-            :selected="isSpellSelected(choice.id, spell.id)"
-            :disabled="!isSpellSelected(choice.id, spell.id) && isChoiceAtLimit(choice)"
+            :selected="isSpellSelected(choice.id, spell)"
+            :disabled="!isSpellSelected(choice.id, spell) && isChoiceAtLimit(choice)"
             @toggle="handleSpellToggle(choice, spell)"
             @view-details="handleViewDetails(spell)"
           />

@@ -28,13 +28,27 @@ const {
   resolveChoice
 } = useUnifiedChoices(computed(() => store.characterId))
 
+// Local selections: Map<choiceId, Set<slug>> - NEW selections being made this session
+const localSelections = ref<Map<string, Set<string>>>(new Map())
+
 // Fetch language choices on mount
 onMounted(async () => {
   await fetchChoices('language')
 })
 
-// Local selections: Map<choiceId, Set<slug>> - stored as strings for API compatibility
-const localSelections = ref<Map<string, Set<string>>>(new Map())
+// Initialize localSelections from choice.selected when choices load
+watch(choicesByType, (newVal) => {
+  for (const choice of newVal.languages) {
+    if (!localSelections.value.has(choice.id) && choice.selected.length > 0) {
+      // Initialize from already-resolved selections (slugs from API)
+      const selected = new Set<string>()
+      for (const slug of choice.selected) {
+        selected.add(String(slug))
+      }
+      localSelections.value.set(choice.id, selected)
+    }
+  }
+}, { immediate: true })
 
 // Get language choices grouped by source
 const languageChoicesBySource = computed(() => {
@@ -67,9 +81,11 @@ const sourceData = computed((): SourceDisplayData[] => {
       choice,
       label: 'From Race',
       entityName: choice.source_name,
-      knownLanguages: choice.selected.map((id) => {
-        const option = (choice.options as Array<{ id: number, name: string }>)?.find(o => o.id === Number(id))
-        return option ?? { id: Number(id), name: `Language ${id}` }
+      knownLanguages: choice.selected.map((slug) => {
+        // choice.selected contains full_slug values (e.g., "core:common")
+        const options = choice.options as Array<{ id: number, full_slug?: string, slug: string, name: string }>
+        const option = options?.find(o => (o.full_slug ?? o.slug) === String(slug))
+        return option ?? { id: 0, name: String(slug) }
       })
     })
   }
@@ -80,9 +96,11 @@ const sourceData = computed((): SourceDisplayData[] => {
       choice,
       label: 'From Background',
       entityName: choice.source_name,
-      knownLanguages: choice.selected.map((id) => {
-        const option = (choice.options as Array<{ id: number, name: string }>)?.find(o => o.id === Number(id))
-        return option ?? { id: Number(id), name: `Language ${id}` }
+      knownLanguages: choice.selected.map((slug) => {
+        // choice.selected contains full_slug values (e.g., "core:common")
+        const options = choice.options as Array<{ id: number, full_slug?: string, slug: string, name: string }>
+        const option = options?.find(o => (o.full_slug ?? o.slug) === String(slug))
+        return option ?? { id: 0, name: String(slug) }
       })
     })
   }
@@ -135,9 +153,16 @@ function handleLanguageToggle(choice: PendingChoice, slug: string) {
 }
 
 // Check if all language choices are complete
+// A choice is complete when remaining === 0 OR localSelections has enough new picks
 const allLanguageChoicesComplete = computed(() => {
   for (const data of sourceData.value) {
-    if (getSelectedCount(data.choice.id) < data.choice.quantity) {
+    const choice = data.choice
+    // If remaining is 0, choice is already complete
+    if (choice.remaining === 0) continue
+    // Otherwise, check if we have enough new selections
+    const newSelections = localSelections.value.get(choice.id)?.size ?? 0
+    const alreadySelected = choice.selected.length
+    if (newSelections + alreadySelected < choice.quantity) {
       return false
     }
   }
@@ -202,9 +227,9 @@ async function handleContinue() {
       class="mb-6"
     />
 
-    <!-- Loading State -->
+    <!-- Loading State (fetching choices or saving) -->
     <div
-      v-if="pending && !choicesError"
+      v-if="(pending || isLoading) && !choicesError"
       class="flex justify-center py-8"
     >
       <UIcon
@@ -230,9 +255,9 @@ async function handleContinue() {
       </p>
     </div>
 
-    <!-- Language choices by source -->
+    <!-- Language choices by source (hidden during save to prevent DOM patching errors) -->
     <div
-      v-else
+      v-else-if="!isLoading"
       class="space-y-8"
     >
       <div
@@ -288,36 +313,36 @@ async function handleContinue() {
           <!-- Language options grid -->
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             <button
-              v-for="option in (data.choice.options as Array<{ id: number, slug: string, name: string, script?: string }>)"
-              :key="option.slug"
+              v-for="option in (data.choice.options as Array<{ id: number, full_slug?: string, slug: string, name: string, script?: string }>)"
+              :key="option.full_slug ?? option.slug"
               type="button"
               class="language-option p-3 rounded-lg border text-left transition-all"
               :class="{
-                'border-primary bg-primary/10': isLanguageSelected(data.choice.id, option.slug),
-                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isLanguageSelected(data.choice.id, option.slug) && !isLanguageSelectedElsewhere(data.choice.id, option.slug),
-                'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed': isLanguageSelectedElsewhere(data.choice.id, option.slug)
+                'border-primary bg-primary/10': isLanguageSelected(data.choice.id, option.full_slug ?? option.slug),
+                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isLanguageSelected(data.choice.id, option.full_slug ?? option.slug) && !isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug),
+                'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed': isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)
               }"
-              :disabled="isLanguageSelectedElsewhere(data.choice.id, option.slug)"
-              @click="handleLanguageToggle(data.choice, option.slug)"
+              :disabled="isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)"
+              @click="handleLanguageToggle(data.choice, option.full_slug ?? option.slug)"
             >
               <div class="flex items-center gap-2">
                 <UIcon
-                  :name="isLanguageSelectedElsewhere(data.choice.id, option.slug)
+                  :name="isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)
                     ? 'i-heroicons-no-symbol'
-                    : isLanguageSelected(data.choice.id, option.slug)
+                    : isLanguageSelected(data.choice.id, option.full_slug ?? option.slug)
                       ? 'i-heroicons-check-circle-solid'
                       : 'i-heroicons-circle'"
                   class="w-5 h-5"
                   :class="{
-                    'text-primary': isLanguageSelected(data.choice.id, option.slug),
-                    'text-gray-400': !isLanguageSelected(data.choice.id, option.slug) && !isLanguageSelectedElsewhere(data.choice.id, option.slug),
-                    'text-gray-300 dark:text-gray-600': isLanguageSelectedElsewhere(data.choice.id, option.slug)
+                    'text-primary': isLanguageSelected(data.choice.id, option.full_slug ?? option.slug),
+                    'text-gray-400': !isLanguageSelected(data.choice.id, option.full_slug ?? option.slug) && !isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug),
+                    'text-gray-300 dark:text-gray-600': isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)
                   }"
                 />
                 <span class="font-medium">{{ option.name }}</span>
               </div>
               <p
-                v-if="isLanguageSelectedElsewhere(data.choice.id, option.slug)"
+                v-if="isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)"
                 class="text-xs text-gray-400 dark:text-gray-500 mt-1 ml-7"
               >
                 Already selected from {{ data.choice.source === 'race' ? 'background' : 'race' }}

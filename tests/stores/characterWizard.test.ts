@@ -517,7 +517,7 @@ describe('characterWizard store', () => {
       expect(store.selections.class?.id).toBe(mockCleric.id)
       expect(mockApiFetch).toHaveBeenCalledWith(
         '/characters/1/classes',
-        expect.objectContaining({ method: 'POST', body: { class_slug: mockCleric.full_slug } })
+        expect.objectContaining({ method: 'POST', body: { class_slug: mockCleric.full_slug, force: true } })
       )
     })
 
@@ -535,8 +535,9 @@ describe('characterWizard store', () => {
       await store.selectClass(mockCleric)
 
       expect(store.selections.class?.id).toBe(mockCleric.id)
+      // URL now uses full_slug instead of ID (see #318)
       expect(mockApiFetch).toHaveBeenCalledWith(
-        `/characters/1/classes/${mockFighter.id}`,
+        `/characters/1/classes/${mockFighter.full_slug}`,
         expect.objectContaining({ method: 'PUT', body: { class_slug: mockCleric.full_slug } })
       )
     })
@@ -760,18 +761,22 @@ describe('characterWizard store', () => {
       expect(mockApiFetch).not.toHaveBeenCalled()
     })
 
-    it('fetches character by publicId', async () => {
+    it('fetches character by publicId and loads full entity details', async () => {
       const store = useCharacterWizardStore()
 
       mockApiFetch
+        // First: character endpoint returns lightweight data with slugs
         .mockResolvedValueOnce({
           data: {
             id: 42,
             public_id: 'noble-mage-xyz',
             name: 'Gandalf',
-            race: mockElf
+            race: { slug: 'elf', full_slug: 'phb:elf' }
           }
         })
+        // Second: full race details fetched from /races/elf
+        .mockResolvedValueOnce({ data: mockElf })
+        // Third/Fourth: stats and summary
         .mockResolvedValueOnce({ data: {} }) // stats
         .mockResolvedValueOnce({ data: {} }) // summary
 
@@ -780,7 +785,9 @@ describe('characterWizard store', () => {
       expect(store.characterId).toBe(42)
       expect(store.publicId).toBe('noble-mage-xyz')
       expect(store.selections.name).toBe('Gandalf')
+      // Full race data is now fetched from /races/{slug}
       expect(store.selections.race?.id).toBe(mockElf.id)
+      expect(mockApiFetch).toHaveBeenCalledWith('/races/elf')
     })
 
     it('sets error on failure', async () => {

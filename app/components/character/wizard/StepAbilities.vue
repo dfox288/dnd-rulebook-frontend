@@ -56,6 +56,43 @@ const nullableScores = ref<Record<keyof AbilityScores, number | null>>({
   charisma: null
 })
 
+// Sync local state from store when it changes (e.g., after page reload)
+watch(
+  () => selections.value.abilityMethod,
+  (newMethod) => {
+    if (newMethod && newMethod !== selectedMethod.value) {
+      selectedMethod.value = newMethod
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => selections.value.abilityScores,
+  (newScores) => {
+    if (!newScores) return
+
+    // Check if scores are non-default (user has assigned them)
+    const hasAssignedScores = Object.values(newScores).some(v => v !== 10)
+
+    if (hasAssignedScores) {
+      // Update localScores for point_buy/manual
+      localScores.value = { ...newScores }
+
+      // Update nullableScores for standard_array
+      nullableScores.value = {
+        strength: newScores.strength,
+        dexterity: newScores.dexterity,
+        constitution: newScores.constitution,
+        intelligence: newScores.intelligence,
+        wisdom: newScores.wisdom,
+        charisma: newScores.charisma
+      }
+    }
+  },
+  { immediate: true }
+)
+
 // Track validity from child components
 const isInputValid = ref(false)
 

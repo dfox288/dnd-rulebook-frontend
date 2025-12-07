@@ -440,13 +440,12 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
    * If no class exists, uses POST to add it.
    *
    * Note: Uses full_slug for API requests (see #318)
-   * URL paths still use ID (backend accepts both, pivot ID recommended)
    */
   async function selectClass(cls: CharacterClass): Promise<void> {
     if (!characterId.value) return
 
     // Skip if selecting the same class (user went back and clicked same option)
-    if (selections.value.class?.id === cls.id) {
+    if (selections.value.class?.full_slug === cls.full_slug) {
       return
     }
 
@@ -455,23 +454,25 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
     try {
       // Class must have full_slug for slug-based references (#318)
-      const classSlug = cls.full_slug
-      if (!classSlug) {
+      const newClassSlug = cls.full_slug
+      if (!newClassSlug) {
         throw new Error('Class missing full_slug - cannot save')
       }
 
-      if (selections.value.class) {
+      if (selections.value.class?.full_slug) {
         // Replace existing class using PUT endpoint
-        // URL uses ID (backend accepts both), body uses class_slug (#318)
-        await apiFetch(`/characters/${characterId.value}/classes/${selections.value.class.id}`, {
+        // URL uses current class full_slug, body contains new class_slug (#318)
+        const currentClassSlug = selections.value.class.full_slug
+        await apiFetch(`/characters/${characterId.value}/classes/${currentClassSlug}`, {
           method: 'PUT',
-          body: { class_slug: classSlug }
+          body: { class_slug: newClassSlug }
         })
       } else {
         // Add new class using POST endpoint with class_slug (#318)
+        // force: true skips multiclass prereq checks (this is initial class, not multiclass)
         await apiFetch(`/characters/${characterId.value}/classes`, {
           method: 'POST',
-          body: { class_slug: classSlug }
+          body: { class_slug: newClassSlug, force: true }
         })
       }
 
@@ -498,7 +499,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
    * Note: Uses full_slug for API requests (see #318)
    */
   async function selectSubclass(subclass: Subclass): Promise<void> {
-    if (!characterId.value || !selections.value.class) return
+    if (!characterId.value || !selections.value.class?.full_slug) return
 
     // Validate full_slug exists (required for API - see #318)
     if (!subclass.full_slug) {
@@ -509,9 +510,9 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     error.value = null
 
     try {
-      // URL uses class ID, body uses subclass_slug (#318)
+      // URL uses class full_slug, body uses subclass_slug (#318)
       await apiFetch(
-        `/characters/${characterId.value}/classes/${selections.value.class.id}/subclass`,
+        `/characters/${characterId.value}/classes/${selections.value.class.full_slug}/subclass`,
         {
           method: 'PUT',
           body: { subclass_slug: subclass.full_slug }
@@ -654,7 +655,8 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
    * Load an existing character by publicId (for page refresh/navigation)
    *
    * Called when navigating to a wizard step URL with a publicId.
-   * Fetches the character data and populates the store state.
+   * Fetches the character data and then fetches FULL entity details
+   * (race, class, background) to restore equipment, proficiencies, etc.
    */
   async function loadCharacter(charPublicId: string): Promise<void> {
     // Skip if already loaded
@@ -667,20 +669,102 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
     try {
       // Fetch character data by publicId (backend accepts both id and public_id)
-      const response = await apiFetch<{ data: { id: number, public_id: string, name: string, race?: Race, background?: Background } }>(`/characters/${charPublicId}`)
+      const response = await apiFetch<{
+        data: {
+          id: number
+          public_id: string
+          name: string
+          alignment?: CharacterAlignment
+          race?: { slug: string, full_slug?: string }
+          background?: { slug: string, full_slug?: string }
+          class?: { slug: string, full_slug?: string }
+          classes?: Array<{ subclass?: { id: number, name: string, slug: string, full_slug?: string } }>
+          ability_score_method?: AbilityMethod
+          ability_scores?: {
+            STR: number | null
+            DEX: number | null
+            CON: number | null
+            INT: number | null
+            WIS: number | null
+            CHA: number | null
+          }
+        }
+      }>(`/characters/${charPublicId}`)
 
       characterId.value = response.data.id
       publicId.value = response.data.public_id
 
-      // Populate selections from fetched data
+      // Populate name from character data
       if (response.data.name) {
         selections.value.name = response.data.name
       }
-      if (response.data.race) {
-        selections.value.race = response.data.race as Race
+
+      // Restore alignment
+      if (response.data.alignment) {
+        selections.value.alignment = response.data.alignment
       }
-      if (response.data.background) {
-        selections.value.background = response.data.background as Background
+
+      // Restore ability score method
+      if (response.data.ability_score_method) {
+        selections.value.abilityMethod = response.data.ability_score_method
+      }
+
+      // Restore ability scores (map API format STR/DEX to store format strength/dexterity)
+      if (response.data.ability_scores) {
+        const scores = response.data.ability_scores
+        selections.value.abilityScores = {
+          strength: scores.STR ?? 10,
+          dexterity: scores.DEX ?? 10,
+          constitution: scores.CON ?? 10,
+          intelligence: scores.INT ?? 10,
+          wisdom: scores.WIS ?? 10,
+          charisma: scores.CHA ?? 10
+        }
+      }
+
+      // Fetch FULL entity details in parallel for equipment, proficiencies, etc.
+      // The character endpoint returns lightweight data; we need full details.
+      const fetchPromises: Promise<void>[] = []
+
+      if (response.data.race?.slug) {
+        fetchPromises.push(
+          apiFetch<{ data: Race }>(`/races/${response.data.race.slug}`)
+            .then((raceRes) => {
+              selections.value.race = raceRes.data
+            })
+        )
+      }
+
+      if (response.data.class?.slug) {
+        fetchPromises.push(
+          apiFetch<{ data: CharacterClass }>(`/classes/${response.data.class.slug}`)
+            .then((classRes) => {
+              selections.value.class = classRes.data
+            })
+        )
+      }
+
+      if (response.data.background?.slug) {
+        fetchPromises.push(
+          apiFetch<{ data: Background }>(`/backgrounds/${response.data.background.slug}`)
+            .then((bgRes) => {
+              selections.value.background = bgRes.data
+            })
+        )
+      }
+
+      // Wait for all entity fetches to complete
+      await Promise.all(fetchPromises)
+
+      // Restore subclass from classes array (first entry is primary class)
+      const apiSubclass = response.data.classes?.[0]?.subclass
+      if (apiSubclass) {
+        selections.value.subclass = {
+          id: apiSubclass.id,
+          name: apiSubclass.name,
+          slug: apiSubclass.slug,
+          full_slug: apiSubclass.full_slug ?? apiSubclass.slug
+        }
       }
 
       await syncWithBackend()
