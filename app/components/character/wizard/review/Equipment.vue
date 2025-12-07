@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewEquipment.vue -->
+<!-- app/components/character/wizard/review/Equipment.vue -->
 <script setup lang="ts">
 /**
  * Equipment card - displays character's equipment list

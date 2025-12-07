@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewProficiencies.vue -->
+<!-- app/components/character/wizard/review/Proficiencies.vue -->
 <script setup lang="ts">
 /**
  * Proficiencies card - displays proficiencies grouped by type

@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewLanguages.vue -->
+<!-- app/components/character/wizard/review/Languages.vue -->
 <script setup lang="ts">
 /**
  * Languages card - displays character's known languages

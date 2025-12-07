@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewCharacterStats.vue -->
+<!-- app/components/character/wizard/review/CharacterStats.vue -->
 <script setup lang="ts">
 /**
  * Combat stats section - includes combat stats, saving throws, and spellcasting cards

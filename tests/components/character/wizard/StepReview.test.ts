@@ -55,15 +55,14 @@ const statsStubs = {
 // Stub review sub-components - render meaningful content for tests
 const stubs = {
   ...statsStubs,
-  CharacterWizardReviewReviewCharacterIdentity: {
+  CharacterWizardReviewCharacterIdentity: {
     template: `<div>
       <h1>{{ characterName }}</h1>
       <p>{{ race }} · {{ characterClass }} · {{ background }}</p>
-      <button>Edit Details</button>
     </div>`,
     props: ['characterName', 'race', 'characterClass', 'background']
   },
-  CharacterWizardReviewReviewCharacterAbilities: {
+  CharacterWizardReviewCharacterAbilities: {
     template: `<div>
       <span>Ability Scores</span>
       <div v-if="abilityScores" v-for="a in abilityScores" :key="a.code">
@@ -72,7 +71,7 @@ const stubs = {
     </div>`,
     props: ['abilityScores']
   },
-  CharacterWizardReviewReviewCharacterStats: {
+  CharacterWizardReviewCharacterStats: {
     template: `<div>
       <div data-testid="combat-stats-card">Combat Stats</div>
       <div data-testid="saving-throws-card" v-if="savingThrows">Saving Throws</div>
@@ -80,19 +79,19 @@ const stubs = {
     </div>`,
     props: ['hitPoints', 'armorClass', 'initiative', 'speed', 'proficiencyBonus', 'savingThrows', 'isSpellcaster', 'spellcasting']
   },
-  CharacterWizardReviewReviewProficiencies: {
+  CharacterWizardReviewProficiencies: {
     template: '<div><span>Proficiencies</span></div>',
     props: ['proficiencies']
   },
-  CharacterWizardReviewReviewLanguages: {
+  CharacterWizardReviewLanguages: {
     template: '<div><span>Languages</span></div>',
     props: ['languages']
   },
-  CharacterWizardReviewReviewEquipment: {
+  CharacterWizardReviewEquipment: {
     template: '<div><span>Equipment</span></div>',
     props: ['equipment']
   },
-  CharacterWizardReviewReviewSpells: {
+  CharacterWizardReviewSpells: {
     template: '<div v-if="isSpellcaster"><span>Spells</span></div>',
     props: ['spells', 'isSpellcaster']
   }
@@ -314,13 +313,14 @@ describe('StepReview', () => {
     })
   })
 
-  describe('edit functionality', () => {
-    it('shows edit button for character details', async () => {
+  describe('finish button', () => {
+    it('shows Create Character button', async () => {
       const wrapper = await mountSuspended(StepReview, {
         global: { stubs }
       })
 
-      expect(wrapper.text()).toMatch(/Edit/i)
+      expect(wrapper.find('[data-testid="finish-btn"]').exists()).toBe(true)
+      expect(wrapper.text()).toContain('Create Character')
     })
   })
 })

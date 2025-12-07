@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewCharacterAbilities.vue -->
+<!-- app/components/character/wizard/review/CharacterAbilities.vue -->
 <script setup lang="ts">
 /**
  * Ability scores card - displays all 6 ability scores with modifiers

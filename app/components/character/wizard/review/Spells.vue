@@ -1,4 +1,4 @@
-<!-- app/components/character/wizard/review/ReviewSpells.vue -->
+<!-- app/components/character/wizard/review/Spells.vue -->
 <script setup lang="ts">
 /**
  * Spells card - displays spells grouped by level

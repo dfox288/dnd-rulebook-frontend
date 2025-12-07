@@ -4,13 +4,13 @@
  * Final review step - shows complete character summary before finishing
  *
  * Composes sub-components for each section:
- * - ReviewCharacterIdentity - Name and race/class/background
- * - ReviewCharacterAbilities - Ability scores card
- * - ReviewCharacterStats - Combat stats, saving throws, spellcasting
- * - ReviewProficiencies - Proficiencies grouped by type
- * - ReviewLanguages - Known languages
- * - ReviewEquipment - Equipment list
- * - ReviewSpells - Spells grouped by level
+ * - CharacterIdentity - Name and race/class/background
+ * - CharacterAbilities - Ability scores card
+ * - CharacterStats - Combat stats, saving throws, spellcasting
+ * - Proficiencies - Proficiencies grouped by type
+ * - Languages - Known languages
+ * - Equipment - Equipment list
+ * - Spells - Spells grouped by level
  */
 
 import { useCharacterWizardStore } from '~/stores/characterWizard'
@@ -89,7 +89,7 @@ const { data: spells } = await useAsyncData(
 <template>
   <div class="max-w-5xl mx-auto space-y-6">
     <!-- Header: Character Name and Identity -->
-    <CharacterWizardReviewReviewCharacterIdentity
+    <CharacterWizardReviewCharacterIdentity
       :character-name="characterName"
       :race="race"
       :character-class="characterClass"
@@ -100,14 +100,14 @@ const { data: spells } = await useAsyncData(
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Left Column: Ability Scores -->
       <div class="lg:col-span-1">
-        <CharacterWizardReviewReviewCharacterAbilities
+        <CharacterWizardReviewCharacterAbilities
           :ability-scores="abilityScores"
         />
       </div>
 
       <!-- Right Column: Combat Stats and Saving Throws -->
       <div class="lg:col-span-2">
-        <CharacterWizardReviewReviewCharacterStats
+        <CharacterWizardReviewCharacterStats
           :hit-points="hitPoints"
           :armor-class="armorClass"
           :initiative="initiative"
@@ -122,21 +122,21 @@ const { data: spells } = await useAsyncData(
 
     <!-- Proficiencies and Languages -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <CharacterWizardReviewReviewProficiencies
+      <CharacterWizardReviewProficiencies
         :proficiencies="proficiencies"
       />
-      <CharacterWizardReviewReviewLanguages
+      <CharacterWizardReviewLanguages
         :languages="languages"
       />
     </div>
 
     <!-- Equipment -->
-    <CharacterWizardReviewReviewEquipment
+    <CharacterWizardReviewEquipment
       :equipment="equipment"
     />
 
     <!-- Spells (conditional) -->
-    <CharacterWizardReviewReviewSpells
+    <CharacterWizardReviewSpells
       :spells="spells"
       :is-spellcaster="isSpellcaster"
     />
