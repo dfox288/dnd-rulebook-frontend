@@ -1,4 +1,4 @@
-import { computed, isRef, ref, toValue, type ComputedRef, type MaybeRef } from 'vue'
+import { computed, isRef, ref, toValue, type ComputedRef, type MaybeRef, type Ref } from 'vue'
 
 /**
  * Configuration for useEntityDetail composable
