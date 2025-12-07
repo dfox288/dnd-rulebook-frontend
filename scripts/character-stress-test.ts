@@ -10,11 +10,13 @@
  *   npm run test:character-stress -- --count=10
  *   npm run test:character-stress -- --count=5 --verbose
  *   npm run test:character-stress -- --count=1 --dry-run
+ *   npm run test:character-stress -- --count=20 --cleanup
  *
  * Options:
  *   --count=N    Number of characters to create (default: 10)
  *   --verbose    Show detailed output for each step
  *   --dry-run    Show what would happen without making API calls
+ *   --cleanup    Delete characters after creation (default: keep them)
  *   --help       Show help message
  *
  * Environment:
@@ -53,6 +55,7 @@ interface CliOptions {
   count: number
   verbose: boolean
   dryRun: boolean
+  cleanup: boolean
 }
 
 function parseArgs(): CliOptions {
@@ -60,7 +63,8 @@ function parseArgs(): CliOptions {
   const options: CliOptions = {
     count: 10,
     verbose: false,
-    dryRun: false
+    dryRun: false,
+    cleanup: false
   }
 
   for (const arg of args) {
@@ -70,6 +74,8 @@ function parseArgs(): CliOptions {
       options.verbose = true
     } else if (arg === '--dry-run') {
       options.dryRun = true
+    } else if (arg === '--cleanup') {
+      options.cleanup = true
     } else if (arg === '--help' || arg === '-h') {
       console.log(`
 Character Stress Test Script
@@ -80,6 +86,7 @@ Options:
   --count=N    Number of characters to create (default: 10)
   --verbose    Show detailed output for each step
   --dry-run    Show what would happen without making API calls
+  --cleanup    Delete characters after creation (default: keep them)
   --help       Show this help message
 `)
       process.exit(0)
@@ -555,6 +562,7 @@ async function main() {
   console.log(`   Creating ${options.count} characters...`)
   console.log(`   API: ${API_BASE}`)
   if (options.dryRun) console.log('   (DRY RUN - no API calls)')
+  if (options.cleanup) console.log('   (CLEANUP - characters will be deleted after creation)')
   console.log('')
 
   if (options.dryRun) {
@@ -647,8 +655,8 @@ async function main() {
     } finally {
       result.timing.total = Date.now() - startTotal
 
-      // Cleanup: delete the character
-      if (characterId) {
+      // Cleanup: delete the character only if --cleanup flag is set
+      if (options.cleanup && characterId) {
         try {
           await deleteCharacter(characterId)
         } catch {

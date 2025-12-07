@@ -133,12 +133,15 @@ docker compose exec nuxt npm run types:sync # Sync API types from backend
 Rapidly create N characters via API to test the character builder without UI:
 
 ```bash
-npm run test:character-stress -- --count=10          # Create 10 random characters
+npm run test:character-stress -- --count=10          # Create 10 characters (kept in DB)
 npm run test:character-stress -- --count=3 --verbose # Watch choices being made
 npm run test:character-stress -- --dry-run           # Preview without API calls
+npm run test:character-stress -- --count=5 --cleanup # Create and delete after test
 ```
 
-**What it tests:** Character creation → class → background → ability scores → all pending choices (proficiencies, languages, equipment, spells) → validation → cleanup.
+**What it tests:** Character creation → class → background → ability scores → all pending choices (proficiencies, languages, equipment, spells) → validation.
+
+**Default behavior:** Characters are kept in the database. Use `--cleanup` to delete after creation.
 
 **Test pool:** 5 races × 5 classes × 4 backgrounds = 100 unique combinations (PHB-focused).
 
