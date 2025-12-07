@@ -426,8 +426,8 @@ async function handleContinue() {
 </script>
 
 <template>
-  <div class="step-proficiencies">
-    <div class="text-center mb-8">
+  <div class="step-proficiencies space-y-6">
+    <div class="text-center">
       <h2 class="text-2xl font-bold text-primary">
         Your Proficiencies
       </h2>
