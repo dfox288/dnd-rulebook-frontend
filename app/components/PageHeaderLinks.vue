@@ -7,7 +7,6 @@ const { copy, copied } = useClipboard()
 // TODO: useSiteConfig() is not available - needs @nuxtjs/site-config module or custom implementation
 const site = { url: 'http://localhost:3000' }
 const isCopying = ref(false)
-console.log(site)
 
 const mdPath = computed(() => `${site.url}/raw${route.path}.md`)
 

@@ -4,6 +4,7 @@ import type { components } from '~/types/api/generated'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { normalizeEndpoint } from '~/composables/useApi'
+import { logger } from '~/utils/logger'
 
 type ProficiencyResource = components['schemas']['ProficiencyResource']
 type PendingChoice = components['schemas']['PendingChoiceResource']
@@ -78,7 +79,7 @@ async function fetchOptionsIfNeeded(choice: PendingChoice): Promise<void> {
       optionsCache.value.set(choice.id, response.data)
     }
   } catch (err) {
-    console.warn(`Failed to fetch options for choice ${choice.id}:`, err)
+    logger.warn(`Failed to fetch options for choice ${choice.id}:`, err)
   } finally {
     loadingOptions.value.delete(choice.id)
   }
@@ -411,7 +412,7 @@ async function handleContinue() {
     // Move to next step
     await nextStep()
   } catch (err) {
-    console.error('Failed to save proficiency choices:', err)
+    logger.error('Failed to save proficiency choices:', err)
     toast.add({
       title: 'Failed to save proficiencies',
       description: 'Please try again',

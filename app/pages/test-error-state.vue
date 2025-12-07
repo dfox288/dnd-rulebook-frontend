@@ -3,7 +3,6 @@ const testError = new Error('Failed to fetch spells from API')
 const testErrorString = 'Network connection timeout'
 
 const handleRetry = () => {
-  console.log('Retry clicked!')
   alert('Retry clicked!')
 }
 </script>

@@ -4,16 +4,10 @@
  * Ability scores card - displays all 6 ability scores with modifiers
  */
 
-interface AbilityScore {
-  code: string
-  name: string
-  score: number
-  modifier: number
-  formattedModifier: string
-}
+import type { AbilityScoreDisplay } from '~/composables/useCharacterStats'
 
 defineProps<{
-  abilityScores: AbilityScore[] | null
+  abilityScores: AbilityScoreDisplay[] | null
 }>()
 </script>
 

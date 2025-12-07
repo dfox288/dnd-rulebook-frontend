@@ -233,6 +233,22 @@ git commit -m "feat: Add feature description
 
 **Exception:** Use `size="lg"` for prominent header badges (entity codes like "STR", "PHB").
 
+### Logging (Dev-Only)
+
+**Never use `console.log/warn/error` directly.** Use the logger utility instead:
+
+```typescript
+import { logger } from '~/utils/logger'
+
+// These only log in development mode (import.meta.dev)
+logger.error('Failed to save:', err)
+logger.warn('Collision detected, retrying...')
+logger.info('Operation completed')
+logger.debug('Debug info:', data)
+```
+
+**Why:** Keeps production console clean while preserving useful dev logs.
+
 ### Other Standards
 - **Feature branches** - Always work on `feature/issue-N-*` branches, never commit directly to main
 - **Commit frequently** - Small, focused commits on feature branch

@@ -6,6 +6,7 @@ import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { useDetailModal } from '~/composables/useDetailModal'
 import { useEntitySearch } from '~/composables/useEntitySearch'
+import { logger } from '~/utils/logger'
 
 const store = useCharacterWizardStore()
 const { selections, isLoading, error, sourceFilterString } = storeToRefs(store)
@@ -72,7 +73,7 @@ async function confirmSelection() {
     await store.selectBackground(localSelectedBackground.value)
     nextStep()
   } catch (err) {
-    console.error('Failed to save background:', err)
+    logger.error('Failed to save background:', err)
     toast.add({
       title: 'Save Failed',
       description: 'Unable to save your selection. Please try again.',

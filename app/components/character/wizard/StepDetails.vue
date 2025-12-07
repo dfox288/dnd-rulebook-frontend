@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import type { CharacterAlignment } from '~/types/character'
+import { logger } from '~/utils/logger'
 
 /**
  * Step: Character Details
@@ -48,7 +49,7 @@ async function handleContinue() {
     await store.saveDetails(name.value, alignment.value)
     await nextStep()
   } catch (err) {
-    console.error('Failed to save details:', err)
+    logger.error('Failed to save details:', err)
     toast.add({
       title: 'Save Failed',
       description: 'Unable to save your selection. Please try again.',

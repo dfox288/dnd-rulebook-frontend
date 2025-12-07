@@ -1,4 +1,6 @@
 // app/composables/useCharacterStats.ts
+import { logger } from '~/utils/logger'
+
 /**
  * Composable for fetching and displaying character stats
  *
@@ -215,7 +217,7 @@ export function useCharacterStats(characterId: Ref<number | null>) {
       stats.value = response.data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch stats'
-      console.error('Failed to fetch character stats:', err)
+      logger.error('Failed to fetch character stats:', err)
     } finally {
       isLoading.value = false
     }

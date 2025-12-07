@@ -1,6 +1,7 @@
 <!-- app/pages/characters/index.vue -->
 <script setup lang="ts">
 import type { CharacterSummary } from '~/types'
+import { logger } from '~/utils/logger'
 
 /**
  * Character List Page
@@ -30,7 +31,7 @@ async function deleteCharacter(publicId: string) {
     await apiFetch(`/characters/${publicId}`, { method: 'DELETE' })
     await refresh()
   } catch (err) {
-    console.error('Failed to delete character:', err)
+    logger.error('Failed to delete character:', err)
   }
 }
 </script>

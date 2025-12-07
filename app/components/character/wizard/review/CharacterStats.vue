@@ -7,7 +7,7 @@
 import type { SavingThrowDisplay, SpellcastingDisplay } from '~/composables/useCharacterStats'
 
 defineProps<{
-  hitPoints: number | null
+  hitPoints: number | string | null
   armorClass: number | null
   initiative: string | null
   speed: number

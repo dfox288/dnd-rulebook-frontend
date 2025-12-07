@@ -123,21 +123,21 @@ const { data: spells } = await useAsyncData(
     <!-- Proficiencies and Languages -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <CharacterWizardReviewProficiencies
-        :proficiencies="proficiencies"
+        :proficiencies="proficiencies ?? null"
       />
       <CharacterWizardReviewLanguages
-        :languages="languages"
+        :languages="languages ?? null"
       />
     </div>
 
     <!-- Equipment -->
     <CharacterWizardReviewEquipment
-      :equipment="equipment"
+      :equipment="equipment ?? null"
     />
 
     <!-- Spells (conditional) -->
     <CharacterWizardReviewSpells
-      :spells="spells"
+      :spells="spells ?? null"
       :is-spellcaster="isSpellcaster"
     />
 

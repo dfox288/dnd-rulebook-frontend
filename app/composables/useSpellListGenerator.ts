@@ -1,5 +1,6 @@
 import { ref, computed, type Ref, type ComputedRef } from 'vue'
 import type { CharacterClass } from '~/types'
+import { logger } from '~/utils/logger'
 
 interface SpellSlots {
   cantrips: number
@@ -186,7 +187,7 @@ export function useSpellListGenerator(): UseSpellListGeneratorReturn {
       characterLevel.value = data.characterLevel || 1
       selectedSpells.value = new Set(data.selectedSpells || [])
     } catch (e) {
-      console.error('Failed to load spell list from localStorage:', e)
+      logger.error('Failed to load spell list from localStorage:', e)
     }
   }
 

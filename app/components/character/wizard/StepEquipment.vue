@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import type { components } from '~/types/api/generated'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
+import { logger } from '~/utils/logger'
 
 type EntityItemResource = components['schemas']['EntityItemResource']
 type PackContentResource = components['schemas']['PackContentResource']
@@ -172,7 +173,7 @@ async function handleContinue() {
 
     nextStep()
   } catch (e) {
-    console.error('Failed to save equipment choices:', e)
+    logger.error('Failed to save equipment choices:', e)
     toast.add({
       title: 'Failed to save equipment',
       description: 'Please try again',

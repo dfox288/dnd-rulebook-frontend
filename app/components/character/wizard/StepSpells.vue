@@ -6,6 +6,7 @@ import type { components } from '~/types/api/generated'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { normalizeEndpoint } from '~/composables/useApi'
+import { logger } from '~/utils/logger'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
@@ -70,7 +71,7 @@ async function fetchSpellOptionsForChoice(choice: PendingChoice) {
     const response = await apiFetch<{ data: Spell[] }>(endpoint)
     spellOptions.value.set(choice.id, response.data)
   } catch (e) {
-    console.error(`Failed to fetch spell options for ${choice.id}:`, e)
+    logger.error(`Failed to fetch spell options for ${choice.id}:`, e)
   }
 }
 
@@ -206,7 +207,7 @@ async function handleContinue() {
     }
     nextStep()
   } catch (e) {
-    console.error('Failed to save spell choices:', e)
+    logger.error('Failed to save spell choices:', e)
     saveError.value = e instanceof Error ? e.message : 'Failed to save spell choices'
     toast.add({
       title: 'Failed to save spells',
