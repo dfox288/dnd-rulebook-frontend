@@ -78,11 +78,13 @@ describe('CharacterSheetEquipmentPanel', () => {
 
 describe('CharacterSheetSpellsPanel', () => {
   const mockSpells = [
-    { id: 1, spell: { name: 'Fire Bolt', level: 0 }, prepared: true },
-    { id: 2, spell: { name: 'Magic Missile', level: 1 }, prepared: true }
+    { id: 1, spell: { name: 'Fire Bolt', level: 0 }, is_prepared: true },
+    { id: 2, spell: { name: 'Magic Missile', level: 1 }, is_prepared: true }
   ]
   const mockStats = {
-    spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 }
+    spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 },
+    preparation_limit: null,
+    prepared_spell_count: 0
   }
 
   it('displays spells', async () => {
@@ -99,6 +101,54 @@ describe('CharacterSheetSpellsPanel', () => {
     })
     expect(wrapper.text()).toContain('13') // DC
     expect(wrapper.text()).toContain('+5') // Attack bonus
+  })
+
+  it('displays preparation count when preparation_limit is set', async () => {
+    const statsWithPreparation = {
+      spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 },
+      preparation_limit: 11,
+      prepared_spell_count: 8
+    }
+    const wrapper = await mountSuspended(SpellsPanel, {
+      props: { spells: mockSpells, stats: statsWithPreparation }
+    })
+    expect(wrapper.text()).toContain('Prepared: 8 / 11')
+  })
+
+  it('hides preparation count when preparation_limit is null', async () => {
+    const statsWithoutPreparation = {
+      spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 },
+      preparation_limit: null,
+      prepared_spell_count: 0
+    }
+    const wrapper = await mountSuspended(SpellsPanel, {
+      props: { spells: mockSpells, stats: statsWithoutPreparation }
+    })
+    expect(wrapper.text()).not.toContain('Prepared:')
+  })
+
+  it('displays zero preparation count correctly', async () => {
+    const statsWithZeroPreparation = {
+      spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 },
+      preparation_limit: 5,
+      prepared_spell_count: 0
+    }
+    const wrapper = await mountSuspended(SpellsPanel, {
+      props: { spells: mockSpells, stats: statsWithZeroPreparation }
+    })
+    expect(wrapper.text()).toContain('Prepared: 0 / 5')
+  })
+
+  it('displays full preparation count correctly', async () => {
+    const statsWithFullPreparation = {
+      spellcasting: { ability: 'INT', spell_save_dc: 13, spell_attack_bonus: 5 },
+      preparation_limit: 10,
+      prepared_spell_count: 10
+    }
+    const wrapper = await mountSuspended(SpellsPanel, {
+      props: { spells: mockSpells, stats: statsWithFullPreparation }
+    })
+    expect(wrapper.text()).toContain('Prepared: 10 / 10')
   })
 })
 
