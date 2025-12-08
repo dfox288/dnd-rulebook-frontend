@@ -1,53 +1,24 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { Race } from '~/types'
 import RaceCard from '~/components/race/RaceCard.vue'
+import { createMockRace } from '../../helpers/mockFactories'
 import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('RaceCard', () => {
-  const mockRace: Race = {
-    id: 1,
-    name: 'Elf',
-    slug: 'elf',
-    size: {
-      id: 3,
-      name: 'Medium',
-      code: 'M'
-    },
-    speed: 30,
-    parent_race_id: null,
-    parent_race: null,
-    subraces: [
-      { id: 2, slug: 'high-elf', name: 'High Elf' },
-      { id: 3, slug: 'wood-elf', name: 'Wood Elf' }
-    ],
-    modifiers: [
-      {
-        modifier_category: 'ability_score',
-        ability_score: { id: 2, code: 'DEX', name: 'Dexterity' },
-        value: 2
-      }
-    ],
-    traits: [
-      { id: 1, name: 'Darkvision' },
-      { id: 2, name: 'Keen Senses' },
-      { id: 3, name: 'Fey Ancestry' }
-    ],
-    description: 'Elves are a magical people of otherworldly grace, living in the world but not entirely part of it.',
-    sources: [
-      { code: 'PHB', name: 'Player\'s Handbook', pages: '21' }
-    ]
-  }
+  const mockRace = createMockRace()
 
-  // Race-specific tests (domain logic)
-  it('renders race name', async () => {
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: mockRace }
-    })
-
-    expect(wrapper.text()).toContain('Elf')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: RaceCard,
+    propName: 'race',
+    mockFactory: createMockRace,
+    entityName: 'Elf',
+    linkPath: '/races/elf',
+    optionalFields: ['size', 'parent_race', 'sources']
   })
 
+  // Race-specific tests (domain logic)
   it('renders size when provided', async () => {
     const wrapper = await mountSuspended(RaceCard, {
       props: { race: mockRace }

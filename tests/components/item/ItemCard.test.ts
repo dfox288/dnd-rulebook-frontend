@@ -4,20 +4,22 @@ import ItemCard from '~/components/item/ItemCard.vue'
 import { createMockItem } from '../../helpers/mockFactories'
 import { testBadgeVisibility } from '../../helpers/badgeVisibilityBehavior'
 import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('ItemCard', () => {
   const mockItem = createMockItem()
 
-  // Item-specific tests (domain logic)
-
-  it('renders item name', async () => {
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: mockItem }
-    })
-
-    expect(wrapper.text()).toContain('Longsword')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: ItemCard,
+    propName: 'item',
+    mockFactory: createMockItem,
+    entityName: 'Longsword',
+    linkPath: '/items/longsword',
+    optionalFields: ['item_type', 'rarity', 'sources']
   })
 
+  // Item-specific tests (domain logic)
   it('renders item type when provided', async () => {
     const wrapper = await mountSuspended(ItemCard, {
       props: { item: mockItem }

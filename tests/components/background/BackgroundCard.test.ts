@@ -1,39 +1,24 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { Background } from '~/types'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
+import { createMockBackground } from '../../helpers/mockFactories'
 import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('BackgroundCard', () => {
-  const mockBackground: Background = {
-    id: 1,
-    name: 'Acolyte',
-    slug: 'acolyte',
-    proficiencies: [
-      { id: 1, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 1, name: 'Insight', code: 'INSIGHT', description: null, ability_score: null }, proficiency_name: 'Insight', grants: true, is_choice: false, quantity: 1 },
-      { id: 2, proficiency_type: 'skill', proficiency_subcategory: null, proficiency_type_id: null, skill: { id: 2, name: 'Religion', code: 'RELIGION', description: null, ability_score: null }, proficiency_name: 'Religion', grants: true, is_choice: false, quantity: 1 }
-    ],
-    languages: [
-      { language: { id: 1, name: 'Common' }, is_choice: false },
-      { language: { id: 2, name: 'Elvish' }, is_choice: false }
-    ],
-    feature_name: 'Shelter of the Faithful',
-    description: 'You have spent your life in the service of a temple to a specific god or pantheon of gods.',
-    sources: [
-      { code: 'PHB', name: 'Player\'s Handbook', pages: '127' }
-    ]
-  }
+  const mockBackground = createMockBackground()
 
-  // Background-specific tests (domain logic)
-
-  it('renders background name', async () => {
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: mockBackground }
-    })
-
-    expect(wrapper.text()).toContain('Acolyte')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: BackgroundCard,
+    propName: 'background',
+    mockFactory: createMockBackground,
+    entityName: 'Acolyte',
+    linkPath: '/backgrounds/acolyte',
+    optionalFields: ['feature_name', 'proficiencies', 'sources']
   })
 
+  // Background-specific tests (domain logic)
   it('renders feature name badge when provided', async () => {
     const wrapper = await mountSuspended(BackgroundCard, {
       props: { background: mockBackground }

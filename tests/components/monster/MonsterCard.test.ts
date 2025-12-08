@@ -3,18 +3,22 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import MonsterCard from '~/components/monster/MonsterCard.vue'
 import { createMockMonster } from '../../helpers/mockFactories'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('MonsterCard', () => {
   const mockMonster = createMockMonster()
 
-  it('renders monster name', async () => {
-    const wrapper = await mountSuspended(MonsterCard, {
-      props: { monster: mockMonster }
-    })
-
-    expect(wrapper.text()).toContain('Ancient Red Dragon')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: MonsterCard,
+    propName: 'monster',
+    mockFactory: createMockMonster,
+    entityName: 'Ancient Red Dragon',
+    linkPath: '/monsters/ancient-red-dragon',
+    optionalFields: ['size', 'alignment', 'sources']
   })
 
+  // Monster-specific tests (domain logic)
   it('renders CR badge with monster color', async () => {
     const wrapper = await mountSuspended(MonsterCard, {
       props: { monster: mockMonster }
