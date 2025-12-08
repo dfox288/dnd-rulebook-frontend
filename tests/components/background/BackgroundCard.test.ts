@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Background } from '~/types'
 import BackgroundCard from '~/components/background/BackgroundCard.vue'
+import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
 
 describe('BackgroundCard', () => {
   const mockBackground: Background = {
@@ -178,14 +179,13 @@ describe('BackgroundCard', () => {
     expect(wrapper.text()).toContain('You have spent your life')
   })
 
-  it('shows default description when not provided', async () => {
-    const bgWithoutDescription = { ...mockBackground, description: undefined }
-    const wrapper = await mountSuspended(BackgroundCard, {
-      props: { background: bgWithoutDescription }
-    })
-
-    expect(wrapper.text()).toContain('A character background for D&D 5e')
-  })
+  // Missing description fallback test using shared helper
+  testMissingDescriptionFallback(
+    () => mountSuspended(BackgroundCard, {
+      props: { background: { ...mockBackground, description: undefined } }
+    }),
+    'A character background for D&D 5e'
+  )
 
   it('displays all key information in organized layout', async () => {
     const fullBg = {

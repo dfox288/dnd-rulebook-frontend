@@ -3,24 +3,20 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { CharacterClass } from '~/types'
 import ClassCard from '~/components/class/ClassCard.vue'
 import { createMockClass } from '../../helpers/mockFactories'
+import { testDescriptionTruncation, testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
 
 describe('ClassCard', () => {
   const mockClass = createMockClass()
 
-  // Class-specific tests (domain logic)
-  it('truncates descriptions to 150 characters', async () => {
-    const longDescription = 'A'.repeat(200)
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: { ...mockClass, description: longDescription } }
+  // Description truncation tests using shared helper
+  testDescriptionTruncation(
+    () => mountSuspended(ClassCard, {
+      props: { characterClass: { ...mockClass, description: 'A'.repeat(200) } }
+    }),
+    () => mountSuspended(ClassCard, {
+      props: { characterClass: { ...mockClass, description: 'Short' } }
     })
-
-    const text = wrapper.text()
-    // Should truncate at 150 chars + '...'
-    expect(text).toContain('A'.repeat(150))
-    expect(text).toContain('...')
-    // Should not contain characters beyond 150
-    expect(text).not.toContain('A'.repeat(151))
-  })
+  )
 
   it('renders class name', async () => {
     const wrapper = await mountSuspended(ClassCard, {
@@ -162,14 +158,13 @@ describe('ClassCard', () => {
     expect(wrapper.text()).toContain('Wizards are supreme magic-users')
   })
 
-  it('shows default description when not provided', async () => {
-    const classWithoutDescription = { ...mockClass, description: undefined }
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: classWithoutDescription }
-    })
-
-    expect(wrapper.text()).toContain('A playable class for D&D 5e characters')
-  })
+  // Missing description fallback test using shared helper
+  testMissingDescriptionFallback(
+    () => mountSuspended(ClassCard, {
+      props: { characterClass: { ...mockClass, description: undefined } }
+    }),
+    'A playable class for D&D 5e characters'
+  )
 
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(ClassCard, {

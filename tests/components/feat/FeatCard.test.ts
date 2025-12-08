@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Feat } from '~/types'
 import FeatCard from '~/components/feat/FeatCard.vue'
+import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
 
 describe('FeatCard', () => {
   const mockFeat: Feat = {
@@ -186,14 +187,13 @@ describe('FeatCard', () => {
     expect(wrapper.text()).toContain('You have practiced casting spells')
   })
 
-  it('shows default description when not provided', async () => {
-    const featWithoutDescription = { ...mockFeat, description: undefined }
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: featWithoutDescription }
-    })
-
-    expect(wrapper.text()).toContain('A feat that provides special abilities or bonuses')
-  })
+  // Missing description fallback test using shared helper
+  testMissingDescriptionFallback(
+    () => mountSuspended(FeatCard, {
+      props: { feat: { ...mockFeat, description: undefined } }
+    }),
+    'A feat that provides special abilities or bonuses'
+  )
 
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(FeatCard, {

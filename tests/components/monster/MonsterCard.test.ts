@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import MonsterCard from '~/components/monster/MonsterCard.vue'
 import { createMockMonster } from '../../helpers/mockFactories'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 
 describe('MonsterCard', () => {
   const mockMonster = createMockMonster()
@@ -82,30 +83,15 @@ describe('MonsterCard', () => {
     expect(wrapper.text()).not.toContain('Legendary')
   })
 
-  it('truncates long descriptions', async () => {
-    const longDesc = 'A'.repeat(200)
-    const monster = { ...mockMonster, description: longDesc }
-    const wrapper = await mountSuspended(MonsterCard, {
-      props: { monster }
+  // Description truncation tests using shared helper
+  testDescriptionTruncation(
+    () => mountSuspended(MonsterCard, {
+      props: { monster: { ...mockMonster, description: 'A'.repeat(200) } }
+    }),
+    () => mountSuspended(MonsterCard, {
+      props: { monster: { ...mockMonster, description: 'Short' } }
     })
-
-    const text = wrapper.text()
-    // Should contain truncated version (150 chars + '...')
-    expect(text).toContain('A'.repeat(150) + '...')
-    // Should NOT contain the full 200 chars
-    expect(text).not.toContain('A'.repeat(200))
-  })
-
-  it('does not truncate short descriptions', async () => {
-    const shortDesc = 'A small creature.'
-    const monster = { ...mockMonster, description: shortDesc }
-    const wrapper = await mountSuspended(MonsterCard, {
-      props: { monster }
-    })
-
-    expect(wrapper.text()).toContain(shortDesc)
-    expect(wrapper.text()).not.toContain('...')
-  })
+  )
 
   it.each([
     ['0'],

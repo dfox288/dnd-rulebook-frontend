@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import type { Race } from '~/types'
 import RaceCard from '~/components/race/RaceCard.vue'
+import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
 
 describe('RaceCard', () => {
   const mockRace: Race = {
@@ -397,14 +398,13 @@ describe('RaceCard', () => {
     expect(wrapper.text()).toContain('Elves are a magical people')
   })
 
-  it('shows default description when not provided', async () => {
-    const raceWithoutDescription = { ...mockRace, description: undefined }
-    const wrapper = await mountSuspended(RaceCard, {
-      props: { race: raceWithoutDescription }
-    })
-
-    expect(wrapper.text()).toContain('A playable race for D&D 5e characters')
-  })
+  // Missing description fallback test using shared helper
+  testMissingDescriptionFallback(
+    () => mountSuspended(RaceCard, {
+      props: { race: { ...mockRace, description: undefined } }
+    }),
+    'A playable race for D&D 5e characters'
+  )
 
   it('displays all key information in organized layout', async () => {
     const wrapper = await mountSuspended(RaceCard, {
