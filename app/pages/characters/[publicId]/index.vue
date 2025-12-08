@@ -20,6 +20,7 @@ const {
   equipment,
   spells,
   languages,
+  notes,
   skills,
   savingThrows,
   loading,
@@ -48,7 +49,8 @@ const tabItems = computed(() => {
     { label: 'Features', slot: 'features', icon: 'i-heroicons-star' },
     { label: 'Proficiencies', slot: 'proficiencies', icon: 'i-heroicons-academic-cap' },
     { label: 'Equipment', slot: 'equipment', icon: 'i-heroicons-briefcase' },
-    { label: 'Languages', slot: 'languages', icon: 'i-heroicons-language' }
+    { label: 'Languages', slot: 'languages', icon: 'i-heroicons-language' },
+    { label: 'Notes', slot: 'notes', icon: 'i-heroicons-document-text' }
   ]
   // Only show Spells tab for casters
   if (stats.value?.spellcasting) {
@@ -170,6 +172,10 @@ const tabItems = computed(() => {
 
         <template #languages>
           <CharacterSheetLanguagesPanel :languages="languages" />
+        </template>
+
+        <template #notes>
+          <CharacterSheetNotesPanel :notes="notes" />
         </template>
       </UTabs>
     </div>

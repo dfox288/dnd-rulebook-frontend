@@ -6,6 +6,7 @@ import ProficienciesPanel from '~/components/character/sheet/ProficienciesPanel.
 import EquipmentPanel from '~/components/character/sheet/EquipmentPanel.vue'
 import SpellsPanel from '~/components/character/sheet/SpellsPanel.vue'
 import LanguagesPanel from '~/components/character/sheet/LanguagesPanel.vue'
+import NotesPanel from '~/components/character/sheet/NotesPanel.vue'
 
 describe('CharacterSheetFeaturesPanel', () => {
   const mockFeatures = [
@@ -253,5 +254,104 @@ describe('CharacterSheetLanguagesPanel', () => {
       props: { languages: [] }
     })
     expect(wrapper.text()).toContain('No languages')
+  })
+})
+
+describe('CharacterSheetNotesPanel', () => {
+  // Notes are grouped by category - structure matches CharacterNotesGroupedResource
+  const mockNotesGrouped = {
+    backstory: [
+      {
+        id: 1,
+        category: 'backstory',
+        category_label: 'Backstory',
+        title: 'Origins',
+        content: 'Born in the village of Oakhurst...',
+        sort_order: 0,
+        created_at: '2024-01-15T00:00:00Z',
+        updated_at: '2024-01-15T00:00:00Z'
+      }
+    ],
+    session_notes: [
+      {
+        id: 2,
+        category: 'session_notes',
+        category_label: 'Session Notes',
+        title: 'Session 1',
+        content: 'Met the party at the tavern...',
+        sort_order: 0,
+        created_at: '2024-01-16T00:00:00Z',
+        updated_at: '2024-01-16T00:00:00Z'
+      },
+      {
+        id: 3,
+        category: 'session_notes',
+        category_label: 'Session Notes',
+        title: 'Session 2',
+        content: 'Explored the dungeon...',
+        sort_order: 1,
+        created_at: '2024-01-17T00:00:00Z',
+        updated_at: '2024-01-17T00:00:00Z'
+      }
+    ]
+  }
+
+  it('displays notes grouped by category', async () => {
+    const wrapper = await mountSuspended(NotesPanel, {
+      props: { notes: mockNotesGrouped }
+    })
+    expect(wrapper.text()).toContain('Backstory')
+    expect(wrapper.text()).toContain('Session Notes')
+    expect(wrapper.text()).toContain('Born in the village of Oakhurst')
+    expect(wrapper.text()).toContain('Met the party at the tavern')
+  })
+
+  it('displays note titles when present', async () => {
+    const wrapper = await mountSuspended(NotesPanel, {
+      props: { notes: mockNotesGrouped }
+    })
+    expect(wrapper.text()).toContain('Origins')
+    expect(wrapper.text()).toContain('Session 1')
+    expect(wrapper.text()).toContain('Session 2')
+  })
+
+  it('shows empty state when no notes', async () => {
+    const wrapper = await mountSuspended(NotesPanel, {
+      props: { notes: {} }
+    })
+    expect(wrapper.text()).toContain('No notes')
+  })
+
+  it('handles notes without titles', async () => {
+    const notesWithoutTitle = {
+      goals: [
+        {
+          id: 4,
+          category: 'goals',
+          category_label: 'Goals',
+          title: null,
+          content: 'Find the lost artifact',
+          sort_order: 0,
+          created_at: '2024-01-18T00:00:00Z',
+          updated_at: '2024-01-18T00:00:00Z'
+        }
+      ]
+    }
+    const wrapper = await mountSuspended(NotesPanel, {
+      props: { notes: notesWithoutTitle }
+    })
+    expect(wrapper.text()).toContain('Goals')
+    expect(wrapper.text()).toContain('Find the lost artifact')
+  })
+
+  it('renders multiple notes within a category', async () => {
+    const wrapper = await mountSuspended(NotesPanel, {
+      props: { notes: mockNotesGrouped }
+    })
+    // Session notes has 2 entries
+    expect(wrapper.text()).toContain('Session 1')
+    expect(wrapper.text()).toContain('Session 2')
+    expect(wrapper.text()).toContain('Met the party at the tavern')
+    expect(wrapper.text()).toContain('Explored the dungeon')
   })
 })
