@@ -130,6 +130,10 @@ function formatRoll(entry: EntityDataTableEntryResource): string {
         v-for="entry in table.entries"
         :key="entry.id"
         data-testid="entry-option"
+        role="checkbox"
+        :aria-checked="isSelected(entry)"
+        :aria-disabled="isDisabled(entry)"
+        :tabindex="isDisabled(entry) ? -1 : 0"
         class="flex items-start gap-3 p-2 rounded-lg cursor-pointer transition-colors"
         :class="[
           isSelected(entry)
@@ -138,6 +142,8 @@ function formatRoll(entry: EntityDataTableEntryResource): string {
           isDisabled(entry) ? 'opacity-50 cursor-not-allowed' : ''
         ]"
         @click="!isDisabled(entry) && handleSelect(entry)"
+        @keydown.space.prevent="!isDisabled(entry) && handleSelect(entry)"
+        @keydown.enter.prevent="!isDisabled(entry) && handleSelect(entry)"
       >
         <!-- Selection indicator -->
         <div class="flex-shrink-0 mt-0.5">

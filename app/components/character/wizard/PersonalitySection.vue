@@ -13,6 +13,7 @@ export interface PersonalitySelections {
 interface Props {
   dataTables: EntityDataTableResource[]
   backgroundName: string
+  loading?: boolean
 }
 
 const props = defineProps<Props>()
@@ -187,8 +188,23 @@ function clearAll() {
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div
+      v-if="props.loading"
+      class="flex justify-center py-8"
+    >
+      <UIcon
+        name="i-heroicons-arrow-path"
+        class="w-6 h-6 animate-spin text-gray-400"
+      />
+      <span class="ml-2 text-gray-500">Loading personality...</span>
+    </div>
+
     <!-- Personality Tables Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div
+      v-else
+      class="grid grid-cols-1 lg:grid-cols-2 gap-4"
+    >
       <CharacterWizardPersonalityTablePicker
         v-for="table in personalityTables"
         :key="table.id"

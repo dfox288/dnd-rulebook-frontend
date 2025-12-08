@@ -46,6 +46,9 @@ const personalitySelections = ref<PersonalitySelections>({
   flaw: null
 })
 
+// Loading state for personality notes
+const loadingPersonality = ref(false)
+
 // Get data tables from selected background
 // Note: data_tables is typed as unknown[] in generated types, but the API returns EntityDataTableResource[]
 const backgroundDataTables = computed(() => {
@@ -66,6 +69,7 @@ const backgroundName = computed(() => {
 async function loadExistingNotes() {
   if (!store.characterId) return
 
+  loadingPersonality.value = true
   try {
     const response = await apiFetch<{
       data: {
@@ -85,9 +89,17 @@ async function loadExistingNotes() {
       bond: notes.bond?.[0]?.content || null,
       flaw: notes.flaw?.[0]?.content || null
     }
-  } catch (err) {
-    // Silently fail - notes are optional
-    logger.debug('Could not load existing notes:', err)
+  } catch (err: unknown) {
+    // 404 is expected when no notes exist - just log debug
+    // Other errors might indicate real problems
+    const status = (err as { status?: number })?.status
+    if (status === 404) {
+      logger.debug('No existing personality notes found')
+    } else {
+      logger.warn('Failed to load personality notes:', err)
+    }
+  } finally {
+    loadingPersonality.value = false
   }
 }
 
@@ -263,6 +275,7 @@ const alignmentOptions = [
       v-model:selections="personalitySelections"
       :data-tables="backgroundDataTables"
       :background-name="backgroundName"
+      :loading="loadingPersonality"
     />
 
     <!-- Info Text -->
