@@ -16,7 +16,7 @@ function formatModifier(mod: number): string {
     <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
       Skills
     </h3>
-    <div class="space-y-1">
+    <div class="grid grid-cols-2 gap-x-4 gap-y-1">
       <div
         v-for="skill in skills"
         :key="skill.id"

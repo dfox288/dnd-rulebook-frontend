@@ -15,6 +15,12 @@ import type {
   AbilityScoreCode
 } from '~/types/character'
 
+export interface HitDice {
+  die: string
+  total: number
+  current: number
+}
+
 export interface UseCharacterSheetReturn {
   // Raw API data
   character: ComputedRef<Character | null>
@@ -29,6 +35,7 @@ export interface UseCharacterSheetReturn {
   // Computed/derived
   skills: ComputedRef<CharacterSkill[]>
   savingThrows: ComputedRef<CharacterSavingThrow[]>
+  hitDice: ComputedRef<HitDice[]>
 
   // State
   loading: ComputedRef<boolean>
@@ -188,6 +195,20 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     })
   })
 
+  // Computed: Transform hit dice from object to array format
+  // API returns: { d8: { available: 1, max: 1, spent: 0 } }
+  // Component expects: [{ die: 'd8', total: 1, current: 1 }]
+  const hitDice = computed<HitDice[]>(() => {
+    const rawHitDice = stats.value?.hit_dice
+    if (!rawHitDice || typeof rawHitDice !== 'object') return []
+
+    return Object.entries(rawHitDice).map(([die, data]) => ({
+      die,
+      total: (data as { max: number }).max,
+      current: (data as { available: number }).available
+    }))
+  })
+
   // Refresh all data
   const refresh = async () => {
     await Promise.all([
@@ -213,6 +234,7 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     notes,
     skills,
     savingThrows,
+    hitDice,
     loading,
     error,
     refresh

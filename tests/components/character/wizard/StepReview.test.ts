@@ -89,6 +89,10 @@ const mockSavingThrows = ref([
   { ability: 'CHA', modifier: 3, proficient: false }
 ])
 
+const mockHitDice = ref([
+  { die: 'd8', total: 1, current: 1 }
+])
+
 // Mock useCharacterSheet composable
 vi.mock('~/composables/useCharacterSheet', () => ({
   useCharacterSheet: vi.fn(() => ({
@@ -101,6 +105,7 @@ vi.mock('~/composables/useCharacterSheet', () => ({
     languages: mockLanguages,
     skills: mockSkills,
     savingThrows: mockSavingThrows,
+    hitDice: mockHitDice,
     notes: ref({}),
     loading: ref(false),
     error: ref(null),
@@ -169,6 +174,18 @@ const stubs = {
   CharacterSheetFeaturesPanel: {
     template: '<div data-testid="features"><span>Features</span></div>',
     props: ['features']
+  },
+  CharacterSheetPassiveScores: {
+    template: '<div data-testid="passive-scores"><span>Passive</span></div>',
+    props: ['perception', 'investigation', 'insight']
+  },
+  CharacterSheetHitDice: {
+    template: '<div data-testid="hit-dice"><span>Hit Dice</span></div>',
+    props: ['hitDice']
+  },
+  CharacterSheetDeathSaves: {
+    template: '<div data-testid="death-saves"><span>Death Saves</span></div>',
+    props: ['successes', 'failures']
   }
 }
 

@@ -23,6 +23,7 @@ const {
   notes,
   skills,
   savingThrows,
+  hitDice,
   loading,
   error
 } = useCharacterSheet(publicId)
@@ -112,16 +113,17 @@ const tabItems = computed(() => {
 
       <!-- Main Grid: Abilities sidebar + Stats/Skills -->
       <div class="grid lg:grid-cols-[200px_1fr] gap-6">
-        <!-- Left Sidebar: Ability Scores + Death Saves + Hit Dice -->
+        <!-- Left Sidebar: Ability Scores + Passive + Hit Dice -->
         <div class="space-y-4">
           <CharacterSheetAbilityScoreBlock :stats="stats" />
-          <CharacterSheetDeathSaves
-            :successes="character.death_save_successes"
-            :failures="character.death_save_failures"
+          <CharacterSheetPassiveScores
+            :perception="stats.passive_perception"
+            :investigation="stats.passive_investigation"
+            :insight="stats.passive_insight"
           />
           <CharacterSheetHitDice
-            v-if="stats.hit_dice?.length"
-            :hit-dice="stats.hit_dice"
+            v-if="hitDice.length"
+            :hit-dice="hitDice"
           />
         </div>
 
@@ -134,9 +136,19 @@ const tabItems = computed(() => {
           />
 
           <!-- Saving Throws and Skills -->
-          <div class="grid md:grid-cols-2 gap-6">
-            <CharacterSheetSavingThrowsList :saving-throws="savingThrows" />
-            <CharacterSheetSkillsList :skills="skills" />
+          <div class="grid md:grid-cols-3 gap-6">
+            <!-- Saving Throws + Death Saves stacked -->
+            <div class="space-y-4">
+              <CharacterSheetSavingThrowsList :saving-throws="savingThrows" />
+              <CharacterSheetDeathSaves
+                :successes="character.death_save_successes"
+                :failures="character.death_save_failures"
+              />
+            </div>
+            <CharacterSheetSkillsList
+              :skills="skills"
+              class="md:col-span-2"
+            />
           </div>
         </div>
       </div>

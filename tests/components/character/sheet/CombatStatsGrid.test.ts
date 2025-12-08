@@ -5,7 +5,8 @@ import CombatStatsGrid from '~/components/character/sheet/CombatStatsGrid.vue'
 
 const mockCharacter = {
   speed: 30,
-  proficiency_bonus: 2
+  proficiency_bonus: 2,
+  has_inspiration: false
 }
 
 const mockStats = {
@@ -58,17 +59,33 @@ describe('CharacterSheetCombatStatsGrid', () => {
     expect(wrapper.text()).toContain('Prof')
   })
 
-  it('displays all three passive scores', async () => {
+  it('displays inspiration section', async () => {
     const wrapper = await mountSuspended(CombatStatsGrid, {
       props: { character: mockCharacter, stats: mockStats }
     })
-    expect(wrapper.text()).toContain('Passive')
-    expect(wrapper.text()).toContain('Perc')
-    expect(wrapper.text()).toContain('14')
-    expect(wrapper.text()).toContain('Inv')
-    expect(wrapper.text()).toContain('10')
-    expect(wrapper.text()).toContain('Ins')
-    expect(wrapper.text()).toContain('11')
+    expect(wrapper.text()).toContain('Inspiration')
+  })
+
+  it('shows filled star when has inspiration', async () => {
+    const wrapper = await mountSuspended(CombatStatsGrid, {
+      props: {
+        character: { ...mockCharacter, has_inspiration: true },
+        stats: mockStats
+      }
+    })
+    const icon = wrapper.find('.text-yellow-500')
+    expect(icon.exists()).toBe(true)
+  })
+
+  it('shows empty star when no inspiration', async () => {
+    const wrapper = await mountSuspended(CombatStatsGrid, {
+      props: {
+        character: { ...mockCharacter, has_inspiration: false },
+        stats: mockStats
+      }
+    })
+    const icon = wrapper.find('.text-gray-300')
+    expect(icon.exists()).toBe(true)
   })
 
   it('shows temporary HP when present', async () => {
@@ -76,45 +93,6 @@ describe('CharacterSheetCombatStatsGrid', () => {
       props: { character: mockCharacter, stats: mockStats }
     })
     expect(wrapper.text()).toContain('+5')
-  })
-
-  it('handles null passive scores gracefully', async () => {
-    const wrapper = await mountSuspended(CombatStatsGrid, {
-      props: {
-        character: mockCharacter,
-        stats: {
-          ...mockStats,
-          passive_perception: null,
-          passive_investigation: null,
-          passive_insight: null
-        }
-      }
-    })
-    // Should show em dashes for all null values
-    const text = wrapper.text()
-    expect(text).toContain('Passive')
-    // Count the em dashes - should be 3 for the passive scores
-    const dashMatches = text.match(/—/g)
-    expect(dashMatches).toBeTruthy()
-    expect(dashMatches!.length).toBeGreaterThanOrEqual(3)
-  })
-
-  it('handles mixed null and valid passive scores', async () => {
-    const wrapper = await mountSuspended(CombatStatsGrid, {
-      props: {
-        character: mockCharacter,
-        stats: {
-          ...mockStats,
-          passive_perception: 14,
-          passive_investigation: null,
-          passive_insight: 11
-        }
-      }
-    })
-    const text = wrapper.text()
-    expect(text).toContain('14')
-    expect(text).toContain('11')
-    expect(text).toContain('—')
   })
 
   describe('alternate movement speeds', () => {

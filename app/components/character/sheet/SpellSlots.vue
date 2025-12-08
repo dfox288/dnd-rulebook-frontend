@@ -26,10 +26,11 @@ function ordinal(level: number): string {
 
 /**
  * Get sorted list of spell levels that have slots
+ * Filters out level 0 (cantrips don't have slots)
  */
 const sortedLevels = computed(() => {
   return Object.entries(props.spellSlots)
-    .filter(([, count]) => count > 0) // Only levels with slots
+    .filter(([level, count]) => count > 0 && Number(level) > 0) // Only levels 1+ with slots
     .map(([level, count]) => ({ level: Number(level), count }))
     .sort((a, b) => a.level - b.level)
 })

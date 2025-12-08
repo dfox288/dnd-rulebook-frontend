@@ -70,10 +70,11 @@ const spellsByLevel = computed(() => {
       <!-- Level Header -->
       <div class="flex items-center gap-2">
         <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          {{ getOrdinalLevel(group.level) }} Level
+          {{ group.level === 0 ? 'Cantrips' : `${getOrdinalLevel(group.level)} Level` }}
         </h4>
         <span class="text-xs text-gray-500 dark:text-gray-400">
-          {{ group.totalCount }} {{ group.totalCount === 1 ? 'spell' : 'spells' }} &bull; {{ group.preparedCount }} prepared
+          {{ group.totalCount }} {{ group.totalCount === 1 ? (group.level === 0 ? 'cantrip' : 'spell') : (group.level === 0 ? 'cantrips' : 'spells') }}
+          <template v-if="group.level > 0">&bull; {{ group.preparedCount }} prepared</template>
         </span>
       </div>
 

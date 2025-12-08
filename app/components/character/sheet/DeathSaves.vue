@@ -16,9 +16,9 @@ defineProps<{
 <template>
   <div class="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
     <!-- Title -->
-    <div class="text-sm font-bold text-gray-700 dark:text-gray-300 text-center">
+    <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
       Death Saves
-    </div>
+    </h3>
 
     <!-- Successes Row -->
     <div class="space-y-1">
