@@ -3,6 +3,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import ItemCard from '~/components/item/ItemCard.vue'
 import { createMockItem } from '../../helpers/mockFactories'
 import { testBadgeVisibility } from '../../helpers/badgeVisibilityBehavior'
+import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
 
 describe('ItemCard', () => {
   const mockItem = createMockItem()
@@ -144,14 +145,13 @@ describe('ItemCard', () => {
     expect(wrapper.text()).toContain('A versatile martial weapon')
   })
 
-  it('shows default description when not provided', async () => {
-    const itemWithoutDescription = { ...mockItem, description: undefined }
-    const wrapper = await mountSuspended(ItemCard, {
-      props: { item: itemWithoutDescription }
-    })
-
-    expect(wrapper.text()).toContain('No description available')
-  })
+  // Missing description fallback test using shared helper
+  testMissingDescriptionFallback(
+    () => mountSuspended(ItemCard, {
+      props: { item: { ...mockItem, description: undefined } }
+    }),
+    'No description available'
+  )
 
   it('displays all key information in organized layout', async () => {
     const fullItem = {
