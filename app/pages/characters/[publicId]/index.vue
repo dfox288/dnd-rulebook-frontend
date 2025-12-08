@@ -107,8 +107,14 @@ const tabItems = computed(() => {
 
       <!-- Main Grid: Abilities sidebar + Stats/Skills -->
       <div class="grid lg:grid-cols-[200px_1fr] gap-6">
-        <!-- Left Sidebar: Ability Scores -->
-        <CharacterSheetAbilityScoreBlock :stats="stats" />
+        <!-- Left Sidebar: Ability Scores + Death Saves -->
+        <div class="space-y-4">
+          <CharacterSheetAbilityScoreBlock :stats="stats" />
+          <CharacterSheetDeathSaves
+            :successes="character.death_save_successes"
+            :failures="character.death_save_failures"
+          />
+        </div>
 
         <!-- Right: Combat Stats + Saves/Skills -->
         <div class="space-y-6">
