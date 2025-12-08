@@ -3,6 +3,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import SpellCard from '~/components/spell/SpellCard.vue'
 import { createMockSpell } from '../../helpers/mockFactories'
 import { testBadgeVisibility } from '../../helpers/badgeVisibilityBehavior'
+import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
 
 describe('SpellCard', () => {
   const mockSpell = createMockSpell()
@@ -92,6 +93,16 @@ describe('SpellCard', () => {
 
     expect(wrapper.text()).toContain('A bright streak flashes')
   })
+
+  // Description truncation tests using shared helper
+  testDescriptionTruncation(
+    () => mountSuspended(SpellCard, {
+      props: { spell: createMockSpell({ description: 'A'.repeat(200) }) }
+    }),
+    () => mountSuspended(SpellCard, {
+      props: { spell: createMockSpell({ description: 'Short description' }) }
+    })
+  )
 
   // Badge visibility tests (consolidated via helper)
   testBadgeVisibility(SpellCard, createMockSpell, 'spell', [
