@@ -27,10 +27,21 @@ const detailModalOpen = ref(false)
 const detailSubrace = ref<Race | null>(null)
 const loadingDetail = ref(false)
 
-// Get subraces directly from the selected base race
-// The selections.race already has the full subraces array from the detail endpoint
+// Get subraces from the selected base race, filtered by selected sourcebooks
 const availableSubraces = computed(() => {
   if (!selections.value.race?.subraces) return []
+
+  // Filter by selected sources if any are selected
+  if (store.selectedSources.length > 0) {
+    return selections.value.race.subraces.filter((subrace) => {
+      // Check if any of the subrace's sources match the selected sources
+      if (!subrace.sources || subrace.sources.length === 0) return false
+      return subrace.sources.some(source =>
+        store.selectedSources.includes(source.code)
+      )
+    })
+  }
+
   return selections.value.race.subraces
 })
 
