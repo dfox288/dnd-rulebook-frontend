@@ -32,7 +32,7 @@
  *   - Character creation with race
  *   - Adding a class
  *   - Setting background and ability scores
- *   - Resolving all pending choices (proficiencies, languages, equipment, spells)
+ *   - Resolving all pending choices (proficiencies, languages, equipment, spells, ability scores)
  *   - Stats calculation endpoint
  *   - Summary/validation endpoint
  *
@@ -40,6 +40,7 @@
  *   - Level 1 subclass selection (Cleric, Sorcerer, Warlock) not yet implemented
  *   - Subrace selection not yet implemented
  *   - Some optional_feature choices may show warnings but don't block completion
+ *   - Ability score choices (Half-Elf) require backend support (#161, #352)
  *
  * @see docs/plans/2025-12-07-character-stress-test-script.md
  */
@@ -102,24 +103,24 @@ Options:
 
 const TEST_POOL = {
   races: [
-    'phb:human',      // Simple, 1 language choice
-    'phb:elf',        // Has subraces (will use base for now)
-    'phb:dwarf',      // Has subraces (will use base for now)
-    'phb:half-elf',   // Multiple choices (skills, languages)
-    'phb:tiefling',   // No subraces, racial spells
+    'phb:human', // Simple, 1 language choice
+    'phb:elf', // Has subraces (will use base for now)
+    'phb:dwarf', // Has subraces (will use base for now)
+    'phb:half-elf', // Multiple choices (skills, languages)
+    'phb:tiefling' // No subraces, racial spells
   ],
   classes: [
-    'phb:fighter',    // Fighting style, multiple equipment choices
-    'phb:wizard',     // Spellcaster with spell selection
-    'phb:rogue',      // Expertise choices
-    'phb:bard',       // Jack of all trades, spells
-    'phb:ranger',     // Fighting style, spells
+    'phb:fighter', // Fighting style, multiple equipment choices
+    'phb:wizard', // Spellcaster with spell selection
+    'phb:rogue', // Expertise choices
+    'phb:bard', // Jack of all trades, spells
+    'phb:ranger' // Fighting style, spells
   ],
   backgrounds: [
-    'phb:acolyte',    // Languages
-    'phb:soldier',    // Gaming set choice
-    'phb:sage',       // Languages
-    'phb:criminal',   // Tool proficiency
+    'phb:acolyte', // Languages
+    'phb:soldier', // Gaming set choice
+    'phb:sage', // Languages
+    'phb:criminal' // Tool proficiency
   ]
 }
 
@@ -201,8 +202,8 @@ async function apiFetch<T>(
   return response.json()
 }
 
-async function createCharacter(name: string, publicId: string, raceSlug: string): Promise<{ id: number; public_id: string }> {
-  const response = await apiFetch<{ data: { id: number; public_id: string } }>('/characters', {
+async function createCharacter(name: string, publicId: string, raceSlug: string): Promise<{ id: number, public_id: string }> {
+  const response = await apiFetch<{ data: { id: number, public_id: string } }>('/characters', {
     method: 'POST',
     body: JSON.stringify({
       name,
@@ -218,7 +219,7 @@ async function addClass(characterId: number, classSlug: string): Promise<void> {
     method: 'POST',
     body: JSON.stringify({
       class_slug: classSlug,
-      force: true  // Skip multiclass prereqs for initial class
+      force: true // Skip multiclass prereqs for initial class
     })
   })
 }
@@ -241,8 +242,8 @@ async function getStats(characterId: number): Promise<Record<string, unknown>> {
   return response.data
 }
 
-async function getSummary(characterId: number): Promise<{ creation_complete: boolean; missing_required: string[] }> {
-  const response = await apiFetch<{ data: { creation_complete: boolean; missing_required: string[] } }>(
+async function getSummary(characterId: number): Promise<{ creation_complete: boolean, missing_required: string[] }> {
+  const response = await apiFetch<{ data: { creation_complete: boolean, missing_required: string[] } }>(
     `/characters/${characterId}/summary`
   )
   return response.data
@@ -269,9 +270,10 @@ async function checkApiConnectivity(): Promise<boolean> {
 interface ChoiceOption {
   full_slug?: string
   slug?: string
+  code?: string // For ability_score choices (STR, DEX, etc.)
   name: string
-  option?: string  // "a" or "b" for equipment
-  items?: Array<{ full_slug: string; is_fixed: boolean }>
+  option?: string // "a" or "b" for equipment
+  items?: Array<{ full_slug: string, is_fixed: boolean }>
   is_category?: boolean
   is_fixed?: boolean
 }
@@ -316,7 +318,7 @@ async function getPendingChoices(characterId: number): Promise<PendingChoice[]> 
 async function resolveChoice(
   characterId: number,
   choiceId: string,
-  payload: { selected: string[]; item_selections?: Record<string, string[]> }
+  payload: { selected: string[], item_selections?: Record<string, string[]> }
 ): Promise<void> {
   const encodedId = encodeURIComponent(choiceId)
   await apiFetch(`/characters/${characterId}/choices/${encodedId}`, {
@@ -325,12 +327,12 @@ async function resolveChoice(
   })
 }
 
-async function fetchOptionsFromEndpoint(endpoint: string): Promise<Array<{ full_slug: string; name: string }>> {
+async function fetchOptionsFromEndpoint(endpoint: string): Promise<Array<{ full_slug: string, name: string }>> {
   // The endpoint is relative to the API, e.g., "/api/v1/characters/13/available-spells"
   // We need to call it relative to our API_BASE
   const cleanEndpoint = endpoint.replace('/api/v1', '')
 
-  const response = await apiFetch<{ data: Array<{ full_slug: string; name: string }> | null }>(cleanEndpoint)
+  const response = await apiFetch<{ data: Array<{ full_slug: string, name: string }> | null }>(cleanEndpoint)
 
   // Handle null/undefined data
   if (!response.data || !Array.isArray(response.data)) {
@@ -340,7 +342,7 @@ async function fetchOptionsFromEndpoint(endpoint: string): Promise<Array<{ full_
   return response.data
 }
 
-async function pickRandomChoiceSelection(choice: PendingChoice): Promise<{ selected: string[]; item_selections?: Record<string, string[]> }> {
+async function pickRandomChoiceSelection(choice: PendingChoice): Promise<{ selected: string[], item_selections?: Record<string, string[]> }> {
   switch (choice.type) {
     case 'proficiency':
     case 'language':
@@ -438,6 +440,21 @@ async function pickRandomChoiceSelection(choice: PendingChoice): Promise<{ selec
       return { selected: pickRandomN(available, Math.min(choice.quantity, available.length)) }
     }
 
+    case 'ability_score': {
+      // Ability score choices (e.g., Half-Elf +1 to two abilities)
+      // Options have 'code' property (STR, DEX, CON, INT, WIS, CHA)
+      const available = (choice.options || [])
+        .map(o => o.code)
+        .filter((code): code is string => !!code)
+
+      if (available.length < choice.quantity) {
+        console.warn(`    ⚠️  Not enough ability score options: need ${choice.quantity}, have ${available.length}`)
+        return { selected: pickRandomN(available, available.length) }
+      }
+
+      return { selected: pickRandomN(available, choice.quantity) }
+    }
+
     default:
       console.warn(`    ⚠️  Unknown choice type: ${choice.type}`)
       return { selected: [] }
@@ -447,7 +464,7 @@ async function pickRandomChoiceSelection(choice: PendingChoice): Promise<{ selec
 async function resolveAllChoices(characterId: number, verbose: boolean): Promise<number> {
   let resolved = 0
   let iterations = 0
-  const maxIterations = 20  // Safety limit
+  const maxIterations = 20 // Safety limit
 
   while (iterations < maxIterations) {
     iterations++
@@ -648,7 +665,6 @@ async function main() {
       // Also get stats to verify calculations work
       await getStats(characterId)
       result.timing.validate = Date.now() - startValidate
-
     } catch (err) {
       result.status = 'error'
       result.error = err instanceof Error ? err.message : String(err)
