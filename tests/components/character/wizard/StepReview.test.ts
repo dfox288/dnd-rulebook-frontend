@@ -5,95 +5,170 @@ import { ref, computed } from 'vue'
 import StepReview from '~/components/character/wizard/StepReview.vue'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 
-// Mock data for stats (note: speed not included - it comes from race data)
-const mockStatsData = {
-  hitPoints: ref(12),
-  armorClass: ref(14),
-  initiative: ref('+2'),
-  proficiencyBonus: ref('+2'),
-  savingThrows: ref([
-    { code: 'STR', name: 'Strength', bonus: 1, formattedBonus: '+1', isProficient: false },
-    { code: 'DEX', name: 'Dexterity', bonus: 4, formattedBonus: '+4', isProficient: true },
-    { code: 'CON', name: 'Constitution', bonus: 1, formattedBonus: '+1', isProficient: false },
-    { code: 'INT', name: 'Intelligence', bonus: 0, formattedBonus: '+0', isProficient: false },
-    { code: 'WIS', name: 'Wisdom', bonus: 2, formattedBonus: '+2', isProficient: false },
-    { code: 'CHA', name: 'Charisma', bonus: 5, formattedBonus: '+5', isProficient: true }
-  ]),
-  spellcasting: ref(null),
-  abilityScores: ref([
-    { code: 'STR', name: 'Strength', score: 12, modifier: 1, formattedModifier: '+1', formatted: '12 (+1)' },
-    { code: 'DEX', name: 'Dexterity', score: 18, modifier: 4, formattedModifier: '+4', formatted: '18 (+4)' },
-    { code: 'CON', name: 'Constitution', score: 13, modifier: 1, formattedModifier: '+1', formatted: '13 (+1)' },
-    { code: 'INT', name: 'Intelligence', score: 10, modifier: 0, formattedModifier: '+0', formatted: '10 (+0)' },
-    { code: 'WIS', name: 'Wisdom', score: 14, modifier: 2, formattedModifier: '+2', formatted: '14 (+2)' },
-    { code: 'CHA', name: 'Charisma', score: 16, modifier: 3, formattedModifier: '+3', formatted: '16 (+3)' }
-  ]),
-  isSpellcaster: ref(false)
-}
+// Mock data for useCharacterSheet
+const mockCharacter = ref({
+  id: 123,
+  public_id: 'shadow-rogue-x7k3',
+  name: 'Elara Moonwhisper',
+  race: { id: 1, name: 'Elf', slug: 'elf' },
+  classes: [{ class: { id: 2, name: 'Rogue', slug: 'rogue' }, level: 1 }],
+  background: { id: 3, name: 'Criminal', slug: 'criminal' },
+  alignment: 'Chaotic Good',
+  speed: 30,
+  proficiency_bonus: 2,
+  is_complete: false,
+  has_inspiration: false,
+  death_save_successes: 0,
+  death_save_failures: 0,
+  portrait: null,
+  conditions: []
+})
 
-// Mock composables
-vi.mock('~/composables/useCharacterStats', () => ({
-  useCharacterStats: vi.fn(() => mockStatsData)
+const mockStats = ref({
+  hit_points: { current: 12, max: 12, temporary: 0 },
+  armor_class: 14,
+  initiative_bonus: 2,
+  proficiency_bonus: 2,
+  passive_perception: 12,
+  passive_investigation: 10,
+  passive_insight: 12,
+  ability_scores: {
+    STR: { score: 12, modifier: 1 },
+    DEX: { score: 18, modifier: 4 },
+    CON: { score: 13, modifier: 1 },
+    INT: { score: 10, modifier: 0 },
+    WIS: { score: 14, modifier: 2 },
+    CHA: { score: 16, modifier: 3 }
+  },
+  saving_throws: {
+    STR: 1,
+    DEX: 6, // proficient
+    CON: 1,
+    INT: 2, // proficient
+    WIS: 2,
+    CHA: 3
+  },
+  spellcasting: null,
+  hit_dice: [{ die: 'd8', total: 1, used: 0 }],
+  carrying_capacity: 180,
+  push_drag_lift: 360
+})
+
+const mockProficiencies = ref([
+  { id: 1, name: 'Stealth', type: 'skill', skill: { slug: 'stealth' }, expertise: true },
+  { id: 2, name: 'Thieves\' Tools', type: 'tool', tool: { slug: 'thieves-tools' } }
+])
+
+const mockFeatures = ref([
+  { id: 1, name: 'Sneak Attack', description: '1d6 extra damage', level: 1 }
+])
+
+const mockEquipment = ref([
+  { id: 1, item: { name: 'Rapier' }, quantity: 1 },
+  { id: 2, item: { name: 'Leather Armor' }, quantity: 1 }
+])
+
+const mockSpells = ref([])
+
+const mockLanguages = ref([
+  { id: 1, language: { name: 'Common' } },
+  { id: 2, language: { name: 'Elvish' } }
+])
+
+const mockSkills = ref([
+  { id: 1, name: 'Stealth', slug: 'stealth', ability_code: 'DEX', modifier: 8, proficient: true, expertise: true },
+  { id: 2, name: 'Perception', slug: 'perception', ability_code: 'WIS', modifier: 2, proficient: false, expertise: false }
+])
+
+const mockSavingThrows = ref([
+  { ability: 'STR', modifier: 1, proficient: false },
+  { ability: 'DEX', modifier: 6, proficient: true },
+  { ability: 'CON', modifier: 1, proficient: false },
+  { ability: 'INT', modifier: 2, proficient: true },
+  { ability: 'WIS', modifier: 2, proficient: false },
+  { ability: 'CHA', modifier: 3, proficient: false }
+])
+
+// Mock useCharacterSheet composable
+vi.mock('~/composables/useCharacterSheet', () => ({
+  useCharacterSheet: vi.fn(() => ({
+    character: mockCharacter,
+    stats: mockStats,
+    proficiencies: mockProficiencies,
+    features: mockFeatures,
+    equipment: mockEquipment,
+    spells: mockSpells,
+    languages: mockLanguages,
+    skills: mockSkills,
+    savingThrows: mockSavingThrows,
+    notes: ref({}),
+    loading: ref(false),
+    error: ref(null),
+    refresh: vi.fn()
+  }))
 }))
 
-// Stub child components - stats cards (wrapped by ReviewCharacterStats)
-const statsStubs = {
-  CharacterStatsCombatStatsCard: {
-    template: '<div data-testid="combat-stats-card">Combat Stats</div>',
-    props: ['hitPoints', 'armorClass', 'initiative', 'speed', 'proficiencyBonus']
-  },
-  CharacterStatsSavingThrowsCard: {
-    template: '<div data-testid="saving-throws-card">Saving Throws</div>',
-    props: ['savingThrows']
-  },
-  CharacterStatsSpellcastingCard: {
-    template: '<div data-testid="spellcasting-card">Spellcasting</div>',
-    props: ['ability', 'abilityName', 'saveDC', 'attackBonus', 'formattedAttackBonus', 'slots']
-  }
-}
-
-// Stub review sub-components - render meaningful content for tests
+// Stub sheet components - render meaningful content for tests
 const stubs = {
-  ...statsStubs,
-  CharacterWizardReviewCharacterIdentity: {
-    template: `<div>
-      <h1>{{ characterName }}</h1>
-      <p>{{ race }} · {{ characterClass }} · {{ background }}</p>
+  CharacterSheetHeader: {
+    template: `<div data-testid="sheet-header">
+      <h1>{{ character.name }}</h1>
+      <p>{{ character.race?.name }} · {{ character.classes?.[0]?.class?.name }} · {{ character.background?.name }}</p>
     </div>`,
-    props: ['characterName', 'race', 'characterClass', 'background']
+    props: ['character']
   },
-  CharacterWizardReviewCharacterAbilities: {
-    template: `<div>
-      <span>Ability Scores</span>
-      <div v-if="abilityScores" v-for="a in abilityScores" :key="a.code">
-        {{ a.name }} {{ a.score }} ({{ a.formattedModifier }})
+  CharacterSheetAbilityScoreBlock: {
+    template: `<div data-testid="ability-scores">
+      <div v-for="(data, code) in stats.ability_scores" :key="code">
+        {{ code }}: {{ data.score }} ({{ data.modifier >= 0 ? '+' : '' }}{{ data.modifier }})
       </div>
     </div>`,
-    props: ['abilityScores']
+    props: ['stats']
   },
-  CharacterWizardReviewCharacterStats: {
-    template: `<div>
-      <div data-testid="combat-stats-card">Combat Stats</div>
-      <div data-testid="saving-throws-card" v-if="savingThrows">Saving Throws</div>
-      <div data-testid="spellcasting-card" v-if="isSpellcaster && spellcasting">Spellcasting</div>
+  CharacterSheetCombatStatsGrid: {
+    template: `<div data-testid="combat-stats">
+      <span>HP: {{ stats.hit_points?.max }}</span>
+      <span>AC: {{ stats.armor_class }}</span>
+      <span>Speed: {{ character.speed }}</span>
     </div>`,
-    props: ['hitPoints', 'armorClass', 'initiative', 'speed', 'proficiencyBonus', 'savingThrows', 'isSpellcaster', 'spellcasting']
+    props: ['character', 'stats']
   },
-  CharacterWizardReviewProficiencies: {
-    template: '<div><span>Proficiencies</span></div>',
+  CharacterSheetSavingThrowsList: {
+    template: `<div data-testid="saving-throws">
+      <div v-for="save in savingThrows" :key="save.ability">
+        {{ save.ability }}: {{ save.modifier >= 0 ? '+' : '' }}{{ save.modifier }}
+        <span v-if="save.proficient">●</span>
+      </div>
+    </div>`,
+    props: ['savingThrows']
+  },
+  CharacterSheetSkillsList: {
+    template: `<div data-testid="skills-list">
+      <div v-for="skill in skills" :key="skill.slug">
+        {{ skill.name }}: {{ skill.modifier >= 0 ? '+' : '' }}{{ skill.modifier }}
+      </div>
+    </div>`,
+    props: ['skills']
+  },
+  CharacterSheetProficienciesPanel: {
+    template: '<div data-testid="proficiencies"><span>Proficiencies</span></div>',
     props: ['proficiencies']
   },
-  CharacterWizardReviewLanguages: {
-    template: '<div><span>Languages</span></div>',
+  CharacterSheetLanguagesPanel: {
+    template: '<div data-testid="languages"><span>Languages</span></div>',
     props: ['languages']
   },
-  CharacterWizardReviewEquipment: {
-    template: '<div><span>Equipment</span></div>',
-    props: ['equipment']
+  CharacterSheetEquipmentPanel: {
+    template: '<div data-testid="equipment"><span>Equipment</span></div>',
+    props: ['equipment', 'carryingCapacity', 'pushDragLift']
   },
-  CharacterWizardReviewSpells: {
-    template: '<div v-if="isSpellcaster"><span>Spells</span></div>',
-    props: ['spells', 'isSpellcaster']
+  CharacterSheetSpellsPanel: {
+    template: '<div data-testid="spells"><span>Spells</span></div>',
+    props: ['spells', 'stats']
+  },
+  CharacterSheetFeaturesPanel: {
+    template: '<div data-testid="features"><span>Features</span></div>',
+    props: ['features']
   }
 }
 
@@ -104,6 +179,7 @@ describe('StepReview', () => {
   // Setup store data function
   const setupStoreData = () => {
     store.characterId = 123
+    store.publicId = 'shadow-rogue-x7k3'
     store.selections.name = 'Elara Moonwhisper'
     store.selections.race = {
       id: 1,
@@ -132,10 +208,14 @@ describe('StepReview', () => {
     setActivePinia(pinia)
     store = useCharacterWizardStore()
     setupStoreData()
+
+    // Reset mock data to defaults
+    mockStats.value.spellcasting = null
+    mockSpells.value = []
   })
 
   describe('structure', () => {
-    it('renders character name from store', async () => {
+    it('renders character name from useCharacterSheet', async () => {
       const wrapper = await mountSuspended(StepReview, {
         global: { stubs, plugins: [pinia] }
       })
@@ -153,170 +233,181 @@ describe('StepReview', () => {
       expect(wrapper.text()).toContain('Criminal')
     })
 
-    it('renders combat stats card', async () => {
+    it('renders sheet header component', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.find('[data-testid="combat-stats-card"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="sheet-header"]').exists()).toBe(true)
     })
 
-    it('renders saving throws card', async () => {
+    it('renders combat stats grid', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.find('[data-testid="saving-throws-card"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="combat-stats"]').exists()).toBe(true)
+    })
+
+    it('renders saving throws list', async () => {
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      expect(wrapper.find('[data-testid="saving-throws"]').exists()).toBe(true)
     })
 
     it('renders ability scores section', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.text()).toContain('Strength')
-      expect(wrapper.text()).toContain('Dexterity')
-      expect(wrapper.text()).toContain('Constitution')
-      expect(wrapper.text()).toContain('Intelligence')
-      expect(wrapper.text()).toContain('Wisdom')
-      expect(wrapper.text()).toContain('Charisma')
+      expect(wrapper.find('[data-testid="ability-scores"]').exists()).toBe(true)
+    })
+
+    it('renders skills list', async () => {
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      expect(wrapper.find('[data-testid="skills-list"]').exists()).toBe(true)
     })
   })
 
   describe('combat stats integration', () => {
-    it('passes correct stats props to ReviewCharacterStats', async () => {
-      // Use stubs and verify data-testid elements render
+    it('displays hit points from stats', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      // The stub for ReviewCharacterStats includes combat-stats-card testid
-      expect(wrapper.find('[data-testid="combat-stats-card"]').exists()).toBe(true)
-      // Verify the text content shows "Combat Stats"
-      expect(wrapper.text()).toContain('Combat Stats')
-    })
-  })
-
-  describe('saving throws integration', () => {
-    it('passes saving throws to ReviewCharacterStats', async () => {
-      // Use stubs and verify data-testid elements render
-      const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
-      })
-
-      // The stub for ReviewCharacterStats includes saving-throws-card testid when savingThrows exists
-      expect(wrapper.find('[data-testid="saving-throws-card"]').exists()).toBe(true)
-      expect(wrapper.text()).toContain('Saving Throws')
-    })
-  })
-
-  describe('spellcasting conditional rendering', () => {
-    it('hides SpellcastingCard for non-spellcasters', async () => {
-      mockStatsData.isSpellcaster.value = false
-      mockStatsData.spellcasting.value = null
-
-      const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
-      })
-
-      // With stubs, check if stub exists
-      expect(wrapper.find('[data-testid="spellcasting-card"]').exists()).toBe(false)
+      expect(wrapper.text()).toContain('HP: 12')
     })
 
-    it('shows SpellcastingCard when character is spellcaster', async () => {
-      // Update mock data for spellcaster
-      mockStatsData.isSpellcaster.value = true
-      mockStatsData.spellcasting.value = {
-        ability: 'INT',
-        abilityName: 'Intelligence',
-        saveDC: 13,
-        attackBonus: 5,
-        formattedAttackBonus: '+5'
-      }
-
+    it('displays armor class from stats', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.find('[data-testid="spellcasting-card"]').exists()).toBe(true)
+      expect(wrapper.text()).toContain('AC: 14')
+    })
 
-      // Reset for other tests
-      mockStatsData.isSpellcaster.value = false
-      mockStatsData.spellcasting.value = null
+    it('displays speed from character', async () => {
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      expect(wrapper.text()).toContain('Speed: 30')
     })
   })
 
   describe('ability scores display', () => {
-    it('displays all six ability scores with modifiers', async () => {
+    it('displays all six ability scores', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      // Check for formatted display
+      const text = wrapper.text()
+      expect(text).toContain('STR')
+      expect(text).toContain('DEX')
+      expect(text).toContain('CON')
+      expect(text).toContain('INT')
+      expect(text).toContain('WIS')
+      expect(text).toContain('CHA')
+    })
+
+    it('displays ability score values', async () => {
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      // Check for some score values
       expect(wrapper.text()).toContain('12')
       expect(wrapper.text()).toContain('18')
-      expect(wrapper.text()).toContain('13')
-      expect(wrapper.text()).toContain('10')
-      expect(wrapper.text()).toContain('14')
-      expect(wrapper.text()).toContain('16')
+    })
+  })
+
+  describe('saving throws display', () => {
+    it('displays saving throw modifiers', async () => {
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      // DEX save should be +6 (proficient)
+      expect(wrapper.text()).toContain('+6')
+    })
+  })
+
+  describe('spellcasting conditional rendering', () => {
+    it('hides spells panel for non-spellcasters', async () => {
+      mockStats.value.spellcasting = null
+
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      expect(wrapper.find('[data-testid="spells"]').exists()).toBe(false)
+    })
+
+    it('shows spells panel when character is spellcaster', async () => {
+      mockStats.value.spellcasting = {
+        ability: 'INT',
+        ability_modifier: 3,
+        spell_save_dc: 13,
+        spell_attack_bonus: 5
+      }
+
+      const wrapper = await mountSuspended(StepReview, {
+        global: { stubs, plugins: [pinia] }
+      })
+
+      expect(wrapper.find('[data-testid="spells"]').exists()).toBe(true)
     })
   })
 
   describe('proficiencies section', () => {
-    it('renders proficiencies section', async () => {
+    it('renders proficiencies panel', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.text()).toMatch(/Proficien(cies|cy)/i)
-    })
-
-    it('displays placeholder when no proficiencies loaded', async () => {
-      const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
-      })
-
-      // Should still render section even if empty
-      expect(wrapper.text()).toMatch(/Proficien(cies|cy)/i)
+      expect(wrapper.find('[data-testid="proficiencies"]').exists()).toBe(true)
     })
   })
 
   describe('languages section', () => {
-    it('renders languages section', async () => {
+    it('renders languages panel', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.text()).toMatch(/Languages?/i)
+      expect(wrapper.find('[data-testid="languages"]').exists()).toBe(true)
     })
   })
 
   describe('equipment section', () => {
-    it('renders equipment section', async () => {
+    it('renders equipment panel', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      expect(wrapper.text()).toMatch(/Equipment/i)
+      expect(wrapper.find('[data-testid="equipment"]').exists()).toBe(true)
     })
   })
 
-  describe('spells section', () => {
-    it('hides spells section for non-spellcasters', async () => {
+  describe('features section', () => {
+    it('renders features panel', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
-      // Spells section should not appear
-      const text = wrapper.text()
-      expect(text).not.toMatch(/^Spells$/m)
+      expect(wrapper.find('[data-testid="features"]').exists()).toBe(true)
     })
   })
 
   describe('finish button', () => {
     it('shows Create Character button', async () => {
       const wrapper = await mountSuspended(StepReview, {
-        global: { stubs }
+        global: { stubs, plugins: [pinia] }
       })
 
       expect(wrapper.find('[data-testid="finish-btn"]').exists()).toBe(true)

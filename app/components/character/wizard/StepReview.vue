@@ -3,27 +3,39 @@
 /**
  * Final review step - shows complete character summary before finishing
  *
- * Composes sub-components for each section:
- * - CharacterIdentity - Name and race/class/background
- * - CharacterAbilities - Ability scores card
- * - CharacterStats - Combat stats, saving throws, spellcasting
- * - Proficiencies - Proficiencies grouped by type
- * - Languages - Known languages
- * - Equipment - Equipment list
- * - Spells - Spells grouped by level
+ * Reuses character sheet components to provide a preview of the final
+ * character sheet. This ensures consistency between the review and the
+ * actual character view page.
+ *
+ * Uses useCharacterSheet composable to fetch all character data in parallel.
  */
 
 import { useCharacterWizardStore } from '~/stores/characterWizard'
-import type {
-  CharacterProficiency,
-  CharacterLanguage,
-  CharacterEquipment,
-  CharacterSpell
-} from '~/types/character'
 
 const store = useCharacterWizardStore()
-const { apiFetch } = useApi()
 const router = useRouter()
+
+// Convert characterId to ref for useCharacterSheet
+// By the time we reach the Review step, characterId should always be set
+// The fallback to 0 satisfies the type but would show loading/empty state if somehow null
+const characterId = computed(() => store.characterId ?? 0)
+
+/**
+ * Fetch all character data using the same composable as the character sheet page.
+ * This ensures we display exactly what the final character sheet will show.
+ */
+const {
+  character,
+  stats,
+  proficiencies,
+  features,
+  equipment,
+  spells,
+  languages,
+  skills,
+  savingThrows,
+  loading
+} = useCharacterSheet(characterId)
 
 /**
  * Finish wizard and navigate to character sheet
@@ -32,129 +44,91 @@ async function finishWizard() {
   await router.push(`/characters/${store.publicId}`)
   store.reset()
 }
-
-// Fetch character stats
-const {
-  hitPoints,
-  armorClass,
-  initiative,
-  proficiencyBonus,
-  savingThrows,
-  spellcasting,
-  abilityScores,
-  isSpellcaster
-} = useCharacterStats(computed(() => store.characterId))
-
-// Speed comes from race, not stats endpoint
-const speed = computed(() => store.selections.race?.speed ?? 30)
-
-// Character identity
-const characterName = computed(() => store.selections.name || 'Unnamed Character')
-const race = computed(() => store.selections.race?.name || 'Unknown')
-const characterClass = computed(() => store.selections.class?.name || 'Unknown')
-const background = computed(() => store.selections.background?.name || 'Unknown')
-
-// ══════════════════════════════════════════════════════════════
-// Fetch character data from backend
-// ══════════════════════════════════════════════════════════════
-
-const { data: proficiencies } = await useAsyncData(
-  `review-proficiencies-${store.characterId}`,
-  () => apiFetch<{ data: CharacterProficiency[] }>(`/characters/${store.characterId}/proficiencies`),
-  { transform: response => response.data, watch: [() => store.characterId] }
-)
-
-const { data: languages } = await useAsyncData(
-  `review-languages-${store.characterId}`,
-  () => apiFetch<{ data: CharacterLanguage[] }>(`/characters/${store.characterId}/languages`),
-  { transform: response => response.data, watch: [() => store.characterId] }
-)
-
-const { data: equipment } = await useAsyncData(
-  `review-equipment-${store.characterId}`,
-  () => apiFetch<{ data: CharacterEquipment[] }>(`/characters/${store.characterId}/equipment`),
-  { transform: response => response.data, watch: [() => store.characterId] }
-)
-
-const { data: spells } = await useAsyncData(
-  `review-spells-${store.characterId}`,
-  () => {
-    if (!isSpellcaster.value) return Promise.resolve({ data: [] })
-    return apiFetch<{ data: CharacterSpell[] }>(`/characters/${store.characterId}/spells`)
-  },
-  { transform: response => response.data, watch: [() => store.characterId, isSpellcaster] }
-)
 </script>
 
 <template>
   <div class="max-w-5xl mx-auto space-y-6">
-    <!-- Header: Character Name and Identity -->
-    <CharacterWizardReviewCharacterIdentity
-      :character-name="characterName"
-      :race="race"
-      :character-class="characterClass"
-      :background="background"
-    />
-
-    <!-- Two Column Layout: Abilities + Stats -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left Column: Ability Scores -->
-      <div class="lg:col-span-1">
-        <CharacterWizardReviewCharacterAbilities
-          :ability-scores="abilityScores"
-        />
-      </div>
-
-      <!-- Right Column: Combat Stats and Saving Throws -->
-      <div class="lg:col-span-2">
-        <CharacterWizardReviewCharacterStats
-          :hit-points="hitPoints"
-          :armor-class="armorClass"
-          :initiative="initiative"
-          :speed="speed"
-          :proficiency-bonus="proficiencyBonus"
-          :saving-throws="savingThrows"
-          :is-spellcaster="isSpellcaster"
-          :spellcasting="spellcasting"
-        />
+    <!-- Loading State -->
+    <div
+      v-if="loading"
+      class="space-y-6"
+    >
+      <USkeleton class="h-20 w-full" />
+      <div class="grid lg:grid-cols-[200px_1fr] gap-6">
+        <USkeleton class="h-80" />
+        <div class="space-y-4">
+          <USkeleton class="h-32" />
+          <USkeleton class="h-48" />
+        </div>
       </div>
     </div>
 
-    <!-- Proficiencies and Languages -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <CharacterWizardReviewProficiencies
-        :proficiencies="proficiencies ?? null"
+    <!-- Character Preview (reuses sheet components) -->
+    <template v-else-if="character && stats">
+      <!-- Header -->
+      <CharacterSheetHeader :character="character" />
+
+      <!-- Main Grid: Abilities sidebar + Stats/Skills -->
+      <div class="grid lg:grid-cols-[200px_1fr] gap-6">
+        <!-- Left Sidebar: Ability Scores -->
+        <div class="space-y-4">
+          <CharacterSheetAbilityScoreBlock :stats="stats" />
+        </div>
+
+        <!-- Right: Combat Stats + Saves/Skills -->
+        <div class="space-y-6">
+          <!-- Combat Stats Grid -->
+          <CharacterSheetCombatStatsGrid
+            :character="character"
+            :stats="stats"
+          />
+
+          <!-- Saving Throws and Skills -->
+          <div class="grid md:grid-cols-2 gap-6">
+            <CharacterSheetSavingThrowsList :saving-throws="savingThrows" />
+            <CharacterSheetSkillsList :skills="skills" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Features, Proficiencies, Equipment, Spells, Languages -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <CharacterSheetProficienciesPanel :proficiencies="proficiencies" />
+        <CharacterSheetLanguagesPanel :languages="languages" />
+      </div>
+
+      <!-- Equipment -->
+      <CharacterSheetEquipmentPanel
+        :equipment="equipment"
+        :carrying-capacity="stats?.carrying_capacity"
+        :push-drag-lift="stats?.push_drag_lift"
       />
-      <CharacterWizardReviewLanguages
-        :languages="languages ?? null"
+
+      <!-- Spells (conditional) -->
+      <CharacterSheetSpellsPanel
+        v-if="stats.spellcasting"
+        :spells="spells"
+        :stats="stats"
       />
-    </div>
 
-    <!-- Equipment -->
-    <CharacterWizardReviewEquipment
-      :equipment="equipment ?? null"
-    />
+      <!-- Features -->
+      <CharacterSheetFeaturesPanel :features="features" />
 
-    <!-- Spells (conditional) -->
-    <CharacterWizardReviewSpells
-      :spells="spells ?? null"
-      :is-spellcaster="isSpellcaster"
-    />
-
-    <!-- Finish Button -->
-    <div class="flex justify-center pt-8 border-t border-gray-200 dark:border-gray-700 mt-8">
-      <UButton
-        data-testid="finish-btn"
-        size="xl"
-        color="primary"
-        @click="finishWizard"
-      >
-        <UIcon
-          name="i-heroicons-check-circle"
-          class="w-5 h-5 mr-2"
-        />
-        Create Character
-      </UButton>
-    </div>
+      <!-- Finish Button -->
+      <div class="flex justify-center pt-8 border-t border-gray-200 dark:border-gray-700 mt-8">
+        <UButton
+          data-testid="finish-btn"
+          size="xl"
+          color="primary"
+          @click="finishWizard"
+        >
+          <UIcon
+            name="i-heroicons-check-circle"
+            class="w-5 h-5 mr-2"
+          />
+          Create Character
+        </UButton>
+      </div>
+    </template>
   </div>
 </template>
