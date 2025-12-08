@@ -1,47 +1,44 @@
-import { describe, it, expect } from 'vitest'
+/**
+ * Races Page - Filter Tests (Consolidated)
+ *
+ * This file consolidates tests for all race page filters:
+ * - Filter layout tests (size filter, active filters section)
+ * - Parent race filter tests
+ *
+ * Consolidation: 2 files → 1 file
+ * GitHub Issue: #323
+ */
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 import RacesPage from '~/pages/races/index.vue'
 
-describe('Races Page - Filter Layout', () => {
-  describe('Size filter layout', () => {
+describe('Races Page - Filters', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+  // ===========================================================================
+  // Size Filter Layout Tests
+  // ===========================================================================
+  describe('size filter', () => {
     it('displays size filter select (UiFilterSelect)', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Open filters and wait for sizes to load
       const component = wrapper.vm as any
       component.filtersOpen = true
       await wrapper.vm.$nextTick()
 
-      // Look for the size filter select component
       const sizeFilter = wrapper.find('[data-testid="size-filter"]')
       expect(sizeFilter.exists()).toBe(true)
-    })
-  })
-
-  describe('Active filters section', () => {
-    it('displays "Active filters:" label (not "Active:")', async () => {
-      const wrapper = await mountSuspended(RacesPage)
-
-      // Set a filter to make section visible
-      const component = wrapper.vm as any
-      component.selectedSize = 'M'
-      await wrapper.vm.$nextTick()
-
-      // The label is rendered by UiFilterChips and contains "Active filters:"
-      const text = wrapper.text()
-      expect(text).toContain('Active filters:')
-      expect(text).not.toContain('Active:')
     })
 
     it('displays size filter chip when size is selected', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Select a size
       const component = wrapper.vm as any
       component.selectedSize = 'M'
       await wrapper.vm.$nextTick()
 
-      // Look for the chip
       const chip = wrapper.find('[data-testid="size-filter-chip"]')
       expect(chip.exists()).toBe(true)
       expect(chip.text()).toContain('✕')
@@ -50,43 +47,134 @@ describe('Races Page - Filter Layout', () => {
     it('clicking size chip clears size filter', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Select a size
       const component = wrapper.vm as any
       component.selectedSize = 'M'
       await wrapper.vm.$nextTick()
 
-      // Click chip
       const chip = wrapper.find('[data-testid="size-filter-chip"]')
       await chip.trigger('click')
 
-      // Size should be cleared (store-only check, no tick needed)
       expect(component.selectedSize).toBe('')
     })
 
     it('does not show size chip when no size selected', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Ensure no size selected (already default state after mount)
       const component = wrapper.vm as any
       component.selectedSize = ''
 
-      // Chip should not exist (checking non-existence, no tick needed)
       const chip = wrapper.find('[data-testid="size-filter-chip"]')
       expect(chip.exists()).toBe(false)
     })
   })
 
-  describe('Clear filters button position', () => {
-    it('displays Clear filters button when filters are active', async () => {
+  // ===========================================================================
+  // Parent Race Filter Tests
+  // ===========================================================================
+  describe('parent race filter', () => {
+    it('displays parent race filter select dropdown', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Set a filter to make section visible
+      const component = wrapper.vm as any
+      component.filtersOpen = true
+      await wrapper.vm.$nextTick()
+
+      const parentRaceSelect = wrapper.find('[data-testid="parent-race-filter"]')
+      expect(parentRaceSelect.exists()).toBe(true)
+    })
+
+    it('allows selecting a parent race', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedParentRace = 'Elf'
+
+      expect(component.selectedParentRace).toBe('Elf')
+    })
+
+    it('displays parent race filter chip when parent race is selected', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedParentRace = 'Elf'
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-testid="parent-race-filter-chip"]')
+      expect(chip.exists()).toBe(true)
+      expect(chip.text()).toContain('Elf')
+      expect(chip.text()).toContain('✕')
+    })
+
+    it('clicking parent race chip clears filter', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedParentRace = 'Elf'
+      await wrapper.vm.$nextTick()
+
+      const chip = wrapper.find('[data-testid="parent-race-filter-chip"]')
+      await chip.trigger('click')
+
+      expect(component.selectedParentRace).toBe('')
+    })
+
+    it('does not show parent race chip when no parent race selected', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedParentRace = ''
+
+      const chip = wrapper.find('[data-testid="parent-race-filter-chip"]')
+      expect(chip.exists()).toBe(false)
+    })
+
+    it('clears parent race filter when clearFilters is called', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedParentRace = 'Elf'
+
+      component.clearFilters()
+
+      expect(component.selectedParentRace).toBe('')
+    })
+
+    it('includes parent race in active filter count', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      expect(component.activeFilterCount).toBe(0)
+
+      component.selectedParentRace = 'Elf'
+      await wrapper.vm.$nextTick()
+
+      expect(component.activeFilterCount).toBeGreaterThan(0)
+    })
+  })
+
+  // ===========================================================================
+  // Active Filters Section Tests
+  // ===========================================================================
+  describe('active filters section', () => {
+    it('displays "Active filters:" label (not "Active:")', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
       const component = wrapper.vm as any
       component.selectedSize = 'M'
       await wrapper.vm.$nextTick()
 
-      // Look for the Clear filters button (rendered by UiFilterChips)
-      // The button text is "Clear filters" and it's right-aligned via justify-between
+      const text = wrapper.text()
+      expect(text).toContain('Active filters:')
+      expect(text).not.toContain('Active:')
+    })
+
+    it('displays Clear filters button when filters are active', async () => {
+      const wrapper = await mountSuspended(RacesPage)
+
+      const component = wrapper.vm as any
+      component.selectedSize = 'M'
+      await wrapper.vm.$nextTick()
+
       const text = wrapper.text()
       expect(text).toContain('Clear filters')
       expect(text).toContain('Active filters:')
@@ -96,16 +184,13 @@ describe('Races Page - Filter Layout', () => {
       const wrapper = await mountSuspended(RacesPage)
 
       const component = wrapper.vm as any
-
-      // No filters - button should not exist (batch mutations)
-      component.selectedSize = ''
-      component.searchQuery = ''
+      // Clear all filters first to ensure clean state
+      component.clearFilters()
       await wrapper.vm.$nextTick()
 
       let text = wrapper.text()
       expect(text).not.toContain('Clear filters')
 
-      // Add filter - button should appear
       component.selectedSize = 'M'
       await wrapper.vm.$nextTick()
 
@@ -116,25 +201,25 @@ describe('Races Page - Filter Layout', () => {
     it('clicking Clear filters button clears all filters', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
-      // Set filters (batch mutations before single tick)
       const component = wrapper.vm as any
       component.selectedSize = 'M'
       component.searchQuery = 'Elf'
       await wrapper.vm.$nextTick()
 
-      // Click Clear filters button by finding button with text "Clear filters"
       const buttons = wrapper.findAll('button')
       const clearButton = buttons.find(btn => btn.text().includes('Clear filters'))
       expect(clearButton).toBeDefined()
       await clearButton!.trigger('click')
 
-      // All filters should be cleared (store-only checks, no tick needed)
       expect(component.selectedSize).toBe('')
       expect(component.searchQuery).toBe('')
     })
   })
 
-  describe('Search query chip', () => {
+  // ===========================================================================
+  // Search Query Chip Tests
+  // ===========================================================================
+  describe('search query chip', () => {
     it('displays search query chip when search is active', async () => {
       const wrapper = await mountSuspended(RacesPage)
 
@@ -154,14 +239,12 @@ describe('Races Page - Filter Layout', () => {
       component.searchQuery = 'Elf'
       await wrapper.vm.$nextTick()
 
-      // Find and click search chip (the one with the query text)
       const chips = wrapper.findAll('button')
       const searchChip = chips.find(btn => btn.text().includes('"Elf"'))
 
       expect(searchChip).toBeDefined()
       await searchChip!.trigger('click')
 
-      // Store-only check, no tick needed
       expect(component.searchQuery).toBe('')
     })
   })
