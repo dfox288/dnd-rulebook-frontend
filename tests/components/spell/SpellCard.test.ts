@@ -4,19 +4,22 @@ import SpellCard from '~/components/spell/SpellCard.vue'
 import { createMockSpell } from '../../helpers/mockFactories'
 import { testBadgeVisibility } from '../../helpers/badgeVisibilityBehavior'
 import { testDescriptionTruncation } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('SpellCard', () => {
   const mockSpell = createMockSpell()
 
-  // Spell-specific tests (domain logic)
-  it('renders spell name', async () => {
-    const wrapper = await mountSuspended(SpellCard, {
-      props: { spell: mockSpell }
-    })
-
-    expect(wrapper.text()).toContain('Fireball')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: SpellCard,
+    propName: 'spell',
+    mockFactory: createMockSpell,
+    entityName: 'Fireball',
+    linkPath: '/spells/fireball',
+    optionalFields: ['school', 'sources']
   })
 
+  // Spell-specific tests (domain logic)
   it('formats spell level correctly for low level spells', async () => {
     const wrapper = await mountSuspended(SpellCard, {
       props: { spell: mockSpell }

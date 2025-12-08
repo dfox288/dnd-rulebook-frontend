@@ -1,12 +1,22 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { CharacterClass } from '~/types'
 import ClassCard from '~/components/class/ClassCard.vue'
 import { createMockClass } from '../../helpers/mockFactories'
 import { testDescriptionTruncation, testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('ClassCard', () => {
   const mockClass = createMockClass()
+
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: ClassCard,
+    propName: 'characterClass',
+    mockFactory: createMockClass,
+    entityName: 'Wizard',
+    linkPath: '/classes/wizard',
+    optionalFields: ['primary_ability', 'spellcasting_ability', 'sources']
+  })
 
   // Description truncation tests using shared helper
   testDescriptionTruncation(
@@ -17,14 +27,6 @@ describe('ClassCard', () => {
       props: { characterClass: { ...mockClass, description: 'Short' } }
     })
   )
-
-  it('renders class name', async () => {
-    const wrapper = await mountSuspended(ClassCard, {
-      props: { characterClass: mockClass }
-    })
-
-    expect(wrapper.text()).toContain('Wizard')
-  })
 
   it('formats hit die correctly', async () => {
     const wrapper = await mountSuspended(ClassCard, {

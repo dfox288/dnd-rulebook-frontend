@@ -1,39 +1,24 @@
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import type { Feat } from '~/types'
 import FeatCard from '~/components/feat/FeatCard.vue'
+import { createMockFeat } from '../../helpers/mockFactories'
 import { testMissingDescriptionFallback } from '../../helpers/descriptionBehavior'
+import { testEntityCardBasics } from '../../helpers/cardBehavior'
 
 describe('FeatCard', () => {
-  const mockFeat: Feat = {
-    id: 1,
-    name: 'War Caster',
-    slug: 'war-caster',
-    prerequisites: [
-      {
-        ability_score: { id: 4, code: 'INT', name: 'Intelligence' },
-        minimum_value: 13
-      }
-    ],
-    modifiers: [
-      { modifier_type: 'ability_score', ability_score: { id: 1, code: 'STR', name: 'Strength' }, value: 1 },
-      { modifier_type: 'ability_score', ability_score: { id: 3, code: 'CON', name: 'Constitution' }, value: 1 }
-    ],
-    description: 'You have practiced casting spells in the midst of combat, learning techniques that grant you the following benefits.',
-    sources: [
-      { code: 'PHB', name: 'Player\'s Handbook', pages: '170' }
-    ]
-  }
+  const mockFeat = createMockFeat()
 
-  // Feat-specific tests (domain logic)
-  it('renders feat name', async () => {
-    const wrapper = await mountSuspended(FeatCard, {
-      props: { feat: mockFeat }
-    })
-
-    expect(wrapper.text()).toContain('War Caster')
+  // Entity card basics (via helper) - tests name, link, hover
+  testEntityCardBasics({
+    component: FeatCard,
+    propName: 'feat',
+    mockFactory: createMockFeat,
+    entityName: 'War Caster',
+    linkPath: '/feats/war-caster',
+    optionalFields: ['prerequisites', 'modifiers', 'sources']
   })
 
+  // Feat-specific tests (domain logic)
   it('shows prerequisites badge when prerequisites exist', async () => {
     const wrapper = await mountSuspended(FeatCard, {
       props: { feat: mockFeat }
