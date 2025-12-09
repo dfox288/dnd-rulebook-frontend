@@ -1,6 +1,6 @@
 <!-- app/components/character/wizard/StepAbilities.vue -->
 <script setup lang="ts">
-import type { AbilityScores, Feat } from '~/types'
+import type { AbilityScores } from '~/types'
 import type { components } from '~/types/api/generated'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
@@ -8,7 +8,20 @@ import type { AbilityMethod } from '~/stores/characterWizard'
 import { logger } from '~/utils/logger'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
-type ModifierResource = components['schemas']['ModifierResource']
+type AbilityBonusCollection = components['schemas']['AbilityBonusCollectionResource']
+
+// Type for individual bonus from the endpoint
+interface AbilityBonus {
+  source_type: string
+  source_name: string
+  source_slug: string
+  ability_code: string
+  ability_name: string
+  value: number
+  is_choice: boolean
+  choice_resolved?: boolean
+  modifier_id?: number
+}
 
 // Metadata type for ability_score choices (API returns object, not array)
 interface AbilityScoreChoiceMetadata {
@@ -54,7 +67,7 @@ const {
 // Use unified choices composable for ability score choices
 const {
   choicesByType,
-  pending: choicesPending,
+  pending: _choicesPending,
   fetchChoices,
   resolveChoice
 } = useUnifiedChoices(computed(() => store.characterId))
@@ -102,111 +115,70 @@ const fixedBonuses = computed(() =>
 )
 
 // Choice bonuses require user selection (e.g., Half-Elf's "choose 2 different")
-const choiceBonuses = computed(() =>
+// Note: These are handled via pending choices API, kept for reference
+const _choiceBonuses = computed(() =>
   allRacialModifiers.value.filter(m => m.is_choice)
 )
 const { nextStep } = useCharacterWizard()
 
 // ══════════════════════════════════════════════════════════════
-// Feat Ability Bonuses
+// Ability Bonuses from Endpoint (Issue #403)
 // ══════════════════════════════════════════════════════════════
 
 const { apiFetch } = useApi()
 
-// Store for fetched feat data (keyed by slug)
-const selectedFeats = ref<Map<string, Feat>>(new Map())
-const featBonusesLoading = ref(false)
+// Store ability bonuses from the centralized endpoint
+const abilityBonusesData = ref<AbilityBonusCollection | null>(null)
+const abilityBonusesLoading = ref(false)
 
-// Get selected feat slugs from pending choices
-const selectedFeatSlugs = computed(() => {
-  const slugs: string[] = []
-  for (const choice of choicesByType.value.feats) {
-    if (choice.selected && choice.selected.length > 0) {
-      slugs.push(...choice.selected.map(String))
+// Fetch ability bonuses when characterId becomes available
+watch(
+  () => store.characterId,
+  async (id) => {
+    if (!id) {
+      abilityBonusesData.value = null
+      return
     }
-  }
-  return slugs
+
+    abilityBonusesLoading.value = true
+    try {
+      const response = await apiFetch<{ data: AbilityBonusCollection }>(
+        `/characters/${id}/ability-bonuses`
+      )
+      abilityBonusesData.value = response.data
+    } catch (e) {
+      logger.error('Failed to fetch ability bonuses:', e)
+      abilityBonusesData.value = null
+    } finally {
+      abilityBonusesLoading.value = false
+    }
+  },
+  { immediate: true }
+)
+
+// Filter bonuses by source type: race bonuses (fixed, resolved from endpoint)
+const raceBonuses = computed<AbilityBonus[]>(() => {
+  if (!abilityBonusesData.value?.bonuses) return []
+  return abilityBonusesData.value.bonuses.filter(b => b.source_type === 'race')
 })
 
-// Fetch feat details when selected feats change
-watch(selectedFeatSlugs, async (slugs) => {
-  if (slugs.length === 0) return
+// Filter bonuses by source type: feat bonuses
+const featBonuses = computed<AbilityBonus[]>(() => {
+  if (!abilityBonusesData.value?.bonuses) return []
+  return abilityBonusesData.value.bonuses.filter(b => b.source_type === 'feat')
+})
 
-  featBonusesLoading.value = true
-  try {
-    for (const slug of slugs) {
-      // Skip if already fetched
-      if (selectedFeats.value.has(slug)) continue
-
-      // Normalize slug (remove source prefix if present for API call)
-      const apiSlug = slug.includes(':') ? slug : slug
-      const response = await apiFetch<{ data: Feat }>(`/feats/${apiSlug}`)
-      selectedFeats.value.set(slug, response.data)
-    }
-  } catch (e) {
-    logger.error('Failed to fetch feat details:', e)
-  } finally {
-    featBonusesLoading.value = false
-  }
-}, { immediate: true })
-
-// Also fetch feats when feat choices load (for already-selected feats)
-watch(() => choicesByType.value.feats, async (featChoices) => {
-  const slugs: string[] = []
-  for (const choice of featChoices) {
-    if (choice.selected && choice.selected.length > 0) {
-      slugs.push(...choice.selected.map(String))
-    }
-  }
-
-  if (slugs.length === 0) return
-
-  featBonusesLoading.value = true
-  try {
-    for (const slug of slugs) {
-      if (selectedFeats.value.has(slug)) continue
-      const response = await apiFetch<{ data: Feat }>(`/feats/${slug}`)
-      selectedFeats.value.set(slug, response.data)
-    }
-  } catch (e) {
-    logger.error('Failed to fetch feat details:', e)
-  } finally {
-    featBonusesLoading.value = false
-  }
-}, { immediate: true })
-
-// Get all feat ability score modifiers (fixed bonuses from selected feats)
+// Get all feat ability score modifiers in the format expected by the template
+// Maps from new endpoint format to existing display format
 const featAbilityModifiers = computed(() => {
-  const modifiers: Array<ModifierResource & { featName: string }> = []
-
-  for (const feat of selectedFeats.value.values()) {
-    if (!feat.modifiers) continue
-
-    for (const mod of feat.modifiers) {
-      if (mod.modifier_category === 'ability_score' && !mod.is_choice && mod.ability_score) {
-        modifiers.push({ ...mod, featName: feat.name })
-      }
-    }
-  }
-
-  return modifiers
-})
-
-// Check if any selected feat has ability score choices (for future use)
-const featAbilityChoices = computed(() => {
-  const choices: Array<ModifierResource & { featName: string, featSlug: string }> = []
-
-  for (const [slug, feat] of selectedFeats.value.entries()) {
-    if (!feat.modifiers) continue
-
-    for (const mod of feat.modifiers) {
-      if (mod.modifier_category === 'ability_score' && mod.is_choice) {
-        choices.push({ ...mod, featName: feat.name, featSlug: slug })
-      }
-    }
-  }
-
-  return choices
+  return featBonuses.value.map(bonus => ({
+    ability_score: {
+      code: bonus.ability_code,
+      name: bonus.ability_name
+    },
+    value: bonus.value,
+    featName: bonus.source_name
+  }))
 })
 
 // ══════════════════════════════════════════════════════════════
@@ -446,6 +418,15 @@ const methodOptions = [
   { label: 'Point Buy', value: 'point_buy' },
   { label: 'Manual', value: 'manual' }
 ] as const
+
+// Expose computed properties for testing
+defineExpose({
+  raceBonuses,
+  featBonuses,
+  featAbilityModifiers,
+  _choiceBonuses,
+  _choicesPending
+})
 
 // Reset scores when method changes
 watch(selectedMethod, (newMethod) => {

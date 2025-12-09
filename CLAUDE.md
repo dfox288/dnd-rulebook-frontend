@@ -108,7 +108,7 @@ docker compose exec nuxt npm run dev        # Dev server
 docker compose exec nuxt npm run test       # Full test suite (~125s)
 docker compose exec nuxt npm run typecheck  # TypeScript check
 docker compose exec nuxt npm run lint:fix   # Auto-fix linting
-docker compose exec nuxt npm run types:sync # Sync API types from backend
+node scripts/sync-api-types.js             # Sync API types (run from HOST, not Docker)
 ```
 
 | Working On | Test Suite | Runtime |
@@ -194,7 +194,7 @@ git checkout -b chore/issue-13-storybook-setup
 - Add domain test suite to `package.json`
 
 ### For API Type Changes (Additional)
-- Run `npm run types:sync` (requires backend running)
+- Run `node scripts/sync-api-types.js` from HOST (not Docker) - requires backend running
 - Run `npm run typecheck`
 - Update component props if needed
 
