@@ -29,10 +29,14 @@ const { data: subclasses, pending: loadingSubclasses } = await useAsyncData(
     )
 
     // Filter by selected sources if any are selected
+    // Note: If a subclass has no source info (null), include it anyway
+    // to avoid hiding all subclasses when backend data is incomplete
     if (sourceFilterString.value && store.selectedSources.length > 0) {
-      return response.data.filter(subclass =>
-        subclass.source && store.selectedSources.includes(subclass.source.code)
-      )
+      return response.data.filter((subclass) => {
+        // No source info = include by default (data incomplete, don't hide)
+        if (!subclass.source) return true
+        return store.selectedSources.includes(subclass.source.code)
+      })
     }
 
     return response.data
