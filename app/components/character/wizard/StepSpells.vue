@@ -6,7 +6,7 @@ import type { components } from '~/types/api/generated'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { normalizeEndpoint } from '~/composables/useApi'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
@@ -208,14 +208,8 @@ async function handleContinue() {
     }
     nextStep()
   } catch (e) {
-    logger.error('Failed to save spell choices:', e)
     saveError.value = e instanceof Error ? e.message : 'Failed to save spell choices'
-    toast.add({
-      title: 'Failed to save spells',
-      description: 'Please try again',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-circle'
-    })
+    wizardErrors.choiceResolveFailed(e, toast, 'spell')
   } finally {
     isSaving.value = false
   }
@@ -231,24 +225,12 @@ function formatLevelText(level: number): string {
 }
 
 // Modal state for spell details
-const detailModalOpen = ref(false)
-const detailSpell = ref<Spell | null>(null)
-
-/**
- * View spell details - open modal
- */
-function handleViewDetails(spell: Spell) {
-  detailSpell.value = spell
-  detailModalOpen.value = true
-}
-
-/**
- * Close detail modal
- */
-function handleCloseModal() {
-  detailModalOpen.value = false
-  detailSpell.value = null
-}
+const {
+  open: detailModalOpen,
+  item: detailSpell,
+  show: handleViewDetails,
+  close: handleCloseModal
+} = useDetailModal<Spell>()
 </script>
 
 <template>
@@ -374,7 +356,7 @@ function handleCloseModal() {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <CharacterPickerSpellPickerCard
+          <CharacterSpellCard
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"
@@ -406,7 +388,7 @@ function handleCloseModal() {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <CharacterPickerSpellPickerCard
+          <CharacterSpellCard
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"
@@ -438,7 +420,7 @@ function handleCloseModal() {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <CharacterPickerSpellPickerCard
+          <CharacterSpellCard
             v-for="spell in getAvailableSpells(choice)"
             :key="spell.id"
             :spell="spell"

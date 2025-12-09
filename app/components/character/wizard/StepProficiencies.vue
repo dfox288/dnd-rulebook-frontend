@@ -5,6 +5,7 @@ import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { normalizeEndpoint } from '~/composables/useApi'
 import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 type ProficiencyResource = components['schemas']['ProficiencyResource']
 type PendingChoice = components['schemas']['PendingChoiceResource']
@@ -418,13 +419,7 @@ async function handleContinue() {
     // Move to next step
     await nextStep()
   } catch (err) {
-    logger.error('Failed to save proficiency choices:', err)
-    toast.add({
-      title: 'Failed to save proficiencies',
-      description: 'Please try again',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-circle'
-    })
+    wizardErrors.choiceResolveFailed(err, toast, 'proficiency')
   } finally {
     isSaving.value = false
   }

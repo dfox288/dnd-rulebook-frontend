@@ -1,4 +1,4 @@
-<!-- app/components/character/builder/SpellPickerCard.vue -->
+<!-- app/components/character/SpellCard.vue -->
 <script setup lang="ts">
 import type { Spell } from '~/types'
 

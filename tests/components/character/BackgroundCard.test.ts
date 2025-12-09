@@ -1,9 +1,9 @@
-// tests/components/character/picker/BackgroundPickerCard.test.ts
+// tests/components/character/BackgroundCard.test.ts
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import BackgroundPickerCard from '~/components/character/picker/BackgroundPickerCard.vue'
-import { testPickerCardBehavior } from '../../../helpers/pickerCardBehavior'
-import { createMockBackground } from '../../../helpers/mockFactories'
+import BackgroundCard from '~/components/character/BackgroundCard.vue'
+import { testPickerCardBehavior } from '../../helpers/pickerCardBehavior'
+import { createMockBackground } from '../../helpers/mockFactories'
 
 const mockBackground = createMockBackground({
   name: 'Soldier',
@@ -49,10 +49,10 @@ const mockBackground = createMockBackground({
   ]
 })
 
-describe('BackgroundPickerCard', () => {
+describe('BackgroundCard', () => {
   // Test common picker card behavior
   testPickerCardBehavior({
-    component: BackgroundPickerCard,
+    component: BackgroundCard,
     mockEntity: mockBackground,
     entityName: 'Soldier',
     propName: 'background'
@@ -60,14 +60,14 @@ describe('BackgroundPickerCard', () => {
 
   describe('background-specific features', () => {
     it('shows feature name badge when provided', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       expect(wrapper.text()).toContain('Military Rank')
     })
 
     it('shows skill proficiencies', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       expect(wrapper.text()).toContain('Athletics')
@@ -75,14 +75,14 @@ describe('BackgroundPickerCard', () => {
     })
 
     it('shows skills separated by commas', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       expect(wrapper.text()).toContain('Athletics, Intimidation')
     })
 
     it('does not show non-skill proficiencies in skills list', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       // The tool proficiency should not appear
@@ -92,7 +92,7 @@ describe('BackgroundPickerCard', () => {
     })
 
     it('shows language count with singular form', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       expect(wrapper.text()).toContain('1 Language')
@@ -107,7 +107,7 @@ describe('BackgroundPickerCard', () => {
           { id: 2, name: 'Elvish', code: 'ELV' }
         ]
       }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithMultipleLanguages, selected: false }
       })
       expect(wrapper.text()).toContain('2 Languages')
@@ -118,7 +118,7 @@ describe('BackgroundPickerCard', () => {
         ...mockBackground,
         languages: []
       }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithoutLanguages, selected: false }
       })
       expect(wrapper.text()).not.toContain('Language')
@@ -126,7 +126,7 @@ describe('BackgroundPickerCard', () => {
 
     it('handles missing feature name gracefully', async () => {
       const backgroundWithoutFeature = { ...mockBackground, feature_name: undefined }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithoutFeature, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -134,7 +134,7 @@ describe('BackgroundPickerCard', () => {
 
     it('handles missing proficiencies gracefully', async () => {
       const backgroundWithoutProficiencies = { ...mockBackground, proficiencies: undefined }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithoutProficiencies, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -142,7 +142,7 @@ describe('BackgroundPickerCard', () => {
 
     it('handles empty proficiencies gracefully', async () => {
       const backgroundWithEmptyProficiencies = { ...mockBackground, proficiencies: [] }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithEmptyProficiencies, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -150,14 +150,14 @@ describe('BackgroundPickerCard', () => {
 
     it('handles missing languages gracefully', async () => {
       const backgroundWithoutLanguages = { ...mockBackground, languages: undefined }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithoutLanguages, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
     })
 
     it('shows selected checkmark when selected', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: true }
       })
       const selectedCheck = wrapper.find('[data-testid="selected-check"]')
@@ -165,7 +165,7 @@ describe('BackgroundPickerCard', () => {
     })
 
     it('does not show selected checkmark when not selected', async () => {
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: mockBackground, selected: false }
       })
       const selectedCheck = wrapper.find('[data-testid="selected-check"]')
@@ -188,7 +188,7 @@ describe('BackgroundPickerCard', () => {
           }
         ]
       }
-      const wrapper = await mountSuspended(BackgroundPickerCard, {
+      const wrapper = await mountSuspended(BackgroundCard, {
         props: { background: backgroundWithNullSkill, selected: false }
       })
       expect(wrapper.text()).toContain('Athletics')

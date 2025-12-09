@@ -1,39 +1,52 @@
-<!-- app/components/character/builder/ClassPickerCard.vue -->
+<!-- app/components/character/RaceCard.vue -->
 <script setup lang="ts">
-import type { CharacterClass } from '~/types'
+import type { Race } from '~/types'
 
 interface Props {
-  characterClass: CharacterClass
+  race: Race
   selected: boolean
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'select': [characterClass: CharacterClass]
+  'select': [race: Race]
   'view-details': []
 }>()
 
 /**
- * Format hit die for display
+ * Get ability score modifiers summary
  */
-const hitDieText = computed(() => {
-  return `d${props.characterClass.hit_die}`
+const abilityModifiers = computed(() => {
+  if (!props.race.modifiers || props.race.modifiers.length === 0) return null
+
+  const abilityScoreMods = props.race.modifiers
+    .filter(m => m.modifier_category === 'ability_score' && m.ability_score)
+
+  if (abilityScoreMods.length === 0) return null
+
+  return abilityScoreMods
+    .slice(0, 3)
+    .map(m => `${m.ability_score?.code} +${m.value}`)
+    .join(', ')
 })
 
 /**
- * Check if class is a spellcaster
+ * Check if race has subraces
  */
-const isCaster = computed(() => {
-  return props.characterClass.spellcasting_ability !== null
-    && props.characterClass.spellcasting_ability !== undefined
+const hasSubraces = computed(() => {
+  return props.race.subraces && props.race.subraces.length > 0
+})
+
+const subraceCount = computed(() => {
+  return props.race.subraces?.length ?? 0
 })
 
 /**
  * Handle card click - emit select
  */
 function handleCardClick() {
-  emit('select', props.characterClass)
+  emit('select', props.race)
 }
 
 /**
@@ -49,7 +62,7 @@ function handleViewDetails(event: Event) {
  */
 const { getImagePath } = useEntityImage()
 const backgroundImage = computed(() => {
-  return getImagePath('classes', props.characterClass.slug, 256)
+  return getImagePath('races', props.race.slug, 256)
 })
 </script>
 
@@ -58,11 +71,11 @@ const backgroundImage = computed(() => {
     data-testid="picker-card"
     class="relative cursor-pointer transition-all"
     :class="[
-      selected ? 'ring-2 ring-class-500 ring-offset-2' : ''
+      selected ? 'ring-2 ring-race-500 ring-offset-2' : ''
     ]"
     @click="handleCardClick"
   >
-    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-class-300 dark:border-class-700 hover:border-class-500">
+    <UCard class="relative overflow-hidden hover:shadow-lg transition-shadow h-full border-2 border-race-300 dark:border-race-700 hover:border-race-500">
       <!-- Background Image Layer -->
       <div
         v-if="backgroundImage"
@@ -90,48 +103,61 @@ const backgroundImage = computed(() => {
       <!-- Content Layer -->
       <div class="relative z-10 flex flex-col h-full">
         <div class="space-y-3 flex-1">
-          <!-- Badges Row -->
+          <!-- Size Badge -->
           <div class="flex items-center gap-2 flex-wrap">
             <UBadge
-              color="class"
+              v-if="race.size"
+              color="info"
               variant="subtle"
               size="md"
             >
-              Hit Die: {{ hitDieText }}
+              {{ race.size.name }}
             </UBadge>
             <UBadge
-              v-if="characterClass.primary_ability"
-              color="class"
+              v-if="hasSubraces"
+              color="race"
               variant="subtle"
               size="md"
             >
-              {{ characterClass.primary_ability }}
-            </UBadge>
-            <UBadge
-              v-if="isCaster"
-              color="spell"
-              variant="subtle"
-              size="md"
-            >
-              <UIcon
-                name="i-heroicons-sparkles"
-                class="w-3 h-3 mr-1"
-              />
-              {{ characterClass.spellcasting_ability?.name }}
+              {{ subraceCount }} {{ subraceCount === 1 ? 'Subrace' : 'Subraces' }}
             </UBadge>
           </div>
 
-          <!-- Class Name -->
+          <!-- Race Name -->
           <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
-            {{ characterClass.name }}
+            {{ race.name }}
           </h3>
+
+          <!-- Quick Stats -->
+          <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
+            <div
+              v-if="race.speed"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-bolt"
+                class="w-4 h-4"
+              />
+              <span>{{ race.speed }} ft</span>
+            </div>
+            <div
+              v-if="abilityModifiers"
+              class="flex items-center gap-1"
+            >
+              <UIcon
+                name="i-heroicons-arrow-trending-up"
+                class="w-4 h-4"
+              />
+              <span>{{ abilityModifiers }}</span>
+            </div>
+          </div>
 
           <!-- Description Preview -->
           <p
-            v-if="characterClass.description"
+            v-if="race.description"
             class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2"
           >
-            {{ characterClass.description }}
+            {{ race.description }}
           </p>
         </div>
 
@@ -140,7 +166,7 @@ const backgroundImage = computed(() => {
           <UButton
             data-testid="view-details-btn"
             variant="ghost"
-            color="class"
+            color="race"
             size="sm"
             block
             @click="handleViewDetails"

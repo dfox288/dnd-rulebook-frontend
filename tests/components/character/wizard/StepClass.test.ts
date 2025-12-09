@@ -27,10 +27,10 @@ describe('StepClass - Specific Behavior', () => {
       expect(html).toMatch(/grid/)
     })
 
-    it('shows class cards with CharacterPickerClassPickerCard component', async () => {
+    it('shows class cards with CharacterClassCard component', async () => {
       const wrapper = await mountSuspended(StepClass)
 
-      // Component uses CharacterPickerClassPickerCard
+      // Component uses CharacterClassCard
       // Check that picker cards are rendered
       const html = wrapper.html()
       expect(html).toBeTruthy()

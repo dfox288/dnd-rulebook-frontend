@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import type { Race } from '~/types'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 const store = useCharacterWizardStore()
 const { selections, isLoading, error, isSubraceRequired } = storeToRefs(store)
@@ -77,12 +77,7 @@ async function handleViewDetails(subrace: SubraceItem) {
     const response = await apiFetch<{ data: Race }>(`/races/${subrace.slug}`)
     detailSubrace.value = response.data
   } catch (err) {
-    logger.error('Failed to fetch subrace details:', err)
-    toast.add({
-      title: 'Save Failed',
-      description: 'Unable to save your selection. Please try again.',
-      color: 'error'
-    })
+    wizardErrors.loadFailed(err, toast, 'subrace details')
     // Still show modal with partial data from the list
     // Use unknown intermediate cast since SubraceItem is a partial Race
     detailSubrace.value = subrace as unknown as Race
@@ -110,12 +105,7 @@ async function confirmSelection() {
       await store.selectSubrace(null)
       nextStep()
     } catch (err) {
-      logger.error('Failed to save subrace selection:', err)
-      toast.add({
-        title: 'Save Failed',
-        description: 'Unable to save your selection. Please try again.',
-        color: 'error'
-      })
+      wizardErrors.saveFailed(err, toast)
     }
     return
   }
@@ -127,12 +117,7 @@ async function confirmSelection() {
     await store.selectSubrace(fullSubrace.data)
     nextStep()
   } catch (err) {
-    logger.error('Failed to save subrace:', err)
-    toast.add({
-      title: 'Save Failed',
-      description: 'Unable to save your selection. Please try again.',
-      color: 'error'
-    })
+    wizardErrors.saveFailed(err, toast)
   }
 }
 
@@ -227,7 +212,7 @@ onMounted(async () => {
       </div>
 
       <!-- Subrace Cards -->
-      <CharacterPickerSubracePickerCard
+      <CharacterSubraceCard
         v-for="subrace in availableSubraces"
         :key="subrace.id"
         :subrace="subrace"

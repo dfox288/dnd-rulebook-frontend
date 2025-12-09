@@ -4,7 +4,7 @@ import type { components } from '~/types/api/generated'
 import type { CharacterLanguage } from '~/types/character'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
@@ -275,13 +275,7 @@ async function handleContinue() {
 
     await nextStep()
   } catch (e) {
-    logger.error('Failed to save language choices:', e)
-    toast.add({
-      title: 'Failed to save languages',
-      description: 'Please try again',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-circle'
-    })
+    wizardErrors.choiceResolveFailed(e, toast, 'language')
   } finally {
     isLoading.value = false
   }

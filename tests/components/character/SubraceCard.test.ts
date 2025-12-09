@@ -1,8 +1,8 @@
-// tests/components/character/picker/SubracePickerCard.test.ts
+// tests/components/character/SubraceCard.test.ts
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import SubracePickerCard from '~/components/character/picker/SubracePickerCard.vue'
-import { createMockRace, mockSource } from '../../../helpers/mockFactories'
+import SubraceCard from '~/components/character/SubraceCard.vue'
+import { createMockRace, mockSource } from '../../helpers/mockFactories'
 
 // Subrace is a partial Race with subrace-specific properties
 const mockSubrace = createMockRace({
@@ -28,18 +28,18 @@ const mockSubrace = createMockRace({
   ]
 })
 
-describe('SubracePickerCard', () => {
+describe('SubraceCard', () => {
   // Custom common behavior tests (uses different data-testid)
   describe('Picker Card Common Behavior', () => {
     it('renders the entity name', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('Hill Dwarf')
     })
 
     it('shows selected styling when selected', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: true }
       })
       const pickerCard = wrapper.find('[data-testid="subrace-picker-card"]')
@@ -47,7 +47,7 @@ describe('SubracePickerCard', () => {
     })
 
     it('does not show selected styling when not selected', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       const pickerCard = wrapper.find('[data-testid="subrace-picker-card"]')
@@ -55,7 +55,7 @@ describe('SubracePickerCard', () => {
     })
 
     it('emits select event when card is clicked', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       const pickerCard = wrapper.find('[data-testid="subrace-picker-card"]')
@@ -66,14 +66,14 @@ describe('SubracePickerCard', () => {
     })
 
     it('shows View Details button', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('View Details')
     })
 
     it('emits view-details event when View Details button is clicked', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       const detailsBtn = wrapper.find('[data-testid="view-details-btn"]')
@@ -91,21 +91,21 @@ describe('SubracePickerCard', () => {
 
   describe('subrace-specific features', () => {
     it('shows source badge when sources are provided', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('PHB')
     })
 
     it('shows speed stat', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('25 ft')
     })
 
     it('shows ability modifiers', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('WIS +1')
@@ -129,7 +129,7 @@ describe('SubracePickerCard', () => {
           }
         ]
       }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithMultipleMods, selected: false }
       })
       expect(wrapper.text()).toContain('WIS +1')
@@ -137,7 +137,7 @@ describe('SubracePickerCard', () => {
     })
 
     it('shows first trait description as preview', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: mockSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('Your hit point maximum increases')
@@ -145,7 +145,7 @@ describe('SubracePickerCard', () => {
 
     it('handles missing sources gracefully', async () => {
       const subraceWithoutSources = { ...mockSubrace, sources: undefined }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithoutSources, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -153,7 +153,7 @@ describe('SubracePickerCard', () => {
 
     it('handles empty sources array gracefully', async () => {
       const subraceWithEmptySources = { ...mockSubrace, sources: [] }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithEmptySources, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -161,7 +161,7 @@ describe('SubracePickerCard', () => {
 
     it('handles missing speed gracefully', async () => {
       const subraceWithoutSpeed = { ...mockSubrace, speed: undefined }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithoutSpeed, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -169,7 +169,7 @@ describe('SubracePickerCard', () => {
 
     it('handles missing modifiers gracefully', async () => {
       const subraceWithoutModifiers = { ...mockSubrace, modifiers: undefined }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithoutModifiers, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -177,7 +177,7 @@ describe('SubracePickerCard', () => {
 
     it('handles empty modifiers gracefully', async () => {
       const subraceWithEmptyModifiers = { ...mockSubrace, modifiers: [] }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithEmptyModifiers, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -185,7 +185,7 @@ describe('SubracePickerCard', () => {
 
     it('handles missing traits gracefully', async () => {
       const subraceWithoutTraits = { ...mockSubrace, traits: undefined }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithoutTraits, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -193,14 +193,14 @@ describe('SubracePickerCard', () => {
 
     it('handles empty traits array gracefully', async () => {
       const subraceWithEmptyTraits = { ...mockSubrace, traits: [] }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithEmptyTraits, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
     })
 
     it('accepts optional parentRaceSlug prop', async () => {
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: {
           subrace: mockSubrace,
           selected: false,
@@ -228,7 +228,7 @@ describe('SubracePickerCard', () => {
           }
         ]
       }
-      const wrapper = await mountSuspended(SubracePickerCard, {
+      const wrapper = await mountSuspended(SubraceCard, {
         props: { subrace: subraceWithMixedMods, selected: false }
       })
       expect(wrapper.text()).toContain('WIS +1')

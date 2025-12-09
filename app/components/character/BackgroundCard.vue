@@ -1,4 +1,4 @@
-<!-- app/components/character/builder/BackgroundPickerCard.vue -->
+<!-- app/components/character/BackgroundCard.vue -->
 <script setup lang="ts">
 import type { Background } from '~/types'
 
