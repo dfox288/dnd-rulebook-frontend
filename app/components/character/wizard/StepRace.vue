@@ -48,7 +48,7 @@ const {
   confirmSelection,
   detailModal: { open: detailModalOpen, item: detailRace, show: showDetails, close: closeDetails }
 } = useWizardEntitySelection(races, {
-  storeAction: (race) => store.selectRace(race),
+  storeAction: race => store.selectRace(race),
   existingSelection: computed(() => selections.value.race)
 })
 
@@ -110,14 +110,10 @@ async function handleConfirm() {
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="text-center">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        Choose Your Race
-      </h2>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">
-        Your race determines your character's physical traits and natural abilities
-      </p>
-    </div>
+    <CharacterWizardStepHeader
+      title="Choose Your Race"
+      description="Your race determines your character's physical traits and natural abilities"
+    />
 
     <!-- Search -->
     <div class="max-w-md mx-auto">
@@ -138,15 +134,10 @@ async function handleConfirm() {
     />
 
     <!-- Loading State -->
-    <div
+    <CharacterWizardLoadingState
       v-if="loadingRaces"
-      class="flex justify-center py-12"
-    >
-      <UIcon
-        name="i-heroicons-arrow-path"
-        class="w-8 h-8 animate-spin text-race-500"
-      />
-    </div>
+      color="race"
+    />
 
     <!-- Race Grid -->
     <div
@@ -164,30 +155,19 @@ async function handleConfirm() {
     </div>
 
     <!-- Empty State -->
-    <div
+    <CharacterWizardEmptyState
       v-if="!loadingRaces && filteredRaces.length === 0"
-      class="text-center py-12"
-    >
-      <UIcon
-        name="i-heroicons-magnifying-glass"
-        class="w-12 h-12 text-gray-400 mx-auto mb-4"
-      />
-      <p class="text-gray-600 dark:text-gray-400">
-        No races found matching "{{ searchQuery }}"
-      </p>
-    </div>
+      icon="i-heroicons-magnifying-glass"
+      :title="`No races found matching &quot;${searchQuery}&quot;`"
+    />
 
     <!-- Confirm Button -->
-    <div class="flex justify-center pt-4">
-      <UButton
-        size="lg"
-        :disabled="!canProceed || isLoading"
-        :loading="isLoading"
-        @click="handleConfirm"
-      >
-        {{ isLoading ? 'Saving...' : 'Continue with ' + (localSelectedRace?.name || 'Selection') }}
-      </UButton>
-    </div>
+    <CharacterWizardContinueButton
+      :text="isLoading ? 'Saving...' : `Continue with ${localSelectedRace?.name || 'Selection'}`"
+      :disabled="!canProceed || isLoading"
+      :loading="isLoading"
+      @click="handleConfirm"
+    />
 
     <!-- Detail Modal -->
     <CharacterPickerRaceDetailModal
@@ -197,41 +177,12 @@ async function handleConfirm() {
     />
 
     <!-- Confirmation Modal for changing race when subrace was selected -->
-    <UModal v-model:open="confirmChangeModalOpen">
-      <template #content>
-        <div class="p-6">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <UIcon
-                name="i-heroicons-exclamation-triangle"
-                class="w-5 h-5 text-amber-600 dark:text-amber-400"
-              />
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Change Race?
-            </h3>
-          </div>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            Changing your race will clear your subrace selection. You'll need to choose a new subrace if the new race has subraces.
-          </p>
-
-          <div class="flex justify-end gap-3">
-            <UButton
-              variant="outline"
-              @click="cancelRaceChange"
-            >
-              Cancel
-            </UButton>
-            <UButton
-              color="primary"
-              @click="confirmRaceChange"
-            >
-              Continue
-            </UButton>
-          </div>
-        </div>
-      </template>
-    </UModal>
+    <CharacterWizardChangeConfirmationModal
+      v-model:open="confirmChangeModalOpen"
+      title="Change Race?"
+      message="Changing your race will clear your subrace selection. You'll need to choose a new subrace if the new race has subraces."
+      @confirm="confirmRaceChange"
+      @cancel="cancelRaceChange"
+    />
   </div>
 </template>

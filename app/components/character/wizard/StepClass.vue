@@ -45,7 +45,7 @@ const {
   confirmSelection,
   detailModal: { open: detailModalOpen, item: detailClass, show: showDetails, close: closeDetails }
 } = useWizardEntitySelection(classes, {
-  storeAction: (cls) => store.selectClass(cls),
+  storeAction: cls => store.selectClass(cls),
   existingSelection: computed(() => selections.value.class)
 })
 
@@ -65,14 +65,10 @@ async function handleConfirm() {
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="text-center">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        Choose Your Class
-      </h2>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">
-        Your class determines your character's abilities, skills, and combat style
-      </p>
-    </div>
+    <CharacterWizardStepHeader
+      title="Choose Your Class"
+      description="Your class determines your character's abilities, skills, and combat style"
+    />
 
     <!-- Search -->
     <div class="max-w-md mx-auto">
@@ -93,15 +89,10 @@ async function handleConfirm() {
     />
 
     <!-- Loading State -->
-    <div
+    <CharacterWizardLoadingState
       v-if="loadingClasses"
-      class="flex justify-center py-12"
-    >
-      <UIcon
-        name="i-heroicons-arrow-path"
-        class="w-8 h-8 animate-spin text-class-500"
-      />
-    </div>
+      color="class"
+    />
 
     <!-- Class Grid -->
     <div
@@ -119,18 +110,11 @@ async function handleConfirm() {
     </div>
 
     <!-- Empty State -->
-    <div
+    <CharacterWizardEmptyState
       v-if="!loadingClasses && filteredClasses.length === 0"
-      class="text-center py-12"
-    >
-      <UIcon
-        name="i-heroicons-magnifying-glass"
-        class="w-12 h-12 text-gray-400 mx-auto mb-4"
-      />
-      <p class="text-gray-600 dark:text-gray-400">
-        No classes found matching "{{ searchQuery }}"
-      </p>
-    </div>
+      icon="i-heroicons-magnifying-glass"
+      :title="`No classes found matching &quot;${searchQuery}&quot;`"
+    />
 
     <!-- Spellcaster Info -->
     <div
@@ -150,16 +134,12 @@ async function handleConfirm() {
     </div>
 
     <!-- Confirm Button -->
-    <div class="flex justify-center pt-4">
-      <UButton
-        size="lg"
-        :disabled="!canProceed || isLoading"
-        :loading="isLoading"
-        @click="handleConfirm"
-      >
-        {{ isLoading ? 'Saving...' : 'Continue with ' + (localSelectedClass?.name || 'Selection') }}
-      </UButton>
-    </div>
+    <CharacterWizardContinueButton
+      :text="isLoading ? 'Saving...' : `Continue with ${localSelectedClass?.name || 'Selection'}`"
+      :disabled="!canProceed || isLoading"
+      :loading="isLoading"
+      @click="handleConfirm"
+    />
 
     <!-- Detail Modal -->
     <CharacterPickerClassDetailModal
