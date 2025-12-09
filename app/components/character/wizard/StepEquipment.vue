@@ -427,7 +427,7 @@ function formatPackContentItem(content: PackContentResource): string {
             @click="equipmentMode = 'equipment'"
           >
             <UIcon
-              name="i-heroicons-backpack"
+              name="i-heroicons-briefcase"
               class="w-4 h-4 mr-1"
             />
             Equipment
