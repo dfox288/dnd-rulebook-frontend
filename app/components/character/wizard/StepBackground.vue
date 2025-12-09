@@ -43,7 +43,7 @@ const {
   confirmSelection,
   detailModal: { open: detailModalOpen, item: detailBackground, show: showDetails, close: closeDetails }
 } = useWizardEntitySelection(backgrounds, {
-  storeAction: (background) => store.selectBackground(background),
+  storeAction: background => store.selectBackground(background),
   existingSelection: computed(() => selections.value.background),
   searchableFields: ['name', 'feature_name']
 })

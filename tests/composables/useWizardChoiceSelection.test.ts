@@ -13,7 +13,7 @@ interface MockPendingChoice {
   quantity: number
   remaining: number
   selected: string[]
-  options: Array<{ slug: string; full_slug?: string; name: string }> | null
+  options: Array<{ slug: string, full_slug?: string, name: string }> | null
   options_endpoint: string | null
 }
 

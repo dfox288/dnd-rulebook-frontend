@@ -336,13 +336,13 @@ export function useWizardChoiceSelection(
 
       // Handle nested skill options (from endpoint fetch)
       if (opt.skill) {
-        const skill = opt.skill as { slug: string; name: string }
+        const skill = opt.skill as { slug: string, name: string }
         return { id: skill.slug, name: skill.name }
       }
 
       // Handle nested proficiency_type options (from endpoint fetch)
       if (opt.proficiency_type) {
-        const profType = opt.proficiency_type as { slug: string; name: string }
+        const profType = opt.proficiency_type as { slug: string, name: string }
         return { id: profType.slug, name: profType.name }
       }
 

@@ -135,7 +135,7 @@ interface SourceDisplayData {
   choice: PendingChoice
   label: string
   entityName: string
-  knownLanguages: Array<{ id: number; name: string }>
+  knownLanguages: Array<{ id: number, name: string }>
 }
 
 const sourceData = computed((): SourceDisplayData[] => {

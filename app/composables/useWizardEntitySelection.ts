@@ -83,7 +83,7 @@ export interface EntitySelectionReturn<T> {
  * </script>
  * ```
  */
-export function useWizardEntitySelection<T extends { id: number; name: string }>(
+export function useWizardEntitySelection<T extends { id: number, name: string }>(
   entities: Ref<T[] | null | undefined>,
   config: EntitySelectionConfig<T>
 ): EntitySelectionReturn<T> {

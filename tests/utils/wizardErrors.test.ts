@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { handleWizardError, wizardErrors } from '~/utils/wizardErrors'
 
+// Import the mocked logger
+import { logger } from '~/utils/logger'
+
 // Mock the logger
 vi.mock('~/utils/logger', () => ({
   logger: {
@@ -10,9 +13,6 @@ vi.mock('~/utils/logger', () => ({
     debug: vi.fn()
   }
 }))
-
-// Import the mocked logger
-import { logger } from '~/utils/logger'
 
 describe('wizardErrors', () => {
   let mockToast: ReturnType<typeof useToast>
