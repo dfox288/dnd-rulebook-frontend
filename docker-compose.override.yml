@@ -18,13 +18,13 @@
 
 services:
   nuxt:
-    container_name: dnd-frontend-nuxt-2
+    container_name: loh-frontend-nuxt-2
     ports: !override
       - "4002:3000"
       - "34680:24678"
       - "6008:6006"
 
   nginx:
-    container_name: dnd-frontend-nginx-2
+    container_name: loh-frontend-nginx-2
     ports: !override
       - "8083:80"

@@ -18,13 +18,13 @@
 
 services:
   nuxt:
-    container_name: dnd-frontend-nuxt-{{INSTANCE_ID}}
+    container_name: loh-frontend-nuxt-{{INSTANCE_ID}}
     ports: !override
       - "{{NUXT_PORT}}:3000"
       - "{{HMR_PORT}}:24678"
       - "{{STORYBOOK_PORT}}:6006"
 
   nginx:
-    container_name: dnd-frontend-nginx-{{INSTANCE_ID}}
+    container_name: loh-frontend-nginx-{{INSTANCE_ID}}
     ports: !override
       - "{{NGINX_PORT}}:80"
