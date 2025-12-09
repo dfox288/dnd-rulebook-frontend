@@ -227,7 +227,7 @@ describe('PersonalityTablePicker', () => {
     it('roll button selects multiple unique entries in multi mode', async () => {
       // Mock to return indices 0, then 1
       vi.mocked(Math.random)
-        .mockReturnValueOnce(0)    // First roll: index 0
+        .mockReturnValueOnce(0) // First roll: index 0
         .mockReturnValueOnce(0.15) // Second roll: index 1 (0.15 * 8 = 1.2, floor = 1)
 
       const wrapper = await mountSuspended(PersonalityTablePicker, {

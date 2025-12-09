@@ -47,6 +47,7 @@ mockNuxtImport('useUnifiedChoices', () => {
       choices: ref(currentMockChoices),
       choicesByType: computed(() => ({
         abilityScores: currentMockChoices.filter(c => c.type === 'ability_score'),
+        feats: currentMockChoices.filter(c => c.type === 'feat'),
         languages: [],
         proficiencies: [],
         equipment: [],
