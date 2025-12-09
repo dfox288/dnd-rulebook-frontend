@@ -16,11 +16,11 @@ const props = defineProps<{
  */
 const hasDefenses = computed(() => {
   return (
-    props.damageResistances.length > 0 ||
-    props.damageImmunities.length > 0 ||
-    props.damageVulnerabilities.length > 0 ||
-    props.conditionAdvantages.length > 0 ||
-    props.conditionImmunities.length > 0
+    props.damageResistances.length > 0
+    || props.damageImmunities.length > 0
+    || props.damageVulnerabilities.length > 0
+    || props.conditionAdvantages.length > 0
+    || props.conditionImmunities.length > 0
   )
 })
 
@@ -57,7 +57,10 @@ function formatConditionImmunity(immunity: ConditionImmunity): string {
     class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
   >
     <!-- Resistances -->
-    <div v-if="damageResistances.length > 0" class="mb-3 last:mb-0">
+    <div
+      v-if="damageResistances.length > 0"
+      class="mb-3 last:mb-0"
+    >
       <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
         Resistances
       </div>
@@ -76,7 +79,10 @@ function formatConditionImmunity(immunity: ConditionImmunity): string {
     </div>
 
     <!-- Immunities -->
-    <div v-if="damageImmunities.length > 0" class="mb-3 last:mb-0">
+    <div
+      v-if="damageImmunities.length > 0"
+      class="mb-3 last:mb-0"
+    >
       <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
         Immunities
       </div>
@@ -95,7 +101,10 @@ function formatConditionImmunity(immunity: ConditionImmunity): string {
     </div>
 
     <!-- Vulnerabilities -->
-    <div v-if="damageVulnerabilities.length > 0" class="mb-3 last:mb-0">
+    <div
+      v-if="damageVulnerabilities.length > 0"
+      class="mb-3 last:mb-0"
+    >
       <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
         Vulnerabilities
       </div>
@@ -114,7 +123,10 @@ function formatConditionImmunity(immunity: ConditionImmunity): string {
     </div>
 
     <!-- Save Advantages -->
-    <div v-if="conditionAdvantages.length > 0" class="mb-3 last:mb-0">
+    <div
+      v-if="conditionAdvantages.length > 0"
+      class="mb-3 last:mb-0"
+    >
       <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
         Save Advantages
       </div>
@@ -133,7 +145,10 @@ function formatConditionImmunity(immunity: ConditionImmunity): string {
     </div>
 
     <!-- Condition Immunities -->
-    <div v-if="conditionImmunities.length > 0" class="mb-3 last:mb-0">
+    <div
+      v-if="conditionImmunities.length > 0"
+      class="mb-3 last:mb-0"
+    >
       <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
         Condition Immunities
       </div>
