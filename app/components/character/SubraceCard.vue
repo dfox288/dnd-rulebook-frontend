@@ -1,16 +1,24 @@
-<!-- app/components/character/builder/RacePickerCard.vue -->
+<!-- app/components/character/SubraceCard.vue -->
 <script setup lang="ts">
 import type { Race } from '~/types'
 
+/**
+ * Subrace item type - partial Race data from the parent race's subraces array
+ * Contains basic info but may lack full details like traits/description
+ */
+type SubraceItem = NonNullable<Race['subraces']>[number]
+
 interface Props {
-  race: Race
+  subrace: SubraceItem
   selected: boolean
+  /** Parent race slug for image path fallback */
+  parentRaceSlug?: string
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'select': [race: Race]
+  'select': [subrace: SubraceItem]
   'view-details': []
 }>()
 
@@ -18,9 +26,9 @@ const emit = defineEmits<{
  * Get ability score modifiers summary
  */
 const abilityModifiers = computed(() => {
-  if (!props.race.modifiers || props.race.modifiers.length === 0) return null
+  if (!props.subrace.modifiers || props.subrace.modifiers.length === 0) return null
 
-  const abilityScoreMods = props.race.modifiers
+  const abilityScoreMods = props.subrace.modifiers
     .filter(m => m.modifier_category === 'ability_score' && m.ability_score)
 
   if (abilityScoreMods.length === 0) return null
@@ -32,21 +40,10 @@ const abilityModifiers = computed(() => {
 })
 
 /**
- * Check if race has subraces
- */
-const hasSubraces = computed(() => {
-  return props.race.subraces && props.race.subraces.length > 0
-})
-
-const subraceCount = computed(() => {
-  return props.race.subraces?.length ?? 0
-})
-
-/**
  * Handle card click - emit select
  */
 function handleCardClick() {
-  emit('select', props.race)
+  emit('select', props.subrace)
 }
 
 /**
@@ -59,16 +56,21 @@ function handleViewDetails(event: Event) {
 
 /**
  * Get background image path (256px variant)
+ * Try subrace-specific image first, fall back to parent race image
  */
 const { getImagePath } = useEntityImage()
 const backgroundImage = computed(() => {
-  return getImagePath('races', props.race.slug, 256)
+  // First try the subrace's own image
+  const subraceImage = getImagePath('races', props.subrace.slug, 256)
+  // TODO: Could add fallback to parent race image if subrace image doesn't exist
+  // For now, just return the subrace image path
+  return subraceImage
 })
 </script>
 
 <template>
   <div
-    data-testid="picker-card"
+    data-testid="subrace-picker-card"
     class="relative cursor-pointer transition-all"
     :class="[
       selected ? 'ring-2 ring-race-500 ring-offset-2' : ''
@@ -103,42 +105,34 @@ const backgroundImage = computed(() => {
       <!-- Content Layer -->
       <div class="relative z-10 flex flex-col h-full">
         <div class="space-y-3 flex-1">
-          <!-- Size Badge -->
+          <!-- Source Badge -->
           <div class="flex items-center gap-2 flex-wrap">
             <UBadge
-              v-if="race.size"
+              v-if="subrace.sources && subrace.sources.length > 0"
               color="info"
               variant="subtle"
               size="md"
             >
-              {{ race.size.name }}
-            </UBadge>
-            <UBadge
-              v-if="hasSubraces"
-              color="race"
-              variant="subtle"
-              size="md"
-            >
-              {{ subraceCount }} {{ subraceCount === 1 ? 'Subrace' : 'Subraces' }}
+              {{ subrace.sources[0]?.code }}
             </UBadge>
           </div>
 
-          <!-- Race Name -->
+          <!-- Subrace Name -->
           <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 line-clamp-2">
-            {{ race.name }}
+            {{ subrace.name }}
           </h3>
 
           <!-- Quick Stats -->
           <div class="flex items-center gap-4 flex-wrap text-sm text-gray-600 dark:text-gray-400">
             <div
-              v-if="race.speed"
+              v-if="subrace.speed"
               class="flex items-center gap-1"
             >
               <UIcon
                 name="i-heroicons-bolt"
                 class="w-4 h-4"
               />
-              <span>{{ race.speed }} ft</span>
+              <span>{{ subrace.speed }} ft</span>
             </div>
             <div
               v-if="abilityModifiers"
@@ -152,12 +146,12 @@ const backgroundImage = computed(() => {
             </div>
           </div>
 
-          <!-- Description Preview -->
+          <!-- Trait Preview (first trait as description) -->
           <p
-            v-if="race.description"
+            v-if="subrace.traits && subrace.traits.length > 0"
             class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2"
           >
-            {{ race.description }}
+            {{ subrace.traits[0]?.description }}
           </p>
         </div>
 

@@ -1,4 +1,4 @@
-<!-- app/components/character/picker/SubclassPickerCard.vue -->
+<!-- app/components/character/SubclassCard.vue -->
 <script setup lang="ts">
 interface Props {
   subclass: {

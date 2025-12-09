@@ -5,7 +5,7 @@ import type { Feat } from '~/types'
 import type { components } from '~/types/api/generated'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
@@ -213,14 +213,8 @@ async function handleContinue() {
 
     nextStep()
   } catch (e) {
-    logger.error('Failed to save feat choices:', e)
     saveError.value = e instanceof Error ? e.message : 'Failed to save feat choices'
-    toast.add({
-      title: 'Failed to save feats',
-      description: 'Please try again',
-      color: 'error',
-      icon: 'i-heroicons-exclamation-circle'
-    })
+    wizardErrors.choiceResolveFailed(e, toast, 'feat')
   } finally {
     isSaving.value = false
   }
@@ -299,7 +293,7 @@ function handleCloseModal() {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <CharacterPickerFeatPickerCard
+          <CharacterFeatCard
             v-for="feat in getAvailableFeats(choice)"
             :key="feat.id"
             :feat="feat"

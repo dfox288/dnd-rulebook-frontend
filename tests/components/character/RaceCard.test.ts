@@ -1,9 +1,9 @@
-// tests/components/character/picker/RacePickerCard.test.ts
+// tests/components/character/RaceCard.test.ts
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import RacePickerCard from '~/components/character/picker/RacePickerCard.vue'
-import { testPickerCardBehavior } from '../../../helpers/pickerCardBehavior'
-import { createMockRace } from '../../../helpers/mockFactories'
+import RaceCard from '~/components/character/RaceCard.vue'
+import { testPickerCardBehavior } from '../../helpers/pickerCardBehavior'
+import { createMockRace } from '../../helpers/mockFactories'
 
 const mockRace = createMockRace({
   name: 'Dwarf',
@@ -25,10 +25,10 @@ const mockRace = createMockRace({
   ]
 })
 
-describe('RacePickerCard', () => {
+describe('RaceCard', () => {
   // Test common picker card behavior
   testPickerCardBehavior({
-    component: RacePickerCard,
+    component: RaceCard,
     mockEntity: mockRace,
     entityName: 'Dwarf',
     propName: 'race'
@@ -36,14 +36,14 @@ describe('RacePickerCard', () => {
 
   describe('race-specific features', () => {
     it('shows size badge when size is provided', async () => {
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: mockRace, selected: false }
       })
       expect(wrapper.text()).toContain('Medium')
     })
 
     it('shows subrace count badge when race has subraces', async () => {
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: mockRace, selected: false }
       })
       expect(wrapper.text()).toContain('2 Subraces')
@@ -54,7 +54,7 @@ describe('RacePickerCard', () => {
         ...mockRace,
         subraces: [{ id: 1, name: 'Hill Dwarf', slug: 'hill-dwarf' }]
       }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithOneSubrace, selected: false }
       })
       expect(wrapper.text()).toContain('1 Subrace')
@@ -63,21 +63,21 @@ describe('RacePickerCard', () => {
 
     it('does not show subrace badge when race has no subraces', async () => {
       const raceWithoutSubraces = { ...mockRace, subraces: [] }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithoutSubraces, selected: false }
       })
       expect(wrapper.text()).not.toContain('Subrace')
     })
 
     it('shows speed stat', async () => {
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: mockRace, selected: false }
       })
       expect(wrapper.text()).toContain('25 ft')
     })
 
     it('shows ability modifiers', async () => {
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: mockRace, selected: false }
       })
       expect(wrapper.text()).toContain('CON +2')
@@ -101,7 +101,7 @@ describe('RacePickerCard', () => {
           }
         ]
       }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithMultipleMods, selected: false }
       })
       expect(wrapper.text()).toContain('CON +2')
@@ -110,7 +110,7 @@ describe('RacePickerCard', () => {
 
     it('does not show ability modifiers when none are present', async () => {
       const raceWithoutMods = { ...mockRace, modifiers: [] }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithoutMods, selected: false }
       })
       // Should not contain the modifier pattern
@@ -118,7 +118,7 @@ describe('RacePickerCard', () => {
     })
 
     it('shows description when provided', async () => {
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: mockRace, selected: false }
       })
       expect(wrapper.text()).toContain('Bold and hardy')
@@ -126,7 +126,7 @@ describe('RacePickerCard', () => {
 
     it('handles missing description gracefully', async () => {
       const raceWithoutDescription = { ...mockRace, description: undefined }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithoutDescription, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -134,7 +134,7 @@ describe('RacePickerCard', () => {
 
     it('handles missing size gracefully', async () => {
       const raceWithoutSize = { ...mockRace, size: undefined }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithoutSize, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -142,7 +142,7 @@ describe('RacePickerCard', () => {
 
     it('handles missing speed gracefully', async () => {
       const raceWithoutSpeed = { ...mockRace, speed: undefined }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithoutSpeed, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -166,7 +166,7 @@ describe('RacePickerCard', () => {
           }
         ]
       }
-      const wrapper = await mountSuspended(RacePickerCard, {
+      const wrapper = await mountSuspended(RaceCard, {
         props: { race: raceWithMixedMods, selected: false }
       })
       expect(wrapper.text()).toContain('CON +2')

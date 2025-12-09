@@ -1,4 +1,4 @@
-<!-- app/components/character/picker/FeatPickerCard.vue -->
+<!-- app/components/character/FeatCard.vue -->
 <script setup lang="ts">
 import type { Feat } from '~/types'
 

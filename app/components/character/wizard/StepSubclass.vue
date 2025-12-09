@@ -5,7 +5,7 @@ import type { Subclass } from '~/stores/characterWizard'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { useDetailModal } from '~/composables/useDetailModal'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 const store = useCharacterWizardStore()
 const { nextStep } = useCharacterWizard()
@@ -89,12 +89,7 @@ async function confirmSelection() {
     await store.selectSubclass(localSelectedSubclass.value)
     await nextStep()
   } catch (err) {
-    logger.error('Failed to save subclass:', err)
-    toast.add({
-      title: 'Save Failed',
-      description: 'Unable to save your selection. Please try again.',
-      color: 'error'
-    })
+    wizardErrors.saveFailed(err, toast)
   }
 }
 
@@ -163,7 +158,7 @@ onMounted(() => {
       v-else-if="filteredSubclasses.length > 0"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
-      <CharacterPickerSubclassPickerCard
+      <CharacterSubclassCard
         v-for="subclass in filteredSubclasses"
         :key="subclass.id"
         :subclass="subclass"

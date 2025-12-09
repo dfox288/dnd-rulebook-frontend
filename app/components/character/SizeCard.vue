@@ -1,4 +1,4 @@
-<!-- app/components/character/picker/SizePickerCard.vue -->
+<!-- app/components/character/SizeCard.vue -->
 <script setup lang="ts">
 /**
  * Size option from pending-choices API

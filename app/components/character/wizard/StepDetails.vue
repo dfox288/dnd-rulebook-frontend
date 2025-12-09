@@ -4,7 +4,7 @@ import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import type { CharacterAlignment } from '~/types/character'
 import type { PersonalitySelections } from '~/components/character/wizard/PersonalitySection.vue'
-import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 /**
  * Step: Character Details
@@ -159,12 +159,7 @@ async function handleContinue() {
     await savePersonalityNotes()
     await nextStep()
   } catch (err) {
-    logger.error('Failed to save details:', err)
-    toast.add({
-      title: 'Save Failed',
-      description: 'Unable to save your selection. Please try again.',
-      color: 'error'
-    })
+    wizardErrors.saveFailed(err, toast)
   }
 }
 

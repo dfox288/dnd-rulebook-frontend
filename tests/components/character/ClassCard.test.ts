@@ -1,9 +1,9 @@
-// tests/components/character/picker/ClassPickerCard.test.ts
+// tests/components/character/ClassCard.test.ts
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import ClassPickerCard from '~/components/character/picker/ClassPickerCard.vue'
-import { testPickerCardBehavior } from '../../../helpers/pickerCardBehavior'
-import { createMockClass } from '../../../helpers/mockFactories'
+import ClassCard from '~/components/character/ClassCard.vue'
+import { testPickerCardBehavior } from '../../helpers/pickerCardBehavior'
+import { createMockClass } from '../../helpers/mockFactories'
 
 const mockClass = createMockClass({
   name: 'Wizard',
@@ -14,10 +14,10 @@ const mockClass = createMockClass({
   description: 'A scholarly magic-user capable of manipulating the structures of reality.'
 })
 
-describe('ClassPickerCard', () => {
+describe('ClassCard', () => {
   // Test common picker card behavior
   testPickerCardBehavior({
-    component: ClassPickerCard,
+    component: ClassCard,
     mockEntity: mockClass,
     entityName: 'Wizard',
     propName: 'characterClass'
@@ -25,21 +25,21 @@ describe('ClassPickerCard', () => {
 
   describe('class-specific features', () => {
     it('shows hit die badge', async () => {
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: mockClass, selected: false }
       })
       expect(wrapper.text()).toContain('Hit Die: d6')
     })
 
     it('shows primary ability badge when provided', async () => {
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: mockClass, selected: false }
       })
       expect(wrapper.text()).toContain('Intelligence')
     })
 
     it('shows spellcasting ability badge for casters', async () => {
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: mockClass, selected: false }
       })
       // The spellcasting ability name should appear
@@ -57,7 +57,7 @@ describe('ClassPickerCard', () => {
         spellcasting_ability: null,
         description: 'A master of martial combat.'
       }
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: fighterClass, selected: false }
       })
       // Check that the sparkles icon (spellcasting indicator) is not present
@@ -66,7 +66,7 @@ describe('ClassPickerCard', () => {
     })
 
     it('shows description when provided', async () => {
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: mockClass, selected: false }
       })
       expect(wrapper.text()).toContain('A scholarly magic-user')
@@ -74,7 +74,7 @@ describe('ClassPickerCard', () => {
 
     it('handles missing description gracefully', async () => {
       const classWithoutDescription = { ...mockClass, description: undefined }
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: classWithoutDescription, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -82,7 +82,7 @@ describe('ClassPickerCard', () => {
 
     it('handles missing primary ability gracefully', async () => {
       const classWithoutPrimary = { ...mockClass, primary_ability: null }
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: classWithoutPrimary, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -96,7 +96,7 @@ describe('ClassPickerCard', () => {
         slug: 'barbarian',
         hit_die: 12
       }
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: barbarianClass, selected: false }
       })
       expect(wrapper.text()).toContain('Hit Die: d12')
@@ -107,7 +107,7 @@ describe('ClassPickerCard', () => {
         ...mockClass,
         spellcasting_ability: undefined
       }
-      const wrapper = await mountSuspended(ClassPickerCard, {
+      const wrapper = await mountSuspended(ClassCard, {
         props: { characterClass: classWithUndefinedSpellcasting, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()

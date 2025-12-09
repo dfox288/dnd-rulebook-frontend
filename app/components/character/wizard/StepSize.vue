@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useCharacterWizardStore } from '~/stores/characterWizard'
 import { useCharacterWizard } from '~/composables/useCharacterWizard'
 import { logger } from '~/utils/logger'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 /**
  * Size option from pending-choices API
@@ -106,13 +107,7 @@ async function confirmSelection() {
 
     nextStep()
   } catch (err) {
-    // Only show error if the actual choice save failed
-    logger.error('Failed to save size selection:', err)
-    toast.add({
-      title: 'Save Failed',
-      description: 'Unable to save your size selection. Please try again.',
-      color: 'error'
-    })
+    wizardErrors.saveFailed(err, toast)
   }
 }
 
@@ -179,7 +174,7 @@ onMounted(async () => {
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto"
     >
-      <CharacterPickerSizePickerCard
+      <CharacterSizeCard
         v-for="size in sizeOptions"
         :key="size.code"
         :size="size"

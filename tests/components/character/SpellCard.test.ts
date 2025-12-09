@@ -1,7 +1,7 @@
-// tests/components/character/picker/SpellPickerCard.test.ts
+// tests/components/character/SpellCard.test.ts
 import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import SpellPickerCard from '~/components/character/picker/SpellPickerCard.vue'
+import SpellCard from '~/components/character/SpellCard.vue'
 
 const mockSpell = {
   id: 1,
@@ -23,17 +23,17 @@ const mockCantrip = {
   is_ritual: false
 }
 
-describe('SpellPickerCard', () => {
+describe('SpellCard', () => {
   describe('common behavior', () => {
     it('renders the spell name', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       expect(wrapper.text()).toContain('Fireball')
     })
 
     it('shows selected styling when selected', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: true }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -41,7 +41,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('does not show selected styling when not selected', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -49,7 +49,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('emits toggle event when card is clicked', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -60,14 +60,14 @@ describe('SpellPickerCard', () => {
     })
 
     it('shows View Details button', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       expect(wrapper.text()).toContain('View Details')
     })
 
     it('emits view-details event when View Details button is clicked', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       const detailsBtn = wrapper.find('[data-testid="view-details-btn"]')
@@ -83,7 +83,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('shows selected checkmark when selected', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: true }
       })
       const selectedCheck = wrapper.find('[data-testid="selected-check"]')
@@ -91,7 +91,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('does not show selected checkmark when not selected', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       const selectedCheck = wrapper.find('[data-testid="selected-check"]')
@@ -101,7 +101,7 @@ describe('SpellPickerCard', () => {
 
   describe('disabled behavior', () => {
     it('does not emit toggle when disabled', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false, disabled: true }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -111,7 +111,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('shows disabled styling when disabled', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false, disabled: true }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -120,7 +120,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('does not show disabled styling when not disabled', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false, disabled: false }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -128,7 +128,7 @@ describe('SpellPickerCard', () => {
     })
 
     it('defaults disabled to false', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       const spellCard = wrapper.find('[data-testid="spell-card"]')
@@ -138,7 +138,7 @@ describe('SpellPickerCard', () => {
 
   describe('spell level display', () => {
     it('shows "Cantrip" for level 0', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockCantrip, selected: false }
       })
       expect(wrapper.text()).toContain('Cantrip')
@@ -146,7 +146,7 @@ describe('SpellPickerCard', () => {
 
     it('shows "1st" for level 1', async () => {
       const spell = { ...mockSpell, level: 1 }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell, selected: false }
       })
       expect(wrapper.text()).toContain('1st')
@@ -154,7 +154,7 @@ describe('SpellPickerCard', () => {
 
     it('shows "2nd" for level 2', async () => {
       const spell = { ...mockSpell, level: 2 }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell, selected: false }
       })
       expect(wrapper.text()).toContain('2nd')
@@ -162,7 +162,7 @@ describe('SpellPickerCard', () => {
 
     it('shows "3rd" for level 3', async () => {
       const spell = { ...mockSpell, level: 3 }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell, selected: false }
       })
       expect(wrapper.text()).toContain('3rd')
@@ -170,7 +170,7 @@ describe('SpellPickerCard', () => {
 
     it('shows "4th" for level 4', async () => {
       const spell = { ...mockSpell, level: 4 }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell, selected: false }
       })
       expect(wrapper.text()).toContain('4th')
@@ -178,7 +178,7 @@ describe('SpellPickerCard', () => {
 
     it('shows "9th" for level 9', async () => {
       const spell = { ...mockSpell, level: 9 }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell, selected: false }
       })
       expect(wrapper.text()).toContain('9th')
@@ -187,7 +187,7 @@ describe('SpellPickerCard', () => {
 
   describe('spell school display', () => {
     it('shows spell school name', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       expect(wrapper.text()).toContain('Evocation')
@@ -195,7 +195,7 @@ describe('SpellPickerCard', () => {
 
     it('handles missing school gracefully', async () => {
       const spellWithoutSchool = { ...mockSpell, school: undefined }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: spellWithoutSchool, selected: false }
       })
       expect(wrapper.html()).toBeTruthy()
@@ -206,7 +206,7 @@ describe('SpellPickerCard', () => {
         ...mockSpell,
         school: { id: 7, name: 'Necromancy', code: 'N' }
       }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: necromancySpell, selected: false }
       })
       expect(wrapper.text()).toContain('Necromancy')
@@ -216,14 +216,14 @@ describe('SpellPickerCard', () => {
   describe('concentration and ritual badges', () => {
     it('shows concentration badge when needs_concentration is true', async () => {
       const concentrationSpell = { ...mockSpell, needs_concentration: true }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: concentrationSpell, selected: false }
       })
       expect(wrapper.text()).toContain('Concentration')
     })
 
     it('does not show concentration badge when needs_concentration is false', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       expect(wrapper.text()).not.toContain('Concentration')
@@ -231,14 +231,14 @@ describe('SpellPickerCard', () => {
 
     it('shows ritual badge when is_ritual is true', async () => {
       const ritualSpell = { ...mockSpell, is_ritual: true }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: ritualSpell, selected: false }
       })
       expect(wrapper.text()).toContain('Ritual')
     })
 
     it('does not show ritual badge when is_ritual is false', async () => {
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: mockSpell, selected: false }
       })
       expect(wrapper.text()).not.toContain('Ritual')
@@ -250,7 +250,7 @@ describe('SpellPickerCard', () => {
         needs_concentration: true,
         is_ritual: true
       }
-      const wrapper = await mountSuspended(SpellPickerCard, {
+      const wrapper = await mountSuspended(SpellCard, {
         props: { spell: complexSpell, selected: false }
       })
       expect(wrapper.text()).toContain('Concentration')
@@ -276,7 +276,7 @@ describe('SpellPickerCard', () => {
           ...mockSpell,
           school: { id: 1, name, code }
         }
-        const wrapper = await mountSuspended(SpellPickerCard, {
+        const wrapper = await mountSuspended(SpellCard, {
           props: { spell, selected: false }
         })
         expect(wrapper.text()).toContain(name)
