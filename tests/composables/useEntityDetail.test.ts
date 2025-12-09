@@ -25,7 +25,6 @@ describe('useEntityDetail', () => {
     expect(config.slug).toBe('fireball')
     expect(config.seo.titleTemplate('Fireball')).toBe('Fireball - Test')
   })
-
 })
 
 /**

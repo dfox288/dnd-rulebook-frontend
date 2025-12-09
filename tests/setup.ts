@@ -4,6 +4,22 @@ import { h } from 'vue'
 import 'vitest-canvas-mock'
 
 // =============================================================================
+// SUPPRESS VUE-ROUTER TEARDOWN ERRORS
+// =============================================================================
+// When tests mount page components, vue-router may start navigation that
+// doesn't complete before the test ends. This causes "history is not defined"
+// errors during teardown. These are harmless - suppress them to keep output clean.
+// =============================================================================
+process.on('unhandledRejection', (reason: unknown) => {
+  // Suppress vue-router navigation errors during teardown
+  if (reason instanceof ReferenceError && reason.message === 'history is not defined') {
+    return // Silently ignore
+  }
+  // Re-throw other unhandled rejections so they still fail tests
+  throw reason
+})
+
+// =============================================================================
 // BROWSER API MOCKS
 // =============================================================================
 // Mock browser APIs that aren't available in Node.js test environment.
