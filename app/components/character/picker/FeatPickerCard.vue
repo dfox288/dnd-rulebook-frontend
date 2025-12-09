@@ -25,6 +25,25 @@ const hasPrerequisites = computed(() => {
 })
 
 /**
+ * Format a single prerequisite for display
+ */
+function formatPrerequisite(prereq: NonNullable<typeof props.feat.prerequisites>[number]): string {
+  if (prereq.ability_score) {
+    return `${prereq.ability_score.code} ${prereq.minimum_value}+`
+  }
+  if (prereq.race?.full_slug) {
+    return prereq.race.name
+  }
+  if (prereq.skill?.slug) {
+    return prereq.skill.name
+  }
+  if (prereq.proficiency_type?.slug) {
+    return prereq.proficiency_type.name
+  }
+  return prereq.description || 'Prerequisites'
+}
+
+/**
  * Get prerequisites summary for badge
  */
 const prerequisitesSummary = computed(() => {
@@ -34,11 +53,7 @@ const prerequisitesSummary = computed(() => {
 
   // Single prerequisite: show full text
   if (prereqs.length === 1) {
-    const p = prereqs[0]
-    if (p?.ability_score) {
-      return `${p.ability_score.code} ${p.minimum_value}+`
-    }
-    return p?.description || 'Prerequisites'
+    return formatPrerequisite(prereqs[0])
   }
 
   // Multiple prerequisites

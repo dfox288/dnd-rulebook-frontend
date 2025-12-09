@@ -38,6 +38,15 @@ const prerequisitesList = computed(() => {
     if (prereq.ability_score) {
       return `${prereq.ability_score.name} ${prereq.minimum_value}+`
     }
+    if (prereq.race?.full_slug) {
+      return prereq.race.name
+    }
+    if (prereq.skill?.slug) {
+      return prereq.skill.name
+    }
+    if (prereq.proficiency_type?.slug) {
+      return prereq.proficiency_type.name
+    }
     return prereq.description || 'Unknown prerequisite'
   })
 })

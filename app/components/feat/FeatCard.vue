@@ -15,8 +15,27 @@ const hasPrerequisites = computed(() => {
 })
 
 /**
+ * Format a single prerequisite for display
+ */
+function formatPrerequisite(prereq: NonNullable<typeof props.feat.prerequisites>[number]): string {
+  if (prereq.ability_score) {
+    return `${prereq.ability_score.code} ${prereq.minimum_value}+`
+  }
+  if (prereq.race?.full_slug) {
+    return prereq.race.name
+  }
+  if (prereq.skill?.slug) {
+    return prereq.skill.name
+  }
+  if (prereq.proficiency_type?.slug) {
+    return prereq.proficiency_type.name
+  }
+  return prereq.description || 'Prerequisites required'
+}
+
+/**
  * Get prerequisites summary
- * For single prerequisite: Show full text (e.g., "STR 13+")
+ * For single prerequisite: Show full text (e.g., "STR 13+", "Halfling")
  * For multiple: Show first + count (e.g., "STR 13+ +1 more")
  */
 const prerequisitesSummary = computed(() => {
@@ -26,25 +45,12 @@ const prerequisitesSummary = computed(() => {
 
   // Single prerequisite: show full text
   if (prereqs.length === 1) {
-    const p = prereqs[0]
-    if (p?.ability_score) {
-      return `${p.ability_score.code} ${p.minimum_value}+`
-    }
-    return p?.description || 'Prerequisites required'
+    return formatPrerequisite(prereqs[0])
   }
 
   // Multiple prerequisites: show first + count
-  const first = prereqs[0]
+  const firstText = formatPrerequisite(prereqs[0])
   const remaining = prereqs.length - 1
-  let firstText = ''
-
-  if (first?.ability_score) {
-    firstText = `${first.ability_score.code} ${first.minimum_value}+`
-  } else if (first?.description) {
-    firstText = first.description
-  } else {
-    firstText = 'Prerequisites required'
-  }
 
   return `${firstText} +${remaining} more`
 })
