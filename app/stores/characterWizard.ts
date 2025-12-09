@@ -282,9 +282,16 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
   })
 
   /**
-   * Does this character have feat choices to make?
+   * Does this character have feat choices (pending or resolved)?
+   * Returns true if:
+   * 1. Race grants bonus feat (Variant Human, Custom Lineage) - always show step
+   * 2. There are pending feat choices from other sources (ASI, etc.)
    */
   const hasFeatChoices = computed(() => {
+    // Always show feats step if race grants bonus feat (even if already selected)
+    if (raceGrantsBonusFeat.value) return true
+
+    // Fall back to checking pending feats count
     if (!summary.value) return false
     return (summary.value.pending_choices.feats ?? 0) > 0
   })
@@ -327,6 +334,16 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     const race = effectiveRace.value
     if (!race?.modifiers) return []
     return race.modifiers.filter(m => m.modifier_category === 'ability_score')
+  })
+
+  /**
+   * Does the effective race grant a bonus feat?
+   * Used to determine if feats step should be shown (even if feat already selected)
+   */
+  const raceGrantsBonusFeat = computed(() => {
+    const race = effectiveRace.value
+    if (!race?.modifiers) return false
+    return race.modifiers.some(m => m.modifier_category === 'bonus_feat')
   })
 
   // ══════════════════════════════════════════════════════════════
@@ -836,6 +853,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     // Computed: Derived
     effectiveRace,
     racialBonuses,
+    raceGrantsBonusFeat,
 
     // Actions: Backend sync
     syncWithBackend,

@@ -937,4 +937,98 @@ describe('characterWizard store', () => {
       expect(store.racialBonuses[0].modifier_category).toBe('ability_score')
     })
   })
+
+  describe('raceGrantsBonusFeat computed', () => {
+    it('returns false when no race selected', () => {
+      const store = useCharacterWizardStore()
+      expect(store.raceGrantsBonusFeat).toBe(false)
+    })
+
+    it('returns false when race has no bonus_feat modifier', () => {
+      const store = useCharacterWizardStore()
+      store.selections.race = mockElf // No modifiers
+      expect(store.raceGrantsBonusFeat).toBe(false)
+    })
+
+    it('returns true when race has bonus_feat modifier (Variant Human/Custom Lineage)', () => {
+      const store = useCharacterWizardStore()
+      const variantHuman: Race = {
+        ...mockHuman,
+        modifiers: [
+          { id: 1, modifier_category: 'ability_score', value: 1 },
+          { id: 2, modifier_category: 'bonus_feat', value: 1 }
+        ]
+      } as Race
+      store.selections.race = variantHuman
+
+      expect(store.raceGrantsBonusFeat).toBe(true)
+    })
+
+    it('checks effective race (subrace over base race)', () => {
+      const store = useCharacterWizardStore()
+      store.selections.race = mockHuman // No bonus_feat
+      const variantSubrace: Race = {
+        ...mockHuman,
+        id: 999,
+        name: 'Variant Human',
+        slug: 'variant-human',
+        modifiers: [{ id: 1, modifier_category: 'bonus_feat', value: 1 }]
+      } as Race
+      store.selections.subrace = variantSubrace
+
+      expect(store.raceGrantsBonusFeat).toBe(true)
+    })
+  })
+
+  describe('hasFeatChoices computed', () => {
+    it('returns false when no race and no summary', () => {
+      const store = useCharacterWizardStore()
+      expect(store.hasFeatChoices).toBe(false)
+    })
+
+    it('returns true when race grants bonus feat (even with 0 pending feats)', () => {
+      const store = useCharacterWizardStore()
+      const variantHuman: Race = {
+        ...mockHuman,
+        modifiers: [{ id: 1, modifier_category: 'bonus_feat', value: 1 }]
+      } as Race
+      store.selections.race = variantHuman
+      // Summary shows 0 pending feats (feat already selected)
+      store.summary = {
+        character: { id: 1, name: 'Test', total_level: 1 },
+        pending_choices: { proficiencies: 0, languages: 0, spells: 0, optional_features: 0, asi: 0, feats: 0 },
+        creation_complete: false,
+        missing_required: []
+      }
+
+      // Should still return true because race grants feat
+      expect(store.hasFeatChoices).toBe(true)
+    })
+
+    it('returns true when summary has pending feats (from non-race sources)', () => {
+      const store = useCharacterWizardStore()
+      store.selections.race = mockElf // No bonus_feat modifier
+      store.summary = {
+        character: { id: 1, name: 'Test', total_level: 1 },
+        pending_choices: { proficiencies: 0, languages: 0, spells: 0, optional_features: 0, asi: 0, feats: 1 },
+        creation_complete: false,
+        missing_required: []
+      }
+
+      expect(store.hasFeatChoices).toBe(true)
+    })
+
+    it('returns false when no race bonus_feat and no pending feats', () => {
+      const store = useCharacterWizardStore()
+      store.selections.race = mockElf // No bonus_feat modifier
+      store.summary = {
+        character: { id: 1, name: 'Test', total_level: 1 },
+        pending_choices: { proficiencies: 0, languages: 0, spells: 0, optional_features: 0, asi: 0, feats: 0 },
+        creation_complete: false,
+        missing_required: []
+      }
+
+      expect(store.hasFeatChoices).toBe(false)
+    })
+  })
 })

@@ -34,8 +34,9 @@ const availableSubraces = computed(() => {
   // Filter by selected sources if any are selected
   if (store.selectedSources.length > 0) {
     return selections.value.race.subraces.filter((subrace) => {
-      // Check if any of the subrace's sources match the selected sources
-      if (!subrace.sources || subrace.sources.length === 0) return false
+      // If subrace has no source info, show it anyway (can't filter what we don't know)
+      if (!subrace.sources || subrace.sources.length === 0) return true
+      // Otherwise, check if any of the subrace's sources match the selected sources
       return subrace.sources.some(source =>
         store.selectedSources.includes(source.code)
       )
