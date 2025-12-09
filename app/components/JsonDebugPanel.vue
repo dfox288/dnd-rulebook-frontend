@@ -5,6 +5,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const toast = useToast()
 
 const showJson = ref(false)
 const jsonPanelRef = ref<HTMLElement | null>(null)
@@ -22,7 +23,12 @@ const toggleJson = () => {
 const copyJson = () => {
   if (props.data) {
     navigator.clipboard.writeText(JSON.stringify(props.data, null, 2))
-    // TODO: Could add toast notification
+    toast.add({
+      title: 'Copied!',
+      description: 'JSON copied to clipboard',
+      icon: 'i-heroicons-clipboard-document-check',
+      color: 'success',
+    })
   }
 }
 </script>
