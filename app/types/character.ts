@@ -109,6 +109,42 @@ export type CharacterStatsFromAPI = components['schemas']['CharacterStatsResourc
 export type AbilityScoreCode = 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA'
 
 /**
+ * Damage defense trait (resistance, immunity, vulnerability)
+ */
+export interface DamageDefense {
+  /** Damage type (e.g., "Poison", "Fire") */
+  type: string
+  /** Optional conditional text (e.g., "from nonmagical attacks") */
+  condition: string | null
+  /** Source of the trait (e.g., "Dwarf", "Red Dragon") */
+  source: string
+}
+
+/**
+ * Condition advantage trait (advantage on saves against conditions)
+ */
+export interface ConditionAdvantage {
+  /** Condition name (e.g., "Poisoned", "Charmed") */
+  condition: string
+  /** Effect description (e.g., "Advantage on saving throws") */
+  effect: string
+  /** Source of the trait (e.g., "Dwarf", "Elf") */
+  source: string
+}
+
+/**
+ * Condition immunity trait (immune to specific conditions)
+ */
+export interface ConditionImmunity {
+  /** Condition name (e.g., "Poisoned", "Charmed") */
+  condition: string
+  /** Effect description (e.g., "Immune to condition") */
+  effect: string
+  /** Source of the trait (e.g., "Dwarf", "Elf") */
+  source: string
+}
+
+/**
  * Character stats with strongly-typed ability score keys
  *
  * Extends the generated type with stricter typing for ability_scores
@@ -123,6 +159,11 @@ export interface CharacterStats extends Omit<CharacterStatsFromAPI, 'ability_sco
     spell_save_dc: number
     spell_attack_bonus: number
   } | null
+  damage_resistances: DamageDefense[]
+  damage_immunities: DamageDefense[]
+  damage_vulnerabilities: DamageDefense[]
+  condition_advantages: ConditionAdvantage[]
+  condition_immunities: ConditionImmunity[]
 }
 
 // =============================================================================
