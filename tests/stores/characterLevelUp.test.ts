@@ -1,0 +1,314 @@
+// tests/stores/characterLevelUp.test.ts
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { setActivePinia, createPinia } from 'pinia'
+
+// =============================================================================
+// API MOCK SETUP
+// =============================================================================
+
+const { mockApiFetch } = vi.hoisted(() => ({
+  mockApiFetch: vi.fn()
+}))
+
+vi.mock('~/composables/useApi', () => ({
+  useApi: () => ({ apiFetch: mockApiFetch })
+}))
+
+// Import store AFTER mocks are set up
+// eslint-disable-next-line import/first
+import { useCharacterLevelUpStore } from '~/stores/characterLevelUp'
+
+// =============================================================================
+// MOCK DATA
+// =============================================================================
+
+const mockLevelUpResult = {
+  previous_level: 3,
+  new_level: 4,
+  hp_increase: 9,
+  new_max_hp: 38,
+  features_gained: [
+    { id: 1, name: 'Ability Score Improvement', description: 'Increase ability scores' }
+  ],
+  spell_slots: {},
+  asi_pending: true,
+  hp_choice_pending: true
+}
+
+const mockCharacterClasses = [
+  {
+    class: {
+      id: 1,
+      name: 'Fighter',
+      slug: 'fighter',
+      full_slug: 'phb:fighter',
+      hit_die: 10
+    },
+    level: 3,
+    subclass: null,
+    is_primary: true
+  }
+]
+
+// =============================================================================
+// TESTS
+// =============================================================================
+
+describe('characterLevelUp store', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
+
+  describe('initial state', () => {
+    it('starts with null character data', () => {
+      const store = useCharacterLevelUpStore()
+      expect(store.characterId).toBeNull()
+      expect(store.publicId).toBeNull()
+      expect(store.levelUpResult).toBeNull()
+    })
+
+    it('starts not open', () => {
+      const store = useCharacterLevelUpStore()
+      expect(store.isOpen).toBe(false)
+    })
+
+    it('starts on class-selection step', () => {
+      const store = useCharacterLevelUpStore()
+      expect(store.currentStepName).toBe('class-selection')
+    })
+
+    it('starts with no loading state', () => {
+      const store = useCharacterLevelUpStore()
+      expect(store.isLoading).toBe(false)
+      expect(store.error).toBeNull()
+    })
+  })
+
+  describe('openWizard', () => {
+    it('sets character data and opens wizard', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      expect(store.characterId).toBe(123)
+      expect(store.publicId).toBe('shadow-warden-q3x9')
+      expect(store.isOpen).toBe(true)
+    })
+
+    it('stores character classes for multiclass detection', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      expect(store.characterClasses).toEqual(mockCharacterClasses)
+      expect(store.totalLevel).toBe(3)
+    })
+
+    it('resets previous state when opening', () => {
+      const store = useCharacterLevelUpStore()
+
+      // Set some state
+      store.levelUpResult = mockLevelUpResult
+      store.selectedClassSlug = 'phb:fighter'
+      store.error = 'previous error'
+
+      // Open fresh wizard
+      store.openWizard(456, 'new-char-xxxx', [], 1)
+
+      expect(store.levelUpResult).toBeNull()
+      expect(store.selectedClassSlug).toBeNull()
+      expect(store.error).toBeNull()
+    })
+  })
+
+  describe('closeWizard', () => {
+    it('closes wizard but preserves character data', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+      store.closeWizard()
+
+      expect(store.isOpen).toBe(false)
+      expect(store.characterId).toBe(123)
+      expect(store.publicId).toBe('shadow-warden-q3x9')
+    })
+  })
+
+  describe('reset', () => {
+    it('clears all state', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+      store.levelUpResult = mockLevelUpResult
+      store.reset()
+
+      expect(store.characterId).toBeNull()
+      expect(store.publicId).toBeNull()
+      expect(store.isOpen).toBe(false)
+      expect(store.levelUpResult).toBeNull()
+      expect(store.characterClasses).toEqual([])
+      expect(store.totalLevel).toBe(0)
+    })
+  })
+
+  describe('goToStep', () => {
+    it('changes current step', () => {
+      const store = useCharacterLevelUpStore()
+      store.goToStep('hit-points')
+
+      expect(store.currentStepName).toBe('hit-points')
+    })
+  })
+
+  describe('computed: isMulticlass', () => {
+    it('returns false for single-class characters', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'test', mockCharacterClasses, 3)
+
+      expect(store.isMulticlass).toBe(false)
+    })
+
+    it('returns true for multiclass characters', () => {
+      const store = useCharacterLevelUpStore()
+      const multiclassEntries = [
+        ...mockCharacterClasses,
+        {
+          class: { id: 2, name: 'Rogue', slug: 'rogue', full_slug: 'phb:rogue', hit_die: 8 },
+          level: 2,
+          subclass: null,
+          is_primary: false
+        }
+      ]
+      store.openWizard(123, 'test', multiclassEntries, 5)
+
+      expect(store.isMulticlass).toBe(true)
+    })
+  })
+
+  describe('computed: isFirstMulticlassOpportunity', () => {
+    it('returns true at level 1', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'test', mockCharacterClasses, 1)
+
+      expect(store.isFirstMulticlassOpportunity).toBe(true)
+    })
+
+    it('returns false at level 2+', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'test', mockCharacterClasses, 3)
+
+      expect(store.isFirstMulticlassOpportunity).toBe(false)
+    })
+  })
+
+  describe('computed: needsClassSelection', () => {
+    it('returns true for multiclass characters', () => {
+      const store = useCharacterLevelUpStore()
+      const multiclassEntries = [
+        ...mockCharacterClasses,
+        {
+          class: { id: 2, name: 'Rogue', slug: 'rogue', full_slug: 'phb:rogue', hit_die: 8 },
+          level: 2,
+          subclass: null,
+          is_primary: false
+        }
+      ]
+      store.openWizard(123, 'test', multiclassEntries, 5)
+
+      expect(store.needsClassSelection).toBe(true)
+    })
+
+    it('returns true for first multiclass opportunity', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'test', mockCharacterClasses, 1)
+
+      expect(store.needsClassSelection).toBe(true)
+    })
+
+    it('returns false for single-class at level 2+', () => {
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'test', mockCharacterClasses, 3)
+
+      expect(store.needsClassSelection).toBe(false)
+    })
+  })
+
+  describe('computed: isComplete', () => {
+    it('returns false when no level up result', () => {
+      const store = useCharacterLevelUpStore()
+      expect(store.isComplete).toBe(false)
+    })
+
+    it('returns false when choices are pending', () => {
+      const store = useCharacterLevelUpStore()
+      store.levelUpResult = { ...mockLevelUpResult, hp_choice_pending: true, asi_pending: false }
+      expect(store.isComplete).toBe(false)
+    })
+
+    it('returns true when all choices resolved', () => {
+      const store = useCharacterLevelUpStore()
+      store.levelUpResult = { ...mockLevelUpResult, hp_choice_pending: false, asi_pending: false }
+      expect(store.isComplete).toBe(true)
+    })
+  })
+
+  describe('levelUp action', () => {
+    it('calls API with correct parameters', async () => {
+      mockApiFetch.mockResolvedValueOnce(mockLevelUpResult)
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      await store.levelUp('phb:fighter')
+
+      expect(mockApiFetch).toHaveBeenCalledWith(
+        '/characters/shadow-warden-q3x9/classes/phb:fighter/level-up',
+        { method: 'POST' }
+      )
+    })
+
+    it('stores level up result on success', async () => {
+      mockApiFetch.mockResolvedValueOnce(mockLevelUpResult)
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      const result = await store.levelUp('phb:fighter')
+
+      expect(store.levelUpResult).toEqual(mockLevelUpResult)
+      expect(store.selectedClassSlug).toBe('phb:fighter')
+      expect(result).toEqual(mockLevelUpResult)
+    })
+
+    it('sets loading state during API call', async () => {
+      let resolvePromise: (value: unknown) => void
+      mockApiFetch.mockImplementationOnce(() => new Promise((resolve) => {
+        resolvePromise = resolve
+      }))
+
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      const promise = store.levelUp('phb:fighter')
+      expect(store.isLoading).toBe(true)
+
+      resolvePromise!(mockLevelUpResult)
+      await promise
+
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('handles API errors', async () => {
+      const error = new Error('Network error')
+      mockApiFetch.mockRejectedValueOnce(error)
+
+      const store = useCharacterLevelUpStore()
+      store.openWizard(123, 'shadow-warden-q3x9', mockCharacterClasses, 3)
+
+      await expect(store.levelUp('phb:fighter')).rejects.toThrow('Network error')
+      expect(store.error).toBe('Network error')
+      expect(store.isLoading).toBe(false)
+    })
+
+    it('throws if no character selected', async () => {
+      const store = useCharacterLevelUpStore()
+
+      await expect(store.levelUp('phb:fighter')).rejects.toThrow('No character selected')
+    })
+  })
+})

@@ -111,7 +111,8 @@ export function useUnifiedChoices(characterId: Ref<number | null>) {
     optionalFeatures: choices.value.filter(c => c.type === 'optional_feature'),
     abilityScores: choices.value.filter(c => c.type === 'ability_score'),
     feats: choices.value.filter(c => c.type === 'feat'),
-    sizes: choices.value.filter(c => c.type === 'size')
+    sizes: choices.value.filter(c => c.type === 'size'),
+    hitPoints: choices.value.filter(c => c.type === 'hit_points')
   }))
 
   /**
