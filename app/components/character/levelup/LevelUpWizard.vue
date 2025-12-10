@@ -14,20 +14,45 @@ const { apiFetch } = useApi()
 const characterStats = ref<{ constitution_modifier: number } | null>(null)
 const isLoadingStats = ref(false)
 
-// Fetch character stats when wizard opens
+/**
+ * Initialize wizard when it opens
+ *
+ * For single-class characters who don't need class selection:
+ * 1. Auto-select their only class
+ * 2. Call the level-up API
+ * 3. Navigate to the first relevant step (hit-points)
+ */
 watch(() => store.isOpen, async (open) => {
-  if (open && store.publicId) {
-    isLoadingStats.value = true
-    try {
-      const response = await apiFetch<{ data: { constitution_modifier: number } }>(
-        `/characters/${store.publicId}/stats`
-      )
-      characterStats.value = response.data
-    } catch (e) {
-      // Stats fetch failed - will use default CON mod of 0
-      characterStats.value = { constitution_modifier: 0 }
-    } finally {
-      isLoadingStats.value = false
+  if (!open || !store.publicId) return
+
+  // Fetch character stats for HP calculation
+  isLoadingStats.value = true
+  try {
+    const response = await apiFetch<{ data: { constitution_modifier: number } }>(
+      `/characters/${store.publicId}/stats`
+    )
+    characterStats.value = response.data
+  } catch (e) {
+    // Stats fetch failed - will use default CON mod of 0
+    characterStats.value = { constitution_modifier: 0 }
+  } finally {
+    isLoadingStats.value = false
+  }
+
+  // Auto-advance for single-class characters who don't need class selection
+  if (!store.needsClassSelection && store.characterClasses.length === 1) {
+    const primaryClass = store.characterClasses[0]
+    const classSlug = primaryClass?.class?.slug || primaryClass?.class?.full_slug
+
+    if (classSlug && !store.levelUpResult) {
+      try {
+        // Automatically trigger level-up for the single class
+        await store.levelUp(classSlug)
+        // Navigate to hit-points step (first step after class selection)
+        store.goToStep('hit-points')
+      } catch (e) {
+        // Error is already set in store by levelUp()
+      }
     }
   }
 })
@@ -67,15 +92,16 @@ const emit = defineEmits<{
 
 <template>
   <UModal
-    v-if="store.isOpen"
     v-model:open="store.isOpen"
     fullscreen
     :prevent-close="true"
+    title="Level Up"
   >
-    <div
-      data-testid="level-up-wizard"
-      class="flex h-full"
-    >
+    <template #body>
+      <div
+        data-testid="level-up-wizard"
+        class="flex h-full"
+      >
       <!-- Sidebar -->
       <div class="w-64 flex-shrink-0">
         <CharacterLevelupLevelUpSidebar />
@@ -182,5 +208,6 @@ const emit = defineEmits<{
         </div>
       </div>
     </div>
+    </template>
   </UModal>
 </template>

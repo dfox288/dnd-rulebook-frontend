@@ -26,8 +26,8 @@ const hpGained = ref<number | null>(null)
 const isSaving = ref(false)
 const error = ref<string | null>(null)
 
-// Reference to die roller component
-const dieRoller = ref<{ rollDie: () => void } | null>(null)
+// Trigger counter for die roller (increment to trigger a roll)
+const rollTrigger = ref(0)
 
 // Calculate average (rounded up per 5e rules)
 const averageValue = computed(() => Math.ceil((props.hitDie + 1) / 2))
@@ -45,7 +45,7 @@ const totalHpGained = computed(() => {
 
 function handleRollClick() {
   selectedMethod.value = 'roll'
-  dieRoller.value?.rollDie()
+  rollTrigger.value++ // Increment to trigger the roll
 }
 
 function handleRollComplete(result: number) {
@@ -60,7 +60,15 @@ function handleAverageClick() {
 }
 
 async function handleConfirm() {
-  if (hpGained.value === null) return
+  // Capture value before any async operations
+  const hpValue = hpGained.value
+
+  console.log('[HP Step] handleConfirm called, hpGained:', hpValue)
+
+  if (hpValue === null) {
+    console.log('[HP Step] hpGained is null, returning early')
+    return
+  }
 
   isSaving.value = true
   error.value = null
@@ -71,14 +79,19 @@ async function handleConfirm() {
     const hpChoices = choicesByType.value.hitPoints
     const firstChoice = hpChoices?.[0]
 
+    console.log('[HP Step] Found HP choices:', hpChoices?.length, 'First choice:', firstChoice?.id)
+
     if (!firstChoice) {
       // No HP choice available - may have already been resolved or character at max level
       error.value = 'No HP choice available. The character may already be at max level.'
       return
     }
 
+    console.log('[HP Step] Resolving choice with selected:', hpValue)
+
+    // Backend expects { selected: [string] } format for HP choices
     await resolveChoice(firstChoice.id, {
-      hit_point_increase: hpGained.value
+      selected: [String(hpValue)]
     })
 
     emit('choice-made', hpGained.value)
@@ -131,8 +144,8 @@ onMounted(() => {
         @click="handleRollClick"
       >
         <CharacterLevelupHitDieRoller
-          ref="dieRoller"
           :die-size="hitDie"
+          :trigger-roll="rollTrigger"
           @roll-complete="handleRollComplete"
         />
         <span class="mt-3 font-semibold text-gray-900 dark:text-white">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   dieSize: number
-  rolling?: boolean
+  triggerRoll?: number // Increment to trigger a new roll
 }>()
 
 const emit = defineEmits<{
@@ -38,7 +38,14 @@ function rollDie() {
   }, 50)
 }
 
-// Expose roll function for parent
+// Watch for trigger changes to start rolling
+watch(() => props.triggerRoll, (newVal, oldVal) => {
+  if (newVal !== undefined && newVal !== oldVal) {
+    rollDie()
+  }
+})
+
+// Expose roll function for parent (keeping for backward compatibility)
 defineExpose({ rollDie })
 
 onUnmounted(() => {
@@ -49,18 +56,15 @@ onUnmounted(() => {
 <template>
   <div
     class="relative w-24 h-24 flex items-center justify-center"
-    :class="{ 'animate-bounce': isRolling }"
   >
     <!-- Die background -->
     <div
-      class="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl shadow-lg transform"
-      :class="{ 'rotate-12': isRolling }"
+      class="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl shadow-lg"
     />
 
     <!-- Die value -->
     <span
-      class="relative text-3xl font-bold text-white z-10"
-      :class="{ 'animate-pulse': isRolling }"
+      class="relative text-3xl font-bold text-white z-10 tabular-nums"
     >
       <template v-if="displayValue !== null">
         {{ displayValue }}

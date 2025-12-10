@@ -6,10 +6,6 @@ const props = defineProps<{
   character: Character
 }>()
 
-const emit = defineEmits<{
-  'level-up': []
-}>()
-
 /**
  * Format classes display string
  * Shows each class with its level and subclass (if any), separated by " / "
@@ -65,10 +61,6 @@ const totalLevel = computed(() => {
 const canLevelUp = computed(() => {
   return props.character.is_complete && totalLevel.value < 20
 })
-
-function handleLevelUp() {
-  emit('level-up')
-}
 </script>
 
 <template>
@@ -140,11 +132,11 @@ function handleLevelUp() {
       <UButton
         v-if="canLevelUp"
         data-testid="level-up-button"
+        :to="`/characters/${character.public_id}/level-up`"
         variant="soft"
         color="primary"
         size="sm"
         icon="i-heroicons-arrow-trending-up"
-        @click="handleLevelUp"
       >
         Level Up
       </UButton>
