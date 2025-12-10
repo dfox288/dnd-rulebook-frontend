@@ -366,3 +366,40 @@ export interface WizardStep {
   isActive: boolean
   isDisabled: boolean
 }
+
+// =============================================================================
+// Level-Up Types
+// =============================================================================
+
+/**
+ * Result from level-up API call
+ *
+ * Returned by POST /characters/{id}/classes/{classSlug}/level-up
+ */
+export interface LevelUpResult {
+  previous_level: number
+  new_level: number
+  hp_increase: number
+  new_max_hp: number
+  features_gained: Array<{
+    id: number
+    name: string
+    description: string | null
+  }>
+  spell_slots: Record<string, number>
+  asi_pending: boolean
+  hp_choice_pending: boolean
+}
+
+/**
+ * Level-up wizard step definition
+ *
+ * Similar to WizardStep but with dynamic visibility based on level-up result
+ */
+export interface LevelUpStep {
+  name: string
+  label: string
+  icon: string
+  visible: () => boolean
+  shouldSkip?: () => boolean
+}
