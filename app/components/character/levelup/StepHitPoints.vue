@@ -24,6 +24,7 @@ const selectedMethod = ref<'roll' | 'average' | null>(null)
 const rollResult = ref<number | null>(null)
 const hpGained = ref<number | null>(null)
 const isSaving = ref(false)
+const error = ref<string | null>(null)
 
 // Reference to die roller component
 const dieRoller = ref<{ rollDie: () => void } | null>(null)
@@ -62,19 +63,28 @@ async function handleConfirm() {
   if (hpGained.value === null) return
 
   isSaving.value = true
+  error.value = null
+
   try {
     // Find the HP choice and resolve it
     await fetchChoices('hit_points')
     const hpChoices = choicesByType.value.hitPoints
     const firstChoice = hpChoices?.[0]
-    if (firstChoice) {
-      await resolveChoice(firstChoice.id, {
-        hit_point_increase: hpGained.value
-      })
+
+    if (!firstChoice) {
+      // No HP choice available - may have already been resolved or character at max level
+      error.value = 'No HP choice available. The character may already be at max level.'
+      return
     }
+
+    await resolveChoice(firstChoice.id, {
+      hit_point_increase: hpGained.value
+    })
 
     emit('choice-made', hpGained.value)
     nextStep()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to save HP choice. Please try again.'
   } finally {
     isSaving.value = false
   }
@@ -88,6 +98,16 @@ onMounted(() => {
 
 <template>
   <div class="space-y-8">
+    <!-- Error Alert -->
+    <UAlert
+      v-if="error"
+      color="error"
+      icon="i-heroicons-exclamation-circle"
+      :title="error"
+      :close-button="{ icon: 'i-heroicons-x-mark', color: 'error', variant: 'link' }"
+      @close="error = null"
+    />
+
     <!-- Header -->
     <div class="text-center">
       <h2 class="text-2xl font-bold text-gray-900 dark:text-white">

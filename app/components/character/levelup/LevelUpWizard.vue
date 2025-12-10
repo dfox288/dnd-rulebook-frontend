@@ -12,10 +12,12 @@ const hpGained = ref<number>(0)
 // Get character stats for HP calculation (CON modifier, hit die)
 const { apiFetch } = useApi()
 const characterStats = ref<{ constitution_modifier: number } | null>(null)
+const isLoadingStats = ref(false)
 
 // Fetch character stats when wizard opens
 watch(() => store.isOpen, async (open) => {
   if (open && store.publicId) {
+    isLoadingStats.value = true
     try {
       const response = await apiFetch<{ data: { constitution_modifier: number } }>(
         `/characters/${store.publicId}/stats`
@@ -23,6 +25,9 @@ watch(() => store.isOpen, async (open) => {
       characterStats.value = response.data
     } catch (e) {
       // Stats fetch failed - will use default CON mod of 0
+      characterStats.value = { constitution_modifier: 0 }
+    } finally {
+      isLoadingStats.value = false
     }
   }
 })
@@ -124,12 +129,27 @@ const emit = defineEmits<{
             </div>
 
             <!-- Hit Points Step -->
-            <CharacterLevelupStepHitPoints
-              v-else-if="store.currentStepName === 'hit-points'"
-              :hit-die="hitDie"
-              :con-modifier="conModifier"
-              @choice-made="handleHpChoice"
-            />
+            <template v-else-if="store.currentStepName === 'hit-points'">
+              <!-- Show loading while fetching stats -->
+              <div
+                v-if="isLoadingStats"
+                class="flex flex-col items-center justify-center py-12"
+              >
+                <UIcon
+                  name="i-heroicons-arrow-path"
+                  class="w-8 h-8 animate-spin text-primary"
+                />
+                <p class="mt-4 text-gray-500">
+                  Loading character stats...
+                </p>
+              </div>
+              <CharacterLevelupStepHitPoints
+                v-else
+                :hit-die="hitDie"
+                :con-modifier="conModifier"
+                @choice-made="handleHpChoice"
+              />
+            </template>
 
             <!-- ASI/Feat Step (reuse existing) -->
             <CharacterWizardStepFeats

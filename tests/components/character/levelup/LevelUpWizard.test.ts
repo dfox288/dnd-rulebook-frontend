@@ -63,6 +63,18 @@ vi.mock('~/composables/useApi', () => ({
   })
 }))
 
+vi.mock('~/composables/useUnifiedChoices', () => ({
+  useUnifiedChoices: () => ({
+    choices: ref([]),
+    choicesByType: ref({ hitPoints: [] }),
+    pendingCount: ref(0),
+    isLoading: ref(false),
+    fetchChoices: vi.fn().mockResolvedValue(undefined),
+    resolveChoice: vi.fn().mockResolvedValue(undefined),
+    clearChoices: vi.fn()
+  })
+}))
+
 // Import component AFTER mocks
 // eslint-disable-next-line import/first
 import LevelUpWizard from '~/components/character/levelup/LevelUpWizard.vue'
