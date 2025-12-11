@@ -66,6 +66,9 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
   /** Error state */
   const error = ref<string | null>(null)
 
+  /** Current wizard step (fallback for non-URL navigation) */
+  const currentStepName = ref<string>('class-selection')
+
   // ══════════════════════════════════════════════════════════════
   // COMPUTED
   // ══════════════════════════════════════════════════════════════
@@ -137,6 +140,7 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     levelUpResult.value = null
     selectedClassSlug.value = null
     error.value = null
+    currentStepName.value = 'class-selection'
     isOpen.value = true
   }
 
@@ -206,6 +210,13 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
   }
 
   /**
+   * Navigate to a specific step (for non-URL navigation)
+   */
+  function goToStep(stepName: string): void {
+    currentStepName.value = stepName
+  }
+
+  /**
    * Reset all wizard state
    */
   function reset() {
@@ -219,6 +230,7 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     pendingChoices.value = []
     isLoading.value = false
     error.value = null
+    currentStepName.value = 'class-selection'
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -237,6 +249,7 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     pendingChoices,
     isLoading,
     error,
+    currentStepName,
 
     // Computed
     isMulticlass,
@@ -256,6 +269,7 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     levelUp,
     reset,
     fetchPendingChoices,
-    refreshChoices
+    refreshChoices,
+    goToStep
   }
 })
