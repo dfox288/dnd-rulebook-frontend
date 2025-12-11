@@ -11,27 +11,47 @@ import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
+// Props for store-agnostic usage (enables use in both creation and level-up wizards)
+const props = withDefaults(defineProps<{
+  characterId?: number
+  nextStep?: () => void
+  spellcastingStats?: {
+    ability: string
+    spell_save_dc: number
+    spell_attack_bonus: number
+  } | null
+}>(), {
+  characterId: undefined,
+  nextStep: undefined,
+  spellcastingStats: null
+})
+
+// Fallback to store if props not provided (backward compatibility)
 const store = useCharacterWizardStore()
 const {
-  characterId,
+  characterId: storeCharacterId,
   selections,
   stats,
   isLoading,
   error: storeError
 } = storeToRefs(store)
-const { nextStep } = useCharacterWizard()
+const wizardNav = useCharacterWizard()
+
+// Use prop or store value
+const effectiveCharacterId = computed(() => props.characterId ?? storeCharacterId.value)
+const effectiveNextStep = computed(() => props.nextStep ?? wizardNav.nextStep)
 
 // API client for fetching spell options
 const { apiFetch } = useApi()
 
-// Use unified choices composable
+// Use unified choices composable with effective character ID
 const {
   choicesByType,
   pending: loadingChoices,
   error: choicesError,
   fetchChoices,
   resolveChoice
-} = useUnifiedChoices(computed(() => characterId.value))
+} = useUnifiedChoices(effectiveCharacterId)
 
 // Fetch spell choices on mount
 onMounted(async () => {
@@ -103,8 +123,30 @@ watch(choicesByType, async (newVal) => {
   }
 }, { immediate: true })
 
-// Spellcasting display from stats
+// Spellcasting display from stats (use prop if provided, otherwise use store stats)
 const spellcasting = computed(() => {
+  // Use prop if provided
+  if (props.spellcastingStats) {
+    const sc = props.spellcastingStats
+    const abilityNames: Record<string, string> = {
+      STR: 'Strength',
+      DEX: 'Dexterity',
+      CON: 'Constitution',
+      INT: 'Intelligence',
+      WIS: 'Wisdom',
+      CHA: 'Charisma'
+    }
+
+    return {
+      ability: sc.ability,
+      abilityName: abilityNames[sc.ability] ?? sc.ability,
+      saveDC: sc.spell_save_dc,
+      attackBonus: sc.spell_attack_bonus,
+      formattedAttackBonus: sc.spell_attack_bonus >= 0 ? `+${sc.spell_attack_bonus}` : `${sc.spell_attack_bonus}`
+    }
+  }
+
+  // Otherwise use store stats
   if (!stats.value?.spellcasting) return null
 
   const sc = stats.value.spellcasting
@@ -187,7 +229,7 @@ const toast = useToast()
 async function handleContinue() {
   try {
     await saveAllChoices()
-    nextStep()
+    effectiveNextStep.value()
   } catch (e) {
     wizardErrors.choiceResolveFailed(e, toast, 'spell')
   }
