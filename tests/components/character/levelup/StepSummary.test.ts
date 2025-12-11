@@ -1,11 +1,11 @@
-// tests/components/character/levelup/StepLevelUpSummary.test.ts
+// tests/components/character/levelup/StepSummary.test.ts
 import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
-import StepLevelUpSummary from '~/components/character/levelup/StepLevelUpSummary.vue'
+import StepSummary from '~/components/character/levelup/StepSummary.vue'
 import type { LevelUpResult } from '~/types/character'
 
-describe('StepLevelUpSummary', () => {
+describe('StepSummary', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
@@ -24,7 +24,7 @@ describe('StepLevelUpSummary', () => {
   }
 
   it('shows level up complete message', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -36,7 +36,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('shows level transition', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -49,7 +49,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('shows HP gained', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -62,7 +62,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('shows features gained', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -74,7 +74,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('has button to return to character sheet', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -86,7 +86,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('emits complete event when button clicked', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -99,7 +99,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('shows ASI choice when provided', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -113,7 +113,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('shows feat name when provided', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -127,7 +127,7 @@ describe('StepLevelUpSummary', () => {
   })
 
   it('hides ASI/Feat section when neither provided', async () => {
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: mockLevelUpResult,
         className: 'Fighter',
@@ -145,7 +145,7 @@ describe('StepLevelUpSummary', () => {
       features_gained: []
     }
 
-    const wrapper = await mountSuspended(StepLevelUpSummary, {
+    const wrapper = await mountSuspended(StepSummary, {
       props: {
         levelUpResult: emptyFeaturesResult,
         className: 'Fighter',
