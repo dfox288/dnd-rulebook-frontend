@@ -9,9 +9,37 @@ const { nextStep } = useLevelUpWizard()
 // Track HP gained for summary
 const hpGained = ref<number>(0)
 
-// Get character stats for HP calculation (CON modifier, hit die)
+// Handler functions for step completion
+async function handleFeatureChoicesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleSpellsComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleLanguagesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleProficienciesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+// Get character stats for HP calculation (CON modifier, hit die) and spellcasting
 const { apiFetch } = useApi()
-const characterStats = ref<{ constitution_modifier: number } | null>(null)
+const characterStats = ref<{
+  constitution_modifier: number
+  spellcasting?: {
+    ability: string
+    spell_save_dc: number
+    spell_attack_bonus: number
+  } | null
+} | null>(null)
 const isLoadingStats = ref(false)
 
 /**
@@ -183,9 +211,33 @@ const emit = defineEmits<{
                 v-else-if="store.currentStepName === 'asi-feat'"
               />
 
-              <!-- Spells Step (reuse existing) -->
+              <!-- Feature Choices Step -->
+              <CharacterWizardStepFeatureChoices
+                v-else-if="store.currentStepName === 'feature-choices' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleFeatureChoicesComplete"
+              />
+
+              <!-- Spells Step -->
               <CharacterWizardStepSpells
-                v-else-if="store.currentStepName === 'spells'"
+                v-else-if="store.currentStepName === 'spells' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleSpellsComplete"
+                :spellcasting-stats="characterStats?.spellcasting"
+              />
+
+              <!-- Languages Step -->
+              <CharacterWizardStepLanguages
+                v-else-if="store.currentStepName === 'languages' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleLanguagesComplete"
+              />
+
+              <!-- Proficiencies Step -->
+              <CharacterWizardStepProficiencies
+                v-else-if="store.currentStepName === 'proficiencies' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleProficienciesComplete"
               />
 
               <!-- Summary Step -->
