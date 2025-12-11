@@ -160,4 +160,45 @@ describe('StepFeatureChoices', () => {
       expect(wrapper.text()).toContain('No feature choices available')
     })
   })
+
+  describe('fighting style section', () => {
+    it('displays fighting style section when choices exist', async () => {
+      currentMockChoices = mockFightingStyleChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      const section = wrapper.find('[data-testid="fighting-style-section"]')
+      expect(section.exists()).toBe(true)
+    })
+
+    it('shows fighting style section title with source name', async () => {
+      currentMockChoices = mockFightingStyleChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      expect(wrapper.text()).toContain('Fighting Style')
+      expect(wrapper.text()).toContain('Fighter')
+    })
+
+    it('does not show fighting style section when no choices', async () => {
+      currentMockChoices = mockExpertiseChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      const section = wrapper.find('[data-testid="fighting-style-section"]')
+      expect(section.exists()).toBe(false)
+    })
+  })
 })

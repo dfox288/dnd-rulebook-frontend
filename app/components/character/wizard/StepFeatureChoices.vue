@@ -1,6 +1,8 @@
 <!-- app/components/character/wizard/StepFeatureChoices.vue -->
 <script setup lang="ts">
 import type { components } from '~/types/api/generated'
+import { useWizardChoiceSelection } from '~/composables/useWizardChoiceSelection'
+import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
@@ -32,14 +34,52 @@ const hasAnyChoices = computed(() =>
   || optionalFeatureChoices.value.length > 0
 )
 
-// Fetch on mount
+// Use choice selection composable for all feature choices
+const {
+  getSelectedCount,
+  isOptionSelected,
+  isOptionDisabled,
+  getDisabledReason,
+  handleToggle: handleOptionToggle,
+  getDisplayOptions,
+  fetchOptionsIfNeeded,
+  isOptionsLoading,
+  allComplete,
+  saveAllChoices
+} = useWizardChoiceSelection(
+  computed(() => [
+    ...fightingStyleChoices.value,
+    ...expertiseChoices.value,
+    ...optionalFeatureChoices.value
+  ]),
+  { resolveChoice }
+)
+
+// Fetch on mount - fetch all choices (they get filtered by choicesByType)
 onMounted(async () => {
-  await fetchChoices(['fighting_style', 'expertise', 'optional_feature'])
+  await fetchChoices()
 })
+
+// Load options when choices change
+watch([fightingStyleChoices, expertiseChoices, optionalFeatureChoices], async () => {
+  const allChoices = [
+    ...fightingStyleChoices.value,
+    ...expertiseChoices.value,
+    ...optionalFeatureChoices.value
+  ]
+  for (const choice of allChoices) {
+    await fetchOptionsIfNeeded(choice)
+  }
+}, { immediate: true })
 
 // Continue handler
 async function handleContinue() {
-  props.nextStep()
+  try {
+    await saveAllChoices()
+    props.nextStep()
+  } catch (e) {
+    wizardErrors.choiceResolveFailed(e, toast, 'feature')
+  }
 }
 </script>
 
@@ -83,6 +123,67 @@ async function handleContinue() {
         No feature choices available.
       </p>
     </div>
+
+    <!-- Fighting Style Section -->
+    <section
+      v-if="fightingStyleChoices.length > 0"
+      data-testid="fighting-style-section"
+      class="space-y-4"
+    >
+      <div v-for="choice in fightingStyleChoices" :key="choice.id" class="space-y-4">
+        <div class="flex items-center justify-between border-b pb-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            Fighting Style ({{ choice.source_name }})
+          </h3>
+          <UBadge
+            :color="getSelectedCount(choice.id) >= choice.quantity ? 'success' : 'warning'"
+            variant="subtle"
+            size="md"
+          >
+            {{ getSelectedCount(choice.id) }} of {{ choice.quantity }}
+          </UBadge>
+        </div>
+
+        <div v-if="isOptionsLoading(choice)" class="flex items-center gap-2 p-4 text-gray-500">
+          <UIcon name="i-heroicons-arrow-path" class="w-5 h-5 animate-spin" />
+          <span>Loading options...</span>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button
+            v-for="option in getDisplayOptions(choice)"
+            :key="option.id"
+            :data-testid="`fighting-style-option-${option.id}`"
+            type="button"
+            class="p-4 rounded-lg border text-left transition-all"
+            :class="{
+              'border-primary bg-primary/10': isOptionSelected(choice.id, option.id),
+              'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isOptionSelected(choice.id, option.id) && !isOptionDisabled(choice.id, option.id),
+              'opacity-50 cursor-not-allowed': isOptionDisabled(choice.id, option.id)
+            }"
+            :disabled="isOptionDisabled(choice.id, option.id)"
+            @click="handleOptionToggle(choice, option.id)"
+          >
+            <div class="flex items-center gap-3">
+              <UIcon
+                :name="isOptionSelected(choice.id, option.id) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
+                class="w-6 h-6 flex-shrink-0"
+                :class="{
+                  'text-primary': isOptionSelected(choice.id, option.id),
+                  'text-gray-400': !isOptionSelected(choice.id, option.id)
+                }"
+              />
+              <div>
+                <p class="font-semibold">{{ option.name }}</p>
+                <p v-if="option.description" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {{ option.description }}
+                </p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </section>
 
     <!-- Continue Button -->
     <div class="flex justify-center pt-4">
