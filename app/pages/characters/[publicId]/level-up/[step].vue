@@ -27,7 +27,7 @@ const stepComponents: Record<string, Component> = {
   'spells': defineAsyncComponent(() => import('~/components/character/levelup/StepSpells.vue')),
   'languages': defineAsyncComponent(() => import('~/components/character/levelup/StepLanguages.vue')),
   'proficiencies': defineAsyncComponent(() => import('~/components/character/levelup/StepProficiencies.vue')),
-  'summary': defineAsyncComponent(() => import('~/components/character/levelup/StepSummary.vue')),
+  'summary': defineAsyncComponent(() => import('~/components/character/levelup/StepSummary.vue'))
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -152,7 +152,10 @@ useSeoMeta({
           />
           <template #fallback>
             <div class="flex items-center justify-center py-12">
-              <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary" />
+              <UIcon
+                name="i-heroicons-arrow-path"
+                class="w-8 h-8 animate-spin text-primary"
+              />
             </div>
           </template>
         </Suspense>

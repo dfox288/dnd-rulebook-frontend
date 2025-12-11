@@ -96,7 +96,7 @@ function createStepRegistry(store: ReturnType<typeof useCharacterLevelUpStore>):
   ]
 }
 
-export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
+export function useLevelUpWizard(options: UseLevelUpWizardOptions) {
   const store = useCharacterLevelUpStore()
 
   // Create step registry with store access
@@ -114,11 +114,9 @@ export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
   )
 
   /**
-   * Current step name - from options if provided, otherwise from store
+   * Current step name - from URL (options.currentStep)
    */
-  const currentStepName = computed(() =>
-    options?.currentStep ?? store.currentStepName
-  )
+  const currentStepName = computed(() => options.currentStep)
 
   /**
    * Current step index within active steps
@@ -164,16 +162,10 @@ export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
   // ══════════════════════════════════════════════════════════════
 
   function getStepUrl(stepName: string): string {
-    if (!options) {
-      throw new Error('useLevelUpWizard: options required for URL navigation')
-    }
     return `/characters/${options.publicId}/level-up/${stepName}`
   }
 
   function getPreviewUrl(): string {
-    if (!options) {
-      throw new Error('useLevelUpWizard: options required for URL navigation')
-    }
     return `/characters/${options.publicId}/level-up`
   }
 
@@ -190,12 +182,7 @@ export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
     while (nextIndex < activeSteps.value.length) {
       const next = activeSteps.value[nextIndex]
       if (next && !next.shouldSkip?.()) {
-        // Use URL navigation if options provided, otherwise use store
-        if (options) {
-          await navigateTo(getStepUrl(next.name))
-        } else {
-          store.goToStep(next.name)
-        }
+        await navigateTo(getStepUrl(next.name))
         return
       }
       nextIndex++
@@ -211,12 +198,7 @@ export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
     while (prevIndex >= 0) {
       const prev = activeSteps.value[prevIndex]
       if (prev && !prev.shouldSkip?.()) {
-        // Use URL navigation if options provided, otherwise use store
-        if (options) {
-          await navigateTo(getStepUrl(prev.name))
-        } else {
-          store.goToStep(prev.name)
-        }
+        await navigateTo(getStepUrl(prev.name))
         return
       }
       prevIndex--
@@ -229,12 +211,7 @@ export function useLevelUpWizard(options?: UseLevelUpWizardOptions) {
   async function goToStep(stepName: string): Promise<void> {
     const step = activeSteps.value.find(s => s.name === stepName)
     if (step) {
-      // Use URL navigation if options provided, otherwise use store
-      if (options) {
-        await navigateTo(getStepUrl(stepName))
-      } else {
-        store.goToStep(stepName)
-      }
+      await navigateTo(getStepUrl(stepName))
     }
   }
 

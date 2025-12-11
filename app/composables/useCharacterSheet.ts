@@ -215,11 +215,15 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     const rawHitDice = stats.value?.hit_dice
     if (!rawHitDice || typeof rawHitDice !== 'object') return []
 
-    return Object.entries(rawHitDice).map(([die, data]) => ({
-      die,
-      total: (data as { max: number }).max,
-      current: (data as { available: number }).available
-    }))
+    return Object.entries(rawHitDice).map(([die, data]) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const hitDiceData = data as any
+      return {
+        die,
+        total: hitDiceData.max,
+        current: hitDiceData.available
+      }
+    })
   })
 
   // Refresh all data

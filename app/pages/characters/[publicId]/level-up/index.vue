@@ -58,14 +58,14 @@ const isMulticlass = computed(() => (character.value?.classes?.length ?? 0) > 1)
 // LEVEL-UP INITIATION
 // ════════════════════════════════════════════════════════════════
 
-const selectedClassSlug = ref<string | null>(null)
+const selectedClassSlug = ref<string | undefined>(undefined)
 const isStarting = ref(false)
 const startError = ref<string | null>(null)
 
 // For single-class, auto-select
 watchEffect(() => {
   if (!isMulticlass.value && primaryClass.value) {
-    selectedClassSlug.value = primaryClass.value.class?.full_slug ?? primaryClass.value.class?.slug ?? null
+    selectedClassSlug.value = primaryClass.value.class?.full_slug ?? primaryClass.value.class?.slug ?? undefined
   }
 })
 
@@ -78,7 +78,8 @@ async function beginLevelUp() {
   try {
     // Initialize store
     const classEntries: CharacterClassEntry[] = (character.value.classes ?? []).map(c => ({
-      class: c.class,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      class: c.class as any, // API returns partial class data
       level: c.level,
       subclass: c.subclass ? { name: c.subclass.name, slug: c.subclass.slug } : null,
       is_primary: c.is_primary
@@ -117,7 +118,8 @@ async function resumeLevelUp() {
   try {
     // Initialize store
     const classEntries: CharacterClassEntry[] = (character.value.classes ?? []).map(c => ({
-      class: c.class,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      class: c.class as any, // API returns partial class data
       level: c.level,
       subclass: c.subclass ? { name: c.subclass.name, slug: c.subclass.slug } : null,
       is_primary: c.is_primary

@@ -30,10 +30,13 @@ const {
 const subclassChoice = computed(() => choicesByType.value.subclass)
 
 // Get class slug from the choice metadata
-const classSlug = computed(() => subclassChoice.value?.metadata?.class_slug as string | undefined)
+const classSlug = computed(() => {
+  const metadata = subclassChoice.value?.metadata as { class_slug?: string } | undefined
+  return metadata?.class_slug
+})
 
 // Local state
-const selectedSubclass = ref<string | null>(null)
+const selectedSubclass = ref<string | undefined>(undefined)
 const isSaving = ref(false)
 const error = ref<string | null>(null)
 
@@ -114,7 +117,7 @@ onMounted(() => {
       v-if="error || choicesError"
       color="error"
       icon="i-heroicons-exclamation-circle"
-      :title="error || choicesError"
+      :title="error || choicesError || undefined"
     />
 
     <!-- Loading State -->
@@ -134,34 +137,34 @@ onMounted(() => {
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
     >
       <button
-        v-for="option in subclassOptions"
-        :key="option.full_slug || option.slug"
+        v-for="option in subclassOptions as any[]"
+        :key="(option as any).full_slug || (option as any).slug"
         type="button"
         class="p-4 rounded-lg border-2 text-left transition-all"
         :class="{
-          'border-primary bg-primary-50 dark:bg-primary-900/20': selectedSubclass === (option.full_slug || option.slug),
-          'border-gray-200 dark:border-gray-700 hover:border-primary-300': selectedSubclass !== (option.full_slug || option.slug)
+          'border-primary bg-primary-50 dark:bg-primary-900/20': selectedSubclass === ((option as any).full_slug || (option as any).slug),
+          'border-gray-200 dark:border-gray-700 hover:border-primary-300': selectedSubclass !== ((option as any).full_slug || (option as any).slug)
         }"
-        @click="selectedSubclass = option.full_slug || option.slug"
+        @click="selectedSubclass = (option as any).full_slug || (option as any).slug"
       >
         <div class="flex items-center gap-3">
           <UIcon
-            :name="selectedSubclass === (option.full_slug || option.slug) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
+            :name="selectedSubclass === ((option as any).full_slug || (option as any).slug) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
             class="w-6 h-6 flex-shrink-0"
             :class="{
-              'text-primary': selectedSubclass === (option.full_slug || option.slug),
-              'text-gray-400': selectedSubclass !== (option.full_slug || option.slug)
+              'text-primary': selectedSubclass === ((option as any).full_slug || (option as any).slug),
+              'text-gray-400': selectedSubclass !== ((option as any).full_slug || (option as any).slug)
             }"
           />
           <div>
             <p class="font-semibold text-gray-900 dark:text-white">
-              {{ option.name }}
+              {{ (option as any).name }}
             </p>
             <p
-              v-if="option.description"
+              v-if="(option as any).description"
               class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2"
             >
-              {{ option.description }}
+              {{ (option as any).description }}
             </p>
           </div>
         </div>
