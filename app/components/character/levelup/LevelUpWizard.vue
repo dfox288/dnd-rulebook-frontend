@@ -9,9 +9,37 @@ const { nextStep } = useLevelUpWizard()
 // Track HP gained for summary
 const hpGained = ref<number>(0)
 
-// Get character stats for HP calculation (CON modifier, hit die)
+// Handler functions for step completion
+async function handleFeatureChoicesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleSpellsComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleLanguagesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+async function handleProficienciesComplete() {
+  await store.refreshChoices()
+  nextStep()
+}
+
+// Get character stats for HP calculation (CON modifier, hit die) and spellcasting
 const { apiFetch } = useApi()
-const characterStats = ref<{ constitution_modifier: number } | null>(null)
+const characterStats = ref<{
+  constitution_modifier: number
+  spellcasting?: {
+    ability: string
+    spell_save_dc: number
+    spell_attack_bonus: number
+  } | null
+} | null>(null)
 const isLoadingStats = ref(false)
 
 /**
@@ -102,112 +130,136 @@ const emit = defineEmits<{
         data-testid="level-up-wizard"
         class="flex h-full"
       >
-      <!-- Sidebar -->
-      <div class="w-64 flex-shrink-0">
-        <CharacterLevelupLevelUpSidebar />
-      </div>
-
-      <!-- Main Content -->
-      <div class="flex-1 flex flex-col">
-        <!-- Header with close button -->
-        <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Level Up
-          </h1>
-          <UButton
-            data-testid="close-button"
-            variant="ghost"
-            color="neutral"
-            icon="i-heroicons-x-mark"
-            @click="store.closeWizard()"
-          />
+        <!-- Sidebar -->
+        <div class="w-64 flex-shrink-0">
+          <CharacterLevelupLevelUpSidebar />
         </div>
 
-        <!-- Step Content -->
-        <div class="flex-1 overflow-y-auto p-8">
-          <!-- Error State -->
-          <UAlert
-            v-if="store.error"
-            color="error"
-            icon="i-heroicons-exclamation-circle"
-            :title="store.error"
-            class="mb-6"
-          />
-
-          <!-- Loading State -->
-          <div
-            v-if="store.isLoading"
-            data-testid="loading-spinner"
-            class="flex justify-center py-12"
-          >
-            <UIcon
-              name="i-heroicons-arrow-path"
-              class="w-8 h-8 animate-spin text-primary"
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+          <!-- Header with close button -->
+          <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+              Level Up
+            </h1>
+            <UButton
+              data-testid="close-button"
+              variant="ghost"
+              color="neutral"
+              icon="i-heroicons-x-mark"
+              @click="store.closeWizard()"
             />
           </div>
 
-          <!-- Step Components -->
-          <template v-else>
-            <!-- Class Selection Step (placeholder for multiclass) -->
-            <div v-if="store.currentStepName === 'class-selection'">
-              <p class="text-center text-gray-500">
-                Class selection coming soon...
-              </p>
+          <!-- Step Content -->
+          <div class="flex-1 overflow-y-auto p-8">
+            <!-- Error State -->
+            <UAlert
+              v-if="store.error"
+              color="error"
+              icon="i-heroicons-exclamation-circle"
+              :title="store.error"
+              class="mb-6"
+            />
+
+            <!-- Loading State -->
+            <div
+              v-if="store.isLoading"
+              data-testid="loading-spinner"
+              class="flex justify-center py-12"
+            >
+              <UIcon
+                name="i-heroicons-arrow-path"
+                class="w-8 h-8 animate-spin text-primary"
+              />
             </div>
 
-            <!-- Hit Points Step -->
-            <template v-else-if="store.currentStepName === 'hit-points'">
-              <!-- Show loading while fetching stats -->
-              <div
-                v-if="isLoadingStats"
-                class="flex flex-col items-center justify-center py-12"
-              >
-                <UIcon
-                  name="i-heroicons-arrow-path"
-                  class="w-8 h-8 animate-spin text-primary"
-                />
-                <p class="mt-4 text-gray-500">
-                  Loading character stats...
+            <!-- Step Components -->
+            <template v-else>
+              <!-- Class Selection Step (placeholder for multiclass) -->
+              <div v-if="store.currentStepName === 'class-selection'">
+                <p class="text-center text-gray-500">
+                  Class selection coming soon...
                 </p>
               </div>
-              <CharacterLevelupStepHitPoints
-                v-else
-                :hit-die="hitDie"
-                :con-modifier="conModifier"
-                @choice-made="handleHpChoice"
+
+              <!-- Hit Points Step -->
+              <template v-else-if="store.currentStepName === 'hit-points'">
+                <!-- Show loading while fetching stats -->
+                <div
+                  v-if="isLoadingStats"
+                  class="flex flex-col items-center justify-center py-12"
+                >
+                  <UIcon
+                    name="i-heroicons-arrow-path"
+                    class="w-8 h-8 animate-spin text-primary"
+                  />
+                  <p class="mt-4 text-gray-500">
+                    Loading character stats...
+                  </p>
+                </div>
+                <CharacterLevelupStepHitPoints
+                  v-else
+                  :hit-die="hitDie"
+                  :con-modifier="conModifier"
+                  @choice-made="handleHpChoice"
+                />
+              </template>
+
+              <!-- ASI/Feat Step (reuse existing) -->
+              <CharacterWizardStepFeats
+                v-else-if="store.currentStepName === 'asi-feat'"
               />
+
+              <!-- Feature Choices Step -->
+              <CharacterWizardStepFeatureChoices
+                v-else-if="store.currentStepName === 'feature-choices' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleFeatureChoicesComplete"
+              />
+
+              <!-- Spells Step -->
+              <CharacterWizardStepSpells
+                v-else-if="store.currentStepName === 'spells' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleSpellsComplete"
+                :spellcasting-stats="characterStats?.spellcasting"
+              />
+
+              <!-- Languages Step -->
+              <CharacterWizardStepLanguages
+                v-else-if="store.currentStepName === 'languages' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleLanguagesComplete"
+              />
+
+              <!-- Proficiencies Step -->
+              <CharacterWizardStepProficiencies
+                v-else-if="store.currentStepName === 'proficiencies' && store.characterId"
+                :character-id="store.characterId"
+                :next-step="handleProficienciesComplete"
+              />
+
+              <!-- Summary Step -->
+              <CharacterLevelupStepLevelUpSummary
+                v-else-if="store.currentStepName === 'summary' && store.levelUpResult"
+                :level-up-result="store.levelUpResult"
+                :class-name="className"
+                :hp-gained="hpGained"
+                @complete="handleComplete"
+              />
+
+              <!-- Fallback for unknown step -->
+              <div
+                v-else
+                class="text-center text-gray-500"
+              >
+                <p>Unknown step: {{ store.currentStepName }}</p>
+              </div>
             </template>
-
-            <!-- ASI/Feat Step (reuse existing) -->
-            <CharacterWizardStepFeats
-              v-else-if="store.currentStepName === 'asi-feat'"
-            />
-
-            <!-- Spells Step (reuse existing) -->
-            <CharacterWizardStepSpells
-              v-else-if="store.currentStepName === 'spells'"
-            />
-
-            <!-- Summary Step -->
-            <CharacterLevelupStepLevelUpSummary
-              v-else-if="store.currentStepName === 'summary' && store.levelUpResult"
-              :level-up-result="store.levelUpResult"
-              :class-name="className"
-              :hp-gained="hpGained"
-              @complete="handleComplete"
-            />
-
-            <!-- Fallback for unknown step -->
-            <div
-              v-else
-              class="text-center text-gray-500"
-            >
-              <p>Unknown step: {{ store.currentStepName }}</p>
-            </div>
-          </template>
+          </div>
         </div>
       </div>
-    </div>
     </template>
   </UModal>
 </template>

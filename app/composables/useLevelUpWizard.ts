@@ -16,7 +16,10 @@ import type { LevelUpStep } from '~/types/character'
  * - subclass: When reaching subclass level (placeholder for now)
  * - hit-points: Always shown (every level-up needs HP choice)
  * - asi-feat: At ASI levels (4, 8, 12, 16, 19)
- * - spells: For spellcasters gaining new spells (placeholder)
+ * - feature-choices: For class features (fighting style, expertise, optional features)
+ * - spells: For spellcasters gaining new spells
+ * - languages: For language choices
+ * - proficiencies: For proficiency choices
  * - summary: Always shown as final step
  */
 function createStepRegistry(store: ReturnType<typeof useCharacterLevelUpStore>): LevelUpStep[] {
@@ -32,8 +35,8 @@ function createStepRegistry(store: ReturnType<typeof useCharacterLevelUpStore>):
       name: 'subclass',
       label: 'Subclass',
       icon: 'i-heroicons-star',
-      visible: () => false, // Will be set based on level-up result
-      shouldSkip: () => true // Skip unless subclass choice pending
+      visible: () => store.hasSubclassChoice,
+      shouldSkip: () => !store.hasSubclassChoice
     },
     {
       name: 'hit-points',
@@ -50,11 +53,32 @@ function createStepRegistry(store: ReturnType<typeof useCharacterLevelUpStore>):
       shouldSkip: () => !(store.levelUpResult?.asi_pending ?? false)
     },
     {
+      name: 'feature-choices',
+      label: 'Features',
+      icon: 'i-heroicons-puzzle-piece',
+      visible: () => store.hasFeatureChoices,
+      shouldSkip: () => !store.hasFeatureChoices
+    },
+    {
       name: 'spells',
       label: 'Spells',
       icon: 'i-heroicons-sparkles',
-      visible: () => false, // Will be determined by pending spell choices
-      shouldSkip: () => true // Skip unless spell choices pending
+      visible: () => store.hasSpellChoices,
+      shouldSkip: () => !store.hasSpellChoices
+    },
+    {
+      name: 'languages',
+      label: 'Languages',
+      icon: 'i-heroicons-language',
+      visible: () => store.hasLanguageChoices,
+      shouldSkip: () => !store.hasLanguageChoices
+    },
+    {
+      name: 'proficiencies',
+      label: 'Proficiencies',
+      icon: 'i-heroicons-academic-cap',
+      visible: () => store.hasProficiencyChoices,
+      shouldSkip: () => !store.hasProficiencyChoices
     },
     {
       name: 'summary',

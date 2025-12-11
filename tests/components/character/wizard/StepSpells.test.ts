@@ -527,4 +527,105 @@ describe('StepSpells - Specific Behavior', () => {
       expect(text).toContain('starting spells')
     })
   })
+
+  describe('Props-Based Usage (Task 2.1)', () => {
+    it('accepts characterId as prop', async () => {
+      const { wrapper } = await mountWizardStep(StepSpells, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      // Component should mount without error when props provided
+      expect(wrapper.exists()).toBe(true)
+      const vm = wrapper.vm as any
+      expect(vm.effectiveCharacterId).toBe(123)
+    })
+
+    it('accepts nextStep function as prop', async () => {
+      const nextStepFn = vi.fn()
+      const { wrapper } = await mountWizardStep(StepSpells, {
+        props: {
+          characterId: 123,
+          nextStep: nextStepFn
+        }
+      })
+
+      // Component should mount without error
+      expect(wrapper.exists()).toBe(true)
+      const vm = wrapper.vm as any
+      expect(typeof vm.effectiveNextStep).toBe('function')
+    })
+
+    it('accepts spellcastingStats as prop', async () => {
+      const spellcastingStats = {
+        ability: 'INT',
+        spell_save_dc: 13,
+        spell_attack_bonus: 5
+      }
+      const { wrapper } = await mountWizardStep(StepSpells, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn(),
+          spellcastingStats
+        }
+      })
+
+      // Component should mount without error
+      expect(wrapper.exists()).toBe(true)
+    })
+
+    it('uses characterId prop for useUnifiedChoices', async () => {
+      // This tests that the component uses props.characterId, not store.characterId
+      const { wrapper } = await mountWizardStep(StepSpells, {
+        props: {
+          characterId: 456,
+          nextStep: vi.fn()
+        }
+      })
+
+      // Component should initialize with the prop value
+      const vm = wrapper.vm as any
+      expect(vm.effectiveCharacterId).toBe(456)
+    })
+
+    it('works without props (backward compatibility)', async () => {
+      // When no props provided, should use store values
+      const { wrapper, store } = await mountWizardStep(StepSpells, {
+        storeSetup: (store) => {
+          store.selections.class = wizardMockClasses.wizard
+          store.characterId = 999
+        }
+      })
+
+      // Should work normally - render without error
+      const heading = wrapper.find('h2')
+      expect(heading.exists()).toBe(true)
+      expect(heading.text()).toBe('Select Your Spells')
+
+      // Verify store is set correctly (component should react to this)
+      expect(store.characterId).toBe(999)
+
+      // Component should render spell selection UI
+      expect(wrapper.text()).toContain('Choose your starting spells')
+    })
+
+    it('prefers props over store when both provided', async () => {
+      const { wrapper } = await mountWizardStep(StepSpells, {
+        props: {
+          characterId: 456,
+          nextStep: vi.fn()
+        },
+        storeSetup: (store) => {
+          store.selections.class = wizardMockClasses.wizard
+          store.characterId = 999
+        }
+      })
+
+      // Props should take precedence
+      const vm = wrapper.vm as any
+      expect(vm.effectiveCharacterId).toBe(456)
+    })
+  })
 })

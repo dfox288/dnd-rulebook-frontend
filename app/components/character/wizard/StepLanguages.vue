@@ -9,9 +9,25 @@ import { wizardErrors } from '~/utils/wizardErrors'
 
 type PendingChoice = components['schemas']['PendingChoiceResource']
 
+// Props for store-agnostic usage (enables use in both creation and level-up wizards)
+const props = withDefaults(defineProps<{
+  characterId?: number
+  nextStep?: () => void
+  refreshAfterSave?: () => Promise<void>
+}>(), {
+  characterId: undefined,
+  nextStep: undefined,
+  refreshAfterSave: undefined
+})
+
+// Fallback to store if props not provided (backward compatibility)
 const store = useCharacterWizardStore()
 const { isLoading } = storeToRefs(store)
-const { nextStep } = useCharacterWizard()
+const wizardNav = useCharacterWizard()
+
+// Use prop or store value
+const effectiveCharacterId = computed(() => props.characterId ?? store.characterId)
+const effectiveNextStep = computed(() => props.nextStep ?? wizardNav.nextStep)
 
 // Toast for user feedback
 const toast = useToast()
@@ -24,15 +40,15 @@ const { apiFetch } = useApi()
 // ══════════════════════════════════════════════════════════════
 
 const { data: knownLanguagesData, pending: knownLanguagesPending } = await useAsyncData(
-  `wizard-known-languages-${store.characterId}`,
+  `wizard-known-languages-${effectiveCharacterId.value}`,
   async () => {
-    if (!store.characterId) return []
+    if (!effectiveCharacterId.value) return []
     const response = await apiFetch<{ data: CharacterLanguage[] }>(
-      `/characters/${store.characterId}/languages`
+      `/characters/${effectiveCharacterId.value}/languages`
     )
     return response.data
   },
-  { watch: [computed(() => store.characterId)] }
+  { watch: [effectiveCharacterId] }
 )
 
 // Group known languages by source
@@ -67,7 +83,7 @@ const {
   error: choicesError,
   fetchChoices,
   resolveChoice
-} = useUnifiedChoices(computed(() => store.characterId))
+} = useUnifiedChoices(effectiveCharacterId)
 
 // Fetch language choices on mount
 onMounted(async () => {
@@ -210,10 +226,14 @@ async function handleContinue() {
     // Clear local selections after save
     localSelections.value.clear()
 
-    // Sync store with backend to update hasLanguageChoices
-    await store.syncWithBackend()
+    // Refresh choices - use prop if provided (level-up), otherwise sync wizard store
+    if (props.refreshAfterSave) {
+      await props.refreshAfterSave()
+    } else {
+      await store.syncWithBackend()
+    }
 
-    await nextStep()
+    effectiveNextStep.value()
   } catch (e) {
     wizardErrors.choiceResolveFailed(e, toast, 'language')
   } finally {

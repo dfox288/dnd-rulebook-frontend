@@ -11,6 +11,10 @@
 import { defineStore } from 'pinia'
 import type { LevelUpResult } from '~/types/character'
 import type { CharacterClass } from '~/types'
+import type { components } from '~/types/api/generated'
+import { logger } from '~/utils/logger'
+
+type PendingChoice = components['schemas']['PendingChoiceResource']
 
 // ════════════════════════════════════════════════════════════════
 // TYPES
@@ -56,6 +60,9 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
   /** Character's total level */
   const totalLevel = ref<number>(0)
 
+  /** Pending choices for this level-up */
+  const pendingChoices = ref<PendingChoice[]>([])
+
   /** Loading state */
   const isLoading = ref(false)
 
@@ -82,6 +89,33 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     if (!levelUpResult.value) return false
     return !levelUpResult.value.hp_choice_pending && !levelUpResult.value.asi_pending
   })
+
+  /** Does character have pending subclass choice? */
+  const hasSubclassChoice = computed(() =>
+    pendingChoices.value.some(c => c.type === 'subclass')
+  )
+
+  /** Does character have pending spell choices? */
+  const hasSpellChoices = computed(() =>
+    pendingChoices.value.some(c => c.type === 'spell')
+  )
+
+  /** Does character have pending feature choices (fighting_style, expertise, optional_feature)? */
+  const hasFeatureChoices = computed(() =>
+    pendingChoices.value.some(c =>
+      ['fighting_style', 'expertise', 'optional_feature'].includes(c.type)
+    )
+  )
+
+  /** Does character have pending language choices? */
+  const hasLanguageChoices = computed(() =>
+    pendingChoices.value.some(c => c.type === 'language')
+  )
+
+  /** Does character have pending proficiency choices? */
+  const hasProficiencyChoices = computed(() =>
+    pendingChoices.value.some(c => c.type === 'proficiency')
+  )
 
   // ══════════════════════════════════════════════════════════════
   // ACTIONS
@@ -124,20 +158,52 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     error.value = null
 
     try {
-      const result = await apiFetch<LevelUpResult>(
+      const response = await apiFetch<{ data: LevelUpResult }>(
         `/characters/${publicId.value}/classes/${classSlug}/level-up`,
         { method: 'POST' }
       )
 
-      levelUpResult.value = result
+      // API returns { data: { ... } }, extract the inner data
+      levelUpResult.value = response.data
       selectedClassSlug.value = classSlug
-      return result
+
+      // Fetch pending choices after successful level-up
+      await fetchPendingChoices()
+
+      return response.data
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to level up'
       throw e
     } finally {
       isLoading.value = false
     }
+  }
+
+  /**
+   * Fetch pending choices for the character
+   * Called after level-up and after each choice is resolved
+   */
+  async function fetchPendingChoices(): Promise<void> {
+    if (!publicId.value) return
+
+    try {
+      const response = await apiFetch<{ data: { choices: PendingChoice[], summary: unknown } }>(
+        `/characters/${publicId.value}/pending-choices`
+      )
+      // API returns { data: { choices: [...], summary: {...} } }
+      pendingChoices.value = response.data?.choices ?? []
+    } catch (e) {
+      // Don't fail silently - log but don't throw
+      logger.error('Failed to fetch pending choices:', e)
+    }
+  }
+
+  /**
+   * Refresh choices - alias for fetchPendingChoices
+   * Used after completing a step to update visibility of downstream steps
+   */
+  async function refreshChoices(): Promise<void> {
+    await fetchPendingChoices()
   }
 
   /**
@@ -177,6 +243,7 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     selectedClassSlug,
     characterClasses,
     totalLevel,
+    pendingChoices,
     isLoading,
     error,
 
@@ -185,12 +252,19 @@ export const useCharacterLevelUpStore = defineStore('characterLevelUp', () => {
     isFirstMulticlassOpportunity,
     needsClassSelection,
     isComplete,
+    hasSubclassChoice,
+    hasSpellChoices,
+    hasFeatureChoices,
+    hasLanguageChoices,
+    hasProficiencyChoices,
 
     // Actions
     openWizard,
     closeWizard,
     levelUp,
     goToStep,
-    reset
+    reset,
+    fetchPendingChoices,
+    refreshChoices
   }
 })
