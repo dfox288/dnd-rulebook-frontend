@@ -115,7 +115,7 @@ describe('StepFeats - Specific Behavior', () => {
 
       const vm = wrapper.vm as any
       const mockChoice = { id: 'test-choice', quantity: 1 }
-      const mockFeat = { id: 1, name: 'Alert', slug: 'alert', full_slug: 'phb:alert' }
+      const mockFeat = { id: 1, name: 'Alert', slug: 'phb:alert' }
 
       vm.handleFeatToggle(mockChoice, mockFeat)
       await wrapper.vm.$nextTick()
@@ -132,7 +132,7 @@ describe('StepFeats - Specific Behavior', () => {
 
       const vm = wrapper.vm as any
       const mockChoice = { id: 'test-choice', quantity: 1 }
-      const mockFeat = { id: 1, name: 'Alert', slug: 'alert', full_slug: 'phb:alert' }
+      const mockFeat = { id: 1, name: 'Alert', slug: 'phb:alert' }
 
       // Select then deselect
       vm.handleFeatToggle(mockChoice, mockFeat)
@@ -153,9 +153,9 @@ describe('StepFeats - Specific Behavior', () => {
       const mockChoice = { id: 'test-choice', quantity: 1 }
 
       // Add feat up to limit
-      vm.handleFeatToggle(mockChoice, { id: 1, name: 'Alert', slug: 'alert', full_slug: 'phb:alert' })
+      vm.handleFeatToggle(mockChoice, { id: 1, name: 'Alert', slug: 'phb:alert' })
       // Try to add beyond limit
-      vm.handleFeatToggle(mockChoice, { id: 2, name: 'Athlete', slug: 'athlete', full_slug: 'phb:athlete' })
+      vm.handleFeatToggle(mockChoice, { id: 2, name: 'Athlete', slug: 'phb:athlete' })
       await wrapper.vm.$nextTick()
 
       expect(vm.selectedFeats.get('test-choice')?.size).toBe(1)
@@ -213,9 +213,9 @@ describe('StepFeats - Specific Behavior', () => {
       // Inline options
       const choiceWithOptions = {
         id: 'test',
-        options: [{ id: 1, name: 'Alert', slug: 'alert', full_slug: 'phb:alert' }]
+        options: [{ id: 1, name: 'Alert', slug: 'phb:alert' }]
       }
-      expect(vm.getAvailableFeats(choiceWithOptions)).toEqual([{ id: 1, name: 'Alert', slug: 'alert', full_slug: 'phb:alert' }])
+      expect(vm.getAvailableFeats(choiceWithOptions)).toEqual([{ id: 1, name: 'Alert', slug: 'phb:alert' }])
 
       // Empty options, no cache
       const emptyChoice = { id: 'test2', options: [] }

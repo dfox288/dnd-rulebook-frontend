@@ -7,14 +7,13 @@ type PendingChoice = components['schemas']['PendingChoiceResource']
 interface PackContent {
   quantity: number | string
   name: string
-  full_slug?: string
+  slug?: string
 }
 
 interface EquipmentItem {
   id: number
   name: string
   slug?: string
-  full_slug?: string
   quantity: number
   contents?: PackContent[]
 }
@@ -369,7 +368,7 @@ function isSelected(choiceId: string, optionLetter: string): boolean {
               </span>
               <USelectMenu
                 :model-value="getSelectedItem(choice.id, option.option, selectionIndex)"
-                :items="(option.items ?? []).map(item => ({ label: item.name, value: item.full_slug || item.slug || String(item.id) }))"
+                :items="(option.items ?? []).map(item => ({ label: item.name, value: item.slug || String(item.id) }))"
                 :placeholder="`Select item ${selectionIndex + 1}...`"
                 value-key="value"
                 class="flex-1"

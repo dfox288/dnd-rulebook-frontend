@@ -287,8 +287,8 @@ describe('StepProficiencies - Specific Behavior', () => {
       const choiceWithOptions = {
         id: 'test',
         options: [
-          { slug: 'athletics', name: 'Athletics' },
-          { full_slug: 'core:stealth', name: 'Stealth' }
+          { slug: 'core:athletics', name: 'Athletics' },
+          { slug: 'core:stealth', name: 'Stealth' }
         ]
       }
 

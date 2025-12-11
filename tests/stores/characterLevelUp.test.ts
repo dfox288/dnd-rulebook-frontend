@@ -40,8 +40,7 @@ const mockCharacterClasses = [
     class: {
       id: 1,
       name: 'Fighter',
-      slug: 'fighter',
-      full_slug: 'phb:fighter',
+      slug: 'phb:fighter',
       hit_die: 10
     },
     level: 3,
@@ -170,7 +169,7 @@ describe('characterLevelUp store', () => {
       const multiclassEntries = [
         ...mockCharacterClasses,
         {
-          class: { id: 2, name: 'Rogue', slug: 'rogue', full_slug: 'phb:rogue', hit_die: 8 },
+          class: { id: 2, name: 'Rogue', slug: 'phb:rogue', hit_die: 8 },
           level: 2,
           subclass: null,
           is_primary: false
@@ -204,7 +203,7 @@ describe('characterLevelUp store', () => {
       const multiclassEntries = [
         ...mockCharacterClasses,
         {
-          class: { id: 2, name: 'Rogue', slug: 'rogue', full_slug: 'phb:rogue', hit_die: 8 },
+          class: { id: 2, name: 'Rogue', slug: 'phb:rogue', hit_die: 8 },
           level: 2,
           subclass: null,
           is_primary: false

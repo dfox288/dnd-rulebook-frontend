@@ -678,8 +678,8 @@ describe('StepEquipment - Specific Behavior', () => {
           label: 'any two simple weapons',
           is_category: true,
           items: [
-            { full_slug: 'phb:club', quantity: 2, is_fixed: false },
-            { full_slug: 'phb:dagger', quantity: 2, is_fixed: false }
+            { slug: 'phb:club', quantity: 2, is_fixed: false },
+            { slug: 'phb:dagger', quantity: 2, is_fixed: false }
           ]
         }
 
@@ -698,7 +698,7 @@ describe('StepEquipment - Specific Behavior', () => {
           option: 'a',
           label: 'studded leather armor',
           is_category: false,
-          items: [{ full_slug: 'phb:studded-leather', quantity: 1, is_fixed: true }]
+          items: [{ slug: 'phb:studded-leather', quantity: 1, is_fixed: true }]
         }
 
         expect(vm.optionRequiresItemSelection(fixedOption)).toBe(false)
@@ -892,8 +892,8 @@ describe('StepEquipment - Specific Behavior', () => {
             select_count: 1, // User must select 1 item
             category_item_count: 14, // 14 items available (not used for validation)
             items: [
-              { full_slug: 'phb:club', quantity: 1, is_fixed: false },
-              { full_slug: 'phb:dagger', quantity: 1, is_fixed: false }
+              { slug: 'phb:club', quantity: 1, is_fixed: false },
+              { slug: 'phb:dagger', quantity: 1, is_fixed: false }
             ]
           }]
         }
@@ -922,8 +922,8 @@ describe('StepEquipment - Specific Behavior', () => {
             select_count: 2, // User must select 2 items (e.g., "two martial weapons")
             category_item_count: 14, // 14 items available
             items: [
-              { full_slug: 'phb:club', quantity: 1, is_fixed: false },
-              { full_slug: 'phb:dagger', quantity: 1, is_fixed: false }
+              { slug: 'phb:club', quantity: 1, is_fixed: false },
+              { slug: 'phb:dagger', quantity: 1, is_fixed: false }
             ]
           }]
         }
@@ -955,8 +955,8 @@ describe('StepEquipment - Specific Behavior', () => {
             select_count: 2, // User must select 2 items
             category_item_count: 14, // 14 items available
             items: [
-              { full_slug: 'phb:club', quantity: 1, is_fixed: false },
-              { full_slug: 'phb:dagger', quantity: 1, is_fixed: false }
+              { slug: 'phb:club', quantity: 1, is_fixed: false },
+              { slug: 'phb:dagger', quantity: 1, is_fixed: false }
             ]
           }]
         }

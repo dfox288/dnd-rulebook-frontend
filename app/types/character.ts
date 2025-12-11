@@ -255,15 +255,15 @@ export interface CharacterSummary {
   level: number
   is_complete: boolean
   /** Resolved race data (null if dangling) */
-  race: { id: number, name: string, slug: string, full_slug: string } | null
+  race: { id: number, name: string, slug: string } | null
   /** Race slug reference (always present if race was set) */
   race_slug: string | null
   /** Indicates if race reference couldn't be resolved */
   race_is_dangling?: boolean
   /** Resolved primary class data (null if dangling) */
-  class: { id: number, name: string, slug: string, full_slug: string } | null
+  class: { id: number, name: string, slug: string } | null
   /** Resolved background data (null if dangling) */
-  background: { id: number, name: string, slug: string, full_slug: string } | null
+  background: { id: number, name: string, slug: string } | null
   /** Background slug reference (always present if background was set) */
   background_slug: string | null
   /** Indicates if background reference couldn't be resolved */

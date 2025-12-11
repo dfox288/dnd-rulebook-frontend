@@ -26,7 +26,7 @@ interface CharacterResponse {
     public_id: string
     name: string
     classes: Array<{
-      class: { name: string, slug: string, full_slug?: string, hit_die: number }
+      class: { name: string, slug: string, hit_die: number }
       level: number
       subclass?: { name: string, slug: string } | null
       is_primary: boolean
@@ -65,7 +65,7 @@ const startError = ref<string | null>(null)
 // For single-class, auto-select
 watchEffect(() => {
   if (!isMulticlass.value && primaryClass.value) {
-    selectedClassSlug.value = primaryClass.value.class?.full_slug ?? primaryClass.value.class?.slug ?? undefined
+    selectedClassSlug.value = primaryClass.value.class?.slug ?? undefined
   }
 })
 
@@ -287,7 +287,7 @@ useSeoMeta({
               v-model="selectedClassSlug"
               :items="character.classes.map(c => ({
                 label: `${c.class.name} (Level ${c.level})`,
-                value: c.class.full_slug ?? c.class.slug ?? ''
+                value: c.class.slug ?? ''
               }))"
               placeholder="Select a class"
             />

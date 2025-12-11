@@ -22,7 +22,6 @@ interface EquipmentOption {
   /** Number of items the user should select from the category */
   select_count?: number
   items?: Array<{
-    full_slug?: string
     slug?: string
     is_fixed?: boolean
     quantity?: number

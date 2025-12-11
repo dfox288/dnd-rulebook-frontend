@@ -138,22 +138,22 @@ onMounted(() => {
     >
       <button
         v-for="option in subclassOptions as any[]"
-        :key="(option as any).full_slug || (option as any).slug"
+        :key="(option as any).slug"
         type="button"
         class="p-4 rounded-lg border-2 text-left transition-all"
         :class="{
-          'border-primary bg-primary-50 dark:bg-primary-900/20': selectedSubclass === ((option as any).full_slug || (option as any).slug),
-          'border-gray-200 dark:border-gray-700 hover:border-primary-300': selectedSubclass !== ((option as any).full_slug || (option as any).slug)
+          'border-primary bg-primary-50 dark:bg-primary-900/20': selectedSubclass === ((option as any).slug),
+          'border-gray-200 dark:border-gray-700 hover:border-primary-300': selectedSubclass !== ((option as any).slug)
         }"
-        @click="selectedSubclass = (option as any).full_slug || (option as any).slug"
+        @click="selectedSubclass = (option as any).slug"
       >
         <div class="flex items-center gap-3">
           <UIcon
-            :name="selectedSubclass === ((option as any).full_slug || (option as any).slug) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
+            :name="selectedSubclass === ((option as any).slug) ? 'i-heroicons-check-circle-solid' : 'i-heroicons-circle'"
             class="w-6 h-6 flex-shrink-0"
             :class="{
-              'text-primary': selectedSubclass === ((option as any).full_slug || (option as any).slug),
-              'text-gray-400': selectedSubclass !== ((option as any).full_slug || (option as any).slug)
+              'text-primary': selectedSubclass === ((option as any).slug),
+              'text-gray-400': selectedSubclass !== ((option as any).slug)
             }"
           />
           <div>

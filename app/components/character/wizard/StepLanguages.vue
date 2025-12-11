@@ -121,7 +121,6 @@ const hasAnyChoices = computed(() => {
 // Type for language options from the API
 interface LanguageOption {
   id: number
-  full_slug?: string
   slug: string
   name: string
   script?: string
@@ -180,7 +179,7 @@ const sourceData = computed((): SourceDisplayData[] => {
         entityName: choice.source_name,
         knownLanguages: choice.selected.map((slug) => {
           const options = choice.options as LanguageOption[] | null
-          const option = options?.find(o => (o.full_slug ?? o.slug) === String(slug))
+          const option = options?.find(o => o.slug === String(slug))
           return option ?? { id: 0, name: String(slug) }
         })
       })
@@ -437,46 +436,46 @@ async function handleContinue() {
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             <button
               v-for="option in getLearnableOptions(data.choice.options)"
-              :key="option.full_slug ?? option.slug"
+              :key="option.slug"
               type="button"
               class="language-option p-3 rounded-lg border text-left transition-all"
               :class="{
-                'border-primary bg-primary/10': isOptionSelected(data.choice.id, option.full_slug ?? option.slug),
-                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isOptionSelected(data.choice.id, option.full_slug ?? option.slug) && !isOptionDisabled(data.choice.id, option.full_slug ?? option.slug),
-                'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed': isOptionDisabled(data.choice.id, option.full_slug ?? option.slug)
+                'border-primary bg-primary/10': isOptionSelected(data.choice.id, option.slug),
+                'border-gray-200 dark:border-gray-700 hover:border-primary/50': !isOptionSelected(data.choice.id, option.slug) && !isOptionDisabled(data.choice.id, option.slug),
+                'border-gray-200 dark:border-gray-700 opacity-50 cursor-not-allowed': isOptionDisabled(data.choice.id, option.slug)
               }"
-              :disabled="isOptionDisabled(data.choice.id, option.full_slug ?? option.slug)"
-              @click="handleToggle(data.choice, option.full_slug ?? option.slug)"
+              :disabled="isOptionDisabled(data.choice.id, option.slug)"
+              @click="handleToggle(data.choice, option.slug)"
             >
               <div class="flex items-center gap-2">
                 <UIcon
-                  :name="isLanguageAlreadyKnown(option.full_slug ?? option.slug)
+                  :name="isLanguageAlreadyKnown(option.slug)
                     ? 'i-heroicons-check-circle-solid'
-                    : isLanguageSelectedElsewhere(data.choice.id, option.full_slug ?? option.slug)
+                    : isLanguageSelectedElsewhere(data.choice.id, option.slug)
                       ? 'i-heroicons-no-symbol'
-                      : isOptionSelected(data.choice.id, option.full_slug ?? option.slug)
+                      : isOptionSelected(data.choice.id, option.slug)
                         ? 'i-heroicons-check-circle-solid'
                         : 'i-heroicons-circle'"
                   class="w-5 h-5"
                   :class="{
-                    'text-success': isLanguageAlreadyKnown(option.full_slug ?? option.slug),
-                    'text-primary': !isLanguageAlreadyKnown(option.full_slug ?? option.slug) && isOptionSelected(data.choice.id, option.full_slug ?? option.slug),
-                    'text-gray-400': !isOptionSelected(data.choice.id, option.full_slug ?? option.slug) && !isOptionDisabled(data.choice.id, option.full_slug ?? option.slug),
-                    'text-gray-300 dark:text-gray-600': isOptionDisabled(data.choice.id, option.full_slug ?? option.slug) && !isLanguageAlreadyKnown(option.full_slug ?? option.slug)
+                    'text-success': isLanguageAlreadyKnown(option.slug),
+                    'text-primary': !isLanguageAlreadyKnown(option.slug) && isOptionSelected(data.choice.id, option.slug),
+                    'text-gray-400': !isOptionSelected(data.choice.id, option.slug) && !isOptionDisabled(data.choice.id, option.slug),
+                    'text-gray-300 dark:text-gray-600': isOptionDisabled(data.choice.id, option.slug) && !isLanguageAlreadyKnown(option.slug)
                   }"
                 />
                 <span
                   class="font-medium"
-                  :class="{ 'text-gray-400 dark:text-gray-500': isOptionDisabled(data.choice.id, option.full_slug ?? option.slug) }"
+                  :class="{ 'text-gray-400 dark:text-gray-500': isOptionDisabled(data.choice.id, option.slug) }"
                 >
                   {{ option.name }}
                 </span>
               </div>
               <p
-                v-if="getDisabledReason(data.choice.id, option.full_slug ?? option.slug)"
+                v-if="getDisabledReason(data.choice.id, option.slug)"
                 class="text-xs text-gray-400 dark:text-gray-500 mt-1 ml-7"
               >
-                {{ getDisabledReason(data.choice.id, option.full_slug ?? option.slug) }}
+                {{ getDisabledReason(data.choice.id, option.slug) }}
               </p>
               <p
                 v-else-if="option.script"

@@ -184,20 +184,17 @@ const fixedRaceSpells = computed(() =>
 
 // Spell-specific wrappers for composable functions (work with Spell objects)
 function isSpellSelected(choiceId: string, spell: Spell): boolean {
-  const slug = spell.full_slug ?? spell.slug
-  return isSpellSelectedById(choiceId, slug)
+  return isSpellSelectedById(choiceId, spell.slug)
 }
 
 function isSpellDisabled(choiceId: string, spell: Spell): boolean {
-  const slug = spell.full_slug ?? spell.slug
   // Disabled if: already selected elsewhere OR at limit (and not selected in this choice)
-  return isSpellDisabledById(choiceId, slug)
-    || (!isSpellSelectedById(choiceId, slug) && isChoiceAtLimit(choiceId))
+  return isSpellDisabledById(choiceId, spell.slug)
+    || (!isSpellSelectedById(choiceId, spell.slug) && isChoiceAtLimit(choiceId))
 }
 
 function getSpellDisabledReason(choiceId: string, spell: Spell): string | null {
-  const slug = spell.full_slug ?? spell.slug
-  return getSpellDisabledReasonById(choiceId, slug)
+  return getSpellDisabledReasonById(choiceId, spell.slug)
 }
 
 function isChoiceAtLimit(choiceId: string): boolean {
@@ -206,8 +203,7 @@ function isChoiceAtLimit(choiceId: string): boolean {
 }
 
 function handleSpellToggle(choice: PendingChoice, spell: Spell) {
-  const spellSlug = spell.full_slug ?? spell.slug
-  handleSpellToggleById(choice, spellSlug)
+  handleSpellToggleById(choice, spell.slug)
 }
 
 // Get available spells for a choice (from choice.options or local cache)

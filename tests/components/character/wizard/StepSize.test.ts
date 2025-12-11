@@ -56,8 +56,7 @@ mockNuxtImport('useToast', () => {
 const mockRace = {
   id: 1,
   name: 'Halfling',
-  slug: 'halfling',
-  full_slug: 'halfling',
+  slug: 'phb:halfling',
   description: 'The comforts of home are the goals of most halflings\' lives.',
   speed: 25,
   sources: [{ code: 'PHB', name: 'Player\'s Handbook', pages: '26' }]
