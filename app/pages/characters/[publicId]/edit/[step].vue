@@ -31,6 +31,7 @@ const stepComponents: Record<string, Component> = {
   feats: defineAsyncComponent(() => import('~/components/character/wizard/StepFeats.vue')),
   abilities: defineAsyncComponent(() => import('~/components/character/wizard/StepAbilities.vue')),
   proficiencies: defineAsyncComponent(() => import('~/components/character/wizard/StepProficiencies.vue')),
+  'feature-choices': defineAsyncComponent(() => import('~/components/character/wizard/StepFeatureChoices.vue')),
   languages: defineAsyncComponent(() => import('~/components/character/wizard/StepLanguages.vue')),
   equipment: defineAsyncComponent(() => import('~/components/character/wizard/StepEquipment.vue')),
   spells: defineAsyncComponent(() => import('~/components/character/wizard/StepSpells.vue')),
