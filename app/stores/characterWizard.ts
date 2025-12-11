@@ -312,13 +312,54 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
   /**
    * Does this character have feature choices to make?
    * (fighting_style, expertise, optional_feature)
+   *
+   * Note: The summary endpoint uses 'optional_features' (plural) and may not
+   * include fighting_style/expertise. We check both naming conventions and
+   * also check the featurePendingChoices ref which is populated from /pending-choices.
    */
   const hasFeatureChoices = computed(() => {
-    if (!summary.value) return false
-    return (summary.value.pending_choices.expertise ?? 0) > 0
-      || (summary.value.pending_choices.fighting_style ?? 0) > 0
-      || (summary.value.pending_choices.optional_feature ?? 0) > 0
+    // Check summary counts (may use plural naming)
+    if (summary.value) {
+      const pc = summary.value.pending_choices
+      if ((pc.expertise ?? 0) > 0) return true
+      if ((pc.fighting_style ?? 0) > 0) return true
+      if ((pc.optional_feature ?? 0) > 0) return true
+      if ((pc.optional_features ?? 0) > 0) return true
+    }
+
+    // Also check the actual pending choices if fetched
+    if (featurePendingChoices.value.length > 0) return true
+
+    return false
   })
+
+  /**
+   * Pending feature choices fetched from /pending-choices endpoint.
+   * This supplements the summary counts which may not include all choice types.
+   */
+  const featurePendingChoices = ref<Array<{ id: string, type: string, remaining: number }>>([])
+
+  /**
+   * Fetch feature-related pending choices to determine step visibility.
+   * Call this after class selection to populate featurePendingChoices.
+   */
+  async function fetchFeaturePendingChoices(): Promise<void> {
+    if (!characterId.value) return
+
+    try {
+      const response = await apiFetch<{ data: { choices: Array<{ id: string, type: string, remaining: number }> } }>(
+        `/characters/${characterId.value}/pending-choices`
+      )
+
+      // Filter to feature-related choice types with remaining > 0
+      featurePendingChoices.value = (response?.data?.choices ?? []).filter(c =>
+        ['fighting_style', 'expertise', 'optional_feature'].includes(c.type) && c.remaining > 0
+      )
+    } catch (e) {
+      logger.error('Failed to fetch feature pending choices:', e)
+      featurePendingChoices.value = []
+    }
+  }
 
   /**
    * Is character creation complete?
@@ -389,6 +430,10 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
       stats.value = statsRes.data
       summary.value = summaryRes.data
+
+      // Also fetch feature pending choices for step visibility
+      // (summary endpoint may not include fighting_style/expertise counts)
+      await fetchFeaturePendingChoices()
     } catch (err) {
       logger.error('Failed to sync with backend:', err)
       // Don't throw - UI should still work with stale data
@@ -871,6 +916,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
     hasFeatChoices,
     hasSizeChoices,
     hasFeatureChoices,
+    featurePendingChoices,
     isComplete,
 
     // Computed: Filtering
@@ -883,6 +929,7 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
 
     // Actions: Backend sync
     syncWithBackend,
+    fetchFeaturePendingChoices,
 
     // Actions: Selections
     selectRace,
