@@ -20,6 +20,12 @@ const mockExpertiseOptions = [
   { id: 3, name: 'Perception', slug: 'perception' }
 ]
 
+const mockOptionalFeatureOptions = [
+  { id: 1, name: 'Agonizing Blast', slug: 'agonizing-blast', description: 'Add Charisma modifier to Eldritch Blast damage' },
+  { id: 2, name: 'Armor of Shadows', slug: 'armor-of-shadows', description: 'Cast Mage Armor at will without spell slots' },
+  { id: 3, name: 'Devil\'s Sight', slug: 'devils-sight', description: 'See normally in magical and nonmagical darkness' }
+]
+
 // Mock pending choices responses
 const mockFightingStyleChoice: PendingChoice[] = [
   {
@@ -52,6 +58,24 @@ const mockExpertiseChoice: PendingChoice[] = [
     remaining: 2,
     selected: [],
     options: mockExpertiseOptions,
+    options_endpoint: null,
+    metadata: []
+  }
+]
+
+const mockOptionalFeatureChoice: PendingChoice[] = [
+  {
+    id: 'optional_feature:class:1:2:warlock_eldritch_invocations',
+    type: 'optional_feature',
+    subtype: null,
+    source: 'class',
+    source_name: 'Eldritch Invocations',
+    level_granted: 2,
+    required: true,
+    quantity: 2,
+    remaining: 2,
+    selected: [],
+    options: mockOptionalFeatureOptions,
     options_endpoint: null,
     metadata: []
   }
@@ -240,6 +264,83 @@ describe('StepFeatureChoices', () => {
 
       const section = wrapper.find('[data-testid="expertise-section"]')
       expect(section.exists()).toBe(false)
+    })
+  })
+
+  describe('optional features section', () => {
+    it('displays optional features section when choices exist', async () => {
+      currentMockChoices = mockOptionalFeatureChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      const section = wrapper.find('[data-testid="optional-features-section"]')
+      expect(section.exists()).toBe(true)
+    })
+
+    it('shows title using choice.source_name directly', async () => {
+      currentMockChoices = mockOptionalFeatureChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      // Should use source_name directly, not "Optional Features (source_name)"
+      expect(wrapper.text()).toContain('Eldritch Invocations')
+      // Should NOT contain generic "Optional Features" label
+      expect(wrapper.text()).not.toMatch(/Optional Features \(/)
+    })
+
+    it('does not show optional features section when no choices', async () => {
+      currentMockChoices = mockFightingStyleChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      const section = wrapper.find('[data-testid="optional-features-section"]')
+      expect(section.exists()).toBe(false)
+    })
+
+    it('displays option cards with testid', async () => {
+      currentMockChoices = mockOptionalFeatureChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      // Wait for the component to finish loading and rendering options
+      await wrapper.vm.$nextTick()
+
+      // Options are in the mock data, check if they're being rendered
+      const section = wrapper.find('[data-testid="optional-features-section"]')
+      expect(section.exists()).toBe(true)
+
+      // Check if any option buttons exist
+      const allButtons = wrapper.findAll('button[data-testid^="optional-feature-option-"]')
+      expect(allButtons.length).toBeGreaterThan(0)
+    })
+
+    it('shows option name and description', async () => {
+      currentMockChoices = mockOptionalFeatureChoice
+      const wrapper = await mountSuspended(StepFeatureChoices, {
+        props: {
+          characterId: 123,
+          nextStep: vi.fn()
+        }
+      })
+
+      expect(wrapper.text()).toContain('Agonizing Blast')
+      expect(wrapper.text()).toContain('Add Charisma modifier to Eldritch Blast damage')
     })
   })
 })
