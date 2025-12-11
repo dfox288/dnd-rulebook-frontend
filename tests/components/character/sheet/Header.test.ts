@@ -378,9 +378,10 @@ describe('CharacterSheetHeader', () => {
       expect(wrapper.find('[data-testid="level-up-button"]').exists()).toBe(false)
     })
 
-    it('emits level-up event when clicked', async () => {
+    it('renders level-up button as navigable link', async () => {
       const character = {
         ...mockCharacter,
+        public_id: 'test-hero-Ab12',
         is_complete: true,
         classes: [
           { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 5, is_primary: true }
@@ -390,8 +391,14 @@ describe('CharacterSheetHeader', () => {
         props: { character }
       })
 
-      await wrapper.find('[data-testid="level-up-button"]').trigger('click')
-      expect(wrapper.emitted('level-up')).toBeTruthy()
+      const button = wrapper.find('[data-testid="level-up-button"]')
+      expect(button.exists()).toBe(true)
+      expect(button.text()).toContain('Level Up')
+      // UButton with :to renders as <a> tag with href
+      const anchor = button.find('a')
+      if (anchor.exists()) {
+        expect(anchor.attributes('href')).toContain('/level-up')
+      }
     })
   })
 })

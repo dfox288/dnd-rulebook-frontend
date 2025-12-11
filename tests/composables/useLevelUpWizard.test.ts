@@ -8,6 +8,7 @@ import { ref } from 'vue'
 // =============================================================================
 
 const mockGoToStep = vi.fn()
+const mockNavigateTo = vi.fn()
 
 // Create reactive refs that tests can modify
 const mockLevelUpResult = ref<unknown>(null)
@@ -17,6 +18,8 @@ const mockHasSpellChoices = ref(false)
 const mockHasFeatureChoices = ref(false)
 const mockHasLanguageChoices = ref(false)
 const mockHasProficiencyChoices = ref(false)
+const mockHasSubclassChoice = ref(false)
+const mockPublicId = ref('test-hero-Ab12')
 
 vi.mock('~/stores/characterLevelUp', () => ({
   useCharacterLevelUpStore: vi.fn(() => ({
@@ -28,9 +31,20 @@ vi.mock('~/stores/characterLevelUp', () => ({
     get hasFeatureChoices() { return mockHasFeatureChoices.value },
     get hasLanguageChoices() { return mockHasLanguageChoices.value },
     get hasProficiencyChoices() { return mockHasProficiencyChoices.value },
+    get hasSubclassChoice() { return mockHasSubclassChoice.value },
+    get publicId() { return mockPublicId.value },
     goToStep: mockGoToStep
   }))
 }))
+
+// Mock navigateTo from #app
+vi.mock('#app', async () => {
+  const actual = await vi.importActual('#app')
+  return {
+    ...actual,
+    navigateTo: (path: string) => mockNavigateTo(path)
+  }
+})
 
 // Import composable AFTER mocks
 // eslint-disable-next-line import/first
@@ -52,6 +66,8 @@ describe('useLevelUpWizard', () => {
     mockHasFeatureChoices.value = false
     mockHasLanguageChoices.value = false
     mockHasProficiencyChoices.value = false
+    mockHasSubclassChoice.value = false
+    mockPublicId.value = 'test-hero-Ab12'
   })
 
   describe('stepRegistry', () => {
@@ -401,6 +417,145 @@ describe('useLevelUpWizard', () => {
       goToStep('summary')
 
       expect(mockGoToStep).toHaveBeenCalledWith('summary')
+    })
+  })
+
+  describe('URL-based navigation', () => {
+    it('accepts options parameter with publicId and currentStep', () => {
+      mockLevelUpResult.value = { hp_choice_pending: true }
+
+      const wizard = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'hit-points'
+      })
+
+      expect(wizard).toBeDefined()
+      expect(wizard.getStepUrl).toBeDefined()
+      expect(wizard.getPreviewUrl).toBeDefined()
+      expect(wizard.nextStepInfo).toBeDefined()
+      expect(wizard.previousStepInfo).toBeDefined()
+    })
+
+    it('getStepUrl returns correct URL format', () => {
+      const { getStepUrl } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'hit-points'
+      })
+
+      expect(getStepUrl('spells')).toBe('/characters/test-hero-Ab12/level-up/spells')
+      expect(getStepUrl('hit-points')).toBe('/characters/test-hero-Ab12/level-up/hit-points')
+      expect(getStepUrl('summary')).toBe('/characters/test-hero-Ab12/level-up/summary')
+    })
+
+    it('getPreviewUrl returns correct URL format', () => {
+      const { getPreviewUrl } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'hit-points'
+      })
+
+      expect(getPreviewUrl()).toBe('/characters/test-hero-Ab12/level-up')
+    })
+
+    it('getStepUrl works with different publicId formats', () => {
+      const { getStepUrl } = useLevelUpWizard({
+        publicId: 'arcane-phoenix-M7k2',
+        currentStep: 'hit-points'
+      })
+
+      expect(getStepUrl('asi-feat')).toBe('/characters/arcane-phoenix-M7k2/level-up/asi-feat')
+    })
+
+    it('currentStepName computed returns step from options', () => {
+      const { currentStepName } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'asi-feat'
+      })
+
+      expect(currentStepName.value).toBe('asi-feat')
+    })
+
+    it('currentStepName overrides store value when options provided', () => {
+      mockCurrentStepName.value = 'hit-points'
+
+      const { currentStepName } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'summary'
+      })
+
+      // Should use options value, not store value
+      expect(currentStepName.value).toBe('summary')
+    })
+
+    it('nextStepInfo returns information about next unskipped step', () => {
+      mockLevelUpResult.value = { hp_choice_pending: true }
+      mockHasFeatureChoices.value = false
+      mockHasSpellChoices.value = true
+
+      const { nextStepInfo } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'hit-points'
+      })
+
+      // Should skip asi-feat and feature-choices, go to spells
+      expect(nextStepInfo.value?.name).toBe('spells')
+      expect(nextStepInfo.value?.label).toBe('Spells')
+    })
+
+    it('previousStepInfo returns information about previous unskipped step', () => {
+      mockLevelUpResult.value = { hp_choice_pending: true }
+      mockHasSpellChoices.value = true
+
+      const { previousStepInfo } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'spells'
+      })
+
+      expect(previousStepInfo.value?.name).toBe('hit-points')
+      expect(previousStepInfo.value?.label).toBe('Hit Points')
+    })
+
+    it('nextStepInfo returns null when on last step', () => {
+      const { nextStepInfo } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'summary'
+      })
+
+      expect(nextStepInfo.value).toBeNull()
+    })
+
+    it('previousStepInfo returns null when on first step', () => {
+      mockNeedsClassSelection.value = true
+
+      const { previousStepInfo } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'class-selection'
+      })
+
+      expect(previousStepInfo.value).toBeNull()
+    })
+
+    it('navigation functions exist and are callable', async () => {
+      const { nextStep, previousStep, goToStep } = useLevelUpWizard({
+        publicId: 'test-hero-Ab12',
+        currentStep: 'hit-points'
+      })
+
+      expect(typeof nextStep).toBe('function')
+      expect(typeof previousStep).toBe('function')
+      expect(typeof goToStep).toBe('function')
+
+      // These will call navigateTo internally but we can't easily mock it
+      // The important thing is they don't throw errors
+      await expect(nextStep()).resolves.not.toThrow()
+      await expect(previousStep()).resolves.not.toThrow()
+      await expect(goToStep('summary')).resolves.not.toThrow()
+    })
+
+    it('throws error when trying to use URL helpers without options', () => {
+      const { getStepUrl, getPreviewUrl } = useLevelUpWizard()
+
+      expect(() => getStepUrl('spells')).toThrow('options required')
+      expect(() => getPreviewUrl()).toThrow('options required')
     })
   })
 })

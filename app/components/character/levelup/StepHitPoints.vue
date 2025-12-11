@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useCharacterLevelUpStore } from '~/stores/characterLevelUp'
-import { useLevelUpWizard } from '~/composables/useLevelUpWizard'
-
 const props = defineProps<{
+  characterId: number
+  nextStep: () => void
   hitDie: number
   conModifier: number
 }>()
@@ -11,12 +10,9 @@ const emit = defineEmits<{
   'choice-made': [hpGained: number]
 }>()
 
-const store = useCharacterLevelUpStore()
-const { nextStep } = useLevelUpWizard()
-
 // Use unified choices for HP choice resolution
 const { resolveChoice, fetchChoices, choicesByType } = useUnifiedChoices(
-  computed(() => store.characterId)
+  computed(() => props.characterId)
 )
 
 // Local state
@@ -101,8 +97,8 @@ async function handleConfirm() {
 
     console.log('[HP Step] Choice resolved successfully')
 
-    emit('choice-made', hpGained.value)
-    nextStep()
+    emit('choice-made', hpValue)
+    props.nextStep()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to save HP choice. Please try again.'
   } finally {
