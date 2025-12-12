@@ -777,6 +777,14 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
             WIS: number | null
             CHA: number | null
           }
+          base_ability_scores?: {
+            STR: number | null
+            DEX: number | null
+            CON: number | null
+            INT: number | null
+            WIS: number | null
+            CHA: number | null
+          }
         }
       }>(`/characters/${charPublicId}`)
 
@@ -798,9 +806,11 @@ export const useCharacterWizardStore = defineStore('characterWizard', () => {
         selections.value.abilityMethod = response.data.ability_score_method
       }
 
-      // Restore ability scores (map API format STR/DEX to store format strength/dexterity)
-      if (response.data.ability_scores) {
-        const scores = response.data.ability_scores
+      // Restore BASE ability scores (without racial/feat bonuses)
+      // Using base_ability_scores to avoid double-counting bonuses in StepAbilities
+      // The UI adds bonuses on top of base scores for display
+      if (response.data.base_ability_scores) {
+        const scores = response.data.base_ability_scores
         selections.value.abilityScores = {
           strength: scores.STR ?? 10,
           dexterity: scores.DEX ?? 10,
