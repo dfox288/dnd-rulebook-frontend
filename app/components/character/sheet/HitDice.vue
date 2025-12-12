@@ -1,16 +1,39 @@
 <!-- app/components/character/sheet/HitDice.vue -->
 <script setup lang="ts">
 /**
- * Hit Dice Counter
+ * Hit Dice Counter with Rest Actions
  *
- * Displays hit dice by die type as filled/empty circles.
+ * Displays hit dice by die type as filled/empty dice icons.
  * Supports multiclass characters with multiple die types.
  * Compact design fits in the sidebar (~200px width).
+ *
+ * When editable (play mode):
+ * - Filled dice are clickable to spend (player rolls physical dice)
+ * - Rest buttons appear at bottom for short/long rest actions
+ *
+ * @see #534 - Rest Actions
  */
 
-defineProps<{
+const props = defineProps<{
   hitDice: { die: string, total: number, current: number }[]
+  editable?: boolean
+  /** Disables all interactions (used during rest actions to prevent race conditions) */
+  disabled?: boolean
 }>()
+
+const emit = defineEmits<{
+  'spend': [{ dieType: string }]
+  'short-rest': []
+  'long-rest': []
+}>()
+
+/**
+ * Handle clicking a filled die - spend it
+ */
+function handleDieClick(dieType: string) {
+  if (!props.editable || props.disabled) return
+  emit('spend', { dieType })
+}
 </script>
 
 <template>
@@ -37,25 +60,68 @@ defineProps<{
         </span>
       </div>
 
-      <!-- Dice Circles -->
+      <!-- Dice Icons -->
       <div class="flex gap-1 flex-wrap">
-        <!-- Current (filled) dice -->
+        <!-- Current (filled) dice - clickable when editable and not disabled -->
         <UIcon
           v-for="i in dice.current"
           :key="`${dice.die}-filled-${i}`"
-          name="i-heroicons-circle-stack-solid"
-          class="w-5 h-5 text-primary-600 dark:text-primary-500"
+          name="i-game-icons-perspective-dice-six"
+          :class="[
+            'w-5 h-5 text-primary-600 dark:text-primary-500',
+            editable && !disabled ? 'cursor-pointer hover:opacity-80 transition-opacity' : '',
+            disabled ? 'opacity-50' : ''
+          ]"
           :data-testid="`dice-${dice.die}-filled`"
+          @click="handleDieClick(dice.die)"
         />
-        <!-- Used (empty) dice -->
+        <!-- Used (empty) dice - display only -->
         <UIcon
           v-for="i in (dice.total - dice.current)"
           :key="`${dice.die}-empty-${i}`"
-          name="i-heroicons-circle-stack"
+          name="i-game-icons-perspective-dice-six"
           class="w-5 h-5 text-gray-300 dark:text-gray-600"
           :data-testid="`dice-${dice.die}-empty`"
         />
       </div>
     </div>
+
+    <!-- Rest Actions (play mode only) -->
+    <template v-if="editable">
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+        <div class="flex gap-2">
+          <UButton
+            data-testid="short-rest-btn"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            class="flex-1"
+            :disabled="disabled"
+            @click="emit('short-rest')"
+          >
+            <UIcon
+              name="i-heroicons-sun"
+              class="w-4 h-4 mr-1"
+            />
+            Short
+          </UButton>
+          <UButton
+            data-testid="long-rest-btn"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            class="flex-1"
+            :disabled="disabled"
+            @click="emit('long-rest')"
+          >
+            <UIcon
+              name="i-heroicons-moon"
+              class="w-4 h-4 mr-1"
+            />
+            Long
+          </UButton>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
