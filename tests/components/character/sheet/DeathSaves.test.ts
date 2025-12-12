@@ -116,20 +116,6 @@ describe('CharacterSheetDeathSaves', () => {
       expect(wrapper.emitted('update:successes')).toBeUndefined()
     })
 
-    it('does not show reset button when editable is false', async () => {
-      const wrapper = await mountSuspended(DeathSaves, {
-        props: { successes: 1, failures: 1 }
-      })
-      expect(wrapper.find('[data-testid="reset-button"]').exists()).toBe(false)
-    })
-
-    it('shows reset button when editable is true', async () => {
-      const wrapper = await mountSuspended(DeathSaves, {
-        props: { successes: 1, failures: 1, editable: true }
-      })
-      expect(wrapper.find('[data-testid="reset-button"]').exists()).toBe(true)
-    })
-
     it('clicking empty success circle emits update:successes with incremented value', async () => {
       const wrapper = await mountSuspended(DeathSaves, {
         props: { successes: 1, failures: 0, editable: true }
@@ -172,15 +158,6 @@ describe('CharacterSheetDeathSaves', () => {
       await filledFailureCircle.trigger('click')
       expect(wrapper.emitted('update:failures')).toBeTruthy()
       expect(wrapper.emitted('update:failures')![0]).toEqual([1])
-    })
-
-    it('reset button emits reset event', async () => {
-      const wrapper = await mountSuspended(DeathSaves, {
-        props: { successes: 2, failures: 1, editable: true }
-      })
-      const resetButton = wrapper.find('[data-testid="reset-button"]')
-      await resetButton.trigger('click')
-      expect(wrapper.emitted('reset')).toBeTruthy()
     })
 
     it('shows "Stabilized" badge when successes equals 3', async () => {

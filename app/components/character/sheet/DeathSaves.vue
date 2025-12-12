@@ -21,7 +21,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:successes': [value: number]
   'update:failures': [value: number]
-  'reset': []
 }>()
 
 /** D&D 5e death save threshold - 3 successes to stabilize, 3 failures to die */
@@ -58,13 +57,6 @@ function handleFailureClick(circleIndex: number) {
   } else {
     emit('update:failures', circleIndex)
   }
-}
-
-/**
- * Reset button handler
- */
-function handleReset() {
-  emit('reset')
 }
 
 /**
@@ -151,17 +143,5 @@ const isDead = computed(() => props.failures >= DEATH_SAVE_MAX)
       </div>
     </div>
 
-    <!-- Reset Button (only in editable mode) -->
-    <UButton
-      v-if="editable"
-      data-testid="reset-button"
-      color="neutral"
-      variant="ghost"
-      size="sm"
-      block
-      @click="handleReset"
-    >
-      Reset
-    </UButton>
   </div>
 </template>

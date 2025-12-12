@@ -111,46 +111,6 @@ async function handleDeathSaveUpdate(field: 'successes' | 'failures', value: num
   }
 }
 
-/**
- * Reset death saves to 0/0
- */
-async function handleDeathSaveReset() {
-  if (isUpdatingDeathSaves.value || !character.value) return
-
-  isUpdatingDeathSaves.value = true
-  const oldSuccesses = localDeathSaves.successes
-  const oldFailures = localDeathSaves.failures
-
-  localDeathSaves.successes = 0
-  localDeathSaves.failures = 0
-
-  try {
-    await apiFetch(`/characters/${character.value.id}`, {
-      method: 'PATCH',
-      body: {
-        death_save_successes: 0,
-        death_save_failures: 0
-      }
-    })
-    toast.add({
-      title: 'Death saves reset',
-      color: 'success'
-    })
-  } catch (err) {
-    // Rollback on error
-    localDeathSaves.successes = oldSuccesses
-    localDeathSaves.failures = oldFailures
-    logger.error('Failed to reset death saves:', err)
-    toast.add({
-      title: 'Failed to reset',
-      description: 'Could not reset death saves',
-      color: 'error'
-    })
-  } finally {
-    isUpdatingDeathSaves.value = false
-  }
-}
-
 // Validation - check for dangling references when sourcebooks are removed
 const characterId = computed(() => character.value?.id ?? null)
 const { validationResult, validateReferences } = useCharacterValidation(characterId)
@@ -289,7 +249,6 @@ const tabItems = computed(() => {
                 :editable="isPlayMode"
                 @update:successes="handleDeathSaveUpdate('successes', $event)"
                 @update:failures="handleDeathSaveUpdate('failures', $event)"
-                @reset="handleDeathSaveReset"
               />
             </div>
             <CharacterSheetSkillsList
