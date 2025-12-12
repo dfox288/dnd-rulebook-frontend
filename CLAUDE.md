@@ -772,6 +772,72 @@ tests/
 
 ---
 
+## Wizard Test Helpers
+
+Consolidated helpers for testing character wizard components. Located in `tests/helpers/`.
+
+### Available Helpers
+
+| Helper | Purpose | Usage |
+|--------|---------|-------|
+| `wizardTestSetup.ts` | Store setup, mock factories | Component tests |
+| `characterSheetStubs.ts` | CharacterSheet* component stubs | StepReview, level-up tests |
+| `integrationSetup.ts` | MSW + Pinia lifecycle | Integration tests |
+
+### Store Setup
+
+```typescript
+import { setupWizardStore } from '@/tests/helpers/wizardTestSetup'
+
+// Creates fresh Pinia + configured store
+const store = setupWizardStore({
+  race: { id: 1, name: 'Human', slug: 'phb:human' },
+  class: { id: 1, name: 'Fighter', slug: 'phb:fighter' }
+})
+```
+
+### Character Sheet Stubs
+
+```typescript
+import { characterSheetStubs } from '@/tests/helpers/characterSheetStubs'
+
+const wrapper = await mountSuspended(StepReview, {
+  global: { stubs: characterSheetStubs, plugins: [pinia] }
+})
+```
+
+### Integration Test Setup
+
+```typescript
+import { useIntegrationTestSetup } from '@/tests/helpers/integrationSetup'
+
+describe('My Integration Test', () => {
+  useIntegrationTestSetup() // Replaces ~15 lines of MSW/Pinia boilerplate
+
+  it('tests something', async () => {
+    // MSW server running, fresh Pinia each test
+  })
+})
+```
+
+### Mock Composable Pattern (Nuxt)
+
+For Nuxt components, use `mockNuxtImport` at module level:
+
+```typescript
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { createToastMock } from '@/tests/helpers/wizardTestSetup'
+
+// Module-level mock (required for Nuxt)
+mockNuxtImport('useToast', () => () => createToastMock())
+
+describe('MyComponent', () => {
+  // Tests use the mocked composable
+})
+```
+
+---
+
 ## Playwright AI Agents (E2E Testing)
 
 Three AI-powered agents automate E2E test creation using the Playwright MCP server.
