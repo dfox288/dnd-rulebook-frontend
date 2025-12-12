@@ -13,6 +13,7 @@ import {
   type AbilityScoreMap,
   type MulticlassRequirements
 } from '~/composables/useMulticlassEligibility'
+import { logger } from '~/utils/logger'
 
 interface ClassOption {
   id: number
@@ -55,9 +56,12 @@ const multiclassOptions = computed(() => {
 })
 
 /** Default ability scores if not provided */
-const scores = computed<AbilityScoreMap>(() =>
-  props.abilityScores || { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 }
-)
+const scores = computed<AbilityScoreMap>(() => {
+  if (!props.abilityScores) {
+    logger.warn('StepClassSelection: abilityScores prop missing, using default values (all 10s)')
+  }
+  return props.abilityScores || { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 }
+})
 
 // ════════════════════════════════════════════════════════════════
 // METHODS
@@ -81,8 +85,9 @@ async function selectClass(classSlug: string) {
     if (props.nextStep) {
       await props.nextStep()
     }
-  } catch {
-    // Error is stored in store.error
+  } catch (err) {
+    // Error is stored in store.error, but log for debugging
+    logger.error('StepClassSelection: Failed to level up class:', err)
   }
 }
 
