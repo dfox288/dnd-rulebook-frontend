@@ -44,6 +44,7 @@ const referenceItems = ref([
   { label: 'Ability Scores', to: '/ability-scores', icon: 'i-heroicons-chart-bar' },
   { label: 'Conditions', to: '/conditions', icon: 'i-heroicons-exclamation-triangle' },
   { label: 'Creature Sizes', to: '/sizes', icon: 'i-heroicons-arrows-pointing-out' },
+  { label: 'Creature Types', to: '/creature-types', icon: 'i-heroicons-bug-ant' },
   { label: 'Damage Types', to: '/damage-types', icon: 'i-heroicons-bolt' },
   { label: 'Item Types', to: '/item-types', icon: 'i-heroicons-cube' },
   { label: 'Languages', to: '/languages', icon: 'i-heroicons-language' },

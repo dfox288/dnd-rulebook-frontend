@@ -28,8 +28,8 @@ export default defineNuxtConfig({
         'primary', 'secondary', 'info', 'success', 'warning', 'error',
         // Main entity types (7) - semantic names
         'spell', 'item', 'race', 'class', 'background', 'feat', 'monster',
-        // Reference entity types (10)
-        'ability', 'condition', 'damage', 'itemtype', 'language',
+        // Reference entity types (11)
+        'ability', 'condition', 'creature', 'damage', 'itemtype', 'language',
         'proficiency', 'size', 'skill', 'school', 'source'
       ]
     }

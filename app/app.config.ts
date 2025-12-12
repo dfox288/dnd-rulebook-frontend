@@ -13,9 +13,10 @@ export default defineAppConfig({
       feat: 'glory', // Bright blue - achievement
       monster: 'danger', // Vibrant orange - combat threat
 
-      // Reference entity types (10) - Tailwind defaults
+      // Reference entity types (11) - Tailwind defaults
       ability: 'indigo', // Core stats
       condition: 'pink', // Status effects
+      creature: 'violet', // Creature classifications
       damage: 'slate', // Mechanical data
       itemtype: 'teal', // Categorization
       language: 'cyan', // Communication
