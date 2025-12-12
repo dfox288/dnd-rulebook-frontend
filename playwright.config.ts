@@ -3,14 +3,14 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * Playwright E2E Testing Configuration
  *
- * Tests run against the dev server at http://localhost:3000
+ * Tests run against the dev server at http://localhost:4002 (Docker)
  * Requires: Backend API running at localhost:8080
  */
 export default defineConfig({
   testDir: './tests/e2e',
 
   // Maximum time one test can run for
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -30,7 +30,7 @@ export default defineConfig({
   // Shared settings for all the projects below
   use: {
     // Base URL to use in actions like `await page.goto('/')`
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:4002',
 
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',
@@ -70,8 +70,8 @@ export default defineConfig({
   // If not, you'll need to start it manually:
   // docker compose up -d
   webServer: {
-    command: 'echo "Dev server should be running at http://localhost:3000"',
-    url: 'http://localhost:3000',
+    command: 'echo "Dev server should be running at http://localhost:4002"',
+    url: 'http://localhost:4002',
     reuseExistingServer: true,
     timeout: 5 * 1000
   }
