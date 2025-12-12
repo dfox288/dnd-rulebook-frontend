@@ -27,6 +27,7 @@ const emit = defineEmits<{
   'remove': [conditionSlug: string]
   'update-level': [payload: { slug: string, level: number }]
   'add-click': []
+  'confirm-deadly-exhaustion': [payload: { slug: string, currentLevel: number, targetLevel: number }]
 }>()
 
 /**
@@ -61,12 +62,12 @@ const alertTitle = computed(() => {
 
 /**
  * Format condition display text
- * Includes level for Exhaustion, shows duration
+ * Includes level for Exhaustion, shows duration if present
  */
 function formatCondition(condition: ConditionItem) {
   const levelText = condition.level ? ` ${condition.level}` : ''
   const name = `${condition.name}${levelText}`
-  return `${name} - ${condition.duration}`
+  return condition.duration ? `${name} - ${condition.duration}` : name
 }
 
 /**
@@ -92,12 +93,25 @@ function handleRemove(conditionSlug: string) {
 
 /**
  * Handle exhaustion level increment
+ * Emits confirmation request when incrementing to level 6 (death)
  */
 function handleIncrement(condition: ConditionItem) {
   const currentLevel = getLevel(condition)
-  if (currentLevel < 6) {
-    emit('update-level', { slug: condition.slug, level: currentLevel + 1 })
+  if (currentLevel >= 6) return
+
+  const targetLevel = currentLevel + 1
+
+  // Level 6 = death, require confirmation
+  if (targetLevel === 6) {
+    emit('confirm-deadly-exhaustion', {
+      slug: condition.slug,
+      currentLevel,
+      targetLevel
+    })
+    return
   }
+
+  emit('update-level', { slug: condition.slug, level: targetLevel })
 }
 
 /**

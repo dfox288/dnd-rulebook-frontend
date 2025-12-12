@@ -315,6 +315,23 @@ describe('CharacterSheetConditions', () => {
       expect(incrementBtn.attributes('disabled')).toBeDefined()
     })
 
+    it('emits confirm-deadly-exhaustion when incrementing from level 5 to 6', async () => {
+      const exhaustionLevel5 = { ...mockExhaustion, level: '5' }
+      const wrapper = await mountSuspended(Conditions, {
+        props: { conditions: [exhaustionLevel5], editable: true }
+      })
+      await wrapper.find('[data-testid="exhaustion-increment"]').trigger('click')
+      // Should NOT emit update-level directly
+      expect(wrapper.emitted('update-level')).toBeUndefined()
+      // Should emit confirmation request
+      expect(wrapper.emitted('confirm-deadly-exhaustion')).toBeTruthy()
+      expect(wrapper.emitted('confirm-deadly-exhaustion')![0]).toEqual([{
+        slug: 'core:exhaustion',
+        currentLevel: 5,
+        targetLevel: 6
+      }])
+    })
+
     it('shows death warning at level 6', async () => {
       const exhaustionLevel6 = { ...mockExhaustion, level: '6' }
       const wrapper = await mountSuspended(Conditions, {
