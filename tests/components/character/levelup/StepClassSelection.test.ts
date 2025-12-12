@@ -269,7 +269,7 @@ describe('StepClassSelection', () => {
     })
 
     it('shows loading state while level-up is processing', async () => {
-      const wrapper = await mountWithStore(store => {
+      const wrapper = await mountWithStore((store) => {
         store.openWizard(1, 'iron-phoenix-X7k2', [fighterL1], 1)
         store.isLoading = true
       })
@@ -278,7 +278,7 @@ describe('StepClassSelection', () => {
     })
 
     it('shows error message when level-up fails', async () => {
-      const wrapper = await mountWithStore(store => {
+      const wrapper = await mountWithStore((store) => {
         store.openWizard(1, 'iron-phoenix-X7k2', [fighterL1], 1)
         store.error = 'Failed to level up character'
       })
@@ -287,7 +287,7 @@ describe('StepClassSelection', () => {
     })
 
     it('disables class options during loading', async () => {
-      const wrapper = await mountWithStore(store => {
+      const wrapper = await mountWithStore((store) => {
         store.openWizard(1, 'iron-phoenix-X7k2', [fighterL1], 1)
         store.isLoading = true
       })

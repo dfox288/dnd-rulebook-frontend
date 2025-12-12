@@ -41,9 +41,6 @@ const store = useCharacterLevelUpStore()
 /** Is this a max level character? */
 const isMaxLevel = computed(() => store.totalLevel >= 20)
 
-/** Is this the first opportunity to multiclass? (Level 1 → 2) */
-const isFirstMulticlass = computed(() => store.isFirstMulticlassOpportunity)
-
 /** Current character classes */
 const currentClasses = computed(() => store.characterClasses)
 
@@ -113,7 +110,10 @@ function getCurrentClassDisplay(classEntry: typeof currentClasses.value[0]) {
 <template>
   <div class="max-w-3xl mx-auto py-6 px-4">
     <!-- Max Level Message -->
-    <div v-if="isMaxLevel" class="text-center py-12">
+    <div
+      v-if="isMaxLevel"
+      class="text-center py-12"
+    >
       <UIcon
         name="i-heroicons-trophy"
         class="w-16 h-16 mx-auto text-yellow-500 mb-4"
@@ -177,7 +177,11 @@ function getCurrentClassDisplay(classEntry: typeof currentClasses.value[0]) {
                   <span class="font-semibold text-lg text-gray-900 dark:text-white">
                     Continue as {{ getCurrentClassDisplay(classEntry).displayName }}
                   </span>
-                  <UBadge color="primary" variant="soft" size="sm">
+                  <UBadge
+                    color="primary"
+                    variant="soft"
+                    size="sm"
+                  >
                     Current
                   </UBadge>
                 </div>

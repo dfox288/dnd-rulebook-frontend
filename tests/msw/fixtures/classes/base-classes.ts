@@ -6,7 +6,7 @@
  */
 
 export interface MulticlassRequirement {
-  ability: { id: number; code: string; name: string }
+  ability: { id: number, code: string, name: string }
   ability_name: string
   minimum_score: number
   is_alternative: boolean
