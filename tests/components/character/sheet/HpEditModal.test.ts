@@ -120,22 +120,66 @@ describe('HpEditModal', () => {
       expect(vm.parsedDelta).toBe(8)
     })
 
-    it('parses positive input without sign as healing', () => {
+    it('parses unsigned input as "set to" (calculates delta from current)', () => {
       const wrapper = mount(HpEditModal, {
-        props: defaultProps
+        props: defaultProps // currentHp: 43
       })
       const vm = wrapper.vm as any
-      vm.inputValue = '5'
+      vm.inputValue = '30'
 
-      expect(vm.parsedDelta).toBe(5)
+      // Setting to 30 when current is 43 = delta of -13
+      expect(vm.parsedDelta).toBe(-13)
     })
 
-    it('parses zero correctly', () => {
+    it('parses unsigned input as delta when setting higher', () => {
       const wrapper = mount(HpEditModal, {
-        props: defaultProps
+        props: defaultProps // currentHp: 43
+      })
+      const vm = wrapper.vm as any
+      vm.inputValue = '50'
+
+      // Setting to 50 when current is 43 = delta of +7
+      expect(vm.parsedDelta).toBe(7)
+    })
+
+    it('parses unsigned input as 0 delta when setting to current', () => {
+      const wrapper = mount(HpEditModal, {
+        props: defaultProps // currentHp: 43
+      })
+      const vm = wrapper.vm as any
+      vm.inputValue = '43'
+
+      // Setting to 43 when current is 43 = delta of 0
+      expect(vm.parsedDelta).toBe(0)
+    })
+
+    it('parses unsigned zero as "set to 0" (delta = -currentHp)', () => {
+      const wrapper = mount(HpEditModal, {
+        props: defaultProps // currentHp: 43
       })
       const vm = wrapper.vm as any
       vm.inputValue = '0'
+
+      // Setting to 0 when current is 43 = delta of -43
+      expect(vm.parsedDelta).toBe(-43)
+    })
+
+    it('parses +0 as delta 0 (no change)', () => {
+      const wrapper = mount(HpEditModal, {
+        props: defaultProps
+      })
+      const vm = wrapper.vm as any
+      vm.inputValue = '+0'
+
+      expect(vm.parsedDelta).toBe(0)
+    })
+
+    it('parses -0 as delta 0 (no change)', () => {
+      const wrapper = mount(HpEditModal, {
+        props: defaultProps
+      })
+      const vm = wrapper.vm as any
+      vm.inputValue = '-0'
 
       expect(vm.parsedDelta).toBe(0)
     })

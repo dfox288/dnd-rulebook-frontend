@@ -27,18 +27,37 @@ const emit = defineEmits<{
 /** Input value as string to support +/- signs */
 const inputValue = ref('')
 
-/** Parse input to numeric delta */
+/**
+ * Parse input to numeric delta
+ *
+ * Three modes:
+ * - "-X" → damage (delta = -X)
+ * - "+X" → healing (delta = +X)
+ * - "X" (no sign) → set HP to X (delta = X - currentHp)
+ */
 const parsedDelta = computed(() => {
   // Convert to string defensively (in case input type changes)
   const trimmed = String(inputValue.value ?? '').trim()
   if (!trimmed) return null
 
-  // Handle explicit + sign
-  const value = trimmed.startsWith('+')
-    ? parseInt(trimmed.slice(1), 10)
-    : parseInt(trimmed, 10)
+  // Explicit + sign → healing (return positive delta)
+  if (trimmed.startsWith('+')) {
+    const value = parseInt(trimmed.slice(1), 10)
+    return isNaN(value) ? null : value
+  }
 
-  return isNaN(value) ? null : value
+  // Explicit - sign → damage (return negative delta)
+  if (trimmed.startsWith('-')) {
+    const value = parseInt(trimmed, 10)
+    // Normalize -0 to 0 (JavaScript quirk: parseInt('-0') returns -0)
+    return isNaN(value) ? null : (value === 0 ? 0 : value)
+  }
+
+  // No sign → "set to" mode: calculate delta from current HP
+  const targetHp = parseInt(trimmed, 10)
+  if (isNaN(targetHp)) return null
+
+  return targetHp - props.currentHp
 })
 
 /** Whether apply button should be enabled */
@@ -99,14 +118,14 @@ watch(() => props.open, (isOpen) => {
             data-testid="hp-delta-input"
             type="text"
             inputmode="numeric"
-            placeholder="-12 or +8"
+            placeholder="-12, +8, or 25"
             size="lg"
             class="text-center text-lg"
             autofocus
             @keyup.enter="canApply && handleApply()"
           />
           <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
-            Enter damage (-) or healing (+)
+            Damage (-), healing (+), or set HP (no sign)
           </p>
         </div>
       </div>
