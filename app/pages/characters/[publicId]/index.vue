@@ -67,22 +67,26 @@ const localDeathSaves = reactive({
   failures: 0
 })
 
+/** Prevents race conditions from rapid clicks */
+const isUpdatingDeathSaves = ref(false)
+
 // Sync local state when character data loads
 watch(() => character.value, (char) => {
   if (char) {
-    localDeathSaves.successes = char.death_save_successes
-    localDeathSaves.failures = char.death_save_failures
+    localDeathSaves.successes = char.death_save_successes ?? 0
+    localDeathSaves.failures = char.death_save_failures ?? 0
   }
 }, { immediate: true })
 
 /**
  * Handle death save updates
  * Uses optimistic UI - update locally first, then sync to API
+ * Prevents race conditions by blocking during API call
  */
 async function handleDeathSaveUpdate(field: 'successes' | 'failures', value: number) {
-  if (!character.value) return
+  if (isUpdatingDeathSaves.value || !character.value) return
 
-  // Optimistic update (local reactive state)
+  isUpdatingDeathSaves.value = true
   const oldValue = localDeathSaves[field]
   localDeathSaves[field] = value
 
@@ -102,6 +106,8 @@ async function handleDeathSaveUpdate(field: 'successes' | 'failures', value: num
       description: 'Could not update death saves',
       color: 'error'
     })
+  } finally {
+    isUpdatingDeathSaves.value = false
   }
 }
 
@@ -109,9 +115,9 @@ async function handleDeathSaveUpdate(field: 'successes' | 'failures', value: num
  * Reset death saves to 0/0
  */
 async function handleDeathSaveReset() {
-  if (!character.value) return
+  if (isUpdatingDeathSaves.value || !character.value) return
 
-  // Optimistic update
+  isUpdatingDeathSaves.value = true
   const oldSuccesses = localDeathSaves.successes
   const oldFailures = localDeathSaves.failures
 
@@ -140,6 +146,8 @@ async function handleDeathSaveReset() {
       description: 'Could not reset death saves',
       color: 'error'
     })
+  } finally {
+    isUpdatingDeathSaves.value = false
   }
 }
 

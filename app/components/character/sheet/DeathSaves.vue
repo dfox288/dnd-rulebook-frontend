@@ -24,6 +24,9 @@ const emit = defineEmits<{
   'reset': []
 }>()
 
+/** D&D 5e death save threshold - 3 successes to stabilize, 3 failures to die */
+const DEATH_SAVE_MAX = 3
+
 /**
  * Handle click on a success circle
  * If circle is filled (i <= successes), decrement to i-1
@@ -67,12 +70,12 @@ function handleReset() {
 /**
  * Check if character is stabilized (3 successes)
  */
-const isStabilized = computed(() => props.successes >= 3)
+const isStabilized = computed(() => props.successes >= DEATH_SAVE_MAX)
 
 /**
  * Check if character is dead (3 failures)
  */
-const isDead = computed(() => props.failures >= 3)
+const isDead = computed(() => props.failures >= DEATH_SAVE_MAX)
 </script>
 
 <template>
