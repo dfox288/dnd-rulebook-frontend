@@ -88,37 +88,37 @@ function handleDieClick(dieType: string) {
 
     <!-- Rest Actions (play mode only) -->
     <template v-if="editable">
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
-        <div class="flex gap-2">
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-3 mt-2">
+        <div class="flex flex-col gap-1.5">
           <UButton
             data-testid="short-rest-btn"
             color="neutral"
             variant="soft"
             size="xs"
-            class="flex-1"
+            block
             :disabled="disabled"
             @click="emit('short-rest')"
           >
             <UIcon
               name="i-heroicons-sun"
-              class="w-4 h-4 mr-1"
+              class="w-3.5 h-3.5 mr-1"
             />
-            Short
+            Short Rest
           </UButton>
           <UButton
             data-testid="long-rest-btn"
             color="neutral"
             variant="soft"
             size="xs"
-            class="flex-1"
+            block
             :disabled="disabled"
             @click="emit('long-rest')"
           >
             <UIcon
               name="i-heroicons-moon"
-              class="w-4 h-4 mr-1"
+              class="w-3.5 h-3.5 mr-1"
             />
-            Long
+            Long Rest
           </UButton>
         </div>
       </div>

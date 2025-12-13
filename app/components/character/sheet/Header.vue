@@ -4,6 +4,12 @@ import type { Character } from '~/types/character'
 
 const props = defineProps<{
   character: Character
+  isPlayMode?: boolean
+}>()
+
+const emit = defineEmits<{
+  'add-condition': []
+  'level-up': []
 }>()
 
 /**
@@ -60,6 +66,49 @@ const totalLevel = computed(() => {
  */
 const canLevelUp = computed(() => {
   return props.character.is_complete && totalLevel.value < 20
+})
+
+/**
+ * Build dropdown menu items based on character state
+ * Uses onSelect for click handlers (NuxtUI 4 syntax)
+ */
+const actionMenuItems = computed(() => {
+  const items: Array<Array<{ label: string, icon: string, to?: string, onSelect?: () => void, disabled?: boolean }>> = []
+
+  // Play mode actions (only for complete characters in play mode)
+  if (props.character.is_complete && props.isPlayMode) {
+    items.push([
+      {
+        label: 'Add Condition',
+        icon: 'i-heroicons-exclamation-triangle',
+        onSelect: () => emit('add-condition')
+      }
+    ])
+  }
+
+  // Character progression (only for complete characters under max level)
+  if (props.character.is_complete && totalLevel.value < 20) {
+    items.push([
+      {
+        label: 'Level Up',
+        icon: 'i-heroicons-arrow-trending-up',
+        onSelect: () => emit('level-up')
+      }
+    ])
+  }
+
+  // Draft actions
+  if (!props.character.is_complete) {
+    items.push([
+      {
+        label: 'Continue Editing',
+        icon: 'i-heroicons-pencil',
+        to: `/characters/${props.character.public_id}/edit`
+      }
+    ])
+  }
+
+  return items
 })
 </script>
 
@@ -119,39 +168,32 @@ const canLevelUp = computed(() => {
         Inspired
       </UBadge>
 
-      <!-- Status Badge -->
+      <!-- Draft Badge (only show when NOT complete) -->
       <UBadge
-        :color="character.is_complete ? 'success' : 'warning'"
+        v-if="!character.is_complete"
+        color="warning"
         variant="subtle"
         size="lg"
       >
-        {{ character.is_complete ? 'Complete' : 'Draft' }}
+        Draft
       </UBadge>
 
-      <!-- Level Up Button (for complete characters under level 20) -->
-      <UButton
-        v-if="canLevelUp"
-        data-testid="level-up-button"
-        :to="`/characters/${character.public_id}/level-up`"
-        variant="soft"
-        color="primary"
-        size="sm"
-        icon="i-heroicons-arrow-trending-up"
+      <!-- Actions Dropdown -->
+      <UDropdownMenu
+        :items="actionMenuItems"
+        :ui="{ content: 'min-w-40' }"
       >
-        Level Up
-      </UButton>
-
-      <!-- Edit Button (for incomplete characters) -->
-      <UButton
-        v-if="!character.is_complete"
-        data-testid="edit-button"
-        :to="`/characters/${character.public_id}/edit`"
-        variant="outline"
-        size="sm"
-        icon="i-heroicons-pencil"
-      >
-        Edit
-      </UButton>
+        <UButton
+          data-testid="actions-dropdown"
+          color="neutral"
+          variant="soft"
+          size="sm"
+          icon="i-heroicons-ellipsis-vertical"
+          trailing-icon="i-heroicons-chevron-down"
+        >
+          Actions
+        </UButton>
+      </UDropdownMenu>
     </div>
   </div>
 </template>
