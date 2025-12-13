@@ -13,6 +13,22 @@ import type { CharacterEquipment } from '~/types/character'
 
 const route = useRoute()
 const publicId = computed(() => route.params.publicId as string)
+const toast = useToast()
+
+// Play mode toggle (synced with localStorage)
+const isPlayMode = ref(false)
+const playModeKey = computed(() => `play-mode-${publicId.value}`)
+
+onMounted(() => {
+  const saved = localStorage.getItem(playModeKey.value)
+  if (saved === 'true') {
+    isPlayMode.value = true
+  }
+})
+
+watch(isPlayMode, (newValue) => {
+  localStorage.setItem(playModeKey.value, String(newValue))
+})
 
 // Fetch character data for page context
 const { apiFetch } = useApi()
@@ -53,8 +69,37 @@ const currentWeight = computed(() => {
 
 // Handle clicking an item in the sidebar (scroll to it in list)
 function handleItemClick(itemId: number) {
-  // TODO: Scroll to item in list when ItemList component is implemented
-  console.log('Scroll to item:', itemId)
+  // TODO: Scroll to item in list
+  const element = document.querySelector(`[data-item-id="${itemId}"]`)
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+}
+
+// Item action handlers (Phase 5 will add the API calls)
+function handleEquip(itemId: number, slot: string) {
+  toast.add({ title: `Equip to ${slot} - Coming soon!`, color: 'info' })
+  // TODO: Call useInventoryActions.equipItem(itemId, slot)
+}
+
+function handleUnequip(itemId: number) {
+  toast.add({ title: 'Unequip - Coming soon!', color: 'info' })
+  // TODO: Call useInventoryActions.unequipItem(itemId)
+}
+
+function handleSell(itemId: number) {
+  toast.add({ title: 'Sell - Coming soon!', color: 'info' })
+  // TODO: Open sell modal
+}
+
+function handleDrop(itemId: number) {
+  toast.add({ title: 'Drop - Coming soon!', color: 'info' })
+  // TODO: Call useInventoryActions.dropItem(itemId)
+}
+
+function handleEditQty(itemId: number) {
+  toast.add({ title: 'Edit quantity - Coming soon!', color: 'info' })
+  // TODO: Open quantity edit modal
 }
 
 useSeoMeta({
@@ -103,27 +148,38 @@ useSeoMeta({
     >
       <!-- Left Column: Item List -->
       <div class="space-y-4">
-        <!-- Character Name (for SEO and context) -->
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ character?.name }}'s Inventory
-        </h1>
-
-        <!-- Search -->
-        <UInput
-          placeholder="Search items..."
-          icon="i-heroicons-magnifying-glass"
-          data-testid="item-search"
-        />
-
-        <!-- Item List Placeholder -->
-        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 text-center text-gray-500">
-          Item list will go here
-          <br>
-          {{ equipment.length }} items loaded
+        <!-- Header with title and play mode toggle -->
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ character?.name }}'s Inventory
+          </h1>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400">Play Mode</span>
+            <USwitch
+              v-model="isPlayMode"
+              data-testid="play-mode-toggle"
+              color="primary"
+            />
+          </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex gap-3">
+        <!-- Item List (includes its own search) -->
+        <CharacterInventoryItemList
+          data-testid="item-list"
+          :items="equipment"
+          :editable="isPlayMode"
+          @equip="handleEquip"
+          @unequip="handleUnequip"
+          @sell="handleSell"
+          @drop="handleDrop"
+          @edit-qty="handleEditQty"
+        />
+
+        <!-- Action Buttons (only visible in play mode) -->
+        <div
+          v-if="isPlayMode"
+          class="flex gap-3"
+        >
           <UButton
             data-testid="add-loot-btn"
             icon="i-heroicons-plus"
