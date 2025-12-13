@@ -83,6 +83,62 @@ watch(() => character.value?.is_complete, (isComplete) => {
   }
 }, { immediate: true })
 
+// ============================================================================
+// Inspiration Toggle (Play Mode)
+// ============================================================================
+
+/**
+ * Local reactive state for inspiration
+ * Needed for immediate UI feedback when toggling
+ */
+const localHasInspiration = ref(false)
+
+/** Prevents race conditions from rapid clicks */
+const isUpdatingInspiration = ref(false)
+
+// Sync local inspiration state when character data loads
+watch(() => character.value, (char) => {
+  if (char) {
+    localHasInspiration.value = char.has_inspiration ?? false
+  }
+}, { immediate: true })
+
+/**
+ * Handle inspiration toggle from portrait click
+ * Uses optimistic UI - toggle locally first, then sync to API
+ */
+async function handleToggleInspiration() {
+  if (isUpdatingInspiration.value || !character.value) return
+
+  isUpdatingInspiration.value = true
+  const oldValue = localHasInspiration.value
+  const newValue = !oldValue
+  localHasInspiration.value = newValue
+
+  try {
+    await apiFetch(`/characters/${character.value.id}`, {
+      method: 'PATCH',
+      body: { has_inspiration: newValue }
+    })
+
+    // Show feedback toast
+    toast.add({
+      title: newValue ? 'Inspiration granted!' : 'Inspiration spent',
+      color: newValue ? 'warning' : 'neutral'
+    })
+  } catch (err) {
+    // Rollback on error
+    localHasInspiration.value = oldValue
+    logger.error('Failed to toggle inspiration:', err)
+    toast.add({
+      title: 'Failed to update inspiration',
+      color: 'error'
+    })
+  } finally {
+    isUpdatingInspiration.value = false
+  }
+}
+
 /**
  * Local reactive state for death saves
  * Needed because character from useAsyncData is a computed ref that doesn't propagate mutations
@@ -515,6 +571,18 @@ const displayCurrency = computed(() => {
     : character.value.currency
 })
 
+/**
+ * Computed character that uses local inspiration value when in play mode
+ * This ensures the Header component sees immediate updates for the glow effect
+ */
+const displayCharacter = computed(() => {
+  if (!character.value) return null
+
+  return isPlayMode.value
+    ? { ...character.value, has_inspiration: localHasInspiration.value }
+    : character.value
+})
+
 // ============================================================================
 // Rest Actions (Play Mode)
 // ============================================================================
@@ -940,12 +1008,13 @@ const tabItems = computed(() => {
     >
       <!-- Header -->
       <CharacterSheetHeader
-        :character="character"
+        :character="displayCharacter!"
         :is-play-mode="isPlayMode"
         @add-condition="handleAddConditionClick"
         @level-up="showLevelUpModal = true"
         @revive="handleRevive"
         @export="handleExport"
+        @toggle-inspiration="handleToggleInspiration"
       />
 
       <!-- Validation Warning - shows when sourcebook content was removed -->

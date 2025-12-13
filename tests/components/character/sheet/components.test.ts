@@ -110,11 +110,13 @@ describe('CharacterSheetHeader', () => {
     expect(wrapper.text()).toContain('Cleric 2')
   })
 
-  it('shows Complete badge when is_complete is true', async () => {
+  it('hides status badge when is_complete is true (cleaner UI)', async () => {
     const wrapper = await mountSuspended(Header, {
       props: { character: mockCharacter }
     })
-    expect(wrapper.text()).toContain('Complete')
+    // Complete characters don't show any status badge
+    expect(wrapper.text()).not.toContain('Complete')
+    expect(wrapper.text()).not.toContain('Draft')
   })
 
   it('shows Draft badge when is_complete is false', async () => {
@@ -131,11 +133,14 @@ describe('CharacterSheetHeader', () => {
     expect(wrapper.find('[data-testid="inspiration-badge"]').exists()).toBe(true)
   })
 
-  it('shows Edit button for incomplete characters', async () => {
+  it('shows Continue Editing option in dropdown for incomplete characters', async () => {
     const wrapper = await mountSuspended(Header, {
       props: { character: { ...mockCharacter, is_complete: false } }
     })
-    expect(wrapper.find('[data-testid="edit-button"]').exists()).toBe(true)
+    // Edit is now in the Actions dropdown as "Continue Editing"
+    const vm = wrapper.vm as unknown as { actionMenuItems: Array<Array<{ label: string }>> }
+    const allItems = vm.actionMenuItems.flat()
+    expect(allItems.some(item => item.label === 'Continue Editing')).toBe(true)
   })
 })
 

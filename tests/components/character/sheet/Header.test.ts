@@ -328,6 +328,71 @@ describe('CharacterSheetHeader', () => {
     // which is better suited for E2E tests. These unit tests verify the dropdown exists.
   })
 
+  describe('inspiration portrait glow', () => {
+    it('shows animated glow on portrait when character has inspiration', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: { ...mockCharacter, has_inspiration: true } }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      expect(container.classes()).toContain('inspiration-glow')
+    })
+
+    it('does not show glow when character lacks inspiration', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: { ...mockCharacter, has_inspiration: false } }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      expect(container.classes()).not.toContain('inspiration-glow')
+    })
+
+    it('portrait is clickable in play mode', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: mockCharacter, isPlayMode: true }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      expect(container.classes()).toContain('cursor-pointer')
+    })
+
+    it('portrait is not clickable outside play mode', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: mockCharacter, isPlayMode: false }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      expect(container.classes()).not.toContain('cursor-pointer')
+    })
+
+    it('emits toggle-inspiration when portrait is clicked in play mode', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: mockCharacter, isPlayMode: true }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      await container.trigger('click')
+      expect(wrapper.emitted('toggle-inspiration')).toBeTruthy()
+      expect(wrapper.emitted('toggle-inspiration')).toHaveLength(1)
+    })
+
+    it('does not emit toggle-inspiration when clicked outside play mode', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: { character: mockCharacter, isPlayMode: false }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      await container.trigger('click')
+      expect(wrapper.emitted('toggle-inspiration')).toBeFalsy()
+    })
+
+    it('does not emit toggle-inspiration when character is dead', async () => {
+      const wrapper = await mountSuspended(Header, {
+        props: {
+          character: { ...mockCharacter, is_dead: true },
+          isPlayMode: true
+        }
+      })
+      const container = wrapper.find('[data-testid="portrait-container"]')
+      await container.trigger('click')
+      expect(wrapper.emitted('toggle-inspiration')).toBeFalsy()
+    })
+  })
+
   describe('export action', () => {
     it('includes Export Character in action menu items', async () => {
       const wrapper = await mountSuspended(Header, {
