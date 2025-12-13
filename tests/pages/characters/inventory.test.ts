@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest'
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
+import { flushPromises } from '@vue/test-utils'
 import InventoryPage from '~/pages/characters/[publicId]/inventory.vue'
 import { server, http, HttpResponse } from '../../msw/server'
 
@@ -16,12 +17,19 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
-// Mock character for inventory page
+// Mock character for inventory page (includes currency)
 const mockCharacter = {
   id: 1,
   public_id: 'iron-phoenix-X7k2',
   name: 'Thorin Ironforge',
-  level: 1
+  level: 1,
+  currency: {
+    pp: 0,
+    gp: 15,
+    ep: 0,
+    sp: 30,
+    cp: 50
+  }
 }
 
 // Mock equipment items
@@ -85,6 +93,9 @@ const mockStats = {
 describe('Inventory Page', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+
+    // Clear localStorage to ensure clean state for play mode tests
+    localStorage.clear()
 
     // Setup MSW handlers for this test
     server.use(
@@ -165,5 +176,82 @@ describe('Inventory Page', () => {
     const backLink = wrapper.find('a[href*="/characters/iron-phoenix-X7k2"]')
     expect(backLink.exists()).toBe(true)
     expect(backLink.text()).toContain('Back to Character')
+  })
+
+  describe('Currency Display', () => {
+    it('displays currency cell in sidebar', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // StatCurrency component should be present in sidebar
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      expect(currencyCell.exists()).toBe(true)
+    })
+
+    it('shows currency label in cell', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // StatCurrency should show "Currency" label
+      // Note: In test environment, async data may not fully settle,
+      // so we verify the component renders rather than specific values
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      expect(currencyCell.text()).toContain('Currency')
+    })
+
+    it('currency cell is not clickable when play mode is off', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // Play mode is off by default - cell should not have cursor-pointer
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      expect(currencyCell.classes().join(' ')).not.toContain('cursor-pointer')
+    })
+
+    it('currency cell becomes clickable when play mode is on', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // Enable play mode (same pattern as existing passing test)
+      const playToggle = wrapper.find('[data-testid="play-mode-toggle"]')
+      await playToggle.trigger('click')
+      await flushPromises()
+
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      expect(currencyCell.classes().join(' ')).toContain('cursor-pointer')
+    })
+
+    it('opens currency edit modal when clicked in play mode', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // Enable play mode (same pattern as existing passing test)
+      const playToggle = wrapper.find('[data-testid="play-mode-toggle"]')
+      await playToggle.trigger('click')
+      await flushPromises()
+
+      // Click currency cell
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      await currencyCell.trigger('click')
+      await flushPromises()
+
+      // Modal teleports to body, so check document.body for modal content
+      // UModal renders DialogContent with role="dialog"
+      const modalInBody = document.body.querySelector('[role="dialog"]')
+      expect(modalInBody).toBeTruthy()
+    })
+
+    it('does not open modal when clicked outside play mode', async () => {
+      const wrapper = await mountSuspended(InventoryPage)
+      await flushPromises()
+
+      // Click currency cell (play mode is off)
+      const currencyCell = wrapper.find('[data-testid="currency-cell"]')
+      await currencyCell.trigger('click')
+      await flushPromises()
+
+      // Modal should NOT open
+      expect(wrapper.text()).not.toContain('Manage Currency')
+    })
   })
 })

@@ -10,6 +10,7 @@
  */
 
 import type { CharacterEquipment, CharacterCurrency } from '~/types/character'
+import type { CurrencyDelta } from '~/components/character/sheet/CurrencyEditModal.vue'
 import { logger } from '~/utils/logger'
 
 const route = useRoute()
@@ -19,8 +20,11 @@ const toast = useToast()
 // Modal state
 const isAddLootOpen = ref(false)
 const isShopOpen = ref(false)
+const isCurrencyModalOpen = ref(false)
 const isAddingItem = ref(false)
 const isPurchasing = ref(false)
+const isCurrencyLoading = ref(false)
+const currencyError = ref<string | null>(null)
 
 // Play mode toggle (synced with localStorage)
 const isPlayMode = ref(false)
@@ -201,7 +205,7 @@ async function handlePurchase(payload: PurchasePayload) {
     isShopOpen.value = false
     await Promise.all([refreshEquipment(), refreshCharacter()])
   } catch (error: unknown) {
-    const err = error as { statusCode?: number; data?: { message?: string } }
+    const err = error as { statusCode?: number, data?: { message?: string } }
     if (err.statusCode === 422) {
       toast.add({
         title: 'Purchase failed',
@@ -218,6 +222,40 @@ async function handlePurchase(payload: PurchasePayload) {
   } finally {
     isPurchasing.value = false
   }
+}
+
+// Currency edit handler
+async function handleCurrencyUpdate(payload: CurrencyDelta) {
+  isCurrencyLoading.value = true
+  currencyError.value = null
+  try {
+    await apiFetch(`/characters/${publicId.value}/currency`, {
+      method: 'PATCH',
+      body: payload
+    })
+    toast.add({ title: 'Currency updated!', color: 'success' })
+    isCurrencyModalOpen.value = false
+    await refreshCharacter()
+  } catch (error: unknown) {
+    const err = error as { statusCode?: number, data?: { message?: string } }
+    if (err.statusCode === 422) {
+      currencyError.value = err.data?.message || 'Insufficient funds'
+    } else {
+      logger.error('Failed to update currency:', error)
+      currencyError.value = 'Failed to update currency'
+    }
+  } finally {
+    isCurrencyLoading.value = false
+  }
+}
+
+function handleCurrencyClick() {
+  if (!isPlayMode.value) return
+  isCurrencyModalOpen.value = true
+}
+
+function handleClearCurrencyError() {
+  currencyError.value = null
 }
 
 useSeoMeta({
@@ -324,7 +362,12 @@ useSeoMeta({
           @item-click="handleItemClick"
         />
 
-        <!-- TODO: Add currency display here (refactor from CombatStatsGrid first) -->
+        <!-- Currency Display -->
+        <CharacterSheetStatCurrency
+          :currency="currency"
+          :editable="isPlayMode"
+          @click="handleCurrencyClick"
+        />
 
         <!-- Encumbrance Bar -->
         <CharacterInventoryEncumbranceBar
@@ -349,6 +392,18 @@ useSeoMeta({
       :currency="currency"
       :loading="isPurchasing"
       @purchase="handlePurchase"
+    />
+
+    <!-- Currency Edit Modal -->
+    <CharacterSheetCurrencyEditModal
+      data-testid="currency-edit-modal"
+      :open="isCurrencyModalOpen"
+      :currency="currency"
+      :loading="isCurrencyLoading"
+      :error="currencyError"
+      @update:open="isCurrencyModalOpen = $event"
+      @apply="handleCurrencyUpdate"
+      @clear-error="handleClearCurrencyError"
     />
   </div>
 </template>
