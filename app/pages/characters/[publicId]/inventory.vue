@@ -3,15 +3,15 @@
 /**
  * Inventory Management Page
  *
- * Full inventory UI with item actions, equipment status sidebar,
+ * Full inventory UI with grouped item table, equipment status sidebar,
  * add loot/shop modals, and optional encumbrance tracking.
  *
  * Uses CharacterPageHeader for unified header with play mode, inspiration, etc.
  *
- * @see Design: docs/frontend/plans/2025-12-13-inventory-tab-design-v2.md
+ * @see Design: docs/frontend/plans/2025-12-13-inventory-redesign.md
  */
 
-import type { Character, CharacterEquipment, CharacterCurrency } from '~/types/character'
+import type { Character, CharacterEquipment } from '~/types/character'
 import type { CurrencyDelta } from '~/components/character/sheet/CurrencyEditModal.vue'
 import { logger } from '~/utils/logger'
 
@@ -28,10 +28,15 @@ const isPlayMode = computed(() => pageHeaderRef.value?.isPlayMode ?? false)
 const isAddLootOpen = ref(false)
 const isShopOpen = ref(false)
 const isCurrencyModalOpen = ref(false)
+const isItemDetailOpen = ref(false)
+const selectedItem = ref<CharacterEquipment | null>(null)
 const isAddingItem = ref(false)
 const isPurchasing = ref(false)
 const isCurrencyLoading = ref(false)
 const currencyError = ref<string | null>(null)
+
+// Search state
+const searchQuery = ref('')
 
 // Fetch full character data (needed for PageHeader)
 const { data: characterData, pending: characterPending, refresh: refreshCharacter } = await useAsyncData(
@@ -48,7 +53,7 @@ const { data: equipmentData, pending: equipmentPending, refresh: refreshEquipmen
 // Fetch stats for carrying capacity and spellcaster check
 const { data: statsData, pending: statsPending } = await useAsyncData(
   `inventory-stats-${publicId.value}`,
-  () => apiFetch<{ data: { carrying_capacity?: number; push_drag_lift?: number; spellcasting?: unknown } }>(
+  () => apiFetch<{ data: { carrying_capacity?: number, push_drag_lift?: number, spellcasting?: unknown } }>(
     `/characters/${publicId.value}/stats`
   )
 )
@@ -60,6 +65,9 @@ const equipment = computed(() => equipmentData.value?.data ?? [])
 const stats = computed(() => statsData.value?.data ?? null)
 const isSpellcaster = computed(() => !!stats.value?.spellcasting)
 
+// Item count for header
+const itemCount = computed(() => equipment.value.length)
+
 // Calculate total weight of all equipment
 const currentWeight = computed(() => {
   const total = equipment.value.reduce((sum, item) => {
@@ -70,12 +78,18 @@ const currentWeight = computed(() => {
   return Math.round(total * 100) / 100
 })
 
-// Handle clicking an item in the sidebar (scroll to it in list)
-function handleItemClick(itemId: number) {
+// Handle clicking an item in the sidebar (scroll to it in table)
+function handleSidebarItemClick(itemId: number) {
   const element = document.querySelector(`[data-item-id="${itemId}"]`)
   if (element) {
     element.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+}
+
+// Handle clicking an item in the table (open detail modal)
+function handleItemClick(item: CharacterEquipment) {
+  selectedItem.value = item
+  isItemDetailOpen.value = true
 }
 
 // Inventory actions composable
@@ -84,7 +98,8 @@ const {
   unequipItem,
   addItem,
   dropItem,
-  purchaseItem
+  purchaseItem,
+  updateQuantity
 } = useInventoryActions(publicId)
 
 // Item action handlers
@@ -126,7 +141,31 @@ async function handleDrop(itemId: number) {
 }
 
 function handleEditQty(_itemId: number) {
-  toast.add({ title: 'Edit quantity coming soon', color: 'info' })
+  toast.add({ title: 'Edit quantity modal coming soon', color: 'info' })
+}
+
+async function handleIncrementQty(itemId: number) {
+  try {
+    const item = equipment.value.find(e => e.id === itemId)
+    if (!item) return
+    await updateQuantity(itemId, item.quantity + 1)
+    await refreshEquipment()
+  } catch (error) {
+    logger.error('Failed to increment quantity:', error)
+    toast.add({ title: 'Failed to update quantity', color: 'error' })
+  }
+}
+
+async function handleDecrementQty(itemId: number) {
+  try {
+    const item = equipment.value.find(e => e.id === itemId)
+    if (!item || item.quantity <= 1) return
+    await updateQuantity(itemId, item.quantity - 1)
+    await refreshEquipment()
+  } catch (error) {
+    logger.error('Failed to decrement quantity:', error)
+    toast.add({ title: 'Failed to update quantity', color: 'error' })
+  }
 }
 
 // Add Loot modal handler
@@ -187,7 +226,7 @@ async function handlePurchase(payload: PurchasePayload) {
     isShopOpen.value = false
     await Promise.all([refreshEquipment(), refreshCharacter()])
   } catch (error: unknown) {
-    const err = error as { statusCode?: number; data?: { message?: string } }
+    const err = error as { statusCode?: number, data?: { message?: string } }
     if (err.statusCode === 422) {
       toast.add({
         title: 'Purchase failed',
@@ -216,7 +255,7 @@ async function handleCurrencyUpdate(payload: CurrencyDelta) {
     isCurrencyModalOpen.value = false
     await refreshCharacter()
   } catch (error: unknown) {
-    const err = error as { statusCode?: number; data?: { message?: string } }
+    const err = error as { statusCode?: number, data?: { message?: string } }
     if (err.statusCode === 422) {
       currencyError.value = err.data?.message || 'Insufficient funds'
     } else {
@@ -274,56 +313,78 @@ useSeoMeta({
         data-testid="inventory-layout"
         class="grid lg:grid-cols-[1fr_280px] gap-6 mt-6"
       >
-        <!-- Left Column: Item List -->
+        <!-- Left Column: Item Table -->
         <div class="space-y-4">
-          <!-- Item List (includes its own search) -->
-          <CharacterInventoryItemList
-            data-testid="item-list"
+          <!-- Header Row: Title + Action Buttons -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+              Items
+              <span class="text-gray-400 dark:text-gray-500 font-normal">
+                ({{ itemCount }})
+              </span>
+            </h2>
+            <div
+              v-if="isPlayMode"
+              class="flex gap-2"
+            >
+              <UButton
+                data-testid="add-loot-btn"
+                size="sm"
+                icon="i-heroicons-plus"
+                @click="isAddLootOpen = true"
+              >
+                Add Loot
+              </UButton>
+              <UButton
+                data-testid="shop-btn"
+                size="sm"
+                variant="outline"
+                icon="i-heroicons-shopping-cart"
+                @click="isShopOpen = true"
+              >
+                Shop
+              </UButton>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <UInput
+            v-model="searchQuery"
+            data-testid="item-search"
+            placeholder="Search items..."
+            icon="i-heroicons-magnifying-glass"
+          />
+
+          <!-- Item Table (grouped) -->
+          <CharacterInventoryItemTable
+            data-testid="item-table"
             :items="equipment"
             :editable="isPlayMode"
+            :search-query="searchQuery"
+            @item-click="handleItemClick"
             @equip="handleEquip"
             @unequip="handleUnequip"
+            @increment-qty="handleIncrementQty"
+            @decrement-qty="handleDecrementQty"
             @sell="handleSell"
             @drop="handleDrop"
             @edit-qty="handleEditQty"
           />
-
-          <!-- Action Buttons (only visible in play mode) -->
-          <div
-            v-if="isPlayMode"
-            class="flex gap-3"
-          >
-            <UButton
-              data-testid="add-loot-btn"
-              icon="i-heroicons-plus"
-              @click="isAddLootOpen = true"
-            >
-              Add Loot
-            </UButton>
-            <UButton
-              data-testid="shop-btn"
-              variant="outline"
-              icon="i-heroicons-shopping-cart"
-              @click="isShopOpen = true"
-            >
-              Shop
-            </UButton>
-          </div>
         </div>
 
         <!-- Right Column: Sidebar (sticky on desktop) -->
         <div class="space-y-4 lg:sticky lg:top-4 lg:self-start">
-          <!-- Equipment Status -->
-          <CharacterInventoryEquipmentStatus
-            :equipment="equipment"
-            @item-click="handleItemClick"
-          />
-
-          <!-- Currency Display -->
+          <!-- Currency Display (moved to top) -->
           <CharacterSheetStatCurrency
             :currency="currency"
             :editable="isPlayMode"
             @click="handleCurrencyClick"
+          />
+
+          <!-- Equipment Status -->
+          <CharacterInventoryEquipmentStatus
+            :equipment="equipment"
+            @item-click="handleSidebarItemClick"
           />
 
           <!-- Encumbrance Bar -->
@@ -336,6 +397,13 @@ useSeoMeta({
         </div>
       </div>
     </template>
+
+    <!-- Item Detail Modal -->
+    <CharacterInventoryItemDetailModal
+      :open="isItemDetailOpen"
+      :item="selectedItem"
+      @update:open="isItemDetailOpen = $event"
+    />
 
     <!-- Add Loot Modal -->
     <CharacterInventoryAddLootModal

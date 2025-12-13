@@ -153,8 +153,11 @@ function getArmorClass(equipment: CharacterEquipment): number | null {
         Attuned
         <span class="text-gray-400 dark:text-gray-500">({{ attunedItems.length }}/3)</span>
       </h3>
-      <div class="space-y-2">
-        <!-- Attuned items -->
+      <!-- Attuned items list -->
+      <div
+        v-if="attunedItems.length > 0"
+        class="space-y-2"
+      >
         <button
           v-for="item in attunedItems"
           :key="item.id"
@@ -164,16 +167,15 @@ function getArmorClass(equipment: CharacterEquipment): number | null {
         >
           {{ getItemName(item) }}
         </button>
-
-        <!-- Empty slots -->
-        <span
-          v-for="i in (3 - attunedItems.length)"
-          :key="`empty-${i}`"
-          class="block text-sm text-gray-400 dark:text-gray-500 italic"
-        >
-          Empty
-        </span>
       </div>
+      <!-- Empty state -->
+      <span
+        v-else
+        data-testid="attuned-empty"
+        class="text-sm text-gray-400 dark:text-gray-500 italic"
+      >
+        None
+      </span>
     </div>
   </div>
 </template>

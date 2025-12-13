@@ -96,15 +96,19 @@ describe('EquipmentStatus', () => {
     expect(wrapper.text()).toContain('Ring of Protection')
   })
 
-  it('shows empty slots when nothing equipped', async () => {
+  it('shows empty states when nothing equipped', async () => {
     const emptyEquipment: CharacterEquipment[] = []
 
     const wrapper = await mountSuspended(EquipmentStatus, {
       props: { equipment: emptyEquipment }
     })
 
-    // Should show empty indicators
+    // Wielded and Armor show "Empty" / "No armor"
     expect(wrapper.text()).toContain('Empty')
+    expect(wrapper.text()).toContain('No armor')
+    // Attuned shows "None" instead of empty slot placeholders
+    expect(wrapper.text()).toContain('None')
+    expect(wrapper.text()).toContain('0/3')
   })
 
   it('shows two-handed indicator when main hand has two-handed weapon', async () => {

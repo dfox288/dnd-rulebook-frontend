@@ -181,7 +181,7 @@ async function handleRevive() {
     })
     emit('updated')
   } catch (err: unknown) {
-    const error = err as { statusCode?: number; data?: { message?: string } }
+    const error = err as { statusCode?: number, data?: { message?: string } }
     if (error.statusCode === 422) {
       toast.add({
         title: 'Cannot revive',
@@ -221,7 +221,7 @@ function handleAddConditionClick() {
   showAddConditionModal.value = true
 }
 
-async function handleAddCondition(payload: { condition: string; source: string; duration: string; level?: number }) {
+async function handleAddCondition(payload: { condition: string, source: string, duration: string, level?: number }) {
   if (isAddingCondition.value) return
   isAddingCondition.value = true
 
@@ -290,7 +290,7 @@ async function handleEditSave(payload: EditPayload) {
     toast.add({ title: toastTitle, color: 'success' })
     emit('updated')
   } catch (err: unknown) {
-    const error = err as { statusCode?: number; data?: { message?: string } }
+    const error = err as { statusCode?: number, data?: { message?: string } }
     if (error.statusCode === 422) {
       editError.value = error.data?.message || 'Validation failed'
     } else {
@@ -365,11 +365,11 @@ const portraitAriaLabel = computed(() => {
 // ============================================================================
 
 const actionMenuItems = computed(() => {
-  const items: Array<Array<{ label: string; icon: string; to?: string; onSelect?: () => void }>> = []
+  const items: Array<Array<{ label: string, icon: string, to?: string, onSelect?: () => void }>> = []
 
   // Play mode actions
   if (props.character.is_complete && isPlayMode.value) {
-    const playModeActions: Array<{ label: string; icon: string; onSelect: () => void }> = []
+    const playModeActions: Array<{ label: string, icon: string, onSelect: () => void }> = []
 
     if (props.character.is_dead) {
       playModeActions.push({
