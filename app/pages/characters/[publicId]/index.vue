@@ -818,8 +818,12 @@ async function handleExport() {
 
     // Generate filename: publicId-YYYY-MM-DD-HHmm.json
     const now = new Date()
-    const datePart = now.toISOString().slice(0, 16).replace('T', '-').replace(':', '')
-    const filename = `${character.value.public_id}-${datePart}.json`
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    const hours = String(now.getHours()).padStart(2, '0')
+    const minutes = String(now.getMinutes()).padStart(2, '0')
+    const filename = `${character.value.public_id}-${year}-${month}-${day}-${hours}${minutes}.json`
 
     // Create blob and trigger download
     const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' })

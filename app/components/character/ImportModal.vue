@@ -49,8 +49,14 @@ const parsedData = ref<ImportData | null>(null)
 /** Drag state for visual feedback */
 const isDragging = ref(false)
 
+/** Counter to fix drag enter/leave flicker on child elements */
+const dragCounter = ref(0)
+
 /** Reference to hidden file input */
 const fileInputRef = ref<HTMLInputElement | null>(null)
+
+/** Max file size (10MB) to prevent browser crashes */
+const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 /** Tab items for UTabs */
 const tabItems = [
@@ -70,6 +76,16 @@ const canImport = computed(() => {
  * Process a file (from input or drop)
  */
 async function processFile(file: File) {
+  // Clear previous state first
+  error.value = null
+  parsedData.value = null
+
+  // Check file size
+  if (file.size > MAX_FILE_SIZE) {
+    error.value = 'File too large (max 10MB)'
+    return
+  }
+
   selectedFile.value = file
 
   try {
@@ -99,18 +115,24 @@ async function handleFileSelect(event: Event) {
 
 /**
  * Handle drag enter/over
+ * Uses counter to avoid flicker when hovering child elements
  */
 function handleDragEnter(event: DragEvent) {
   event.preventDefault()
+  dragCounter.value++
   isDragging.value = true
 }
 
 /**
  * Handle drag leave
+ * Only sets isDragging false when counter reaches 0
  */
 function handleDragLeave(event: DragEvent) {
   event.preventDefault()
-  isDragging.value = false
+  dragCounter.value--
+  if (dragCounter.value === 0) {
+    isDragging.value = false
+  }
 }
 
 /**
@@ -118,10 +140,11 @@ function handleDragLeave(event: DragEvent) {
  */
 async function handleDrop(event: DragEvent) {
   event.preventDefault()
+  dragCounter.value = 0
   isDragging.value = false
 
   const file = event.dataTransfer?.files[0]
-  if (file && file.name.endsWith('.json')) {
+  if (file && (file.name.endsWith('.json') || file.type === 'application/json')) {
     await processFile(file)
   } else if (file) {
     error.value = 'Please drop a .json file'
@@ -177,8 +200,15 @@ function parseAndValidate(jsonString: string) {
     return
   }
 
-  if (!obj.character) {
+  if (!obj.character || typeof obj.character !== 'object') {
     error.value = 'Missing character data'
+    return
+  }
+
+  // Validate character.name exists
+  const char = obj.character as Record<string, unknown>
+  if (!char.name || typeof char.name !== 'string') {
+    error.value = 'Character name is required'
     return
   }
 
@@ -214,6 +244,11 @@ watch(() => props.open, (isOpen) => {
     error.value = null
     parsedData.value = null
     isDragging.value = false
+    dragCounter.value = 0
+    // Reset file input to allow re-selecting same file
+    if (fileInputRef.value) {
+      fileInputRef.value.value = ''
+    }
   }
 })
 
@@ -233,6 +268,10 @@ watch(activeTab, () => {
   pastedJson.value = ''
   error.value = null
   parsedData.value = null
+  // Reset file input to allow re-selecting same file
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+  }
 })
 </script>
 
