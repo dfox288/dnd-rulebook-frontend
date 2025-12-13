@@ -51,6 +51,12 @@ const toast = useToast()
  */
 const isPlayMode = ref(false)
 
+/**
+ * Effective edit mode - play mode is enabled AND character is alive
+ * Dead characters can't interact with anything (must revive first)
+ */
+const canEdit = computed(() => isPlayMode.value && !character.value?.is_dead)
+
 // Load play mode preference from localStorage on mount
 onMounted(() => {
   const saved = localStorage.getItem('character-play-mode')
@@ -887,7 +893,7 @@ const tabItems = computed(() => {
       <CharacterSheetConditions
         v-if="conditions.length > 0"
         :conditions="conditions"
-        :editable="isPlayMode"
+        :editable="canEdit"
         :is-dead="character.is_dead"
         @remove="handleRemoveCondition"
         @update-level="handleUpdateConditionLevel"
@@ -907,7 +913,7 @@ const tabItems = computed(() => {
           <CharacterSheetHitDice
             v-if="hitDice.length"
             :hit-dice="hitDice"
-            :editable="isPlayMode"
+            :editable="canEdit"
             :disabled="isResting"
             :is-dead="character.is_dead"
             @spend="handleHitDiceSpend"
@@ -925,7 +931,7 @@ const tabItems = computed(() => {
             :character="character"
             :stats="displayStats"
             :currency="displayCurrency"
-            :editable="isPlayMode"
+            :editable="canEdit"
             :death-save-failures="localDeathSaves.failures"
             :death-save-successes="localDeathSaves.successes"
             :currency-loading="isUpdatingCurrency"
@@ -954,7 +960,7 @@ const tabItems = computed(() => {
               <CharacterSheetDeathSaves
                 :successes="localDeathSaves.successes"
                 :failures="localDeathSaves.failures"
-                :editable="isPlayMode"
+                :editable="canEdit"
                 :is-dead="character.is_dead"
                 @update:successes="handleDeathSaveUpdate('successes', $event)"
                 @update:failures="handleDeathSaveUpdate('failures', $event)"

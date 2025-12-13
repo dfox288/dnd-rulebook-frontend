@@ -55,7 +55,6 @@ const isCurrencyModalOpen = computed({
 
 function handleHpCellClick() {
   if (!props.editable) return
-  if (isDead.value) return // Can't edit HP when dead - use Revive button
   isHpModalOpen.value = true
 }
 
@@ -84,7 +83,6 @@ function handleTempHpClear() {
 
 function handleCurrencyCellClick() {
   if (!props.editable) return
-  if (isDead.value) return // Can't manage currency when dead
   isCurrencyModalOpen.value = true
 }
 
@@ -297,9 +295,9 @@ const acTooltipText = computed(() => {
             : isAtZeroHp
               ? 'bg-error-100 dark:bg-error-900/40 ring-2 ring-error-500'
               : 'bg-gray-50 dark:bg-gray-800',
-        editable && !isDead && !isAtZeroHp ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
-        editable && isAtZeroHp && !isDead && !isStabilized ? 'cursor-pointer hover:bg-error-200 dark:hover:bg-error-900/60' : '',
-        editable && !isDead && isStabilized ? 'cursor-pointer hover:bg-info-200 dark:hover:bg-info-900/60' : ''
+        editable && !isAtZeroHp ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
+        editable && isAtZeroHp && !isStabilized ? 'cursor-pointer hover:bg-error-200 dark:hover:bg-error-900/60' : '',
+        editable && isStabilized ? 'cursor-pointer hover:bg-info-200 dark:hover:bg-info-900/60' : ''
       ]"
       @click="handleHpCellClick"
     >
@@ -339,9 +337,9 @@ const acTooltipText = computed(() => {
       >
         +{{ stats.hit_points.temporary }} temp
       </div>
-      <!-- Add Temp HP button (only when editable, conscious, and alive) -->
+      <!-- Add Temp HP button (only when editable and conscious) -->
       <UButton
-        v-if="editable && !isAtZeroHp && !isDead"
+        v-if="editable && !isAtZeroHp"
         data-testid="add-temp-hp-btn"
         size="xs"
         variant="link"
@@ -411,7 +409,7 @@ const acTooltipText = computed(() => {
       data-testid="currency-cell"
       :class="[
         'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 transition-colors',
-        editable && !isDead ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : ''
+        editable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : ''
       ]"
       @click="handleCurrencyCellClick"
     >
