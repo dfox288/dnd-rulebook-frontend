@@ -51,6 +51,12 @@ const toast = useToast()
  */
 const isPlayMode = ref(false)
 
+/**
+ * Effective edit mode - play mode is enabled AND character is alive
+ * Dead characters can't interact with anything (must revive first)
+ */
+const canEdit = computed(() => isPlayMode.value && !character.value?.is_dead)
+
 // Load play mode preference from localStorage on mount
 onMounted(() => {
   const saved = localStorage.getItem('character-play-mode')
@@ -298,10 +304,13 @@ const displayStats = computed(() => {
 
 /**
  * Handle reviving a dead character
- * Sets HP to 1 and clears death saves
- * Used when resurrection magic brings a character back
+ * Uses atomic /revive endpoint that handles all state changes:
+ * - Sets is_dead=false
+ * - Resets death saves
+ * - Sets HP (default 1)
+ * - Clears exhaustion
  *
- * @see Issue #544 - is_dead flag support
+ * @see Issue #548 - Character revival endpoint
  */
 async function handleRevive() {
   if (isUpdatingHp.value || !character.value) return
@@ -317,41 +326,53 @@ async function handleRevive() {
   isUpdatingHp.value = true
 
   try {
-    // Heal to 1 HP FIRST - this should set is_dead=false on backend
-    // Resurrection spells typically leave you at 1 HP
-    // Order matters: if we cleared death saves first but HP update failed,
-    // character would be in inconsistent state (no death saves but still dead)
-    const response = await apiFetch<HpUpdateResponse>(`/characters/${character.value.id}/hp`, {
-      method: 'PATCH',
-      body: { hp: '+1' }
-    })
-
-    syncFromHpResponse(response)
-
-    // Then clear death saves (cosmetic cleanup - backend should have reset them)
-    await apiFetch(`/characters/${character.value.id}`, {
-      method: 'PATCH',
+    // Single atomic call handles everything:
+    // is_dead=false, death saves reset, HP set, exhaustion cleared
+    await apiFetch(`/characters/${character.value.id}/revive`, {
+      method: 'POST',
       body: {
-        death_save_successes: 0,
-        death_save_failures: 0
+        hit_points: 1,
+        clear_exhaustion: true
       }
     })
 
-    // Refresh character to get updated is_dead flag
+    // Refresh all character data to sync local state
     await refresh()
+
+    // Sync local HP state from refreshed data
+    if (stats.value?.hit_points) {
+      localHitPoints.current = stats.value.hit_points.current ?? 0
+      localHitPoints.max = stats.value.hit_points.max ?? 0
+      localHitPoints.temporary = stats.value.hit_points.temporary ?? 0
+    }
+
+    // Reset local death saves
+    localDeathSaves.successes = 0
+    localDeathSaves.failures = 0
 
     toast.add({
       title: 'Character revived!',
       description: `${character.value.name} has been brought back with 1 HP`,
       color: 'success'
     })
-  } catch (err) {
-    logger.error('Failed to revive character:', err)
-    toast.add({
-      title: 'Failed to revive',
-      description: 'Could not revive character. Try again.',
-      color: 'error'
-    })
+  } catch (err: unknown) {
+    const error = err as { statusCode?: number, data?: { message?: string } }
+
+    // Handle "character not dead" validation error
+    if (error.statusCode === 422) {
+      toast.add({
+        title: 'Cannot revive',
+        description: error.data?.message || 'Character is not dead',
+        color: 'warning'
+      })
+    } else {
+      logger.error('Failed to revive character:', err)
+      toast.add({
+        title: 'Failed to revive',
+        description: 'Could not revive character. Try again.',
+        color: 'error'
+      })
+    }
   } finally {
     isUpdatingHp.value = false
   }
@@ -872,7 +893,7 @@ const tabItems = computed(() => {
       <CharacterSheetConditions
         v-if="conditions.length > 0"
         :conditions="conditions"
-        :editable="isPlayMode"
+        :editable="canEdit"
         :is-dead="character.is_dead"
         @remove="handleRemoveCondition"
         @update-level="handleUpdateConditionLevel"
@@ -892,7 +913,7 @@ const tabItems = computed(() => {
           <CharacterSheetHitDice
             v-if="hitDice.length"
             :hit-dice="hitDice"
-            :editable="isPlayMode"
+            :editable="canEdit"
             :disabled="isResting"
             :is-dead="character.is_dead"
             @spend="handleHitDiceSpend"
@@ -910,7 +931,7 @@ const tabItems = computed(() => {
             :character="character"
             :stats="displayStats"
             :currency="displayCurrency"
-            :editable="isPlayMode"
+            :editable="canEdit"
             :death-save-failures="localDeathSaves.failures"
             :death-save-successes="localDeathSaves.successes"
             :currency-loading="isUpdatingCurrency"
@@ -939,7 +960,7 @@ const tabItems = computed(() => {
               <CharacterSheetDeathSaves
                 :successes="localDeathSaves.successes"
                 :failures="localDeathSaves.failures"
-                :editable="isPlayMode"
+                :editable="canEdit"
                 :is-dead="character.is_dead"
                 @update:successes="handleDeathSaveUpdate('successes', $event)"
                 @update:failures="handleDeathSaveUpdate('failures', $event)"
