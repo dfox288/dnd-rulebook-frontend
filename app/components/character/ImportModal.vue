@@ -46,6 +46,12 @@ const error = ref<string | null>(null)
 /** Successfully parsed data ready for import */
 const parsedData = ref<ImportData | null>(null)
 
+/** Drag state for visual feedback */
+const isDragging = ref(false)
+
+/** Reference to hidden file input */
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
 /** Tab items for UTabs */
 const tabItems = [
   { label: 'Upload File', slot: 'upload', icon: 'i-heroicons-arrow-up-tray' },
@@ -61,6 +67,21 @@ const canImport = computed(() => {
 })
 
 /**
+ * Process a file (from input or drop)
+ */
+async function processFile(file: File) {
+  selectedFile.value = file
+
+  try {
+    const text = await file.text()
+    parseAndValidate(text)
+  } catch {
+    error.value = 'Failed to read file'
+    parsedData.value = null
+  }
+}
+
+/**
  * Handle file selection from input
  */
 async function handleFileSelect(event: Event) {
@@ -73,15 +94,45 @@ async function handleFileSelect(event: Event) {
     return
   }
 
-  selectedFile.value = file
+  await processFile(file)
+}
 
-  try {
-    const text = await file.text()
-    parseAndValidate(text)
-  } catch {
-    error.value = 'Failed to read file'
-    parsedData.value = null
+/**
+ * Handle drag enter/over
+ */
+function handleDragEnter(event: DragEvent) {
+  event.preventDefault()
+  isDragging.value = true
+}
+
+/**
+ * Handle drag leave
+ */
+function handleDragLeave(event: DragEvent) {
+  event.preventDefault()
+  isDragging.value = false
+}
+
+/**
+ * Handle file drop
+ */
+async function handleDrop(event: DragEvent) {
+  event.preventDefault()
+  isDragging.value = false
+
+  const file = event.dataTransfer?.files[0]
+  if (file && file.name.endsWith('.json')) {
+    await processFile(file)
+  } else if (file) {
+    error.value = 'Please drop a .json file'
   }
+}
+
+/**
+ * Open file picker when drop zone is clicked
+ */
+function openFilePicker() {
+  fileInputRef.value?.click()
 }
 
 /**
@@ -162,6 +213,7 @@ watch(() => props.open, (isOpen) => {
     pastedJson.value = ''
     error.value = null
     parsedData.value = null
+    isDragging.value = false
   }
 })
 
@@ -198,41 +250,57 @@ watch(pastedJson, () => {
         >
           <!-- Upload File Tab -->
           <template #upload>
-            <div class="pt-4 space-y-4">
-              <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                <UIcon
-                  name="i-heroicons-document-arrow-up"
-                  class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3"
-                />
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Select a character JSON file
-                </p>
-                <input
-                  data-testid="file-input"
-                  type="file"
-                  accept=".json"
-                  class="block w-full text-sm text-gray-500 dark:text-gray-400
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-primary-50 file:text-primary-700
-                    dark:file:bg-primary-900 dark:file:text-primary-300
-                    hover:file:bg-primary-100 dark:hover:file:bg-primary-800
-                    cursor-pointer"
-                  @change="handleFileSelect"
-                >
-              </div>
-
-              <!-- Selected file info -->
-              <div
-                v-if="selectedFile"
-                class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+            <div class="pt-4">
+              <!-- Hidden file input -->
+              <input
+                ref="fileInputRef"
+                data-testid="file-input"
+                type="file"
+                accept=".json"
+                class="hidden"
+                @change="handleFileSelect"
               >
-                <UIcon
-                  name="i-heroicons-document-check"
-                  class="w-5 h-5 text-green-500"
-                />
-                <span>{{ selectedFile.name }}</span>
+
+              <!-- Clickable/droppable zone -->
+              <div
+                class="h-[140px] border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
+                :class="isDragging
+                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                  : selectedFile
+                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'"
+                @click="openFilePicker"
+                @dragenter="handleDragEnter"
+                @dragover="handleDragEnter"
+                @dragleave="handleDragLeave"
+                @drop="handleDrop"
+              >
+                <template v-if="selectedFile">
+                  <UIcon
+                    name="i-heroicons-document-check"
+                    class="w-10 h-10 text-green-500 mb-2"
+                  />
+                  <p class="text-sm font-medium text-green-700 dark:text-green-400">
+                    {{ selectedFile.name }}
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Click to change file
+                  </p>
+                </template>
+                <template v-else>
+                  <UIcon
+                    name="i-heroicons-document-arrow-up"
+                    class="w-10 h-10 text-gray-400 dark:text-gray-500 mb-2"
+                    :class="{ 'text-primary-500': isDragging }"
+                  />
+                  <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <span class="font-medium text-primary-600 dark:text-primary-400">Click to upload</span>
+                    or drag and drop
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    JSON files only
+                  </p>
+                </template>
               </div>
             </div>
           </template>
@@ -244,8 +312,8 @@ watch(pastedJson, () => {
                 v-model="pastedJson"
                 data-testid="json-input"
                 placeholder="Paste character JSON here..."
-                :rows="10"
-                class="font-mono text-sm"
+                :rows="6"
+                class="font-mono text-sm w-full"
               />
             </div>
           </template>
