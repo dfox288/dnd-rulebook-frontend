@@ -84,6 +84,7 @@ function handleTempHpClear() {
 
 function handleCurrencyCellClick() {
   if (!props.editable) return
+  if (isDead.value) return // Can't manage currency when dead
   isCurrencyModalOpen.value = true
 }
 
@@ -410,7 +411,7 @@ const acTooltipText = computed(() => {
       data-testid="currency-cell"
       :class="[
         'bg-gray-50 dark:bg-gray-800 rounded-lg p-4 transition-colors',
-        editable ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : ''
+        editable && !isDead ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : ''
       ]"
       @click="handleCurrencyCellClick"
     >
