@@ -243,7 +243,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8 max-w-6xl">
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
     <!-- Loading State -->
     <div
       v-if="loading"
