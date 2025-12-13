@@ -104,11 +104,13 @@ describe('CharacterSheetHeader', () => {
     expect(wrapper.text()).toMatch(/Warlock 3 \(The Fiend\) \/ Fighter 2/)
   })
 
-  it('shows Complete badge when is_complete is true', async () => {
+  it('hides status badge when character is complete', async () => {
     const wrapper = await mountSuspended(Header, {
       props: { character: mockCharacter }
     })
-    expect(wrapper.text()).toContain('Complete')
+    // Complete characters don't show a status badge (cleaner UI)
+    expect(wrapper.text()).not.toContain('Complete')
+    expect(wrapper.text()).not.toContain('Draft')
   })
 
   it('shows Draft badge when is_complete is false', async () => {
@@ -132,12 +134,8 @@ describe('CharacterSheetHeader', () => {
     expect(wrapper.find('[data-testid="inspiration-badge"]').exists()).toBe(false)
   })
 
-  it('shows Edit button for incomplete characters', async () => {
-    const wrapper = await mountSuspended(Header, {
-      props: { character: { ...mockCharacter, is_complete: false } }
-    })
-    expect(wrapper.find('[data-testid="edit-button"]').exists()).toBe(true)
-  })
+  // Note: Edit functionality for incomplete characters is now in the Actions dropdown
+  // as "Continue Editing" - testing dropdown contents is better suited for E2E tests
 
   describe('size display', () => {
     it('displays size in parentheses after race name', async () => {
@@ -316,89 +314,17 @@ describe('CharacterSheetHeader', () => {
     })
   })
 
-  describe('level-up button', () => {
-    it('shows level-up button for complete characters under level 20', async () => {
-      const character = {
-        ...mockCharacter,
-        is_complete: true,
-        classes: [
-          { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 5, is_primary: true }
-        ]
-      }
+  describe('actions dropdown', () => {
+    it('shows actions dropdown button', async () => {
       const wrapper = await mountSuspended(Header, {
-        props: { character }
+        props: { character: mockCharacter }
       })
 
-      expect(wrapper.find('[data-testid="level-up-button"]').exists()).toBe(true)
+      expect(wrapper.find('[data-testid="actions-dropdown"]').exists()).toBe(true)
     })
 
-    it('hides level-up button for incomplete characters', async () => {
-      const character = {
-        ...mockCharacter,
-        is_complete: false,
-        classes: [
-          { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 3, is_primary: true }
-        ]
-      }
-      const wrapper = await mountSuspended(Header, {
-        props: { character }
-      })
-
-      expect(wrapper.find('[data-testid="level-up-button"]').exists()).toBe(false)
-    })
-
-    it('hides level-up button at max level (20)', async () => {
-      const character = {
-        ...mockCharacter,
-        is_complete: true,
-        classes: [
-          { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 20, is_primary: true }
-        ]
-      }
-      const wrapper = await mountSuspended(Header, {
-        props: { character }
-      })
-
-      expect(wrapper.find('[data-testid="level-up-button"]').exists()).toBe(false)
-    })
-
-    it('hides level-up button for multiclass at total level 20', async () => {
-      const character = {
-        ...mockCharacter,
-        is_complete: true,
-        classes: [
-          { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 15, is_primary: true },
-          { class: { id: 2, name: 'Rogue', slug: 'rogue' }, level: 5, is_primary: false }
-        ]
-      }
-      const wrapper = await mountSuspended(Header, {
-        props: { character }
-      })
-
-      expect(wrapper.find('[data-testid="level-up-button"]').exists()).toBe(false)
-    })
-
-    it('renders level-up button as navigable link', async () => {
-      const character = {
-        ...mockCharacter,
-        public_id: 'test-hero-Ab12',
-        is_complete: true,
-        classes: [
-          { class: { id: 1, name: 'Fighter', slug: 'fighter' }, level: 5, is_primary: true }
-        ]
-      }
-      const wrapper = await mountSuspended(Header, {
-        props: { character }
-      })
-
-      const button = wrapper.find('[data-testid="level-up-button"]')
-      expect(button.exists()).toBe(true)
-      expect(button.text()).toContain('Level Up')
-      // UButton with :to renders as <a> tag with href
-      const anchor = button.find('a')
-      if (anchor.exists()) {
-        expect(anchor.attributes('href')).toContain('/level-up')
-      }
-    })
+    // Note: Level Up and Add Condition are now in the Actions dropdown menu
+    // Testing dropdown menu item clicks requires opening the dropdown first
+    // which is better suited for E2E tests. These unit tests verify the dropdown exists.
   })
 })

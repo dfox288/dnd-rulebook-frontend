@@ -145,6 +145,25 @@ export interface ConditionImmunity {
 }
 
 /**
+ * Active condition on a character (e.g., Poisoned, Exhaustion level 2)
+ */
+export interface CharacterCondition {
+  id: number
+  condition: {
+    id: number
+    name: string
+    slug: string
+  }
+  condition_slug: string
+  is_dangling: boolean
+  level: number | null
+  source: string | null
+  duration: string | null
+  is_exhaustion: boolean
+  exhaustion_warning: string | null
+}
+
+/**
  * Skill advantage trait (advantage on skill checks)
  *
  * Note: Not in OpenAPI spec yet. Type defined manually based on API response.
@@ -351,7 +370,11 @@ export interface SkillReference {
   id: number
   name: string
   slug: string
-  ability_code: AbilityScoreCode
+  ability_score: {
+    id: number
+    code: AbilityScoreCode
+    name: string
+  }
 }
 
 /**

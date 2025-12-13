@@ -11,6 +11,7 @@ import type {
   CharacterSkill,
   CharacterSavingThrow,
   CharacterNote,
+  CharacterCondition,
   SkillReference,
   AbilityScoreCode,
   SkillAdvantage
@@ -32,6 +33,7 @@ export interface UseCharacterSheetReturn {
   spells: ComputedRef<CharacterSpell[]>
   languages: ComputedRef<CharacterLanguage[]>
   notes: ComputedRef<Record<string, CharacterNote[]>>
+  conditions: ComputedRef<CharacterCondition[]>
 
   // Computed/derived
   skills: ComputedRef<CharacterSkill[]>
@@ -42,7 +44,11 @@ export interface UseCharacterSheetReturn {
   // State
   loading: ComputedRef<boolean>
   error: ComputedRef<Error | null>
+
+  // Refresh functions
   refresh: () => Promise<void>
+  refreshForShortRest: () => Promise<void>
+  refreshForLongRest: () => Promise<void>
 }
 
 /**
@@ -110,6 +116,13 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
       () => apiFetch<{ data: Record<string, CharacterNote[]> }>(`/characters/${characterId.value}/notes`)
     )
 
+  // Fetch conditions (active status effects)
+  const { data: conditionsData, pending: conditionsPending, refresh: refreshConditions }
+    = useAsyncData(
+      `character-${characterId.value}-conditions`,
+      () => apiFetch<{ data: CharacterCondition[] }>(`/characters/${characterId.value}/conditions`)
+    )
+
   // Fetch skills reference data
   const { data: skillsReference } = useReferenceData<SkillReference>('/skills')
 
@@ -122,6 +135,7 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
   const spells = computed(() => spellsData.value?.data ?? [])
   const languages = computed(() => languagesData.value?.data ?? [])
   const notes = computed(() => notesData.value?.data ?? {})
+  const conditions = computed(() => conditionsData.value?.data ?? [])
 
   // Computed: Aggregate loading state
   const loading = computed(() =>
@@ -133,6 +147,7 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     || spellsPending.value
     || languagesPending.value
     || notesPending.value
+    || conditionsPending.value
   )
 
   // Computed: First error encountered
@@ -153,7 +168,8 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
       const hasExpertise = profRecord?.expertise ?? false
 
       // Get ability modifier from stats
-      const abilityMod = stats.value?.ability_scores[skill.ability_code]?.modifier ?? 0
+      const abilityCode = skill.ability_score.code
+      const abilityMod = stats.value?.ability_scores[abilityCode]?.modifier ?? 0
 
       // Calculate modifier: ability mod + proficiency (+ expertise)
       let modifier = abilityMod
@@ -164,7 +180,7 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
         id: skill.id,
         name: skill.name,
         slug: skill.slug,
-        ability_code: skill.ability_code,
+        ability_code: abilityCode,
         modifier,
         proficient: isProficient,
         expertise: hasExpertise
@@ -236,7 +252,36 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
       refreshEquipment(),
       refreshSpells(),
       refreshLanguages(),
-      refreshNotes()
+      refreshNotes(),
+      refreshConditions()
+    ])
+  }
+
+  /**
+   * Refresh only data that changes during a short rest
+   * - Stats: for pact slot reset
+   * - Features: for feature usage counter reset
+   */
+  const refreshForShortRest = async () => {
+    await Promise.all([
+      refreshStats(),
+      refreshFeatures()
+    ])
+  }
+
+  /**
+   * Refresh data that changes during a long rest
+   * - Character: death saves, HP
+   * - Stats: HP, spell slots, hit dice, pact slots
+   * - Features: all feature counters reset
+   * - Spells: slot availability
+   */
+  const refreshForLongRest = async () => {
+    await Promise.all([
+      refreshCharacter(),
+      refreshStats(),
+      refreshFeatures(),
+      refreshSpells()
     ])
   }
 
@@ -249,12 +294,15 @@ export function useCharacterSheet(characterId: Ref<string | number>): UseCharact
     spells,
     languages,
     notes,
+    conditions,
     skills,
     skillAdvantages,
     savingThrows,
     hitDice,
     loading,
     error,
-    refresh
+    refresh,
+    refreshForShortRest,
+    refreshForLongRest
   }
 }

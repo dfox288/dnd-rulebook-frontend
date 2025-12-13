@@ -58,9 +58,10 @@ function getAdvantage(slug: string): SkillAdvantage | undefined {
         <span class="text-sm font-bold text-gray-900 dark:text-white w-8">
           {{ formatModifier(skill.modifier) }}
         </span>
-        <!-- Skill name -->
+        <!-- Skill name with ability code -->
         <span class="text-sm text-gray-700 dark:text-gray-300 flex-1">
           {{ skill.name }}
+          <span class="text-gray-400 dark:text-gray-500">({{ skill.ability_code }})</span>
         </span>
         <!-- Advantage indicator -->
         <UTooltip
@@ -75,10 +76,6 @@ function getAdvantage(slug: string): SkillAdvantage | undefined {
             :aria-label="`Has advantage from ${getAdvantage(skill.slug)!.source}`"
           />
         </UTooltip>
-        <!-- Ability code -->
-        <span class="text-xs text-gray-400 dark:text-gray-500 uppercase">
-          {{ skill.ability_code }}
-        </span>
       </div>
     </div>
   </div>

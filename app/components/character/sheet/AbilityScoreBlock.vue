@@ -6,14 +6,7 @@ defineProps<{
   stats: CharacterStats
 }>()
 
-const abilities: { code: AbilityScoreCode, label: string }[] = [
-  { code: 'STR', label: 'STR' },
-  { code: 'DEX', label: 'DEX' },
-  { code: 'CON', label: 'CON' },
-  { code: 'INT', label: 'INT' },
-  { code: 'WIS', label: 'WIS' },
-  { code: 'CHA', label: 'CHA' }
-]
+const abilities: AbilityScoreCode[] = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
 
 /**
  * Format modifier with sign
@@ -25,20 +18,25 @@ function formatModifier(mod: number | null): string {
 </script>
 
 <template>
-  <div class="space-y-2">
-    <div
-      v-for="ability in abilities"
-      :key="ability.code"
-      class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-    >
-      <div class="text-sm font-bold text-gray-500 dark:text-gray-400 w-12">
-        {{ ability.label }}
-      </div>
-      <div class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ stats.ability_scores[ability.code]?.score ?? '—' }}
-      </div>
-      <div class="text-lg font-semibold text-primary-600 dark:text-primary-400 w-12 text-right">
-        {{ formatModifier(stats.ability_scores[ability.code]?.modifier ?? null) }}
+  <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+    <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+      Abilities
+    </h3>
+    <div class="space-y-1">
+      <div
+        v-for="ability in abilities"
+        :key="ability"
+        class="flex items-center justify-between"
+      >
+        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 w-10">
+          {{ ability }}
+        </span>
+        <span class="text-lg font-bold text-gray-900 dark:text-white tabular-nums">
+          {{ stats.ability_scores[ability]?.score ?? '—' }}
+        </span>
+        <span class="text-sm font-semibold text-primary-600 dark:text-primary-400 w-10 text-right tabular-nums">
+          {{ formatModifier(stats.ability_scores[ability]?.modifier ?? null) }}
+        </span>
       </div>
     </div>
   </div>

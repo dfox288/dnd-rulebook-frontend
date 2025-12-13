@@ -3,40 +3,22 @@
 /**
  * Active Conditions Display
  *
- * Displays a prominent alert banner when the character has active conditions.
+ * Displays a prominent red-tinted panel when the character has active conditions.
  * When editable=true (play mode), shows controls for adding/removing conditions.
  * Hidden when no conditions are present (unless editable=true).
  */
-
-interface ConditionItem {
-  id: string
-  name: string
-  slug: string
-  level: string
-  source: string
-  duration: string
-  is_dangling: boolean
-}
+import type { CharacterCondition } from '~/types/character'
 
 const props = defineProps<{
-  conditions?: ConditionItem[]
+  conditions?: CharacterCondition[]
   editable?: boolean
 }>()
 
 const emit = defineEmits<{
   'remove': [conditionSlug: string]
-  'update-level': [payload: { slug: string, level: number }]
-  'add-click': []
-  'confirm-deadly-exhaustion': [payload: { slug: string, currentLevel: number, targetLevel: number }]
+  'update-level': [payload: { slug: string, level: number, source: string | null, duration: string | null }]
+  'confirm-deadly-exhaustion': [payload: { slug: string, currentLevel: number, targetLevel: number, source: string | null, duration: string | null }]
 }>()
-
-/**
- * Only show alert when conditions exist OR when editable (to show add button)
- */
-const showComponent = computed(() => {
-  const hasConditions = props.conditions && props.conditions.length > 0
-  return hasConditions || props.editable
-})
 
 /**
  * Whether there are conditions to display
@@ -46,42 +28,32 @@ const hasConditions = computed(() => {
 })
 
 /**
- * Number of active conditions for title
- */
-const conditionCount = computed(() => {
-  return props.conditions?.length ?? 0
-})
-
-/**
- * Alert title with singular/plural handling
- */
-const alertTitle = computed(() => {
-  const count = conditionCount.value
-  return count === 1 ? '1 Active Condition' : `${count} Active Conditions`
-})
-
-/**
  * Format condition display text
- * Includes level for Exhaustion, shows duration if present
+ * Shows: Name [level] (source) - duration
+ * Examples:
+ * - "Poisoned (Giant Spider)"
+ * - "Exhaustion 2 (Forced march) - Until long rest"
+ * - "Frightened - 1 minute"
  */
-function formatCondition(condition: ConditionItem) {
+function formatCondition(condition: CharacterCondition) {
   const levelText = condition.level ? ` ${condition.level}` : ''
-  const name = `${condition.name}${levelText}`
+  const sourceText = condition.source ? ` (${condition.source})` : ''
+  const name = `${condition.condition.name}${levelText}${sourceText}`
   return condition.duration ? `${name} - ${condition.duration}` : name
 }
 
 /**
  * Check if a condition is exhaustion
  */
-function isExhaustion(condition: ConditionItem): boolean {
-  return condition.slug.includes('exhaustion')
+function isExhaustion(condition: CharacterCondition): boolean {
+  return condition.is_exhaustion
 }
 
 /**
  * Get numeric level from condition (for exhaustion)
  */
-function getLevel(condition: ConditionItem): number {
-  return parseInt(condition.level, 10) || 1
+function getLevel(condition: CharacterCondition): number {
+  return condition.level ?? 1
 }
 
 /**
@@ -94,8 +66,9 @@ function handleRemove(conditionSlug: string) {
 /**
  * Handle exhaustion level increment
  * Emits confirmation request when incrementing to level 6 (death)
+ * Preserves source and duration in the payload
  */
-function handleIncrement(condition: ConditionItem) {
+function handleIncrement(condition: CharacterCondition) {
   const currentLevel = getLevel(condition)
   if (currentLevel >= 6) return
 
@@ -104,160 +77,153 @@ function handleIncrement(condition: ConditionItem) {
   // Level 6 = death, require confirmation
   if (targetLevel === 6) {
     emit('confirm-deadly-exhaustion', {
-      slug: condition.slug,
+      slug: condition.condition_slug,
       currentLevel,
-      targetLevel
+      targetLevel,
+      source: condition.source,
+      duration: condition.duration
     })
     return
   }
 
-  emit('update-level', { slug: condition.slug, level: targetLevel })
+  emit('update-level', {
+    slug: condition.condition_slug,
+    level: targetLevel,
+    source: condition.source,
+    duration: condition.duration
+  })
 }
 
 /**
  * Handle exhaustion level decrement
+ * Preserves source and duration in the payload
  */
-function handleDecrement(condition: ConditionItem) {
+function handleDecrement(condition: CharacterCondition) {
   const currentLevel = getLevel(condition)
   if (currentLevel > 1) {
-    emit('update-level', { slug: condition.slug, level: currentLevel - 1 })
+    emit('update-level', {
+      slug: condition.condition_slug,
+      level: currentLevel - 1,
+      source: condition.source,
+      duration: condition.duration
+    })
   }
-}
-
-/**
- * Handle add button click
- */
-function handleAddClick() {
-  emit('add-click')
 }
 
 /**
  * Check if increment is disabled (at max level 6)
  */
-function isIncrementDisabled(condition: ConditionItem): boolean {
+function isIncrementDisabled(condition: CharacterCondition): boolean {
   return getLevel(condition) >= 6
 }
 
 /**
  * Check if decrement is disabled (at min level 1)
  */
-function isDecrementDisabled(condition: ConditionItem): boolean {
+function isDecrementDisabled(condition: CharacterCondition): boolean {
   return getLevel(condition) <= 1
 }
 
 /**
  * Check if exhaustion is at deadly level
  */
-function isDeadlyExhaustion(condition: ConditionItem): boolean {
+function isDeadlyExhaustion(condition: CharacterCondition): boolean {
   return isExhaustion(condition) && getLevel(condition) === 6
 }
 </script>
 
 <template>
-  <div v-if="showComponent">
-    <!-- Alert with conditions -->
-    <UAlert
-      v-if="hasConditions"
-      data-testid="conditions-alert"
-      color="warning"
-      icon="i-heroicons-exclamation-triangle"
-      :title="alertTitle"
-    >
-      <template #description>
-        <ul class="list-disc list-inside space-y-2">
-          <li
-            v-for="condition in conditions"
-            :key="condition.id"
-            class="flex items-center justify-between gap-2"
-          >
-            <span class="flex-1">
-              {{ formatCondition(condition) }}
-              <!-- Death warning for level 6 exhaustion -->
-              <UBadge
-                v-if="isDeadlyExhaustion(condition)"
-                color="error"
-                variant="solid"
-                size="md"
-                class="ml-2"
-              >
-                Death!
-              </UBadge>
-            </span>
-
-            <!-- Editable controls -->
-            <span
-              v-if="editable"
-              class="flex items-center gap-1 flex-shrink-0"
-            >
-              <!-- Exhaustion stepper -->
-              <template v-if="isExhaustion(condition)">
-                <UButton
-                  data-testid="exhaustion-decrement"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  icon="i-heroicons-minus"
-                  :disabled="isDecrementDisabled(condition)"
-                  @click.stop="handleDecrement(condition)"
-                />
-                <UButton
-                  data-testid="exhaustion-increment"
-                  color="neutral"
-                  variant="ghost"
-                  size="xs"
-                  icon="i-heroicons-plus"
-                  :disabled="isIncrementDisabled(condition)"
-                  @click.stop="handleIncrement(condition)"
-                />
-              </template>
-
-              <!-- Remove button -->
-              <UButton
-                :data-testid="`remove-condition-${condition.slug}`"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                icon="i-heroicons-x-mark"
-                @click.stop="handleRemove(condition.slug)"
-              />
-            </span>
-          </li>
-        </ul>
-
-        <!-- Add button inside alert -->
-        <div
-          v-if="editable"
-          class="mt-3 pt-3 border-t border-amber-200 dark:border-amber-800"
-        >
-          <UButton
-            data-testid="add-condition-btn"
-            color="warning"
-            variant="soft"
-            size="sm"
-            icon="i-heroicons-plus"
-            @click="handleAddClick"
-          >
-            Add Condition
-          </UButton>
-        </div>
-      </template>
-    </UAlert>
-
-    <!-- Empty state with add button (editable only) -->
-    <div
-      v-else-if="editable"
-      class="p-3"
-    >
-      <UButton
-        data-testid="add-condition-btn"
-        color="neutral"
+  <div
+    v-if="hasConditions"
+    class="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/30"
+  >
+    <!-- Header -->
+    <div class="flex items-center gap-2 px-4 py-2 border-b border-red-200 dark:border-red-800">
+      <UIcon
+        name="i-heroicons-exclamation-triangle"
+        class="w-5 h-5 text-red-600 dark:text-red-400"
+      />
+      <span class="font-medium text-red-900 dark:text-red-100">
+        Active Conditions
+      </span>
+      <UBadge
+        color="error"
         variant="soft"
         size="sm"
-        icon="i-heroicons-plus"
-        @click="handleAddClick"
       >
-        Add Condition
-      </UButton>
+        {{ conditions!.length }}
+      </UBadge>
+    </div>
+
+    <!-- Conditions list -->
+    <div
+      data-testid="conditions-alert"
+      class="divide-y divide-red-200 dark:divide-red-800/50"
+    >
+      <div
+        v-for="condition in conditions"
+        :key="condition.id"
+        class="flex items-center justify-between gap-3 px-4 py-3"
+      >
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="text-red-900 dark:text-red-100 font-medium">
+            {{ formatCondition(condition) }}
+          </span>
+          <!-- Death warning for level 6 exhaustion -->
+          <UBadge
+            v-if="isDeadlyExhaustion(condition)"
+            color="error"
+            variant="solid"
+            size="md"
+          >
+            Death!
+          </UBadge>
+        </div>
+
+        <!-- Editable controls -->
+        <div
+          v-if="editable"
+          class="flex items-center gap-2 flex-shrink-0"
+        >
+          <!-- Exhaustion controls -->
+          <template v-if="isExhaustion(condition)">
+            <UButton
+              data-testid="exhaustion-decrement"
+              color="success"
+              variant="soft"
+              size="xs"
+              icon="i-heroicons-arrow-down"
+              :disabled="isDecrementDisabled(condition)"
+              @click.stop="handleDecrement(condition)"
+            >
+              Recover
+            </UButton>
+            <UButton
+              data-testid="exhaustion-increment"
+              color="error"
+              variant="soft"
+              size="xs"
+              icon="i-heroicons-arrow-up"
+              :disabled="isIncrementDisabled(condition)"
+              @click.stop="handleIncrement(condition)"
+            >
+              Worsen
+            </UButton>
+          </template>
+
+          <!-- Remove button -->
+          <UButton
+            :data-testid="`remove-condition-${condition.condition_slug}`"
+            color="error"
+            variant="ghost"
+            size="xs"
+            icon="i-heroicons-x-mark"
+            @click.stop="handleRemove(condition.condition_slug)"
+          >
+            Remove
+          </UButton>
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -10,6 +10,7 @@
  *
  * Play Mode: Toggle to enable interactive features (death saves, HP, etc.)
  */
+import type { Condition } from '~/types'
 
 const route = useRoute()
 const publicId = computed(() => route.params.publicId as string)
@@ -23,13 +24,16 @@ const {
   spells,
   languages,
   notes,
+  conditions,
   skills,
   skillAdvantages,
   savingThrows,
   hitDice,
   loading,
   error,
-  refresh
+  refresh,
+  refreshForShortRest,
+  refreshForLongRest
 } = useCharacterSheet(publicId)
 
 // ============================================================================
@@ -53,10 +57,17 @@ onMounted(() => {
   }
 })
 
-// Save play mode preference when changed
+// Save play mode preference when changed (only for complete characters)
 watch(isPlayMode, (newValue) => {
   localStorage.setItem('character-play-mode', String(newValue))
 })
+
+// Ensure play mode is disabled for draft characters
+watch(() => character.value?.is_complete, (isComplete) => {
+  if (!isComplete && isPlayMode.value) {
+    isPlayMode.value = false
+  }
+}, { immediate: true })
 
 /**
  * Local reactive state for death saves
@@ -290,6 +301,9 @@ const displayStats = computed(() => {
 /** Long rest confirmation modal state */
 const showLongRestModal = ref(false)
 
+/** Level up confirmation modal state */
+const showLevelUpModal = ref(false)
+
 /** Prevents race conditions from rapid rest actions */
 const isResting = ref(false)
 
@@ -338,7 +352,7 @@ async function handleShortRest() {
     const response = await apiFetch<ShortRestResponse>(`/characters/${character.value.id}/short-rest`, {
       method: 'POST'
     })
-    await refresh()
+    await refreshForShortRest()
 
     // Build toast message
     const resetCount = response.data.features_reset.length
@@ -382,7 +396,7 @@ async function handleLongRest() {
     const response = await apiFetch<LongRestResponse>(`/characters/${character.value.id}/long-rest`, {
       method: 'POST'
     })
-    await refresh()
+    await refreshForLongRest()
 
     // Sync local HP state from server after long rest
     if (stats.value?.hit_points) {
@@ -411,6 +425,151 @@ async function handleLongRest() {
   } finally {
     isResting.value = false
   }
+}
+
+// ============================================================================
+// Conditions Management (Play Mode)
+// ============================================================================
+
+/** Fetch available conditions for the add modal */
+const { data: availableConditions } = useReferenceData<Condition>('/conditions')
+
+/** Add condition modal state */
+const showAddConditionModal = ref(false)
+
+/** Deadly exhaustion confirmation modal state */
+const showDeadlyExhaustionModal = ref(false)
+
+/** Pending deadly exhaustion data for confirmation */
+const pendingDeadlyExhaustion = ref<{ slug: string, currentLevel: number, targetLevel: number, source: string | null, duration: string | null } | null>(null)
+
+/** Prevents race conditions from rapid condition updates */
+const isUpdatingConditions = ref(false)
+
+/**
+ * Handle add condition button click from Conditions panel
+ */
+function handleAddConditionClick() {
+  showAddConditionModal.value = true
+}
+
+/**
+ * Handle add condition from modal
+ * POSTs new condition to backend
+ */
+async function handleAddCondition(payload: { condition: string, source: string, duration: string, level?: number }) {
+  if (isUpdatingConditions.value || !character.value) return
+
+  isUpdatingConditions.value = true
+
+  try {
+    await apiFetch(`/characters/${character.value.id}/conditions`, {
+      method: 'POST',
+      body: payload
+    })
+    await refresh()
+    toast.add({
+      title: 'Condition added',
+      color: 'success'
+    })
+  } catch (err) {
+    logger.error('Failed to add condition:', err)
+    toast.add({
+      title: 'Failed to add condition',
+      color: 'error'
+    })
+  } finally {
+    isUpdatingConditions.value = false
+  }
+}
+
+/**
+ * Handle remove condition from Conditions panel
+ * DELETEs condition from backend
+ */
+async function handleRemoveCondition(conditionSlug: string) {
+  if (isUpdatingConditions.value || !character.value) return
+
+  isUpdatingConditions.value = true
+
+  try {
+    await apiFetch(`/characters/${character.value.id}/conditions/${conditionSlug}`, {
+      method: 'DELETE'
+    })
+    await refresh()
+    toast.add({
+      title: 'Condition removed',
+      color: 'success'
+    })
+  } catch (err) {
+    logger.error('Failed to remove condition:', err)
+    toast.add({
+      title: 'Failed to remove condition',
+      color: 'error'
+    })
+  } finally {
+    isUpdatingConditions.value = false
+  }
+}
+
+/**
+ * Handle exhaustion level update from Conditions panel
+ * POSTs updated level to backend (upsert behavior)
+ * Preserves source and duration from the original condition
+ */
+async function handleUpdateConditionLevel(payload: { slug: string, level: number, source: string | null, duration: string | null }) {
+  if (isUpdatingConditions.value || !character.value) return
+
+  isUpdatingConditions.value = true
+
+  try {
+    await apiFetch(`/characters/${character.value.id}/conditions`, {
+      method: 'POST',
+      body: {
+        condition: payload.slug,
+        level: payload.level,
+        source: payload.source ?? '',
+        duration: payload.duration ?? ''
+      }
+    })
+    await refresh()
+  } catch (err) {
+    logger.error('Failed to update exhaustion level:', err)
+    toast.add({
+      title: 'Failed to update exhaustion',
+      color: 'error'
+    })
+  } finally {
+    isUpdatingConditions.value = false
+  }
+}
+
+/**
+ * Handle deadly exhaustion confirmation request
+ * Shows confirmation modal before allowing level 6
+ * Preserves source and duration for when confirmation is accepted
+ */
+function handleDeadlyExhaustionConfirm(payload: { slug: string, currentLevel: number, targetLevel: number, source: string | null, duration: string | null }) {
+  pendingDeadlyExhaustion.value = payload
+  showDeadlyExhaustionModal.value = true
+}
+
+/**
+ * Handle confirmed deadly exhaustion
+ * Called when user confirms level 6 in the modal
+ * Passes through source and duration from pending data
+ */
+async function handleDeadlyExhaustionConfirmed() {
+  if (!pendingDeadlyExhaustion.value) return
+
+  await handleUpdateConditionLevel({
+    slug: pendingDeadlyExhaustion.value.slug,
+    level: pendingDeadlyExhaustion.value.targetLevel,
+    source: pendingDeadlyExhaustion.value.source,
+    duration: pendingDeadlyExhaustion.value.duration
+  })
+
+  pendingDeadlyExhaustion.value = null
 }
 
 // Validation - check for dangling references when sourcebooks are removed
@@ -448,7 +607,7 @@ const tabItems = computed(() => {
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-5xl">
-    <!-- Top Bar: Back Link + Play Mode Toggle -->
+    <!-- Top Bar: Back Link + Play Mode Toggle (only for complete characters) -->
     <div class="flex items-center justify-between mb-6">
       <UButton
         to="/characters"
@@ -458,8 +617,11 @@ const tabItems = computed(() => {
         Back to Characters
       </UButton>
 
-      <!-- Play Mode Toggle -->
-      <div class="flex items-center gap-2">
+      <!-- Play Mode Toggle (only for complete characters) -->
+      <div
+        v-if="character?.is_complete"
+        class="flex items-center gap-2"
+      >
         <span class="text-sm text-gray-500 dark:text-gray-400">Play Mode</span>
         <USwitch
           v-model="isPlayMode"
@@ -498,13 +660,25 @@ const tabItems = computed(() => {
       class="space-y-6"
     >
       <!-- Header -->
-      <CharacterSheetHeader :character="character" />
+      <CharacterSheetHeader
+        :character="character"
+        :is-play-mode="isPlayMode"
+        @add-condition="handleAddConditionClick"
+        @level-up="showLevelUpModal = true"
+      />
 
       <!-- Validation Warning - shows when sourcebook content was removed -->
       <CharacterSheetValidationWarning :validation-result="validationResult" />
 
-      <!-- Active Conditions - shows when character has status effects -->
-      <CharacterSheetConditions :conditions="character.conditions" />
+      <!-- Active Conditions - only shows when character has conditions -->
+      <CharacterSheetConditions
+        v-if="conditions.length > 0"
+        :conditions="conditions"
+        :editable="isPlayMode"
+        @remove="handleRemoveCondition"
+        @update-level="handleUpdateConditionLevel"
+        @confirm-deadly-exhaustion="handleDeadlyExhaustionConfirm"
+      />
 
       <!-- Main Grid: Abilities sidebar + Stats/Skills -->
       <div class="grid lg:grid-cols-[200px_1fr] gap-6">
@@ -618,5 +792,26 @@ const tabItems = computed(() => {
   <CharacterSheetLongRestConfirmModal
     v-model:open="showLongRestModal"
     @confirm="handleLongRest"
+  />
+
+  <!-- Level Up Confirmation Modal -->
+  <CharacterSheetLevelUpConfirmModal
+    v-if="character"
+    v-model:open="showLevelUpModal"
+    :character-public-id="character.public_id"
+    :current-level="character.level"
+  />
+
+  <!-- Add Condition Modal -->
+  <CharacterSheetAddConditionModal
+    v-model:open="showAddConditionModal"
+    :available-conditions="availableConditions ?? []"
+    @add="handleAddCondition"
+  />
+
+  <!-- Deadly Exhaustion Confirmation Modal -->
+  <CharacterSheetDeadlyExhaustionConfirmModal
+    v-model:open="showDeadlyExhaustionModal"
+    @confirm="handleDeadlyExhaustionConfirmed"
   />
 </template>
