@@ -18,10 +18,19 @@ export default defineEventHandler(async (event) => {
     return data
   } catch (error: unknown) {
     const err = error as { statusCode?: number, statusMessage?: string, data?: unknown }
+
+    // Re-throw if it's already a H3 error with status code
+    if (err.statusCode) {
+      throw createError({
+        statusCode: err.statusCode,
+        statusMessage: err.statusMessage || 'Failed to fetch portrait',
+        data: err.data
+      })
+    }
+
     throw createError({
-      statusCode: err.statusCode || 500,
-      statusMessage: err.statusMessage || 'Failed to fetch portrait',
-      data: err.data
+      statusCode: 500,
+      statusMessage: 'Failed to fetch portrait'
     })
   }
 })

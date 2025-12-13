@@ -35,6 +35,11 @@ interface CharacterData {
     original: string | null
     thumb: string | null
     medium: string | null
+    /**
+     * Whether this is a user-uploaded portrait vs a generated/default one.
+     * Currently used by backend for tracking; may be used later for UI
+     * differentiation (e.g., showing "custom" badge or different remove behavior).
+     */
     is_uploaded: boolean
   } | null
 }
@@ -174,6 +179,7 @@ async function handleFileSelect(event: Event) {
  */
 function handleDragEnter(event: DragEvent) {
   event.preventDefault()
+  if (props.loading) return
   dragCounter.value++
   isDragging.value = true
 }
@@ -197,6 +203,8 @@ async function handleDrop(event: DragEvent) {
   dragCounter.value = 0
   isDragging.value = false
 
+  if (props.loading) return
+
   const file = event.dataTransfer?.files[0]
   if (file) {
     await processFile(file)
@@ -207,6 +215,7 @@ async function handleDrop(event: DragEvent) {
  * Open file picker when drop zone is clicked
  */
 function openFilePicker() {
+  if (props.loading) return
   fileInputRef.value?.click()
 }
 
@@ -373,12 +382,15 @@ watch(() => props.open, (isOpen) => {
           <!-- Drop zone / File picker -->
           <div
             data-testid="drop-zone"
-            class="h-[120px] border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors"
-            :class="isDragging
-              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-              : selectedFile
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'"
+            class="h-[120px] border-2 border-dashed rounded-lg flex flex-col items-center justify-center transition-colors"
+            :class="[
+              loading ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+              isDragging
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                : selectedFile
+                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+            ]"
             @click="openFilePicker"
             @dragenter="handleDragEnter"
             @dragover="handleDragEnter"

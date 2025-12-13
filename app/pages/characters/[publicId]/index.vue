@@ -983,10 +983,21 @@ async function handleEditSave(payload: EditPayload) {
     // 3. Refresh character data to show updates
     await refresh()
 
-    // 4. Close modal and show success
+    // 4. Close modal and show success with specific message
     showEditModal.value = false
+
+    // Build descriptive toast message
+    const changes: string[] = []
+    if (hasNameChange || hasAlignmentChange) changes.push('details')
+    if (payload.portraitFile) changes.push('portrait')
+    const toastTitle = changes.length > 1
+      ? 'Character details and portrait updated'
+      : payload.portraitFile
+        ? 'Portrait updated'
+        : 'Character updated'
+
     toast.add({
-      title: 'Character updated',
+      title: toastTitle,
       color: 'success'
     })
   } catch (err: unknown) {
