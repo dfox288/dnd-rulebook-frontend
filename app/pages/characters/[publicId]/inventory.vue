@@ -10,6 +10,7 @@
  */
 
 import type { CharacterEquipment, CharacterCurrency } from '~/types/character'
+import { logger } from '~/utils/logger'
 
 const route = useRoute()
 const publicId = computed(() => route.params.publicId as string)
@@ -83,30 +84,60 @@ function handleItemClick(itemId: number) {
   }
 }
 
-// Item action handlers (Phase 5 will add the API calls)
-function handleEquip(itemId: number, slot: string) {
-  toast.add({ title: `Equip to ${slot} - Coming soon!`, color: 'info' })
-  // TODO: Call useInventoryActions.equipItem(itemId, slot)
+// Inventory actions composable
+const {
+  equipItem,
+  unequipItem,
+  addItem,
+  dropItem,
+  sellItem,
+  purchaseItem,
+  updateQuantity
+} = useInventoryActions(publicId)
+
+// Item action handlers
+async function handleEquip(itemId: number, slot: string) {
+  try {
+    await equipItem(itemId, slot as 'main_hand' | 'off_hand' | 'worn' | 'attuned')
+    toast.add({ title: 'Item equipped!', color: 'success' })
+    await refreshEquipment()
+  } catch (error) {
+    logger.error('Failed to equip item:', error)
+    toast.add({ title: 'Failed to equip item', color: 'error' })
+  }
 }
 
-function handleUnequip(itemId: number) {
-  toast.add({ title: 'Unequip - Coming soon!', color: 'info' })
-  // TODO: Call useInventoryActions.unequipItem(itemId)
+async function handleUnequip(itemId: number) {
+  try {
+    await unequipItem(itemId)
+    toast.add({ title: 'Item unequipped', color: 'success' })
+    await refreshEquipment()
+  } catch (error) {
+    logger.error('Failed to unequip item:', error)
+    toast.add({ title: 'Failed to unequip item', color: 'error' })
+  }
 }
 
 function handleSell(itemId: number) {
-  toast.add({ title: 'Sell - Coming soon!', color: 'info' })
-  // TODO: Open sell modal
+  // TODO: Open sell modal to confirm price
+  // For now, just show a coming soon message
+  toast.add({ title: 'Sell modal coming soon', color: 'info' })
 }
 
-function handleDrop(itemId: number) {
-  toast.add({ title: 'Drop - Coming soon!', color: 'info' })
-  // TODO: Call useInventoryActions.dropItem(itemId)
+async function handleDrop(itemId: number) {
+  try {
+    await dropItem(itemId)
+    toast.add({ title: 'Item dropped', color: 'success' })
+    await refreshEquipment()
+  } catch (error) {
+    logger.error('Failed to drop item:', error)
+    toast.add({ title: 'Failed to drop item', color: 'error' })
+  }
 }
 
 function handleEditQty(itemId: number) {
-  toast.add({ title: 'Edit quantity - Coming soon!', color: 'info' })
   // TODO: Open quantity edit modal
+  toast.add({ title: 'Edit quantity coming soon', color: 'info' })
 }
 
 // Add Loot modal handler
@@ -120,11 +151,12 @@ interface AddItemPayload {
 async function handleAddLoot(payload: AddItemPayload) {
   isAddingItem.value = true
   try {
-    // TODO: Phase 5 will add the actual API call
-    // await apiFetch(`/characters/${publicId.value}/equipment`, {
-    //   method: 'POST',
-    //   body: payload
-    // })
+    await addItem({
+      item_slug: payload.item_slug,
+      quantity: payload.quantity,
+      custom_name: payload.custom_name,
+      custom_description: payload.custom_description
+    })
 
     const itemName = payload.custom_name || payload.item_slug?.split(':')[1] || 'item'
     toast.add({
@@ -136,6 +168,7 @@ async function handleAddLoot(payload: AddItemPayload) {
     isAddLootOpen.value = false
     await refreshEquipment()
   } catch (error) {
+    logger.error('Failed to add item:', error)
     toast.add({
       title: 'Failed to add item',
       color: 'error'
@@ -155,11 +188,7 @@ interface PurchasePayload {
 async function handlePurchase(payload: PurchasePayload) {
   isPurchasing.value = true
   try {
-    // TODO: Phase 5 will add the actual API call
-    // await apiFetch(`/characters/${publicId.value}/equipment/purchase`, {
-    //   method: 'POST',
-    //   body: payload
-    // })
+    await purchaseItem(payload.item_slug, payload.quantity, payload.total_cost_cp)
 
     const itemName = payload.item_slug.split(':')[1] || 'item'
     const goldCost = (payload.total_cost_cp / 100).toFixed(2)
@@ -171,11 +200,21 @@ async function handlePurchase(payload: PurchasePayload) {
 
     isShopOpen.value = false
     await Promise.all([refreshEquipment(), refreshCharacter()])
-  } catch (error) {
-    toast.add({
-      title: 'Purchase failed',
-      color: 'error'
-    })
+  } catch (error: unknown) {
+    const err = error as { statusCode?: number; data?: { message?: string } }
+    if (err.statusCode === 422) {
+      toast.add({
+        title: 'Purchase failed',
+        description: err.data?.message || 'Insufficient funds',
+        color: 'error'
+      })
+    } else {
+      logger.error('Failed to purchase item:', error)
+      toast.add({
+        title: 'Purchase failed',
+        color: 'error'
+      })
+    }
   } finally {
     isPurchasing.value = false
   }
