@@ -1061,21 +1061,23 @@ useSeoMeta({
   description: () => `View ${character.value?.name ?? 'character'} - D&D 5e Character Sheet`
 })
 
-// Tab items for bottom section
+// Tab items for bottom section (Equipment moved to dedicated /inventory page)
 const tabItems = computed(() => {
   const items = [
     { label: 'Features', slot: 'features', icon: 'i-heroicons-star' },
     { label: 'Proficiencies', slot: 'proficiencies', icon: 'i-heroicons-academic-cap' },
-    { label: 'Equipment', slot: 'equipment', icon: 'i-heroicons-briefcase' },
     { label: 'Languages', slot: 'languages', icon: 'i-heroicons-language' },
     { label: 'Notes', slot: 'notes', icon: 'i-heroicons-document-text' }
   ]
   // Only show Spells tab for casters
   if (stats.value?.spellcasting) {
-    items.splice(3, 0, { label: 'Spells', slot: 'spells', icon: 'i-heroicons-sparkles' })
+    items.splice(2, 0, { label: 'Spells', slot: 'spells', icon: 'i-heroicons-sparkles' })
   }
   return items
 })
+
+// Is this character a spellcaster? (for TabNavigation)
+const isSpellcaster = computed(() => !!stats.value?.spellcasting)
 </script>
 
 <template>
@@ -1102,6 +1104,13 @@ const tabItems = computed(() => {
         />
       </div>
     </div>
+
+    <!-- Tab Navigation (Overview, Inventory, Spells) -->
+    <CharacterTabNavigation
+      v-if="!loading"
+      :public-id="publicId"
+      :is-spellcaster="isSpellcaster"
+    />
 
     <!-- Loading State -->
     <div
@@ -1244,14 +1253,6 @@ const tabItems = computed(() => {
 
         <template #proficiencies>
           <CharacterSheetProficienciesPanel :proficiencies="proficiencies" />
-        </template>
-
-        <template #equipment>
-          <CharacterSheetEquipmentPanel
-            :equipment="equipment"
-            :carrying-capacity="stats?.carrying_capacity"
-            :push-drag-lift="stats?.push_drag_lift"
-          />
         </template>
 
         <template #spells>
