@@ -41,13 +41,14 @@ const equipment = computed(() => equipmentData.value?.data ?? [])
 const stats = computed(() => statsData.value?.data ?? null)
 const isSpellcaster = computed(() => !!stats.value?.spellcasting)
 
-// Calculate total weight of all equipment
+// Calculate total weight of all equipment (rounded to 2 decimal places)
 const currentWeight = computed(() => {
-  return equipment.value.reduce((total, item) => {
+  const total = equipment.value.reduce((sum, item) => {
     const itemData = item.item as { weight?: string | number } | null
     const weight = parseFloat(String(itemData?.weight ?? 0)) || 0
-    return total + (weight * item.quantity)
+    return sum + (weight * item.quantity)
   }, 0)
+  return Math.round(total * 100) / 100
 })
 
 // Handle clicking an item in the sidebar (scroll to it in list)
