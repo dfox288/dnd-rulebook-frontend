@@ -44,8 +44,8 @@ const mockStats = {
 
 // Mock skills for reference data
 const mockSkills = [
-  { id: 1, name: 'Acrobatics', slug: 'acrobatics', ability_code: 'DEX' },
-  { id: 2, name: 'Athletics', slug: 'athletics', ability_code: 'STR' }
+  { id: 1, name: 'Acrobatics', slug: 'acrobatics', ability_score: { code: 'DEX' } },
+  { id: 2, name: 'Athletics', slug: 'athletics', ability_score: { code: 'STR' } }
 ]
 
 // Mock useApi with smart URL-based responses
