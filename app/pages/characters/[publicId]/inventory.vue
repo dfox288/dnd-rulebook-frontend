@@ -9,11 +9,17 @@
  * @see Design: docs/frontend/plans/2025-12-13-inventory-tab-design-v2.md
  */
 
-import type { CharacterEquipment } from '~/types/character'
+import type { CharacterEquipment, CharacterCurrency } from '~/types/character'
 
 const route = useRoute()
 const publicId = computed(() => route.params.publicId as string)
 const toast = useToast()
+
+// Modal state
+const isAddLootOpen = ref(false)
+const isShopOpen = ref(false)
+const isAddingItem = ref(false)
+const isPurchasing = ref(false)
 
 // Play mode toggle (synced with localStorage)
 const isPlayMode = ref(false)
@@ -30,11 +36,11 @@ watch(isPlayMode, (newValue) => {
   localStorage.setItem(playModeKey.value, String(newValue))
 })
 
-// Fetch character data for page context
+// Fetch character data for page context (includes currency)
 const { apiFetch } = useApi()
-const { data: characterData, pending: characterPending } = await useAsyncData(
+const { data: characterData, pending: characterPending, refresh: refreshCharacter } = await useAsyncData(
   `inventory-character-${publicId.value}`,
-  () => apiFetch<{ data: { id: number, name: string, public_id: string } }>(`/characters/${publicId.value}`)
+  () => apiFetch<{ data: { id: number, name: string, public_id: string, currency: CharacterCurrency } }>(`/characters/${publicId.value}`)
 )
 
 // Fetch equipment data
@@ -52,6 +58,7 @@ const { data: statsData, pending: statsPending } = await useAsyncData(
 )
 
 const loading = computed(() => characterPending.value || equipmentPending.value || statsPending.value)
+const currency = computed(() => characterData.value?.data?.currency ?? null)
 const character = computed(() => characterData.value?.data ?? null)
 const equipment = computed(() => equipmentData.value?.data ?? [])
 const stats = computed(() => statsData.value?.data ?? null)
@@ -100,6 +107,78 @@ function handleDrop(itemId: number) {
 function handleEditQty(itemId: number) {
   toast.add({ title: 'Edit quantity - Coming soon!', color: 'info' })
   // TODO: Open quantity edit modal
+}
+
+// Add Loot modal handler
+interface AddItemPayload {
+  item_slug: string | null
+  quantity: number
+  custom_name: string | null
+  custom_description: string | null
+}
+
+async function handleAddLoot(payload: AddItemPayload) {
+  isAddingItem.value = true
+  try {
+    // TODO: Phase 5 will add the actual API call
+    // await apiFetch(`/characters/${publicId.value}/equipment`, {
+    //   method: 'POST',
+    //   body: payload
+    // })
+
+    const itemName = payload.custom_name || payload.item_slug?.split(':')[1] || 'item'
+    toast.add({
+      title: 'Item Added!',
+      description: `Added ${payload.quantity}x ${itemName} to inventory`,
+      color: 'success'
+    })
+
+    isAddLootOpen.value = false
+    await refreshEquipment()
+  } catch (error) {
+    toast.add({
+      title: 'Failed to add item',
+      color: 'error'
+    })
+  } finally {
+    isAddingItem.value = false
+  }
+}
+
+// Shop modal handler
+interface PurchasePayload {
+  item_slug: string
+  quantity: number
+  total_cost_cp: number
+}
+
+async function handlePurchase(payload: PurchasePayload) {
+  isPurchasing.value = true
+  try {
+    // TODO: Phase 5 will add the actual API call
+    // await apiFetch(`/characters/${publicId.value}/equipment/purchase`, {
+    //   method: 'POST',
+    //   body: payload
+    // })
+
+    const itemName = payload.item_slug.split(':')[1] || 'item'
+    const goldCost = (payload.total_cost_cp / 100).toFixed(2)
+    toast.add({
+      title: 'Purchase Complete!',
+      description: `Bought ${payload.quantity}x ${itemName} for ${goldCost} gp`,
+      color: 'success'
+    })
+
+    isShopOpen.value = false
+    await Promise.all([refreshEquipment(), refreshCharacter()])
+  } catch (error) {
+    toast.add({
+      title: 'Purchase failed',
+      color: 'error'
+    })
+  } finally {
+    isPurchasing.value = false
+  }
 }
 
 useSeoMeta({
@@ -183,6 +262,7 @@ useSeoMeta({
           <UButton
             data-testid="add-loot-btn"
             icon="i-heroicons-plus"
+            @click="isAddLootOpen = true"
           >
             Add Loot
           </UButton>
@@ -190,6 +270,7 @@ useSeoMeta({
             data-testid="shop-btn"
             variant="outline"
             icon="i-heroicons-shopping-cart"
+            @click="isShopOpen = true"
           >
             Shop
           </UButton>
@@ -213,5 +294,20 @@ useSeoMeta({
         />
       </div>
     </div>
+
+    <!-- Add Loot Modal -->
+    <CharacterInventoryAddLootModal
+      v-model:open="isAddLootOpen"
+      :loading="isAddingItem"
+      @add="handleAddLoot"
+    />
+
+    <!-- Shop Modal -->
+    <CharacterInventoryShopModal
+      v-model:open="isShopOpen"
+      :currency="currency"
+      :loading="isPurchasing"
+      @purchase="handlePurchase"
+    />
   </div>
 </template>
