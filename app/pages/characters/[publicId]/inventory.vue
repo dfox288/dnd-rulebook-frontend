@@ -9,6 +9,8 @@
  * @see Design: docs/frontend/plans/2025-12-13-inventory-tab-design-v2.md
  */
 
+import type { CharacterEquipment } from '~/types/character'
+
 const route = useRoute()
 const publicId = computed(() => route.params.publicId as string)
 
@@ -22,7 +24,7 @@ const { data: characterData, pending: characterPending } = await useAsyncData(
 // Fetch equipment data
 const { data: equipmentData, pending: equipmentPending, refresh: refreshEquipment } = await useAsyncData(
   `inventory-equipment-${publicId.value}`,
-  () => apiFetch<{ data: unknown[] }>(`/characters/${publicId.value}/equipment`)
+  () => apiFetch<{ data: CharacterEquipment[] }>(`/characters/${publicId.value}/equipment`)
 )
 
 // Fetch stats for carrying capacity
@@ -38,6 +40,21 @@ const character = computed(() => characterData.value?.data ?? null)
 const equipment = computed(() => equipmentData.value?.data ?? [])
 const stats = computed(() => statsData.value?.data ?? null)
 const isSpellcaster = computed(() => !!stats.value?.spellcasting)
+
+// Calculate total weight of all equipment
+const currentWeight = computed(() => {
+  return equipment.value.reduce((total, item) => {
+    const itemData = item.item as { weight?: string | number } | null
+    const weight = parseFloat(String(itemData?.weight ?? 0)) || 0
+    return total + (weight * item.quantity)
+  }, 0)
+})
+
+// Handle clicking an item in the sidebar (scroll to it in list)
+function handleItemClick(itemId: number) {
+  // TODO: Scroll to item in list when ItemList component is implemented
+  console.log('Scroll to item:', itemId)
+}
 
 useSeoMeta({
   title: () => character.value ? `${character.value.name} - Inventory` : 'Inventory'
@@ -122,15 +139,21 @@ useSeoMeta({
         </div>
       </div>
 
-      <!-- Right Column: Sidebar -->
-      <div class="space-y-4">
-        <!-- Sidebar Placeholder -->
-        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Equipment status sidebar</p>
-          <p class="text-xs text-gray-400 mt-2">
-            Carrying Capacity: {{ stats?.carrying_capacity ?? 'N/A' }} lbs
-          </p>
-        </div>
+      <!-- Right Column: Sidebar (sticky on desktop) -->
+      <div class="space-y-4 lg:sticky lg:top-4 lg:self-start">
+        <!-- Equipment Status -->
+        <CharacterInventoryEquipmentStatus
+          :equipment="equipment"
+          @item-click="handleItemClick"
+        />
+
+        <!-- Encumbrance Bar -->
+        <CharacterInventoryEncumbranceBar
+          v-if="stats?.carrying_capacity"
+          :current-weight="currentWeight"
+          :carrying-capacity="stats.carrying_capacity"
+          :public-id="publicId"
+        />
       </div>
     </div>
   </div>
