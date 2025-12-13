@@ -33,6 +33,25 @@ function handlePortraitClick() {
 }
 
 /**
+ * Handle keyboard interaction for portrait (a11y)
+ */
+function handlePortraitKeydown(event: KeyboardEvent) {
+  if (canToggleInspiration.value && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault()
+    emit('toggle-inspiration')
+  }
+}
+
+/**
+ * Computed ARIA label for portrait button
+ */
+const portraitAriaLabel = computed(() => {
+  if (!canToggleInspiration.value) return undefined
+  const status = props.character.has_inspiration ? 'active' : 'inactive'
+  return `Toggle inspiration (currently ${status})`
+})
+
+/**
  * Format classes display string
  * Shows each class with its level and subclass (if any), separated by " / "
  *
@@ -164,12 +183,16 @@ const actionMenuItems = computed(() => {
       <!-- Portrait - glows when inspired, clickable in play mode -->
       <div
         data-testid="portrait-container"
+        :role="canToggleInspiration ? 'button' : undefined"
+        :aria-label="portraitAriaLabel"
+        :tabindex="canToggleInspiration ? 0 : -1"
         class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-md transition-all duration-300"
         :class="{
           'inspiration-glow': character.has_inspiration,
           'cursor-pointer hover:scale-105': canToggleInspiration
         }"
         @click="handlePortraitClick"
+        @keydown="handlePortraitKeydown"
       >
         <img
           v-if="portraitSrc"
@@ -274,6 +297,16 @@ const actionMenuItems = computed(() => {
       0 0 15px 4px rgba(251, 191, 36, 0.8),
       0 0 25px 6px rgba(251, 191, 36, 0.5),
       0 0 40px 10px rgba(251, 191, 36, 0.3);
+  }
+}
+
+/**
+ * Respect user's motion preferences for accessibility
+ * Disables the pulsing animation while preserving the static glow
+ */
+@media (prefers-reduced-motion: reduce) {
+  .inspiration-glow {
+    animation: none;
   }
 }
 </style>

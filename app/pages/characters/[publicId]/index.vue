@@ -96,10 +96,12 @@ const localHasInspiration = ref(false)
 /** Prevents race conditions from rapid clicks */
 const isUpdatingInspiration = ref(false)
 
-// Sync local inspiration state when character data loads
-watch(() => character.value, (char) => {
-  if (char) {
-    localHasInspiration.value = char.has_inspiration ?? false
+// Sync local inspiration state when character data loads or changes
+// Watch the specific field, not the whole character object, to catch external refreshes
+watch(() => character.value?.has_inspiration, (hasInspiration) => {
+  // Don't sync if we're in the middle of an optimistic update (would cause flicker)
+  if (hasInspiration !== undefined && !isUpdatingInspiration.value) {
+    localHasInspiration.value = hasInspiration
   }
 }, { immediate: true })
 
