@@ -55,6 +55,7 @@ const isCurrencyModalOpen = computed({
 
 function handleHpCellClick() {
   if (!props.editable) return
+  if (isDead.value) return // Can't edit HP when dead - use Revive button
   isHpModalOpen.value = true
 }
 
@@ -295,7 +296,7 @@ const acTooltipText = computed(() => {
             : isAtZeroHp
               ? 'bg-error-100 dark:bg-error-900/40 ring-2 ring-error-500'
               : 'bg-gray-50 dark:bg-gray-800',
-        editable && !isAtZeroHp ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
+        editable && !isDead && !isAtZeroHp ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700' : '',
         editable && isAtZeroHp && !isDead && !isStabilized ? 'cursor-pointer hover:bg-error-200 dark:hover:bg-error-900/60' : '',
         editable && isStabilized ? 'cursor-pointer hover:bg-info-200 dark:hover:bg-info-900/60' : ''
       ]"
