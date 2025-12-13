@@ -416,6 +416,9 @@ async function handleCurrencyUpdate(payload: CurrencyDelta) {
 
   isUpdatingCurrency.value = true
 
+  // Store old values for rollback on error
+  const oldCurrency = { ...localCurrency }
+
   try {
     const response = await apiFetch<CurrencyUpdateResponse>(
       `/characters/${character.value.id}/currency`,
@@ -432,7 +435,8 @@ async function handleCurrencyUpdate(payload: CurrencyDelta) {
     localCurrency.sp = response.data.sp
     localCurrency.cp = response.data.cp
 
-    // Close modal on success
+    // Clear any previous error and close modal on success
+    currencyError.value = null
     isCurrencyModalOpen.value = false
 
     toast.add({
@@ -451,6 +455,9 @@ async function handleCurrencyUpdate(payload: CurrencyDelta) {
         data?: { message?: string }
       }
     }
+
+    // Rollback local state on any error
+    Object.assign(localCurrency, oldCurrency)
 
     // Handle validation errors (insufficient funds) - show in modal
     if (error.statusCode === 422) {
