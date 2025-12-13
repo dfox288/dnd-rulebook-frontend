@@ -6,7 +6,7 @@
  * Read-only modal displaying item details when clicking on an item in the inventory table.
  * Shows item name, type, rarity, stats (weight, value, quantity), description, and properties.
  *
- * No action buttons - actions are handled in the table row.
+ * Layout inspired by SpellDetailModal for consistency across the app.
  *
  * @see Design: docs/frontend/plans/2025-12-13-inventory-redesign.md
  */
@@ -24,6 +24,14 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+// Use local ref for v-model binding (matches SpellDetailModal pattern)
+const isOpen = computed({
+  get: () => props.open,
+  set: (value) => {
+    emit('update:open', value)
+  }
+})
+
 // Item data accessors - handle loosely typed item field
 const itemData = computed(() => props.item?.item as {
   name?: string
@@ -32,11 +40,15 @@ const itemData = computed(() => props.item?.item as {
   item_type?: string
   armor_class?: number
   damage?: string
+  damage_type?: string
   properties?: string[]
   cost_cp?: number
   rarity?: string
   range_normal?: number
   range_long?: number
+  requires_attunement?: boolean
+  stealth_disadvantage?: boolean
+  str_minimum?: number
 } | null)
 
 const displayName = computed(() => {
@@ -47,7 +59,26 @@ const displayName = computed(() => {
 
 const description = computed(() => {
   if (!props.item) return ''
-  if (props.item.custom_description) return props.item.custom_description
+
+  // Try custom_description first
+  if (props.item.custom_description) {
+    // Backend may store JSON like {"source":"background","description":"..."}
+    // Try to parse and extract the description field
+    try {
+      const parsed = JSON.parse(props.item.custom_description)
+      if (typeof parsed === 'object' && parsed.description) {
+        return parsed.description
+      }
+      // If it parsed but has no description field, it's metadata - skip it
+      if (typeof parsed === 'object' && parsed.source) {
+        return itemData.value?.description ?? ''
+      }
+    } catch {
+      // Not JSON, use as-is
+      return props.item.custom_description
+    }
+  }
+
   return itemData.value?.description ?? ''
 })
 
@@ -71,8 +102,12 @@ const costGp = computed(() => {
 
 // Combat stats
 const damage = computed(() => itemData.value?.damage ?? null)
+const damageType = computed(() => itemData.value?.damage_type ?? null)
 const armorClass = computed(() => itemData.value?.armor_class ?? null)
 const properties = computed(() => itemData.value?.properties ?? [])
+const requiresAttunement = computed(() => itemData.value?.requires_attunement ?? false)
+const stealthDisadvantage = computed(() => itemData.value?.stealth_disadvantage ?? false)
+const strMinimum = computed(() => itemData.value?.str_minimum ?? null)
 
 // Range for ranged weapons
 const range = computed(() => {
@@ -81,6 +116,13 @@ const range = computed(() => {
   if (!normal) return null
   if (long) return `${normal}/${long} ft`
   return `${normal} ft`
+})
+
+// Full damage text with type
+const damageText = computed(() => {
+  if (!damage.value) return null
+  if (damageType.value) return `${damage.value} ${damageType.value}`
+  return damage.value
 })
 
 // Badge color based on rarity
@@ -96,79 +138,136 @@ const rarityColor = computed(() => {
   }
 })
 
-function handleClose() {
-  emit('update:open', false)
-}
+// Location text for equipped items
+const locationText = computed(() => {
+  if (!props.item?.equipped) return null
+  switch (props.item.location) {
+    case 'main_hand': return 'Main Hand'
+    case 'off_hand': return 'Off Hand'
+    case 'worn': return 'Worn'
+    case 'attuned': return 'Attuned'
+    default: return props.item.location
+  }
+})
 </script>
 
 <template>
   <UModal
-    :open="open"
-    @update:open="emit('update:open', $event)"
+    v-model:open="isOpen"
+    :title="displayName"
   >
-    <template #header>
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ displayName }}
-          </h2>
-          <div class="flex flex-wrap gap-2 mt-2">
-            <UBadge
-              v-if="itemType"
-              color="neutral"
-              variant="subtle"
-              size="md"
-            >
-              {{ itemType }}
-            </UBadge>
-            <UBadge
-              v-if="rarity"
-              :color="rarityColor"
-              variant="subtle"
-              size="md"
-            >
-              {{ rarity }}
-            </UBadge>
+    <template #body>
+      <div
+        v-if="item"
+        class="space-y-4"
+      >
+        <!-- Type and Rarity Badges -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <UBadge
+            v-if="itemType"
+            color="item"
+            variant="subtle"
+            size="md"
+          >
+            {{ itemType }}
+          </UBadge>
+          <UBadge
+            v-if="rarity"
+            :color="rarityColor"
+            variant="subtle"
+            size="md"
+          >
+            {{ rarity }}
+          </UBadge>
+          <UBadge
+            v-if="requiresAttunement"
+            color="warning"
+            variant="subtle"
+            size="md"
+          >
+            Attunement
+          </UBadge>
+          <UBadge
+            v-if="item.equipped"
+            color="primary"
+            variant="subtle"
+            size="md"
+          >
+            {{ locationText }}
+          </UBadge>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div v-if="weight !== null">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">Weight:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ weight }} lb</span>
+          </div>
+          <div v-if="costGp">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">Value:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ costGp }} gp</span>
+          </div>
+          <div v-if="item.quantity > 1">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">Quantity:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ item.quantity }}</span>
+          </div>
+          <div v-if="damageText">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">Damage:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ damageText }}</span>
+          </div>
+          <div v-if="armorClass">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">AC:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ armorClass }}</span>
+          </div>
+          <div v-if="range">
+            <span class="font-semibold text-gray-900 dark:text-gray-100">Range:</span>
+            <span class="ml-1 text-gray-600 dark:text-gray-400">{{ range }}</span>
           </div>
         </div>
-        <UButton
-          icon="i-heroicons-x-mark"
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          @click="handleClose"
-        />
-      </div>
-    </template>
 
-    <template #body>
-      <div class="space-y-4">
-        <!-- Stats Bar -->
-        <div class="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300 pb-4 border-b border-gray-200 dark:border-gray-700">
-          <span v-if="weight !== null">
-            <span class="text-gray-500 dark:text-gray-400">Weight:</span>
-            {{ weight }} lb
+        <!-- Armor Restrictions -->
+        <div
+          v-if="stealthDisadvantage || strMinimum"
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 text-sm"
+        >
+          <span
+            v-if="stealthDisadvantage"
+            class="block text-gray-600 dark:text-gray-400"
+          >
+            <UIcon
+              name="i-heroicons-exclamation-triangle"
+              class="w-4 h-4 inline mr-1 text-warning"
+            />
+            Disadvantage on Stealth checks
           </span>
-          <span v-if="costGp">
-            <span class="text-gray-500 dark:text-gray-400">Value:</span>
-            {{ costGp }} gp
-          </span>
-          <span v-if="item && item.quantity > 1">
-            <span class="text-gray-500 dark:text-gray-400">Qty:</span>
-            {{ item.quantity }}
+          <span
+            v-if="strMinimum"
+            class="block text-gray-600 dark:text-gray-400"
+          >
+            <UIcon
+              name="i-heroicons-exclamation-triangle"
+              class="w-4 h-4 inline mr-1 text-warning"
+            />
+            Requires Strength {{ strMinimum }}
           </span>
         </div>
 
         <!-- Description -->
-        <div v-if="description">
-          <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+        <div
+          v-if="description"
+          class="prose prose-sm dark:prose-invert max-w-none"
+        >
+          <p class="text-gray-700 dark:text-gray-300 whitespace-pre-line">
             {{ description }}
           </p>
         </div>
 
         <!-- Properties -->
-        <div v-if="properties.length > 0">
-          <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+        <div
+          v-if="properties.length > 0"
+          class="bg-item-50 dark:bg-item-900/20 rounded-lg p-3"
+        >
+          <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Properties
           </h4>
           <div class="flex flex-wrap gap-2">
@@ -184,39 +283,14 @@ function handleClose() {
           </div>
         </div>
 
-        <!-- Combat Stats -->
-        <div v-if="damage || armorClass || range">
-          <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-            Combat
-          </h4>
-          <div class="flex flex-wrap gap-4 text-sm text-gray-700 dark:text-gray-300">
-            <span v-if="damage">
-              <span class="text-gray-500 dark:text-gray-400">Damage:</span>
-              {{ damage }}
-            </span>
-            <span v-if="armorClass">
-              <span class="text-gray-500 dark:text-gray-400">AC:</span>
-              {{ armorClass }}
-            </span>
-            <span v-if="range">
-              <span class="text-gray-500 dark:text-gray-400">Range:</span>
-              {{ range }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Equipped Location -->
-        <div v-if="item?.equipped">
-          <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-            Status
-          </h4>
-          <UBadge
-            color="primary"
-            variant="subtle"
-            size="md"
-          >
-            Equipped: {{ item.location === 'main_hand' ? 'Main Hand' : item.location === 'off_hand' ? 'Off Hand' : item.location === 'worn' ? 'Worn' : item.location === 'attuned' ? 'Attuned' : item.location }}
-          </UBadge>
+        <!-- Custom Name/Description Note -->
+        <div
+          v-if="item.custom_name || item.custom_description"
+          class="text-xs text-gray-400 dark:text-gray-500 italic"
+        >
+          <span v-if="item.custom_name && itemData?.name">
+            Base item: {{ itemData.name }}
+          </span>
         </div>
       </div>
     </template>

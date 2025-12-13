@@ -90,15 +90,15 @@ function getItemType(equipment: CharacterEquipment): string | null {
   return item?.item_type ?? null
 }
 
-// Get the group for an item (prefer backend group field, fallback to mapping)
+// Get the group for an item (backend provides group field directly)
 function getItemGroup(equipment: CharacterEquipment): ItemGroup {
-  // Check if backend provides a group field
+  // Backend now provides group field directly on equipment
   const backendGroup = (equipment as { group?: string }).group
   if (backendGroup && GROUP_ORDER.includes(backendGroup as ItemGroup)) {
     return backendGroup as ItemGroup
   }
 
-  // Fallback to frontend mapping
+  // Fallback for legacy data or edge cases
   const itemType = getItemType(equipment)
   if (itemType) {
     const mapped = ITEM_TYPE_TO_GROUP[itemType]
@@ -266,22 +266,22 @@ function handleEquip(item: CharacterEquipment) {
       <div
         v-for="group in visibleGroups"
         :key="group"
-        class="space-y-2"
+        class="bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm"
       >
         <!-- Group header (collapsible) -->
         <button
           :data-testid="`group-header-${group.toLowerCase()}`"
-          class="flex items-center gap-2 w-full text-left py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+          class="flex items-center gap-2 w-full text-left px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700"
           @click="toggleGroup(group)"
         >
           <UIcon
             :name="isGroupCollapsed(group) ? 'i-heroicons-chevron-right' : 'i-heroicons-chevron-down'"
-            class="w-4 h-4 text-gray-400"
+            class="w-4 h-4 text-gray-500"
           />
-          <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">
             {{ group }}
           </span>
-          <span class="text-sm text-gray-400 dark:text-gray-500">
+          <span class="text-sm text-gray-500 dark:text-gray-400">
             ({{ groupedItems[group].length }})
           </span>
         </button>
@@ -289,15 +289,15 @@ function handleEquip(item: CharacterEquipment) {
         <!-- Items in group -->
         <div
           v-show="!isGroupCollapsed(group)"
-          class="space-y-1"
+          class="divide-y divide-gray-100 dark:divide-gray-800"
         >
           <div
             v-for="item in groupedItems[group]"
             :key="item.id"
             :data-item-id="item.id"
             :data-testid="`item-row-${item.id}`"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-            :class="{ 'border-l-3 border-primary': item.equipped }"
+            class="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            :class="{ 'border-l-3 border-primary bg-primary-50 dark:bg-primary-900/40': item.equipped }"
             @click="emit('item-click', item)"
           >
             <!-- Quantity -->
@@ -328,7 +328,7 @@ function handleEquip(item: CharacterEquipment) {
               v-if="getLocationText(item)"
               color="primary"
               variant="subtle"
-              size="xs"
+              size="sm"
             >
               {{ getLocationText(item) }}
             </UBadge>
